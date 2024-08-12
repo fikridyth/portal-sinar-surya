@@ -34,7 +34,7 @@
                 </div>
                 <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
                     <div class="text-center">
-                        <h2 class="text-dark fw-bolder mb-3">Portal System Ticket Event</h2>
+                        <h2 class="text-dark fw-bolder mb-3">Portal Sinar Surya</h2>
                     </div>
                     <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                         <li class="nav-item" role="presentation">

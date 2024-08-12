@@ -2,11 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\EventController;
 use App\Http\Controllers\PreOrderController;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UnitController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +42,6 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);
-        // Route::resource('/ticket', TicketController::class, ['parameters' => ['ticket' => 'id']]);
+        Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
     });
 });

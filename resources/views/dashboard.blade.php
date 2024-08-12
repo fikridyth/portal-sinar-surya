@@ -14,9 +14,9 @@
 
         <div class="card mb-8">
             <div class="card-body">
-                <h5 class="mt-2">Welcome To Portal System Ticket Event.</h5>
+                <h5 class="mt-2">Welcome To Portal Sinar Surya.</h5>
                 <div class="dropdown-divider mt-3 mb-3"></div>
-                @if (auth()->user()->role == 'admin_ticket')
+                {{-- @if (auth()->user()->role == 'admin_ticket')
                     <h5 class="mt-4">Recent Events:</h5>
                     <div class="row">
                         @if ($events->isEmpty())
@@ -68,7 +68,7 @@
                         @endif
                     </div>
                     <a class="btn btn-primary" href="{{ route('transaction.index') }}">Go To Transaction</a>
-                @endif
+                @endif --}}
             </div>
         </div>
     </div>

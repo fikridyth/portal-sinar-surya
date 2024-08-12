@@ -17,8 +17,7 @@
                 <div class="card-header" style="display: flex; justify-content: space-between;">
                     Master Unit
                     <div>
-
-                        <a href="{{ route('unit.create') }}" type="button" class="btn btn-md btn-primary">Add
+                        <a href="{{ route('master.unit.create') }}" type="button" class="btn btn-md btn-primary">Add
                             Unit</a>
                     </div>
                 </div>

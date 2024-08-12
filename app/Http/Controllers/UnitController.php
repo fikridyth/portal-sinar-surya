@@ -2,9 +2,94 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\UnitDataTable;
+use App\Models\Unit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class UnitController extends Controller
 {
-    //
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(UnitDataTable $dataTable)
+    {
+        $title = 'Master Unit';
+
+        return $dataTable->render('master.unit.index', compact('title'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $title = 'Create Unit';
+
+        return view('master/unit/create', compact('title'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $data = [
+            'nama' => $request->nama,
+        ];
+
+        Unit::create($data);
+
+        return Redirect::route('master.unit.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Add Unit Success!");
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $title = 'Edit Unit';
+        $unit = Unit::find($id);
+
+        return view('master/unit/edit', compact('title', 'unit'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $unit = Unit::find($id);
+
+        $data = [
+            'nama' => $request->nama,
+        ];
+
+        $unit->update($data);
+
+        return Redirect::route('master.unit.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Update Unit Success!");
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        Unit::find($id)->delete();
+
+        return Redirect::route('master.unit.index')
+            ->with('alert.status', '01')
+            ->with('alert.message', "Delete Unit Success!");
+    }
 }

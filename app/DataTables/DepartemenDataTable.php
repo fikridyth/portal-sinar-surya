@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Departeman;
+use App\Models\Departemen;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -21,16 +21,19 @@ class DepartemenDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->with('unit')->orderBy('created_at', 'desc')))
         ->addIndexColumn()
+        ->addColumn('unit', function ($row) {
+            return $row->unit->nama;
+        })
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
         })
         ->addColumn('action', function ($row) {
-            $btnEdit = '<a href="' . route('master.unit.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
+            $btnEdit = '<a href="' . route('master.departemen.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
             $btnDelete = '<a href="#" class="btn btn-danger btn-sm" onclick="deleteData(' . $row->id . ')" ><i class="fa fa-trash"></i></a>';
 
-            $button = '<form id="delete-form-' . $row->id . '" action="' . route('master.unit.destroy', $row->id) . '" method="POST" style="display: none;">';
+            $button = '<form id="delete-form-' . $row->id . '" action="' . route('master.departemen.destroy', $row->id) . '" method="POST" style="display: none;">';
             $button .= csrf_field();
             $button .= method_field('DELETE');
             $button .= '</form>';
@@ -45,7 +48,7 @@ class DepartemenDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
-    public function query(Departeman $model): QueryBuilder
+    public function query(Departemen $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -56,20 +59,20 @@ class DepartemenDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('departemen-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    //->dom('Bfrtip')
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+            ->setTableId('departemen-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            //->dom('Bfrtip')
+            ->orderBy(1, 'asc')
+            ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
+            ->parameters([
+                "lengthMenu" => [
+                    [5, 10, 25, 50, 100],
+                    [5, 10, 25, 50, 100]
+                ]
+            ])
+            ->buttons([''])
+            ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');
     }
 
     /**
@@ -78,15 +81,15 @@ class DepartemenDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
+            Column::make('unit')->title('Unit')->addClass('text-center'),
+            Column::make('nama')->addClass('text-center'),
+            Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
-            Column::make('id'),
-            Column::make('add your columns'),
-            Column::make('created_at'),
-            Column::make('updated_at'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
         ];
     }
 

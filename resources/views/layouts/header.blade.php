@@ -27,9 +27,9 @@ $user = User::where('id', auth()->user()->id)->first();
                         <li>
                             <a class="dropdown-item" href="{{ route('master.unit.index') }}">Unit</a>
                         </li>
-                        {{-- <li>
-                            <a class="dropdown-item" href="{{ route('master.ticket.index') }}">Ticket</a>
-                        </li> --}}
+                        <li>
+                            <a class="dropdown-item" href="{{ route('master.departemen.index') }}">Departemen</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown mx-2">
