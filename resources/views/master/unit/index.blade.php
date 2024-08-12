@@ -6,7 +6,7 @@
             <div class="mt-4">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">Master Ticket</li>
+                        <li class="breadcrumb-item active h3" aria-current="page">Master Unit</li>
                     </ol>
                 </nav>
             </div>
@@ -15,9 +15,11 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-header" style="display: flex; justify-content: space-between;">
-                    Manage Ticket
+                    Master Unit
                     <div>
-                        <a href="{{ route('master.ticket.create') }}" type="button" class="btn btn-md btn-primary">Add Ticket</a>
+
+                        <a href="{{ route('unit.create') }}" type="button" class="btn btn-md btn-primary">Add
+                            Unit</a>
                     </div>
                 </div>
 

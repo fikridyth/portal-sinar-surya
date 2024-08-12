@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        Schema::create('preorders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_event')->references('id')->on('events');
-            $table->string('nama');
-            $table->integer('harga');
-            $table->integer('kuota');
-            $table->string('keterangan')->nullable();
-            $table->foreignId('created_by')->references('id')->on('users');
+            $table->string('nomor_po');
+            $table->foreignId('id_supplier')->references('id')->on('suppliers');
+            $table->string('ref');
+            $table->json('detail');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('preorders');
     }
 };

@@ -18,35 +18,34 @@ $user = User::where('id', auth()->user()->id)->first();
                 <li class="nav-item mx-4">
                     <a class="nav-link" href="{{ route('index') }}">Dashboard</a>
                 </li>
-                @if (auth()->user()->role == 'admin_ticket')
-                    <li class="nav-item dropdown me-3 mx-2">
-                        <a data-mdb-dropdown-init class="nav-link dropdown-toggle" href="#"
-                            id="navbarDropdownMenuLink" role="button" aria-expanded="false">
-                            Master
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('master.event.index') }}">Event</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{{ route('master.ticket.index') }}">Ticket</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endif
-                @if (auth()->user()->role == 'admin_transaction')
-                    <li class="nav-item dropdown mx-2">
-                        <a data-mdb-dropdown-init class="nav-link dropdown-toggle" href="#"
-                            id="navbarDropdownMenuLink" role="button" aria-expanded="false">
-                            Transaction
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('transaction.index') }}">Ticket Event</a>
-                            </li>
-                        </ul>
-                    </li>
-                @endif
+                <li class="nav-item dropdown me-3 mx-2">
+                    <a data-mdb-dropdown-init class="nav-link dropdown-toggle" href="#"
+                        id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                        Master
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('master.unit.index') }}">Unit</a>
+                        </li>
+                        {{-- <li>
+                            <a class="dropdown-item" href="{{ route('master.ticket.index') }}">Ticket</a>
+                        </li> --}}
+                    </ul>
+                </li>
+                <li class="nav-item dropdown mx-2">
+                    <a data-mdb-dropdown-init class="nav-link dropdown-toggle" href="#"
+                        id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                        Preorder
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li>
+                            <a class="dropdown-item" href="{{ route('preorder.index') }}">PO</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('daftar-po') }}">Daftar PO</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
 

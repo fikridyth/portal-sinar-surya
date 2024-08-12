@@ -4,17 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Event;
 
-class Ticket extends Model
+class Preorder extends Model
 {
     use HasFactory;
 
-    protected $table = 'tickets';
+    protected $table = 'preorders';
     protected $guarded = ['id'];
 
-    public function event()
-    {
-        return $this->belongsTo(Event::class, 'id_event');
+    public function supplier() {
+        return $this->belongsTo(Supplier::class, 'id_supplier');
     }
 }
