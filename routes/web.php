@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PreOrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 
 /*
@@ -43,5 +45,13 @@ Route::middleware('auth')->group(function () {
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
+        Route::get('/get-departemen', [DepartemenController::class, 'getDepartemenByUnit'])->name('get-departemen');
+        Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
+        Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
+        Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
+        Route::get('/product/parent/{id}', [ProductController::class, 'productParent'])->name('product.parent');
+        Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
+        Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
+        Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
     });
 });

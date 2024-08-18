@@ -30,6 +30,12 @@ $user = User::where('id', auth()->user()->id)->first();
                         <li>
                             <a class="dropdown-item" href="{{ route('master.departemen.index') }}">Departemen</a>
                         </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('master.supplier.index') }}">Supplier</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('master.product.create') }}">Product</a>
+                        </li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown mx-2">

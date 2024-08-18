@@ -20,6 +20,18 @@ class DepartemenController extends Controller
         return $dataTable->render('master.departemen.index', compact('title'));
     }
 
+    public function getDepartemenByUnit(Request $request)
+    {
+        $unitId = $request->input('unit_id');
+        dd($unitId);
+
+        // Fetch the departemen data based on the unit ID
+        $departemen = Departemen::where('id_unit', $unitId)->get(['id', 'nama']);
+
+        // Return the data as JSON
+        return response()->json(['departemen' => $departemen]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

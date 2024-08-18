@@ -9,3 +9,20 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
 
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<style>
+    /* for readonly like disabled */
+    .readonly-input {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        border: 1px solid #ced4da;
+    }
+
+    /* for a tag blur like disabled */
+    .disabled-link {
+        pointer-events: none; /* Prevents clicking */
+        cursor: not-allowed; /* Shows a not-allowed cursor */
+        text-decoration: none; /* Removes underline */
+        opacity: 0.5; /* Makes the link look faded */
+    }
+</style>

@@ -20,22 +20,44 @@
     });
 
     $(document).ready(function() {
+        @if (session('alert.status'))
+            show_alert_dialog(`{{ session('alert.status') }}`, `{{ session('alert.message') }}`);
+        @endif
+
         @if ($errors->any())
-            var status = `01`;
+            var status = ``;
             var message = ``;
+            @if (session('response_code'))
+                status = {{ session('response_code') }};
+            @endif
             @foreach ($errors->all() as $error)
                 message += `{{ $error }}<br/>`;
             @endforeach
+            message += ``;
             show_alert_dialog(status, message);
+        @endif
+
+        @if (request()->get('alert_status'))
+            show_alert_dialog("{{ request()->get('alert_status') }}", "{{ request()->get('alert_message') }}");
         @endif
     });
 
     function show_alert_dialog(status, message) {
+        if (!(typeof message === "string" || message instanceof String)) {
+            message = message.responseText;
+        }
+
         if (status == "00")
             Swal.fire({
                 title: "Success",
                 html: message,
                 icon: "success",
+            });
+        else if (status == "99")
+            Swal.fire({
+                title: "Failed",
+                html: message,
+                icon: "error",
             });
         else
             Swal.fire({
