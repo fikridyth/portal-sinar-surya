@@ -289,19 +289,16 @@
                         </div>
                     </div>
 
-                    <div class="col-2">
+                    <div class="col-2 mt-2">
                         <div class="row align-items-center">
                             <div class="col-4">
                                 <label class="form-label h6 mt-2" for="ppn">PPN</label>
                             </div>
                             <div class="col-6">
-                                <input type="text" id="ppn" name="ppn"
-                                    value="{{ old('ppn', $product->ppn) }}"
-                                    class="form-control readonly-input @error('ppn') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                            </div>
-                            <div class="col-1">
-                                <label class="form-label h6 mt-2">%</label>
+                                <div class="slider-container">
+                                    <input type="checkbox" id="ppn" name="ppn" {{ $product->is_ppn ? 'checked' : '' }} class="slider-checkbox">
+                                    <label for="ppn" class="slider-label"></label>
+                                </div>
                             </div>
                         </div>
                     </div>

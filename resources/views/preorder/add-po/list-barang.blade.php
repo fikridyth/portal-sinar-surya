@@ -74,6 +74,16 @@
                                         <tbody>
                                             @foreach ($getProducts as $product)
                                                 <tr>
+                                                    <input type="text" name="nama[]" hidden value="{{ $product->nama }}">
+                                                    <input type="text" name="stok[]" hidden value="{{ $product->stok }}">
+                                                    <input type="text" name="unit_jual[]" hidden value="{{ $product->unit_jual }}">
+                                                    <input type="text" name="kode[]" hidden value="{{ $product->kode }}">
+                                                    <input type="text" name="kode_sumber[]" hidden value="{{ $product->kode_sumber }}">
+                                                    <input type="text" name="is_ppn[]" hidden value="{{ $product->is_ppn }}">
+                                                    <input type="text" name="diskon1[]" hidden value="{{ $product->diskon1 }}">
+                                                    <input type="text" name="diskon2[]" hidden value="{{ $product->diskon2 }}">
+                                                    <input type="text" name="diskon3[]" hidden value="{{ $product->diskon3 }}">
+                                                    <input type="text" name="id_supplier[]" hidden value="{{ $product->id_supplier }}">
                                                     <td>{{ $product->nama }}</td>
                                                     <td class="text-end">{{ $product->stok }}</td>
                                                     <td class="text-end">

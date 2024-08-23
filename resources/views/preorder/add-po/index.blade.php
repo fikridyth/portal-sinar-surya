@@ -1,5 +1,7 @@
 @extends('main')
 
+@include('preorder.add-on.styles')
+
 @section('content')
     <div class="container mb-7">
         <div class="d-flex align-items-center justify-content-center">
@@ -22,19 +24,26 @@
                             <div class="row w-100">
                                 <div class="form-group col-9">
                                     <div class="row">
-                                        <label for="nomorSupplier1" class="col-sm-2 col-form-label">Nomor Supplier 1</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="dataSupplier1" name="dataSupplier1" list="supplier" size="70"
-                                                required />
-                                            <datalist id="supplier">
+                                        <label for="nomorSupplier1" class="col-sm-2 col-form-label">Supplier Header</label>
+                                        <div class="col-sm-3">
+                                            <div class="custom-select-supplier">
+                                                <input type="text" class="search-input-supplier_1" name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                                <div class="select-items-supplier" id="select-items-supplier_1">
+                                                    <!-- Options will be added here dynamically -->
+                                                </div>
+                                            </div>
+                            
+                                            <select id="supplier_1" style="width: 200px;" hidden>
+                                                <option value="">---Select Supplier---</option>
+                                                <!-- Example options; replace with server-side data as needed -->
                                                 @foreach ($suppliers as $supplier)
-                                                    <option>{{ $supplier->nama }}</option>
+                                                    <option value="{{ $supplier->id }}" data-kode="{{ $supplier->nomor }}" data-nama="{{ $supplier->nama }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                                 @endforeach
-                                            </datalist>
+                                            </select>
                                         </div>
-                                        {{-- <div class="col-sm-5">
-                                            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                                        </div> --}}
+                                        <div class="col-sm-5">
+                                            <input type="text" id="nama_supplier_1" name='dataSupplier1' value="" readonly class="form-control readonly-input" autocomplete="off" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group col-3">
@@ -54,26 +63,34 @@
                                 <div class="form-group col-9">
                                     <div class="row">
                                         <label for="nomorSupplier2" class="col-sm-2 col-form-label">Nomor Supplier 2</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="dataSupplier2" name="dataSupplier2" list="supplier" size="70" />
-                                            <datalist id="supplier">
+                                        <div class="col-sm-3">
+                                            <div class="custom-select-supplier">
+                                                <input type="text" class="search-input-supplier_2" name="supplier" value="{{ old('supplier') }}" autocomplete="off" placeholder="Search..." onkeyup="filterFunction()">
+                                                <div class="select-items-supplier" id="select-items-supplier_2">
+                                                    <!-- Options will be added here dynamically -->
+                                                </div>
+                                            </div>
+                            
+                                            <select id="supplier_2" style="width: 200px;" hidden>
+                                                <option value="">---Select Supplier---</option>
+                                                <!-- Example options; replace with server-side data as needed -->
                                                 @foreach ($suppliers as $supplier)
-                                                    <option>{{ $supplier->nama }}</option>
+                                                    <option value="{{ $supplier->id }}" data-kode="{{ $supplier->nomor }}" data-nama="{{ $supplier->nama }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                                 @endforeach
-                                            </datalist>
+                                            </select>
                                         </div>
-                                        {{-- <div class="col-sm-5">
-                                            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                                        </div> --}}
+                                        <div class="col-sm-5">
+                                            <input type="text" id="nama_supplier_2" name='dataSupplier2' value="" readonly class="form-control readonly-input" autocomplete="off" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group col-3">
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Waktu Kunjungan</label>
-                                        <div class="col-sm-2">
+                                        <div class="col-sm-3">
                                             <input type="password" disabled class="form-control" id="inputPassword3">
                                         </div>
-                                        <label for="inputPassword3" class="col-sm-4 col-form-label">Hari Sekali</label>
+                                        <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
                                 </div>
                             </div>
@@ -84,17 +101,25 @@
                                 <div class="form-group col-9">
                                     <div class="row">
                                         <label for="nomorSupplier2" class="col-sm-2 col-form-label">Nomor Supplier 3</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="dataSupplier3" name="dataSupplier3" list="supplier" size="70" />
-                                            <datalist id="supplier">
+                                        <div class="col-sm-3">
+                                            <div class="custom-select-supplier">
+                                                <input type="text" class="search-input-supplier_3" name="supplier" value="{{ old('supplier') }}" autocomplete="off" placeholder="Search..." onkeyup="filterFunction()">
+                                                <div class="select-items-supplier" id="select-items-supplier_3">
+                                                    <!-- Options will be added here dynamically -->
+                                                </div>
+                                            </div>
+                            
+                                            <select id="supplier_3" style="width: 200px;" hidden>
+                                                <option value="">---Select Supplier---</option>
+                                                <!-- Example options; replace with server-side data as needed -->
                                                 @foreach ($suppliers as $supplier)
-                                                    <option>{{ $supplier->nama }}</option>
+                                                    <option value="{{ $supplier->id }}" data-kode="{{ $supplier->nomor }}" data-nama="{{ $supplier->nama }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                                 @endforeach
-                                            </datalist>
+                                            </select>
                                         </div>
-                                        {{-- <div class="col-sm-5">
-                                            <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
-                                        </div> --}}
+                                        <div class="col-sm-5">
+                                            <input type="text" id="nama_supplier_3" name='dataSupplier3' value="" readonly class="form-control readonly-input" autocomplete="off" />
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group col-3">
@@ -185,119 +210,5 @@
 @endsection
 
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#dataSupplier1').on('input', function() {
-                var inputValue = $(this).val();
-                var options = $('#supplier option').map(function() {
-                    return $(this).val();
-                }).get();
-
-                if (options.includes(inputValue)) {
-                    $.ajax({
-                        url: '/preorder-get-supplier-data',
-                        method: 'GET',
-                        data: {
-                            nama: inputValue
-                        },
-                        success: function(response) {
-                            $('#supplierName11').text(response.nama);
-                            $('#supplierAddress11').text(response.alamat1);
-                            $('#supplierAddress12').text(response.alamat2);
-
-                            $('#targetRow1').removeAttr('hidden');
-                            $('#targetRow4').attr('hidden', 'hidden');
-                            // $('#dataSupplier2').removeAttr('disabled');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred:", error);
-                            $('#targetRow1').attr('hidden', 'hidden');
-                            $('#targetRow4').removeAttr('hidden');
-                            // $('#targetRow2').attr('hidden', 'hidden');
-                            // $('#targetRow3').attr('hidden', 'hidden');
-                            // $('#dataSupplier2').attr('disabled', 'disabled');
-                            // $('#dataSupplier3').attr('disabled', 'disabled');
-                            // $('#dataSupplier2').val('');
-                            // $('#dataSupplier3').val('');
-                        }
-                    });
-                } else {
-                    $('#targetRow1').attr('hidden', 'hidden');
-                    $('#targetRow4').removeAttr('hidden');
-                    // $('#targetRow2').attr('hidden', 'hidden');
-                    // $('#targetRow3').attr('hidden', 'hidden');
-                    // $('#dataSupplier2').attr('disabled', 'disabled');
-                    // $('#dataSupplier3').attr('disabled', 'disabled');
-                    // $('#dataSupplier2').val('');
-                    // $('#dataSupplier3').val('');
-                }
-            });
-            $('#dataSupplier2').on('input', function() {
-                var inputValue = $(this).val();
-                var options = $('#supplier option').map(function() {
-                    return $(this).val();
-                }).get();
-
-                if (options.includes(inputValue)) {
-                    $.ajax({
-                        url: '/preorder-get-supplier-data',
-                        method: 'GET',
-                        data: {
-                            nama: inputValue
-                        },
-                        success: function(response) {
-                            $('#supplierName21').text(response.nama);
-                            $('#supplierAddress21').text(response.alamat1);
-                            $('#supplierAddress22').text(response.alamat2);
-
-                            $('#targetRow2').removeAttr('hidden');
-                            $('#targetRow4').attr('hidden', 'hidden');
-                            // $('#dataSupplier3').removeAttr('disabled');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred:", error);
-                            $('#targetRow2').attr('hidden', 'hidden');
-                            // $('#targetRow3').attr('hidden', 'hidden');
-                            // $('#dataSupplier3').attr('disabled', 'disabled');
-                            // $('#dataSupplier3').val('');
-                        }
-                    });
-                } else {
-                    $('#targetRow2').attr('hidden', 'hidden');
-                    // $('#targetRow3').attr('hidden', 'hidden');
-                    // $('#dataSupplier3').attr('disabled', 'disabled');
-                }
-            });
-            $('#dataSupplier3').on('input', function() {
-                var inputValue = $(this).val();
-                var options = $('#supplier option').map(function() {
-                    return $(this).val();
-                }).get();
-
-                if (options.includes(inputValue)) {
-                    $.ajax({
-                        url: '/preorder-get-supplier-data',
-                        method: 'GET',
-                        data: {
-                            nama: inputValue
-                        },
-                        success: function(response) {
-                            $('#supplierName31').text(response.nama);
-                            $('#supplierAddress31').text(response.alamat1);
-                            $('#supplierAddress32').text(response.alamat2);
-
-                            $('#targetRow3').removeAttr('hidden');
-                            $('#targetRow4').attr('hidden', 'hidden');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("An error occurred:", error);
-                            $('#targetRow3').attr('hidden', 'hidden');
-                        }
-                    });
-                } else {
-                    $('#targetRow3').attr('hidden', 'hidden');
-                }
-            });
-        });
-    </script>
+    @include('preorder.add-on.scripts')
 @endsection

@@ -53,6 +53,12 @@ class ProductController extends Controller
             return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
         }
 
+        if ($request->ppn == 'on') {
+            $ppn = 1;
+        } else {
+            $ppn = 0;
+        }
+
         $data = [
             'id_supplier' => $idSupplier->id,
             'id_unit' => $request->unit,
@@ -65,7 +71,7 @@ class ProductController extends Controller
             'harga_pokok' => preg_replace('/[^0-9]/', '', $request->harga_pokok),
             'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
             'profit' => $request->profit,
-            'ppn' => $request->ppn,
+            'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
             'merek' => $request->merek,
             'label' => $request->label, 
@@ -235,6 +241,12 @@ class ProductController extends Controller
                 return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
             }
         }
+
+        if ($request->ppn == 'on') {
+            $ppn = 1;
+        } else {
+            $ppn = 0;
+        }
         
         $childProduct = Product::where('kode_sumber', $product->kode)->orderBy('harga_pokok', 'desc')->get();
         foreach($childProduct as $child) {
@@ -256,7 +268,7 @@ class ProductController extends Controller
             'konversi' => $konversi,
             'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
             'profit' => $request->profit,
-            'ppn' => $request->ppn,
+            'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
             'merek' => $request->merek,
             'label' => $request->label, 

@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nomor_po');
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
-            $table->string('ref');
             $table->json('detail');
+            $table->date('date_first');
+            $table->date('date_last');
+            $table->bigInteger('ppn_global')->default(0);
+            $table->bigInteger('total_harga')->default(0);
             $table->timestamps();
         });
     }

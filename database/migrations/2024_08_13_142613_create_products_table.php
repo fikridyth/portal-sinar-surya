@@ -29,6 +29,8 @@ return new class extends Migration
             $table->bigInteger('ppn')->nullable();
             $table->bigInteger('merek')->nullable();
             $table->bigInteger('label')->nullable();
+            $table->decimal('stok', 5, 2)->default(0);
+            $table->smallInteger('is_ppn')->default(0);
             $table->timestamps();
         });
     }

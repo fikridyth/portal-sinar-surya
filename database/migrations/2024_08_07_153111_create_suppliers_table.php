@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('nama');
             $table->string('alamat1')->nullable();
             $table->string('alamat2')->nullable();
+            $table->integer('penjualan_rata')->default(0);
+            $table->integer('waktu_kunjungan')->default(0);
+            $table->integer('stok_minimum')->default(0);
+            $table->integer('stok_maksimum')->default(0);
             $table->timestamps();
         });
     }

@@ -22,7 +22,7 @@
                             <div class="row w-100">
                                 <div class="form-group col-9">
                                     <div class="row">
-                                        <label for="nomorSupplier1" class="col-sm-2 col-form-label">Nomor Supplier 1</label>
+                                        <label for="nomorSupplier1" class="col-sm-2 col-form-label">Supplier Header</label>
                                         <div class="col-sm-2">
                                             <input type="email" disabled class="form-control" id="inputEmail3"
                                                 value="{{ $supplier1->nomor }}" placeholder="Email">
@@ -38,7 +38,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Penjualan Rata2</label>
                                         <div class="col-sm-3">
-                                            <input type="password" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->penjualan_rata }}" disabled class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -64,10 +64,10 @@
                                 <div class="form-group col-3">
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Waktu Kunjungan</label>
-                                        <div class="col-sm-2">
-                                            <input type="password" disabled class="form-control" id="inputPassword3">
+                                        <div class="col-sm-3">
+                                            <input type="text" value="{{ $penjualan->waktu_kunjungan }}" disabled class="form-control" id="inputPassword3">
                                         </div>
-                                        <label for="inputPassword3" class="col-sm-4 col-form-label">Hari Sekali</label>
+                                        <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
                                 </div>
                             </div>
@@ -92,7 +92,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Minimum</label>
                                         <div class="col-sm-3">
-                                            <input type="password" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->stok_minimum }}" disabled class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -108,7 +108,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Maksimum</label>
                                         <div class="col-sm-3">
-                                            <input type="password" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" disabled class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -133,10 +133,10 @@
                                         <tbody>
                                             @foreach ($allProducts as $product)
                                                 <tr>
-                                                    <td>{{ $product->nama }}</td>
-                                                    <td class="text-end">{{ $product->isi }}</td>
+                                                    <td>{{ $product->nama . '/' . $product->unit_jual }}</td>
+                                                    <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td>
                                                     <td class="text-end">{{ $product->stok }}</td>
-                                                    <td class="text-end">{{ number_format($product->harga_beli) }}</td>
+                                                    <td class="text-end">{{ number_format($product->harga_pokok) }}</td>
                                                     <td class="text-end">{{ number_format($product->harga_jual) }}</td>
                                                     <td class="text-center"><input type="checkbox" id="products[]"
                                                             name="products[]" value="{{ $product->id }}"></td>

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ppn;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -18,7 +20,7 @@ class PreOrderController extends Controller
         $title = 'PreOrder';
         $suppliers = Supplier::all();
 
-        return view('preorder.index', compact('title', 'suppliers'));
+        return view('preorder.add-po.index', compact('title', 'suppliers'));
     }
 
     public function getSupplierData(Request $request)
@@ -37,6 +39,7 @@ class PreOrderController extends Controller
     {
         $title = 'Get Barang';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
+        $penjualan = Supplier::where('id', $supplier1->id)->first();
         $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->get() : collect();
 
         $supplier2 = null;
@@ -54,9 +57,9 @@ class PreOrderController extends Controller
             $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->get() : collect();
         }
 
-        $allProducts = $products1->concat($products2)->concat($products3);
+        $allProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual']);
 
-        return view('preorder.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'allProducts'));
+        return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'allProducts', 'penjualan'));
     }
 
     public function processBarang(Request $request)
@@ -64,28 +67,58 @@ class PreOrderController extends Controller
         $title = 'List Barang';
         $products = $request->input('products');
         $supplier1 = Supplier::where('nama', $request->supplierName)->first();
-        $getProducts = Product::whereIn('id', $products)->get();
+        $getProducts = Product::whereIn('id', $products)->orderBy('nama', 'asc')->get();
 
-        return view('preorder.list-barang', compact('title', 'getProducts', 'supplier1'));
+        return view('preorder.add-po.list-barang', compact('title', 'getProducts', 'supplier1'));
     }
 
     public function orderBarang(Request $request)
     {
-        // dd($request->all());
-        $orders = $request->input('order');
-        $prices = $request->input('price');
-        $fieldTotals = $request->input('fieldtotal');
+        $idSupplier = $request->input('id_supplier');
+        $getSupplier = Supplier::whereIn('id', $idSupplier)->get()->keyBy('id');
+
+        $ppnValue = Ppn::pluck('ppn')->first();
+        $isPpn = $request->input('is_ppn');
+
+        $nama = $request->input('nama');
+        $stok = $request->input('stok');
+        $unitJual = $request->input('unit_jual');
+        $kode = $request->input('kode');
+        $order = $request->input('order');
+        $price = $request->input('price');
+        $fieldTotal = $request->input('fieldtotal');
+        $kodeSumber = $request->input('kode_sumber');
+        $diskon1 = $request->input('diskon1');
+        $diskon2 = $request->input('diskon2');
+        $diskon3 = $request->input('diskon3');
         $dataDetail = [];
-        $count = count($orders);
-        if (count($prices) !== $count || count($fieldTotals) !== $count) {
+        $count = count($order);
+        if (count($price) !== $count || count($fieldTotal) !== $count) {
             return response()->json(['error' => 'Array lengths do not match.'], 400);
         }
 
         for ($i = 0; $i < $count; $i++) {
+            $supplierId = $idSupplier[$i];
+            $ppnId = $isPpn[$i];
+            $supplier = $getSupplier->get($supplierId);
+
             $dataDetail[] = [
-                'order' => (int) $orders[$i],
-                'price' => (int) $prices[$i],
-                'fieldtotal' => (int) $fieldTotals[$i]
+                'kode' => $kode[$i],
+                'nama' => $nama[$i],
+                'unit_jual' => $unitJual[$i],
+                'stok' => $stok[$i],
+                'order' => (int) $order[$i],
+                'price' => (int) $price[$i],
+                'field_total' => (int) $fieldTotal[$i],
+                'kode_sumber' => $kodeSumber[$i],
+                'diskon1' => (int) $diskon1[$i],
+                'diskon2' => (int) $diskon2[$i],
+                'diskon3' => (int) $diskon3[$i],
+                'penjualan_rata' => $supplier ? $supplier->penjualan_rata : null,
+                'waktu_kunjungan' => $supplier ? $supplier->waktu_kunjungan : null,
+                'stok_minimum' => $supplier ? $supplier->stok_minimum : null,
+                'stok_maksimum' => $supplier ? $supplier->stok_maksimum : null,
+                'is_ppn' => (int) $ppnId == 1 ? $ppnValue : 0
             ];
         }
         $detail = response()->json($dataDetail);
@@ -94,14 +127,15 @@ class PreOrderController extends Controller
         $data = [
             'nomor_po' => 'PO-000001-01',
             'id_supplier' => $supplier1->id,
-            'ref' => 'A01',
+            'date_first' => Carbon::now()->format('Y-m-d'),
+            'date_last' => Carbon::now()->addDays(16)->format('Y-m-d'),
             'detail' => json_encode($detail->original),
         ];
         // dd($supplier1->id, $dataDetail);
 
         Preorder::create($data);
         
-        return Redirect::route('preorder.index-po')
+        return Redirect::route('daftar-po')
             ->with('alert.status', '00')
             ->with('alert.message', "Add PreOrder Success!");
     }
@@ -111,7 +145,42 @@ class PreOrderController extends Controller
         $title = 'Daftar PreOrder';
         $preorders = Preorder::all();
 
-        return view('preorder.daftar-po', compact('title', 'preorders'));
+        return view('preorder.detail-po.daftar-po', compact('title', 'preorders'));
+    }
+
+    public function showDaftarPo($id)
+    {
+        $title = 'Show PreOrder';
+        $preorder = Preorder::find($id);
+
+        return view('preorder.detail-po.show-daftar-po', compact('title', 'preorder'));
+    }
+
+    public function editDaftarPo($id)
+    {
+        $title = 'Edit PreOrder';
+        $preorder = Preorder::find($id);
+        $ppn = Ppn::pluck('ppn')->first();
+        $products = Product::all();
+
+        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products'));
+    }
+
+    public function updateEditedData(Request $request)
+    {
+        // dd($request->all());
+
+        $preorder = Preorder::find($request->id);
+        $getDetail = json_decode($preorder->detail, true);
+        $getArray = $getDetail[$request->array];
+        $getArray['order'] = $request->order;
+        $getArray['price'] = $request->netto;
+        $getArray['field_total'] = $request->total;
+        $getDetail[$request->array] = $getArray;
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        return response()->json(['success' => true]);
     }
 
     /**

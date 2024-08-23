@@ -140,4 +140,50 @@
         border: 1px solid #ddd;
         border-radius: 4px;
     }
+
+    /* Slider */
+    /* Hide the default checkbox */
+    .slider-checkbox {
+        display: none;
+    }
+
+    /* Slider container */
+    .slider-container {
+        display: inline-block;
+        position: relative;
+    }
+
+    /* Slider label */
+    .slider-label {
+        display: block;
+        width: 60px;
+        height: 34px;
+        background-color: #ccc;
+        border-radius: 50px;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    /* Slider indicator */
+    .slider-label::before {
+        content: '';
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background-color: white;
+        left: 4px;
+        top: 4px;
+        transition: transform 0.3s;
+    }
+
+    /* Change slider appearance when checked */
+    .slider-checkbox:checked + .slider-label {
+        background-color: #4CAF50;
+    }
+
+    .slider-checkbox:checked + .slider-label::before {
+        transform: translateX(26px);
+    }
 </style>
