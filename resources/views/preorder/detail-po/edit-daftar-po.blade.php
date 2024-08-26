@@ -217,7 +217,8 @@
                                                             data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
                                                             >
                                                         </div>
-                                                        <button type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                        <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                        <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
                                                     </td>
                                                     <td class="text-center">{{ $detail['kode'] }}</td>
                                                     <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
@@ -253,11 +254,14 @@
                                 <div class="mx-2">
                                     <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
                                 </div>
-                                {{-- <div class="mx-2">
-                                    <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
-                                </div>
                                 <div class="mx-2">
                                     <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
+                                </div>
+                                {{-- <div class="mx-2">
+                                    <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
+                                </div> --}}
+                                {{-- <div class="mx-2">
+                                    <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
                                 </div> --}}
                             </div>
                             <div class="d-flex">
@@ -271,7 +275,7 @@
                                     <label for="totalOrder" class="mt-1">Jumlah Koli</label>
                                 </div>
                                 <div class="mx-2">
-                                    <input id="total-order" type="text" value="{{ number_format($totalOrder) }}" disabled size="5" class="form-control">
+                                    <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                 </div>
                                 <div class="mx-2">
                                     <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>
@@ -298,6 +302,8 @@
             // Get the netto element by its ID
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
+            const tambahButton = document.getElementById('tambah-button');
+            // const hapusButton = document.getElementById('hapus-button');
             
             // Get the current price and parse it as a float
             let currentPrice = parseFloat(priceInput.value.replace(/[^0-9.-]+/g, ""));
@@ -308,6 +314,8 @@
             // handle button
             var buttonId = "edit-save-" + selectedCheckbox.id.split('-')[1];
             var button = document.getElementById(buttonId);
+            var buttonDId = "delete-save-" + selectedCheckbox.id.split('-')[1];
+            var buttonD = document.getElementById(buttonDId);
 
             // Apply or remove the discount based on the checkbox status
             if (selectedCheckbox.checked) {
@@ -317,6 +325,9 @@
                 selectedCheckbox.style.display = 'none';
                 // Show the corresponding button
                 button.style.display = 'inline-block';
+                buttonD.style.display = 'inline-block';
+                tambahButton.disabled = true;
+                // hapusButton.disabled = false;
             } else {
                 // Remove the discount if the checkbox is unchecked
                 currentNetto += diskonValue;
@@ -324,6 +335,9 @@
                 selectedCheckbox.style.display = 'inline-block';
                 // Hide the corresponding button
                 button.style.display = 'none';
+                buttonD.style.display = 'none';
+                tambahButton.disabled = false;
+                // hapusButton.disabled = true;
             }
 
             // Update the netto value in the DOM
@@ -341,15 +355,16 @@
             toggleInputs(selectedCheckbox);
         }
 
+        function handleDestroyClick(button) {
+            
+        }
+
         function handleSaveClick(button) {
-            // var checkboxId = "checkbox-" + button.id.split('-')[2];
-            // var checkbox = document.getElementById(checkboxId);
-
-            // var priceInput = document.getElementById('price-input-' + checkboxId);
-            // var netto = document.getElementById('netto-' + checkboxId);
-
             // Extract the index from the button's ID
             const index = button.id.split('-')[2];
+            const tambahButton = document.getElementById('tambah-button');
+            const buttonId = `delete-save-${index}`;
+            const deleteButton = document.getElementById(buttonId);
             
             // Get the price input and netto elements by their IDs
             const priceInput = document.getElementById(`price-input-${index}`);
@@ -393,9 +408,11 @@
                     if (response.success) {
                         // var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
                         // window.location.href = redirectUrl;
+                        tambahButton.disabled = false;
                         document.getElementById(`checkbox-${index}`).checked = false;
                         document.getElementById(`checkbox-${index}`).style.display = 'inline-block';
                         button.style.display = 'none';
+                        deleteButton.style.display = 'none';
 
                         document.querySelectorAll('.select-checkbox').forEach(checkbox => {
                             checkbox.disabled = false;
@@ -527,8 +544,6 @@
 
         // Initialize event listeners
         function initializeButtons() {
-            // document.getElementById('ubah-button').addEventListener('click', handleUbahClick);
-            // document.getElementById('simpan-button').addEventListener('click', handleSimpanClick);
             document.getElementById('diskon4-input').addEventListener('input', updateNettoValues);
         }
 

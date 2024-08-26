@@ -26,6 +26,9 @@ class SupplierDataTable extends DataTable
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
         })
+        ->editColumn('nama', function ($row) {
+            return '<a href="' . route('master.supplier.show', $row->id) . '">' . $row->nama . '</a>';
+        })
         ->addColumn('action', function ($row) {
             $btnEdit = '<a href="' . route('master.supplier.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
             $btnDelete = '<a href="#" class="btn btn-danger btn-sm" onclick="deleteData(' . $row->id . ')" ><i class="fa fa-trash"></i></a>';
@@ -39,7 +42,7 @@ class SupplierDataTable extends DataTable
             $button .= $btnDelete . '</div>';
             return $button;
         })
-        ->rawColumns(['action']);
+        ->rawColumns(['nama', 'action']);
     }
 
     /**
@@ -79,16 +82,16 @@ class SupplierDataTable extends DataTable
     {
         return [
             Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
+            Column::make('nama'),
             Column::make('nomor')->addClass('text-center'),
-            Column::make('nama')->addClass('text-center'),
             Column::make('alamat1')->addClass('text-center'),
             Column::make('alamat2')->addClass('text-center'),
-            Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
+            // Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
+            // Column::computed('action')
+            //     ->exportable(false)
+            //     ->printable(false)
+            //     ->width(60)
+            //     ->addClass('text-center'),
         ];
     }
 

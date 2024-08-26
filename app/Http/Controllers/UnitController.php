@@ -25,8 +25,9 @@ class UnitController extends Controller
     public function create()
     {
         $title = 'Create Unit';
+        $unit = new Unit();
 
-        return view('master/unit/create', compact('title'));
+        return view('master/unit/create', compact('title', 'unit'));
     }
 
     /**
@@ -38,9 +39,9 @@ class UnitController extends Controller
             'nama' => $request->nama,
         ];
 
-        Unit::create($data);
+        $unit = Unit::create($data);
 
-        return Redirect::route('master.unit.index')
+        return Redirect::route('master.unit.show', $unit->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Add Unit Success!");
     }
@@ -50,6 +51,10 @@ class UnitController extends Controller
      */
     public function show(string $id)
     {
+        $title = 'Show Unit';
+        $unit = Unit::find($id);
+
+        return view('master/unit/show', compact('title', 'unit'));
     }
 
     /**
@@ -76,7 +81,7 @@ class UnitController extends Controller
 
         $unit->update($data);
 
-        return Redirect::route('master.unit.index')
+        return Redirect::route('master.unit.show', $unit->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Update Unit Success!");
     }

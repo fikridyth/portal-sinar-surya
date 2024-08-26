@@ -42,31 +42,32 @@
                         </div>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="row align-items-center">
-                            <div class="col-5">
+                            <div class="col-4">
                                 <label class="form-label h6 mt-2" for="nama_sumber">NAMA SUMBER</label>
                             </div>
-                            <div class="col mx-n2">
+                            <div class="col">
                                 @if ($product->kode_sumber !== null)
                                     <input type="text" id="nama_sumber" name="nama_sumber" value="{{ $product->nama }}"
                                         class="form-control readonly-input @error('nama_sumber') is-invalid @enderror" autocomplete="off" readonly />
                                 @else
-                                    <input type="text" id="nama_sumber" name="nama_sumber" value=""
+                                    <input type="text" name="nama_sumber" value=""
                                         class="form-control readonly-input @error('nama_sumber') is-invalid @enderror" autocomplete="off" readonly />
+                                    <input type="text" hidden id="nama_sumber">
                                 @endif
                             </div>
                         </div>
                     </div>
 
                     <div class="col-1">
-                        <div class="row align-items-center">
+                        {{-- <div class="row align-items-center">
                             <div class="col">
                                 @if ($product->kode_sumber !== null)
                                     <label class="form-label h6 mt-2" for="nama_barang">/{{ $product->unit_beli }}</label>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="col-2">
@@ -91,25 +92,24 @@
                         </div>
                     </div>
 
-                    <div class="col-5">
+                    <div class="col-6">
                         <div class="row align-items-center">
-                            <div class="col-5">
+                            <div class="col-4">
                                 <label class="form-label h6 mt-2" for="nama_barang">NAMA BARANG</label>
                             </div>
-                            <div class="col mx-n2">
-                                <input type="text" id="nama_barang" name="nama_barang" value="{{ old('nama_barang', $product->nama) }}" required
+                            <div class="col">
+                                <input type="text" id="nama_barang2" name="nama_barang" value="{{ old('nama_barang', $product->nama) }}" required
                                     class="form-control @error('nama_barang') is-invalid @enderror" autocomplete="off" />
                             </div>
                         </div>
                     </div>
 
                     <div class="col-1">
-                        <div class="row align-items-center">
+                        {{-- <div class="row align-items-center">
                             <div class="col">
-                                {{-- <label class="form-label h6 mt-2" id="label_nama_barang" for="nama_barang">/</label> --}}
                                 <label class="form-label h6 mt-2" for="nama_barang">/{{ $product->unit_jual }}</label>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
 
                     <div class="col-2">
@@ -278,7 +278,7 @@
                     </div>
 
                     <div class="col-2 mt-2">
-                        <div class="row align-items-center">
+                        {{-- <div class="row align-items-center">
                             <div class="col-4">
                                 <label class="form-label h6 mt-2" for="ppn">PPN</label>
                             </div>
@@ -288,7 +288,7 @@
                                     <label for="ppn" class="slider-label"></label>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
 
@@ -547,19 +547,26 @@
                 </div>
             {{-- end border --}}
             </div>
-
-            <div class="row d-flex justify-content-center" style="margin: 20px; padding: 0 50px 0 50px;">
-                <div class="col-2 mx-5">
-                    <a href="{{ route('master.product.create') }}" class="btn btn-success btn-block mt-4 mb-7">TAMBAH</a>
+            
+            <div class="row d-flex justify-content-start mb-7">
+                <div class="col-0-5">
+                    <a href="#" class="btn btn-success disabled-link" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
                 </div>
-                <div class="col-2 mx-5">
-                    <button disabled class="btn btn-warning btn-block mt-4 mb-7">EDIT</button>
+                <div class="col-0-5">
+                    <a href="#" class="btn btn-warning disabled-link" title="EDIT DATA"><i class="fas fa-edit"></i></a>
                 </div>
-                <div class="col-2 mx-5">
-                    <button type="submit" class="btn btn-primary btn-block mt-4 mb-7">SAVE</button>
+                <div class="col-0-5">
+                    <button type="submit" class="btn btn-primary" title="SIMPAN DATA"><i class="fas fa-save"></i></button>
                 </div>
-                <div class="col-2 mx-5">
-                    <a href="{{ route('index') }}" class="btn btn-danger btn-block mt-4 mb-7">KEMBALI</a>
+                <div class="col-8"></div>
+                <div class="col-0-5 ml-auto">
+                    <a href="{{ route('master.product.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
+                </div>
+                <div class="col-0-5">
+                    <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
+                </div>
+                <div class="col-0-5">
+                    <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </div>
         </form>
@@ -568,6 +575,24 @@
 
 @section('scripts')
     @include('master.product.add-on.scripts')
+
+    <script>
+        // Mengambil elemen input dengan ID 'kode'
+        var namaSElement = document.getElementById('nama_sumber');
+        var namaBElement = document.getElementById('nama_barang2');
+        
+        // Mengambil nilai saat ini dari elemen input
+        var namaSValue = namaSElement.value;
+        var namaBValue = namaBElement.value;
+        
+        // Menambahkan teks 'hari' ke nilai saat ini
+        var namaSNewValue = namaSValue + "/{{ $product->unit_beli }}";
+        var namaBNewValue = namaBValue + "/{{ $product->unit_jual }}";
+        
+        // Mengupdate nilai elemen input
+        namaSElement.value = namaSNewValue;
+        namaBElement.value = namaBNewValue;
+    </script>
 
     <script>
         $(document).ready(function() {

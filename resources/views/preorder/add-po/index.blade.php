@@ -199,8 +199,8 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <button class="btn btn-primary">Proses</button>
-                            <a class="btn btn-danger mx-5" href="{{ route('index') }}">Batal</a>
+                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button>
+                            <button type="submit" class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
                 </form>

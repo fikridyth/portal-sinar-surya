@@ -23,6 +23,9 @@ class UnitDataTable extends DataTable
     {
         return (new EloquentDataTable($query->orderBy('created_at', 'desc')))
         ->addIndexColumn()
+        ->editColumn('nama', function ($row) {
+            return '<a href="' . route('master.unit.show', $row->id) . '">' . $row->nama . '</a>';
+        })
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
         })
@@ -39,7 +42,7 @@ class UnitDataTable extends DataTable
             $button .= $btnDelete . '</div>';
             return $button;
         })
-        ->rawColumns(['action']);
+        ->rawColumns(['nama', 'action']);
     }
 
     /**
@@ -81,11 +84,11 @@ class UnitDataTable extends DataTable
             Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
             Column::make('nama')->addClass('text-center'),
             Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
+            // Column::computed('action')
+            //     ->exportable(false)
+            //     ->printable(false)
+            //     ->width(60)
+            //     ->addClass('text-center'),
         ];
     }
 

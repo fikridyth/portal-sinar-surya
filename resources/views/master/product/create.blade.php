@@ -56,11 +56,11 @@
                         </div>
 
                         <div class="col-1">
-                            <div class="row align-items-center">
+                            {{-- <div class="row align-items-center">
                                 <div class="col">
                                     <label class="form-label h6 mt-2" for="nama_barang">/</label>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
 
                         <div class="col-2">
@@ -254,7 +254,7 @@
                         </div>
 
                         <div class="col-2 mt-2">
-                            <div class="row align-items-center">
+                            {{-- <div class="row align-items-center">
                                 <div class="col-4">
                                     <label class="form-label h6 mt-2" for="ppn">PPN</label>
                                 </div>
@@ -264,7 +264,7 @@
                                         <label for="ppn" class="slider-label"></label>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 
@@ -412,7 +412,7 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="custom-select-unit">
-                                        <input type="text" id="search-input-unit" name="unit" value="{{ old('unit') }}" class="search-input-unit" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                        <input type="text" id="search-input-unit" name="unit" value="{{ $product->id_unit }}" class="search-input-unit" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
                                         <div class="select-items-unit" id="select-items-unit">
                                             <!-- Options will be added here dynamically -->
                                         </div>
@@ -434,7 +434,7 @@
                             </div>
                         </div>
                         <div class="col-3">
-                            <input type="text" id="nama_unit" value="" readonly class="form-control readonly-input" autocomplete="off" />
+                            <input type="text" id="nama_unit" value="{{ $product->unit->nama }}" readonly class="form-control readonly-input" autocomplete="off" />
                         </div>
                         <div class="col-1">
                             <button disabled class="btn btn-primary" style="width: 95px;">ANAK</button>
@@ -455,7 +455,7 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="custom-select-departemen">
-                                        <input type="text" class="search-input-departemen" name="departemen" value="{{ old('departemen') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                        <input type="text" class="search-input-departemen" name="departemen" value="{{ $product->id_departemen }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
                                         <div class="select-items-departemen" id="select-items-departemen">
                                             <!-- Options will be added here dynamically -->
                                         </div>
@@ -477,7 +477,7 @@
                             </div>
                         </div>
                         <div class="col-3">
-                            <input type="text" id="nama_departemen" value="" readonly class="form-control readonly-input" autocomplete="off" />
+                            <input type="text" id="nama_departemen" value="{{ $product->departemen->nama }}" readonly class="form-control readonly-input" autocomplete="off" />
                         </div>
                         {{-- <div class="col-2">
                             <button type="button" class="btn btn-primary" style="width: 170px;" data-mdb-ripple-init data-mdb-modal-init data-mdb-target="#departemenModal">LIST DEPARTEMEN</button>
@@ -523,18 +523,25 @@
                 {{-- end border --}}
                 </div>
 
-                <div class="row d-flex justify-content-center">
-                    <div class="col-2 mx-5">
-                        <a href="{{ route('master.product.create') }}" type="submit" class="btn btn-success btn-block mt-4 mb-7 disabled-link">TAMBAH</a>
+                <div class="row d-flex justify-content-start mb-7">
+                    <div class="col-0-5">
+                        <a href="#" class="btn btn-success disabled-link" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
                     </div>
-                    <div class="col-2 mx-5">
-                        <button disabled class="btn btn-warning btn-block mt-4 mb-7">EDIT</button>
+                    <div class="col-0-5">
+                        <a href="#" class="btn btn-warning disabled-link" title="EDIT DATA"><i class="fas fa-edit"></i></a>
                     </div>
-                    <div class="col-2 mx-5">
-                        <button type="submit" class="btn btn-primary btn-block mt-4 mb-7">SIMPAN</button>
+                    <div class="col-0-5">
+                        <button type="submit" class="btn btn-primary" title="SIMPAN DATA"><i class="fas fa-save"></i></button>
                     </div>
-                    <div class="col-2 mx-5">
-                        <a href="{{ route('index') }}" type="submit" class="btn btn-danger btn-block mt-4 mb-7">KEMBALI</a>
+                    <div class="col-8"></div>
+                    <div class="col-0-5 ml-auto">
+                        <a href="{{ route('master.product.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
+                    </div>
+                    <div class="col-0-5">
+                        <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
+                    </div>
+                    <div class="col-0-5">
+                        <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
                     </div>
                 </div>
             </form>

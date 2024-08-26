@@ -11,14 +11,14 @@ $user = User::where('id', auth()->user()->id)->first();
 
         <div class="collapse navbar-collapse mx-4" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <img class="mt-1" src="{{ asset('assets/images/zenwalker-logo.png') }}" width="125"
                         alt="Fikri Hidayat">
-                </li>
+                </li> --}}
                 <li class="nav-item mx-4">
                     <a class="nav-link" href="{{ route('index') }}">Dashboard</a>
                 </li>
-                <li class="nav-item dropdown me-3 mx-2">
+                {{-- <li class="nav-item dropdown me-3 mx-2">
                     <a data-mdb-dropdown-init class="nav-link dropdown-toggle" href="#"
                         id="navbarDropdownMenuLink" role="button" aria-expanded="false">
                         Master
@@ -34,7 +34,7 @@ $user = User::where('id', auth()->user()->id)->first();
                             <a class="dropdown-item" href="{{ route('master.supplier.index') }}">Supplier</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="{{ route('master.product.create') }}">Product</a>
+                            <a class="dropdown-item" href="{{ route('master.product.index') }}">Product</a>
                         </li>
                     </ul>
                 </li>
@@ -51,7 +51,7 @@ $user = User::where('id', auth()->user()->id)->first();
                             <a class="dropdown-item" href="{{ route('daftar-po') }}">Daftar PO</a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
             </ul>
         </div>
 

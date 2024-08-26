@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PpnController;
 use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
@@ -43,14 +44,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/daftar-po/{id}', [PreOrderController::class, 'showDaftarPo'])->name('daftar-po.show');
     Route::get('/daftar-po/{id}/edit', [PreOrderController::class, 'editDaftarPo'])->name('daftar-po.edit');
     Route::post('/update-edited-data', [PreOrderController::class, 'updateEditedData'])->name('daftar-po.update');
+    Route::post('/store-new-data', [PreOrderController::class, 'storeNewData'])->name('daftar-po.store');
+    Route::delete('/destroy-current-data', [PreOrderController::class, 'destroyCurrentData'])->name('daftar-po.destroy');
 
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
         Route::get('/get-departemen', [DepartemenController::class, 'getDepartemenByUnit'])->name('get-departemen');
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
+        Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
         Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
+        Route::get('/product/create/{id}', [ProductController::class, 'create'])->name('product.create');
         Route::get('/product/parent/{id}', [ProductController::class, 'productParent'])->name('product.parent');
         Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);

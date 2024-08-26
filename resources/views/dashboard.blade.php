@@ -16,59 +16,25 @@
             <div class="card-body">
                 <h5 class="mt-2">Welcome To Portal Sinar Surya.</h5>
                 <div class="dropdown-divider mt-3 mb-3"></div>
-                {{-- @if (auth()->user()->role == 'admin_ticket')
-                    <h5 class="mt-4">Recent Events:</h5>
-                    <div class="row">
-                        @if ($events->isEmpty())
-                            <p>No Event, Add Event First.</p>
-                        @else
-                            @foreach ($events as $event)
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <div class="bg-image hover-overlay" data-mdb-ripple-init data-mdb-ripple-color="light">
-                                            <img class="img-fluid rounded" style="width: 100%; height: 400px; object-fit: cover;" src="/storage/{{ $event->gambar }}" />
-                                            <a href="#!">
-                                                <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
-                                            </a>
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ $event->nama }} - {{ $event->lokasi }}</h5>
-                                            <p>{{ $event->kategori }}, {{ $event->tanggal_mulai->setTimezone('Asia/Jakarta')->format('d F Y') }} - {{ $event->tanggal_selesai->setTimezone('Asia/Jakarta')->format('d F Y') }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
+                <div class="d-flex justify-content-center">
+                    <div class="mx-5">
+                        <h5 class="text-center">MASTER</h5>
+                        <div style="display: flex; flex-direction: column;">
+                            <a href="{{ route('master.unit.show', $unit->id) }}" class="btn btn-primary mb-2">UNIT</a>
+                            <a href="{{ route('master.departemen.show', $departemen->id) }}" class="btn btn-primary mb-2">DEPARTEMEN</a>
+                            <a href="{{ route('master.supplier.show', $supplier->id) }}" class="btn btn-primary mb-2">SUPPLIER</a>
+                            <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-primary mb-2">PERSEDIAAN</a>
+                            <a href="{{ route('master.ppn.edit', $ppn->id) }}" class="btn btn-primary mb-2">PPN</a>
+                        </div>
                     </div>
-                    <a class="btn btn-primary" href="{{ route('master.event.index') }}">Go To Event</a>
-                @else
-                    <h5 class="mt-4">Recent Transactions:</h5>
-                    <div class="row">
-                        @if ($transactions->isEmpty())
-                            <p>No Transaction.</p>
-                        @else
-                            @foreach ($transactions as $transaction)
-                                <div class="col-md-4 mb-4">
-                                    <div class="card">
-                                        <div class="bg-image hover-overlay" data-mdb-ripple-init data-mdb-ripple-color="light">
-                                            <img class="img-fluid rounded" style="width: 100%; height: 400px; object-fit: cover;" src="/storage/{{ $transaction->ticket->event->gambar }}" />
-                                            <a href="#!">
-                                                <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
-                                            </a>
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">{{ $transaction->ticket->event->nama }} - {{ $transaction->ticket->event->lokasi }} ({{ $transaction->ticket->event->kategori }})</h5>
-                                            <p>Nama: {{ $transaction->nama }}</p>
-                                            <p class="mt-n3">Tanggal: {{ $transaction->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s') }}</p>
-                                            <p class="mt-n3">Detail: {{ $transaction->jumlah }} Pcs ({{ $transaction->ticket->nama }})</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
+                    <div class="mx-5">  
+                        <h5 class="text-center">PROCESS</h5>
+                        <div style="display: flex; flex-direction: column;">
+                            <a href="{{ route('preorder.index') }}" class="btn btn-primary mb-2">PREORDER</a>
+                            <a href="{{ route('daftar-po') }}" class="btn btn-primary mb-2">DAFTAR PREORDER</a>
+                        </div>
                     </div>
-                    <a class="btn btn-primary" href="{{ route('transaction.index') }}">Go To Transaction</a>
-                @endif --}}
+                </div>
             </div>
         </div>
     </div>

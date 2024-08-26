@@ -39,8 +39,9 @@ class DepartemenController extends Controller
     {
         $title = 'Create Departemen';
         $units = Unit::all();
+        $departemen = new Departemen();
 
-        return view('master/departemen/create', compact('title', 'units'));
+        return view('master/departemen/create', compact('title', 'units', 'departemen'));
     }
 
     /**
@@ -53,9 +54,9 @@ class DepartemenController extends Controller
             'nama' => $request->nama,
         ];
 
-        Departemen::create($data);
+        $departemen = Departemen::create($data);
 
-        return Redirect::route('master.departemen.index')
+        return Redirect::route('master.departemen.show', $departemen->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Add Departemen Success!");
     }
@@ -65,6 +66,10 @@ class DepartemenController extends Controller
      */
     public function show(string $id)
     {
+        $title = 'Show Departemen';
+        $departemen = Departemen::find($id);
+
+        return view('master/departemen/show', compact('title', 'departemen'));
     }
 
     /**
@@ -93,7 +98,7 @@ class DepartemenController extends Controller
 
         $departemen->update($data);
 
-        return Redirect::route('master.departemen.index')
+        return Redirect::route('master.departemen.show', $departemen->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Update Departemen Success!");
     }

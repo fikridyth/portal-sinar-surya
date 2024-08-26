@@ -25,4 +25,9 @@
         text-decoration: none; /* Removes underline */
         opacity: 0.5; /* Makes the link look faded */
     }
+
+    .col-0-5 {
+        flex: 0 0 5.33%; /* Lebar 1/12 dari lebar kontainer (5.33% x 12 = 100%) */
+        max-width: 5.33%;
+    }
 </style>

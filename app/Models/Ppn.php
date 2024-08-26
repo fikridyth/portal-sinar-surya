@@ -10,4 +10,6 @@ class Ppn extends Model
     use HasFactory;
 
     protected $table = 'ppns';
+    protected $guarded = ['id'];
+
 }

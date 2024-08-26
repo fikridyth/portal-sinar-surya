@@ -122,35 +122,57 @@
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th class="text-center">Nama Barang</th>
-                                                <th class="text-center">Isi</th>
-                                                <th class="text-center">Stok</th>
-                                                <th class="text-center">Harga Beli</th>
-                                                <th class="text-center">Harga Jual</th>
-                                                <th class="text-center">Pilih</th>
+                                                <th class="text-center">NAMA BARANG</th>
+                                                <th class="text-center">ISI</th>
+                                                <th class="text-center">PENJUALAN</th>
+                                                <th class="text-center">MINIMUM</th>
+                                                <th class="text-center">STOK</th>
+                                                <th class="text-center">MAKSIMUM</th>
+                                                <th class="text-center">ORDER</th>
+                                                <th class="text-center">HARGA</th>
+                                                <th class="text-center">JUMLAH</th>
+                                                {{-- <th class="text-center">Harga Jual</th> --}}
+                                                {{-- <th class="text-center">Pilih</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($allProducts as $product)
+                                            @foreach ($allProducts as $index => $product)
                                                 <tr>
                                                     <td>{{ $product->nama . '/' . $product->unit_jual }}</td>
                                                     <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td>
-                                                    <td class="text-end">{{ $product->stok }}</td>
-                                                    <td class="text-end">{{ number_format($product->harga_pokok) }}</td>
-                                                    <td class="text-end">{{ number_format($product->harga_jual) }}</td>
-                                                    <td class="text-center"><input type="checkbox" id="products[]"
-                                                            name="products[]" value="{{ $product->id }}"></td>
+                                                    <td class="text-end">0</td>
+                                                    <td class="text-end">0</td>
+                                                    <td class="text-end">{{ number_format($product->stok, 2) }}</td>
+                                                    <td class="text-end">0</td>
+                                                    <td class="text-center"><input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"></td>
+                                                    <td class="text-end" id="price-{{ $index }}">{{ number_format($product->harga_pokok) }}</td>
+                                                    <td class="text-end" id="total-{{ $index }}">0</td>
+                                                    <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
+                                                    {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
+                                                    {{-- <td class="text-center"><input type="checkbox" id="products[]"
+                                                            name="products[]" value="{{ $product->id }}"></td> --}}
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center">
-                            <button class="btn btn-primary">Proses</button>
-                            <a class="btn btn-danger mx-5" href="{{ route('preorder.index') }}">Batal</a>
+                        <div class="row">
+                            <div class="col-8">
+                                <!-- Content for the main part of the row goes here -->
+                            </div>
+                            <div class="col-3 d-flex align-items-center mx-5">
+                                <label for="total-price" class="col-5">TOTAL RP</label>
+                                <input id="total-price" type="text" value="" disabled class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button>
+                            <button type="submit" class="btn btn-primary">BUAT PO</button>
                         </div>
                     </div>
                 </form>
@@ -168,5 +190,57 @@
             .val());
             });
         })
+
+        // Function to update the total price for a specific product
+        function updateTotal(input) {
+            // Get the index of the product from the input field's data attribute
+            const index = input.getAttribute('data-index');
+            
+            // Get the quantity from the input field
+            const quantity = parseFloat(input.value) || 0;
+            
+            // Get the product price from the element with a specific id
+            const priceElement = document.getElementById('price-' + index);
+            if (!priceElement) {
+                console.error(`Price element with id 'price-${index}' not found.`);
+                return;
+            }
+            const price = parseFloat(priceElement.textContent.replace(/,/g, '')) || 0;
+            
+            // Calculate the total
+            const total = quantity * price;
+            
+            // Update the total element with the calculated value
+            const totalElement = document.getElementById('total-' + index);
+            const totalHiddenElement = document.getElementById('total-hidden-' + index);
+            if (totalElement) {
+                totalElement.textContent = total.toLocaleString();
+                totalHiddenElement.textContent = total;
+            } else {
+                console.error(`Total element with id 'total-${index}' not found.`);
+            }
+
+            // Recalculate and update the overall total price
+            updateTotalPrice();
+        }
+
+        // Function to update the overall total price
+        function updateTotalPrice() {
+            let totalPrice = 0;
+            document.querySelectorAll('.totally').forEach(element => {
+                let value = element.textContent.replace(/,/g, '');
+                totalPrice += parseInt(value, 10) || 0;
+            });
+
+            // Update the total-price input field
+            document.getElementById('total-price').value = totalPrice.toLocaleString();
+        }
+
+        // Ensure the updateTotal function is called on quantity input change
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('input[data-index]').forEach(input => {
+                input.addEventListener('input', () => updateTotal(input));
+            });
+        });
     </script>
 @endsection

@@ -25,10 +25,11 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
         $title = 'Create Product';
         $units = Unit::all();
+        $product = Product::find($id);
         $departemens = Departemen::all();
         $suppliers = Supplier::all();
         $maxCode = Product::max('kode');
@@ -39,7 +40,7 @@ class ProductController extends Controller
             $newCode = str_pad((int)$maxCode + 1, 8, '0', STR_PAD_LEFT);
         }
 
-        return view('master/product/create', compact('title', 'units', 'departemens', 'suppliers', 'newCode'));
+        return view('master/product/create', compact('title', 'units', 'departemens', 'suppliers', 'newCode', 'product'));
     }
 
     /**
@@ -142,7 +143,15 @@ class ProductController extends Controller
             $validatedData = $request->validate([
                 'unit_jual' => 'nullable|string|max:255',
                 'harga_jual' => 'nullable|numeric',
+                'harga_pokok' => 'nullable|numeric', // Ensure harga_pokok is validated
             ]);
+
+            if (isset($data['harga_pokok']) && isset($validatedData['harga_jual']) && $validatedData['harga_jual'] < $data['harga_pokok']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harga jual tidak boleh kurang dari harga pokok.'
+                ], 400);
+            }
 
             $newProduct = Product::create([
                 'id_supplier' => $parentProduct->id_supplier,
@@ -174,7 +183,6 @@ class ProductController extends Controller
             $data = $request->json()->all();
             $parentProduct = Product::where('kode', $data['kode_sumber'])->first();
             $childProduct = Product::where('kode_sumber', $data['kode_sumber'])->orderBy('harga_pokok', 'desc')->get();
-
 
             $newProduct = Product::create([
                 'id_supplier' => $parentProduct->id_supplier,
@@ -233,14 +241,15 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
         $product = Product::find($id);
         $idSupplier = Supplier::where('nomor', $request->supplier)->first();
         
-        if ($product->kode_sumber == null) {
-            if (preg_replace('/[^0-9]/', '', $request->harga_pokok) > preg_replace('/[^0-9]/', '', $request->harga_jual)) {
-                return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
-            }
+        // if ($product->kode_sumber == null) {
+        if (preg_replace('/[^0-9]/', '', $request->harga_pokok_rata) > preg_replace('/[^0-9]/', '', $request->harga_jual)) {
+            return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
         }
+        // }
 
         if ($request->ppn == 'on') {
             $ppn = 1;
@@ -256,13 +265,14 @@ class ProductController extends Controller
             $child->save();
         }
 
+        $namaBarang = explode('/', $request->nama_barang);
         $konversi = preg_replace('/[^0-9]/', '', $request->unit_beli) / preg_replace('/[^0-9]/', '', $request->unit_jual);
         $data = [
             'id_supplier' => $idSupplier->id,
             'id_unit' => $request->unit,
             'id_departemen' => $request->departemen,
             'kode' => $request->kode,
-            'nama' => $request->nama_barang,
+            'nama' => $namaBarang[0],
             'unit_beli' => $request->unit_beli,
             'unit_jual' => $request->unit_jual,
             'konversi' => $konversi,

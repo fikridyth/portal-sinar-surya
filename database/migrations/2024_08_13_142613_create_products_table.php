@@ -26,11 +26,12 @@ return new class extends Migration
             $table->bigInteger('harga_pokok');
             $table->bigInteger('harga_jual');
             $table->bigInteger('profit');
-            $table->bigInteger('ppn')->nullable();
             $table->bigInteger('merek')->nullable();
             $table->bigInteger('label')->nullable();
             $table->decimal('stok', 5, 2)->default(0);
-            $table->smallInteger('is_ppn')->default(0);
+            $table->decimal('diskon1', 5, 2)->default(0);
+            $table->decimal('diskon2', 5, 2)->default(0);
+            $table->decimal('diskon3', 5, 2)->default(0);
             $table->timestamps();
         });
     }

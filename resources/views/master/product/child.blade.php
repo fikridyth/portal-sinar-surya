@@ -277,24 +277,25 @@
         })
         .then(response => {
             if (!response.ok) {
+                if (response.status === 400) {
+                    return response.json().then(result => {
+                        throw new Error(result.message || 'Bad request.');
+                    });
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(result => {
-            // console.log('Success:', result);
-
             if (result.success) {
-                const newProductId = result.id;
+                const newProductId = result.data.id;
                 const newUrl = `/master/product/parent/${newProductId}`;
                 window.location.href = newUrl;
             } else {
-                // Handle any specific success cases or messages
-                alert('Failed to store data.');
+                alert(result.message || 'Failed to store data.');
             }
         })
         .catch(error => {
-            // console.error('Error:', error);
             alert('An error occurred: ' + error.message);
         });
     }

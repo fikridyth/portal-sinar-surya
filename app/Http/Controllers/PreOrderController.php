@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class PreOrderController extends Controller
 {
@@ -40,7 +41,7 @@ class PreOrderController extends Controller
         $title = 'Get Barang';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
         $penjualan = Supplier::where('id', $supplier1->id)->first();
-        $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->get() : collect();
+        $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->where('kode_sumber', '=', null)->get() : collect();
 
         $supplier2 = null;
         $products2 = collect();
@@ -49,15 +50,27 @@ class PreOrderController extends Controller
 
         if ($request->dataSupplier2) {
             $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
-            $products2 = $supplier2 ? Product::where('id_supplier', $supplier2->id)->get() : collect();
+            $products2 = $supplier2 ? Product::where('id_supplier', $supplier2->id)->where('kode_sumber', '=', null)->get() : collect();
         }
 
         if ($request->dataSupplier3) {
             $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
-            $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->get() : collect();
+            $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->where('kode_sumber', '=', null)->get() : collect();
         }
 
-        $allProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual']);
+        $allProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual'])
+            ->map(function ($product) {
+                // ambil semua stok child untuk digabungkan
+                $getChild = Product::where('kode_sumber', $product->kode)->get();
+                $totalStok = 0;
+                foreach ($getChild as $child) {
+                    $convertChild = $child->stok / $child->konversi;
+                    $totalStok += $convertChild;
+                }
+                $product->stok = $product->stok + $totalStok;
+                return $product;
+            });
+        // dd($allProducts);
 
         return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'allProducts', 'penjualan'));
     }
@@ -144,8 +157,11 @@ class PreOrderController extends Controller
     {
         $title = 'Daftar PreOrder';
         $preorders = Preorder::all();
+        $suppliers = Supplier::all();
+        $orderSupplier = $preorders->pluck('id_supplier')->toArray();
+        // dd($orderSupplier);
 
-        return view('preorder.detail-po.daftar-po', compact('title', 'preorders'));
+        return view('preorder.detail-po.daftar-po', compact('title', 'preorders', 'suppliers', 'orderSupplier'));
     }
 
     public function showDaftarPo($id)
@@ -160,13 +176,85 @@ class PreOrderController extends Controller
     {
         $title = 'Edit PreOrder';
         $preorder = Preorder::find($id);
+        $products = Product::orderBy('nama', 'asc')->get();
         $ppn = Ppn::pluck('ppn')->first();
         $products = Product::all();
 
-        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products'));
+        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products', 'products'));
+    }
+
+    public function storeNewData(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'data.*.kode' => 'required|string',
+            'data.*.order' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
+
+        // $request->validate([
+        //     'data.*.kode' => 'required|string',
+        //     'data.*.order' => 'required|numeric',
+        // ]);
+        
+        $preorder = Preorder::find($request->id);
+        $ppnValue = Ppn::pluck('ppn')->first();
+        $detail = json_decode($preorder->detail, true);
+        
+        foreach ($request->input('data') as $item) {
+            $product = Product::where('kode', $item['kode'])->first();
+            $supplier = Supplier::where('id', $product->id_supplier)->first();
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => $product->stok,
+                'order' => $item['order'],
+                'price' => $product->harga_jual,
+                'field_total' => $item['order'] * $product->harga_jual,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+            ];
+            
+            // Add the new entry to the detail array
+            $detail[] = $newEntry;
+        }
+
+        $preorder->detail = json_encode($detail);
+        $preorder->save();
+
+        return response()->json(['success' => true]);
     }
 
     public function updateEditedData(Request $request)
+    {
+        // dd($request->all());
+
+        $preorder = Preorder::find($request->id);
+        $getDetail = json_decode($preorder->detail, true);
+        $getArray = $getDetail[$request->array];
+        $getArray['order'] = $request->order;
+        $getArray['price'] = $request->netto;
+        $getArray['field_total'] = $request->total;
+        $getDetail[$request->array] = $getArray;
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function destroyCurrentData(Request $request)
     {
         // dd($request->all());
 

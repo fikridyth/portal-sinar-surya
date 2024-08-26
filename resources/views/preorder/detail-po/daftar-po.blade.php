@@ -31,21 +31,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($preorders as $preorder)
+                                    @foreach ($suppliers as $supplier)
                                         <tr>
-                                            <td class="text-center">{{ $preorder->supplier->nama }}</td>
-                                            <td class="text-center">{{ $preorder->nomor_po }}</td>
-                                            @php
-                                                $expiredDate = new DateTime(now()->format('Y-m-d'));
-                                                $currentDate = new DateTime($preorder->date_last);
-                                                $interval = $expiredDate->diff($currentDate);
-                                                $days = $interval->days;
-                                            @endphp
-                                            <td class="text-center">A{{ $days }}</td>
-                                            <td class="text-center">
-                                                <a href="{{ route('daftar-po.show', $preorder->id) }}" class="btn btn-primary btn-sm">Detail PO</a>
-                                                <a href="{{ route('daftar-po.edit', $preorder->id) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
-                                            </td>
+                                            <td class="text-center">{{ $supplier->nama }}</td>
+                                            @if (in_array($supplier->id, $orderSupplier))
+                                                @foreach ($preorders as $preorder)
+                                                <td class="text-center">{{ $preorder->nomor_po }}</td>
+                                                @php
+                                                    $expiredDate = new DateTime(now()->format('Y-m-d'));
+                                                    $currentDate = new DateTime($preorder->date_last);
+                                                    $interval = $expiredDate->diff($currentDate);
+                                                    $days = $interval->days;
+                                                @endphp
+                                                <td class="text-center">A{{ $days }}</td>
+                                                <td class="text-center">
+                                                    <a href="{{ route('daftar-po.show', $preorder->id) }}" class="btn btn-primary btn-sm">Detail PO</a>
+                                                    <a href="{{ route('daftar-po.edit', $preorder->id) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
+                                                </td>
+                                            @endforeach
+                                            @else
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            @endif
                                         </tr>
                                     @endforeach
                                 </tbody>

@@ -41,9 +41,9 @@ class SupplierController extends Controller
             'alamat2' => $request->alamat2,
         ];
 
-        Supplier::create($data);
+        $supplier = Supplier::create($data);
 
-        return Redirect::route('master.supplier.index')
+        return Redirect::route('master.supplier.show', $supplier->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Add Supplier Success!");
     }
@@ -53,6 +53,10 @@ class SupplierController extends Controller
      */
     public function show(string $id)
     {
+        $title = 'Show Supplier';
+        $supplier = Supplier::find($id);
+
+        return view('master/supplier/show', compact('title', 'supplier'));
     }
 
     /**
@@ -82,7 +86,7 @@ class SupplierController extends Controller
 
         $supplier->update($data);
 
-        return Redirect::route('master.supplier.index')
+        return Redirect::route('master.supplier.show', $supplier->id)
             ->with('alert.status', '00')
             ->with('alert.message', "Update Supplier Success!");
     }

@@ -27,7 +27,8 @@
                 </div>
                 
                 <div class="text-center">
-                    <a href="{{ route('master.product.create') }}" class="btn btn-danger">Kembali</a>
+                    {{-- <a href="{{ route('master.product.create') }}" class="btn btn-danger">Kembali</a> --}}
+                    <button type="button" onclick="window.history.back()" class="btn btn-danger mt-4 mb-7">KEMBALI</button>
                 </div>
             </div>
         </div>

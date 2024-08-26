@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('waktu_kunjungan')->default(0);
             $table->integer('stok_minimum')->default(0);
             $table->integer('stok_maksimum')->default(0);
+            $table->smallInteger('is_ppn')->default(0);
             $table->timestamps();
         });
     }
