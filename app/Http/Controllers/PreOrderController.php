@@ -472,6 +472,30 @@ class PreOrderController extends Controller
         return redirect()->back();
     }
 
+    public function setBonus(Request $request, $id)
+    {
+        $preorder = Preorder::find($id);
+        $getDetail = json_decode($preorder->detail, true);
+        $getDetail[$request->no]['field_total'] = 0;
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        // Calculate the new total harga
+        $totalHarga = 0;
+        foreach ($getDetail as $detail) {
+            $totalHarga += $detail['field_total'] ?? 0; // Ensure field_total exists
+        }
+
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+
+        return redirect()->back();
+    }
+
     /**
      * Show the form for creating a new resource.
      */

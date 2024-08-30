@@ -48,6 +48,10 @@
         // Ambil nilai diskon
         const discountInput = document.getElementById('diskon4-input');
         const discountValue = parseFloat(discountInput.value) || 0;
+        // const discount2Input = document.getElementById('diskon5-input');
+        // const discount2Value = parseFloat(discount2Input.value) || 0;
+        // const discount2Input = document.getElementById('diskon6-input');
+        // const discount2Value = parseFloat(discount2Input.value) || 0;
 
         // Update semua elemen netto
         document.querySelectorAll('.netto').forEach(nettoElement => {
@@ -59,10 +63,10 @@
 
             // Cek status checkbox dan diskon
             if (checkbox && checkbox.checked) {
-                if (discountValue >= 1 && discountValue <= 100) {
+                if (discountValue >= 1 && discountValue <= 99) {
                     // Diskon persentase
                     initialPrice -= (initialPrice * discountValue) / 100;
-                } else if (discountValue > 100) {
+                } else if (discountValue > 99) {
                     // Diskon flat
                     initialPrice -= discountValue;
                 }
@@ -81,15 +85,14 @@
             const index = nettoElement.id.split('-')[1];
             const orderInput = document.getElementById('order-input-' + index);
 
-            let nettoValue = nettoElement.textContent.replace(/,/g, '')
+            let nettoValue = nettoElement.textContent.replace(/\./g, '');
             let orderValue = parseFloat(orderInput.value) || 0;
-
             // Hitung field-total
             let fieldTotal = nettoValue * orderValue;
 
             // Update nilai field-total
             const fieldTotalElement = document.getElementById('field-total-' + index);
-            if (fieldTotalElement) {
+            if (fieldTotalElement.textContent !== '0') {
                 fieldTotalElement.textContent = new Intl.NumberFormat().format(fieldTotal);
             }
         });

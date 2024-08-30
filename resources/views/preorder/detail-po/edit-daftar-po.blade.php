@@ -260,8 +260,7 @@
                                                             <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form">
                                                                 @csrf
                                                                 <div class="row align-items-center">
-                                                                    <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
-                                                                    <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
+                                                                    <input type="hidden" name="no" value="{{ $no - 1 }}">
                                                                     <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" class="btn btn-sm btn-primary">SET</button>
                                                                 </div>
                                                             </form>
@@ -478,6 +477,8 @@
             const tambahButton = document.getElementById('tambah-button');
             const buttonId = `delete-save-${index}`;
             const deleteButton = document.getElementById(buttonId);
+            const buttonBId = `bonus-save-${index}`;
+            const bonusButton = document.getElementById(buttonBId);
             
             // Get the price input and netto elements by their IDs
             const priceInput = document.getElementById(`price-input-${index}`);
@@ -506,7 +507,6 @@
                 netto: nettoElementValue,
                 total: fieldTotalElementValue
             };
-            console.log(data)
 
             // Perform AJAX request
             $.ajax({
@@ -529,6 +529,7 @@
                         document.getElementById(`checkbox-${index}`).style.display = 'inline-block';
                         button.style.display = 'none';
                         deleteButton.style.display = 'none';
+                        bonusButton.style.display = 'none';
 
                         document.querySelectorAll('.select-checkbox').forEach(checkbox => {
                             checkbox.disabled = false;
@@ -576,7 +577,6 @@
             document.getElementById('total-price').value = totalPrice.toLocaleString();
         }
 
-        
         function updateTotalOrder() {
             let totalOrder = 0;
             document.querySelectorAll('.order-text').forEach(element => {
