@@ -162,6 +162,7 @@
                                                 $totalPrice += $detail['field_total'];
                                                 $totalOrder += $detail['order'];
                                             @endphp
+                                                {{-- @dd($totalOrder) --}}
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td class="text-center">{{ $detail['kode'] }}</td>
@@ -169,8 +170,8 @@
                                                     <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
                                                     <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
                                                     <td class="text-end">{{ number_format($detail['price']) }}</td>
-                                                    <td class="text-end">{{ $detail['order'] }}</td>
-                                                    <td class="text-end">{{ $detail['order'] }}</td>
+                                                    <td class="text-end">{{ number_format($detail['order'], 2) }}</td>
+                                                    <td class="text-end">{{ number_format($detail['order'], 2) }}</td>
                                                     <td class="text-end">{{ number_format($detail['price']) }}</td>
                                                     <td class="text-end">{{ number_format($detail['field_total']) }}</td> 
                                                 </tr>
@@ -192,7 +193,7 @@
                                 <label for="totalOrder">Jumlah Koli</label>
                             </div>
                             <div class="mx-2">
-                                <input id="totalOrder" type="text" value="{{ number_format($totalOrder) }}" disabled size="5" class="form-control">
+                                <input id="totalOrder" type="text" value="{{ number_format($totalOrder, 2) }}" disabled size="5" class="form-control">
                             </div>
                             <div class="mx-2">
                                 <button class="btn btn-primary">CETAK</button>

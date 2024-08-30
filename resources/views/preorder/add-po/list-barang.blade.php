@@ -72,27 +72,28 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($getProducts as $product)
+                                            @foreach ($results as $result)
                                                 <tr>
-                                                    <input type="text" name="nama[]" hidden value="{{ $product->nama }}">
-                                                    <input type="text" name="stok[]" hidden value="{{ $product->stok }}">
-                                                    <input type="text" name="unit_jual[]" hidden value="{{ $product->unit_jual }}">
-                                                    <input type="text" name="kode[]" hidden value="{{ $product->kode }}">
-                                                    <input type="text" name="kode_sumber[]" hidden value="{{ $product->kode_sumber }}">
-                                                    <input type="text" name="is_ppn[]" hidden value="{{ $product->is_ppn }}">
-                                                    <input type="text" name="diskon1[]" hidden value="{{ $product->diskon1 }}">
-                                                    <input type="text" name="diskon2[]" hidden value="{{ $product->diskon2 }}">
-                                                    <input type="text" name="diskon3[]" hidden value="{{ $product->diskon3 }}">
-                                                    <input type="text" name="id_supplier[]" hidden value="{{ $product->id_supplier }}">
-                                                    <td>{{ $product->nama }}</td>
-                                                    <td class="text-end">{{ $product->stok }}</td>
+                                                    <input type="text" name="nama[]" hidden value="{{ $result['product']->nama }}">
+                                                    <input type="text" name="stok[]" hidden value="{{ $result['details']['stok'] }}">
+                                                    <input type="text" name="order[]" hidden value="{{ $result['details']['order'] }}">
+                                                    <input type="text" name="unit_jual[]" hidden value="{{ $result['product']->unit_jual }}">
+                                                    <input type="text" name="kode[]" hidden value="{{ $result['product']->kode }}">
+                                                    <input type="text" name="kode_sumber[]" hidden value="{{ $result['product']->kode_sumber }}">
+                                                    <input type="text" name="is_ppn[]" hidden value="{{ $result['product']->is_ppn }}">
+                                                    <input type="text" name="diskon1[]" hidden value="{{ $result['product']->diskon1 }}">
+                                                    <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
+                                                    <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">
+                                                    <input type="text" name="id_supplier[]" hidden value="{{ $result['product']->id_supplier }}">
+                                                    <td>{{ $result['product']->nama }}</td>
+                                                    <td class="text-end">{{ $result['details']['stok'] }}</td>
                                                     <td class="text-end">
-                                                        <input type="number" required class="form-control order" name="order[]">
+                                                        <input type="number" required class="form-control order" value="{{ $result['details']['order'] }}">
                                                     </td>
                                                     <td class="text-end">
-                                                        <h6 style="text-align: center; align-items: center;">{{ number_format($product->harga_jual, 2) }}</h6>
+                                                        <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) }}</h6>
                                                         <input type="number" hidden class="form-control price" name="price[]"
-                                                            value="{{ $product->harga_jual }}" step="0.01">
+                                                            value="{{ $result['details']['harga'] }}" step="0.01">
                                                     </td>
                                                     <td class="text-end">
                                                         <input type="text" class="form-control total" name="total[]"

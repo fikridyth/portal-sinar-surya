@@ -57,7 +57,7 @@
                 </td>
                 <td class="text-center data-kode" id="data-kode"></td>
                 <td>
-                    <select id="products-${index}" style="width: 200px;" onchange="handleSelectChange(event)">
+                    <select id="products-${index}" class="product-select" style="width: 200px;" onchange="handleSelectChange(event)">
                         <option value="">---Select Product---</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-isi="{{ $product->unit_jual }}" data-isi2="{{ $product->unit_jual }}"
@@ -76,6 +76,13 @@
             `;
             
             tableBody.appendChild(newRow);
+
+            // Initialize Select2 on the newly added select element
+            $(`#products-${index}`).select2({
+                placeholder: '---Select Product---',
+                allowClear: true
+            });
+
             disableAllCheckboxes();
         });
     });

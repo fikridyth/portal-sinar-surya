@@ -17,7 +17,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between mt-2">
                     <div class="row w-100">
-                        <div class="form-group col-12">
+                        <div class="form-group col-6">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
@@ -31,30 +31,57 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($suppliers as $supplier)
-                                        <tr>
-                                            <td class="text-center">{{ $supplier->nama }}</td>
-                                            @if (in_array($supplier->id, $orderSupplier))
-                                                @foreach ($preorders as $preorder)
-                                                <td class="text-center">{{ $preorder->nomor_po }}</td>
+                                    @foreach ($listPreorders as $po)
+                                        @if ($po['preorder'] == null)
+                                            <tr>
+                                                <td class="text-center">{{ $po['supplier']['nama'] }}</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="text-center">
+                                                    <form action="{{ route('preorder.get-list-barang') }}" method="POST">
+                                                        @csrf
+                                                        <input type="text" hidden name="dataSupplier1" value="{{ $po['supplier']['nama'] }}">
+                                                        <button type="submit" class="btn btn-sm btn-primary">BUAT PO</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="form-group col-6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center">Nama Supplier</th>
+                                        <th class="text-center">Nomor PO</th>
+                                        <th class="text-center">Ref</th>
+                                        <th class="text-center">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($listPreorders as $po)
+                                        @if ($po['preorder'] !== null)
+                                            <tr>
+                                                <td class="text-center">{{ $po['supplier']['nama'] }}</td>
+                                                <td class="text-center">{{ $po['preorder']['nomor_po'] ?? null }}</td>
                                                 @php
                                                     $expiredDate = new DateTime(now()->format('Y-m-d'));
-                                                    $currentDate = new DateTime($preorder->date_last);
+                                                    $currentDate = new DateTime($po['preorder']['date_last'] ?? null );
                                                     $interval = $expiredDate->diff($currentDate);
                                                     $days = $interval->days;
                                                 @endphp
                                                 <td class="text-center">A{{ $days }}</td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('daftar-po.show', $preorder->id) }}" class="btn btn-primary btn-sm">Detail PO</a>
-                                                    <a href="{{ route('daftar-po.edit', $preorder->id) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
+                                                    <a href="{{ route('daftar-po.show', $po['preorder']['id']) }}" class="btn btn-primary btn-sm">Detail PO</a>
+                                                    <a href="{{ route('daftar-po.edit', $po['preorder']['id']) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
                                                 </td>
-                                            @endforeach
-                                            @else
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            @endif
-                                        </tr>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>

@@ -46,6 +46,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/update-edited-data', [PreOrderController::class, 'updateEditedData'])->name('daftar-po.update');
     Route::post('/store-new-data', [PreOrderController::class, 'storeNewData'])->name('daftar-po.store');
     Route::delete('/destroy-current-data', [PreOrderController::class, 'destroyCurrentData'])->name('daftar-po.destroy');
+    Route::post('/set-ppn/{id}', [PreOrderController::class, 'setPpn'])->name('daftar-po.set-ppn');
+    Route::post('/set-diskon/{id}', [PreOrderController::class, 'setDiskon'])->name('daftar-po.set-diskon');
+    Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
 
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);

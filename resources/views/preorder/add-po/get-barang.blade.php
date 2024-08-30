@@ -108,7 +108,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Maksimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -138,14 +138,18 @@
                                         <tbody>
                                             @foreach ($allProducts as $index => $product)
                                                 <tr>
-                                                    <td>{{ $product->nama . '/' . $product->unit_jual }}</td>
-                                                    <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td>
-                                                    <td class="text-end">0</td>
-                                                    <td class="text-end">0</td>
-                                                    <td class="text-end">{{ number_format($product->stok, 2) }}</td>
-                                                    <td class="text-end">0</td>
+                                                    <td>{{ $product['nama'] . '/' . $product['unit_jual'] }}</td>
+                                                    <input type="text" hidden name="name[]" value="{{ $product['nama'] }}">
+                                                    <input type="text" hidden name="stock[]" value="{{ number_format($product['stok'], 2)}}">
+                                                    <input type="text" hidden name="harga[]" value="{{ $product['harga_pokok'] }}">
+                                                    <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
+                                                    <td class="text-end">{{ str_replace('P', '', $product['unit_jual']) }}</td>
+                                                    <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? '' }}</td>
+                                                    <td class="text-end">{{ $product['minimum'] ?? '' }}</td>
+                                                    <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
+                                                    <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
                                                     <td class="text-center"><input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"></td>
-                                                    <td class="text-end" id="price-{{ $index }}">{{ number_format($product->harga_pokok) }}</td>
+                                                    <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                     <td class="text-end" id="total-{{ $index }}">0</td>
                                                     <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
                                                     {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
@@ -166,7 +170,7 @@
                             </div>
                             <div class="col-3 d-flex align-items-center mx-5">
                                 <label for="total-price" class="col-5">TOTAL RP</label>
-                                <input id="total-price" type="text" value="" disabled class="form-control">
+                                <input id="total-price" type="text" value="0" disabled class="form-control">
                             </div>
                         </div>
 
@@ -191,14 +195,59 @@
             });
         })
 
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update stock maximum values when the page loads
+            document.querySelectorAll('input.stok-max').forEach(input => {
+                updateStokMax(input);
+            });
+
+            // Ensure the updateTotal function is called on quantity input change
+            document.querySelectorAll('input[data-index]').forEach(input => {
+                input.addEventListener('input', () => updateTotal(input));
+            });
+
+            // Update total price initially
+            updateTotalPrice();
+        });
+
+        // Function to update the stock maximum values
+        function updateStokMax(inputElement) {
+            // Get the value from the input field
+            const stokMaksimum = parseFloat(inputElement.value);
+
+            // Check if the input value is a valid number
+            if (isNaN(stokMaksimum)) {
+                console.error('Invalid stok_maksimum value');
+                return;
+            }
+
+            // Iterate over each row to update maximum values
+            document.querySelectorAll('tr').forEach(row => {
+                const averageElement = row.querySelector('.average');
+                const maximumElement = row.querySelector('.maximum');
+
+                if (averageElement && maximumElement) {
+                    const averageValue = parseFloat(averageElement.textContent.trim());
+
+                    if (!isNaN(averageValue)) {
+                        // Calculate the new maximum value
+                        const newMaximum = stokMaksimum * averageValue;
+
+                        // Update the maximum value in the table
+                        maximumElement.textContent = newMaximum.toFixed(2); // Display with 2 decimal places
+                    }
+                }
+            });
+        }
+
         // Function to update the total price for a specific product
         function updateTotal(input) {
             // Get the index of the product from the input field's data attribute
             const index = input.getAttribute('data-index');
-            
+
             // Get the quantity from the input field
             const quantity = parseFloat(input.value) || 0;
-            
+
             // Get the product price from the element with a specific id
             const priceElement = document.getElementById('price-' + index);
             if (!priceElement) {
@@ -206,16 +255,18 @@
                 return;
             }
             const price = parseFloat(priceElement.textContent.replace(/,/g, '')) || 0;
-            
+
             // Calculate the total
             const total = quantity * price;
-            
+
             // Update the total element with the calculated value
             const totalElement = document.getElementById('total-' + index);
             const totalHiddenElement = document.getElementById('total-hidden-' + index);
             if (totalElement) {
                 totalElement.textContent = total.toLocaleString();
-                totalHiddenElement.textContent = total;
+                if (totalHiddenElement) {
+                    totalHiddenElement.textContent = total;
+                }
             } else {
                 console.error(`Total element with id 'total-${index}' not found.`);
             }
@@ -235,12 +286,5 @@
             // Update the total-price input field
             document.getElementById('total-price').value = totalPrice.toLocaleString();
         }
-
-        // Ensure the updateTotal function is called on quantity input change
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('input[data-index]').forEach(input => {
-                input.addEventListener('input', () => updateTotal(input));
-            });
-        });
     </script>
 @endsection

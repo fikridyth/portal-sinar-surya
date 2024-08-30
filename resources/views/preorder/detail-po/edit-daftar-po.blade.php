@@ -31,259 +31,335 @@
 </style>
 
 @section('content')
-    <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
-                        </li>
-                    </ol>
-                </nav>
+    <div class="d-flex justify-content-center">
+        <div class="mb-7" style="width: 82%">
+            <div class="d-flex align-items-center justify-content-center">
+                <div class="mt-4">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-body">
-                <form action="{{ route('preorder.process-barang') }}" method="POST">
-                    @csrf
-                    <div class="card-body">
-                        <div class="d-flex justify-content-center">
-                            <div class="row w-100">
-                                <div class="col-2"></div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">Nomor PO</label>
-                                            {{-- <div class="col">
-                                                <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                            </div> --}}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            {{-- <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label> --}}
-                                            <div class="col">
-                                                <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
+            <div class="card">
+                <div class="card-body">
+                    {{-- <form action="{{ route('preorder.process-barang') }}" method="POST">
+                        @csrf --}}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-center">
+                                <div class="row w-100">
+                                    <div class="col-2"></div>
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">Nomor PO</label>
+                                                {{-- <div class="col">
+                                                    <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                                </div> --}}
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="inputPassword3" class="col col-form-label d-flex justify-content-end">TANGGAL PO</label>
-                                            <div class="col">
-                                                <input type="text" value="{{ $preorder->created_at->format('d/m/Y') }}" disabled class="form-control" id="inputPassword3">
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                {{-- <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label> --}}
+                                                <div class="col">
+                                                    <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="inputPassword3" class="col col-form-label d-flex justify-content-end">TANGGAL PO</label>
+                                                <div class="col">
+                                                    <input type="text" value="{{ $preorder->created_at->format('d/m/Y') }}" disabled class="form-control" id="inputPassword3">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="d-flex justify-content-center mb-2">
-                            <div class="row w-100">
-                                <div class="col-2"></div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">NAMA SUPPLIER</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-5">
-                                    <div class="col">
-                                        <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-center mt-3 mb-3">
-                            <div class="row w-100">
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="rata2" class="col-sm-5 col-form-label" style="font-size: 14px;">PENJ. RATA2</label>
-                                            <div class="col-sm-3">
-                                                <input type="text" value="" class="form-control" id="rata2" disabled>
-                                            </div>
-                                            <label for="rata2" class="col-sm-2 col-form-label" style="font-size: 14px;">HR</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="maximum" class="col-sm-5 col-form-label" style="font-size: 14px;">MAKSIMUM</label>
-                                            <div class="col-sm-3">
-                                                <input type="text" value="" class="form-control" id="maximum" disabled>
-                                            </div>
-                                            <label for="maximum" class="col-sm-2 col-form-label" style="font-size: 14px;">HR</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="stok" class="col-sm-3 col-form-label" style="font-size: 14px;">STOK</label>
-                                            <div class="col-sm-4">
-                                                <input type="text" value="" disabled class="form-control" id="stok">
+                            <div class="d-flex justify-content-center mb-2">
+                                <div class="row w-100">
+                                    <div class="col-2"></div>
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">NAMA SUPPLIER</label>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="disc_reg" class="col-sm-6 col-form-label" style="font-size: 14px;">DISKON REGULER</label>
-                                            <div class="col-sm-3">
-                                                <input type="text" value="" class="form-control" id="disc_reg">
-                                            </div>
-                                            <label for="disc_reg" class="col-sm-1 col-form-label" style="font-size: 14px;">%</label>
+                                    <div class="col-5">
+                                        <div class="col">
+                                            <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="container-box">
-                            <div class="column"><div class="form-group"><label class="col-form-label">H. TERAKHIR</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 1</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 2</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 3</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">PPN(%)</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">HARGA RATA2</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 1</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 2</label></div></div>
-                            <div class="column"><div class="form-group"><label class="col-form-label">DISKON 3</label></div></div>
-                        </div>
-                        <div class="container-box mb-3">
-                            <div class="column"><div class="form-group"><input type="text" id="price-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon1-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon2-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon3-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="ppn-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="price-ppn-input" disabled size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon4-input" size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon5-input" size="9"></div></div>
-                            <div class="column"><div class="form-group"><input type="text" id="diskon6-input" size="9"></div></div>
-                        </div>
+                            <div class="d-flex justify-content-center mt-3 mb-3">
+                                <div class="row w-100">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="rata2" class="col-sm-5 col-form-label" style="font-size: 14px;">PENJ. RATA2</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" value="" class="form-control" id="rata2" disabled>
+                                                </div>
+                                                <label for="rata2" class="col-sm-2 col-form-label" style="font-size: 14px;">HR</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="maximum" class="col-sm-5 col-form-label" style="font-size: 14px;">MAKSIMUM</label>
+                                                <div class="col-sm-3">
+                                                    <input type="text" value="" class="form-control" id="maximum" disabled>
+                                                </div>
+                                                <label for="maximum" class="col-sm-2 col-form-label" style="font-size: 14px;">HR</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="stok" class="col-sm-4 col-form-label" style="font-size: 14px;">STOK</label>
+                                                <div class="col-sm-6">
+                                                    <input type="text" value="" disabled class="form-control" id="stok">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <form action="{{ route('daftar-po.set-diskon', $preorder->id) }}" method="POST" class="form">
+                                                    @csrf
+                                                    <div class="row align-items-center">
+                                                        <div class="col-5">
+                                                            <label for="totalPrice" class="mb-0">DISKON REGULER</label>
+                                                        </div>
+                                                        <div class="col-4">
+                                                            <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
+                                                            @if ($preorder->diskon_global == 0)
+                                                                <input type="number" required name="diskon_global" class="form-control" style="width: 120px;">
+                                                            @else
+                                                                <input type="number" required name="diskon_global" value="{{ $preorder->diskon_global }}" class="form-control" style="width: 120px;">
+                                                            @endif
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <button type="submit" class="btn btn-sm btn-primary">SET</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="d-flex justify-content-between mt-2">
-                            <div class="row w-100">
-                                <div class="form-group col-12">
-                                    <table id="details-table" class="table table-bordered">
-                                        <thead>
-                                            <tr class="fs-need">
-                                                <th class="text-center">NO</th>
-                                                <th class="text-center">&#9989;</th>
-                                                <th class="text-center">KODE</th>
-                                                <th class="text-center">NAMA BARANG</th>
-                                                <th class="text-center">ISI</th>
-                                                <th class="text-center">SAT</th>
-                                                <th class="text-center">SATUAN</th>
-                                                <th class="text-center">ORDER</th>
-                                                <th class="text-center">TERIMA</th>
-                                                <th class="text-center">HARGA</th>
-                                                <th class="text-center">NETTO</th>
-                                                <th class="text-center">JUMLAH</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $totalItems = count(json_decode($preorder->detail, true));
-                                            @endphp
-                                            @foreach (json_decode($preorder->detail, true) as $index => $detail)
-                                            @php
-                                                $currentIndex = $totalItems - $index;
-                                                $no = $index + 1;
-                                                $totalPrice += $detail['field_total'];
-                                                $totalOrder += $detail['order'];
-                                                if ($detail['is_ppn'] !== 0) { $priceWithPpn = ($detail['price'] * $detail['is_ppn'] / 100) + $detail['price']; }
-                                                else { $priceWithPpn = $detail['price']; }
-                                            @endphp
+                            <div class="container-box">
+                                <div class="column"><div class="form-group"><label class="col-form-label">H. TERAKHIR</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 1</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 2</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 3</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">PPN(%)</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">HARGA RATA2</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 1</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 2</label></div></div>
+                                <div class="column"><div class="form-group"><label class="col-form-label">DISKON 3</label></div></div>
+                            </div>
+                            <div class="container-box mb-3">
+                                <div class="column"><div class="form-group"><input type="text" id="price-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon1-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon2-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon3-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="ppn-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="price-ppn-input" disabled size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon4-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon5-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" id="diskon6-input" size="9"></div></div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-2">
+                                <div class="row w-100">
+                                    <div class="form-group col-12">
+                                        <table id="details-table" class="table table-bordered">
+                                            <thead>
                                                 <tr class="fs-need">
-                                                    <td>{{ $no }}</td>
-                                                    <td class="text-center">
-                                                        <div class="select-container">
-                                                            <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
-                                                            data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
-                                                            data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
-                                                            data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
-                                                            data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
-                                                            >
-                                                        </div>
-                                                        <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
-                                                        <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
-                                                    </td>
-                                                    <td class="text-center">{{ $detail['kode'] }}</td>
-                                                    <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
-                                                    <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                    <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                    <td class="text-end">{{ number_format($detail['price']) }}</td>
-                                                    <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
-                                                    <td class="text-end">
-                                                        <div class="order-container">
-                                                            <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
-                                                            <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3">
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <div class="price-container">
-                                                            <span class="price-text" id="price-text-{{ $no }}">{{ $detail['price'] }}</span>
-                                                            <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $detail['price'] }}" size="10">
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
-                                                    <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
+                                                    <th class="text-center">NO</th>
+                                                    <th class="text-center">&#9989;</th>
+                                                    <th class="text-center">KODE</th>
+                                                    <th class="text-center">NAMA BARANG</th>
+                                                    <th class="text-center">ISI</th>
+                                                    <th class="text-center">SAT</th>
+                                                    <th class="text-center">SATUAN</th>
+                                                    <th class="text-center">ORDER</th>
+                                                    <th class="text-center">TERIMA</th>
+                                                    <th class="text-center">HARGA</th>
+                                                    <th class="text-center">NETTO</th>
+                                                    <th class="text-center">JUMLAH</th>
+                                                    <th class="text-center">BNS</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                    <input type="hidden" id="current-index" value="{{ $totalItems }}">
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $totalItems = count(json_decode($preorder->detail, true));
+                                                @endphp
+                                                @foreach (json_decode($preorder->detail, true) as $index => $detail)
+                                                @php
+                                                    $currentIndex = $totalItems - $index;
+                                                    $no = $index + 1;
+                                                    $totalPrice += $detail['field_total'];
+                                                    $totalOrder += $detail['order'];
+                                                    if ($detail['is_ppn'] !== 0) { $priceWithPpn = ($detail['price'] * $detail['is_ppn'] / 100) + $detail['price']; }
+                                                    else { $priceWithPpn = $detail['price']; }
+                                                @endphp
+                                                    <tr class="fs-need">
+                                                        <td>{{ $no }}</td>
+                                                        <td class="text-center">
+                                                            <div class="select-container">
+                                                                <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
+                                                                data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
+                                                                data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
+                                                                data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
+                                                                data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
+                                                                >
+                                                            </div>
+                                                            <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                            <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
+                                                        </td>
+                                                        <td class="text-center">{{ $detail['kode'] }}</td>
+                                                        <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
+                                                        <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
+                                                        <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
+                                                        <td class="text-end">{{ number_format($detail['price']) }}</td>
+                                                        <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
+                                                        <td class="text-end">
+                                                            <div class="order-container">
+                                                                <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
+                                                                <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3">
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <div class="price-container">
+                                                                <span class="price-text" id="price-text-{{ $no }}">{{ number_format($detail['price']) }}</span>
+                                                                <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $detail['price'] }}" size="10">
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
+                                                        <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
+                                                        <td>
+                                                            <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form">
+                                                                @csrf
+                                                                <div class="row align-items-center">
+                                                                    <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
+                                                                    <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
+                                                                    <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" class="btn btn-sm btn-primary">SET</button>
+                                                                </div>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <input type="hidden" id="current-index" value="{{ $totalItems }}">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div class="d-flex">
-                                <div class="mx-2">
-                                    <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="d-flex">
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
+                                    </div>
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
+                                    </div>
+                                    {{-- <div class="mx-2">
+                                        <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
+                                    </div> --}}
+                                    {{-- <div class="mx-2">
+                                        <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
+                                    </div> --}}
                                 </div>
-                                <div class="mx-2">
-                                    <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
+                                <div class="d-flex">
+                                    <div class="mx-2">
+                                        <label for="totalPrice" class="mt-1">Jumlah</label>
+                                    </div>
+                                    <div class="mx-2">
+                                        <input type="text" id="totalPrice22" value="{{ number_format($preorder->total_harga) }}" disabled size="10" class="form-control">
+                                    </div>
+                                    <div class="mx-4">
+                                    </div>
+                                    {{-- <div class="mx-2">
+                                        <label for="totalOrder" class="mt-1">Jumlah Koli</label>
+                                    </div>
+                                    <div class="mx-2">
+                                        <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
+                                    </div> --}}
+                                    <div class="mx-2">
+                                        <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>
+                                    </div>
                                 </div>
-                                {{-- <div class="mx-2">
-                                    <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
-                                </div> --}}
-                                {{-- <div class="mx-2">
-                                    <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
-                                </div> --}}
                             </div>
-                            <div class="d-flex">
-                                <div class="mx-2">
-                                    <label for="totalPrice" class="mt-1">Jumlah</label>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="d-flex">
                                 </div>
-                                <div class="mx-2">
-                                    <input id="total-price" type="text" value="{{ number_format($totalPrice) }}" disabled size="10" class="form-control">
+                                <div class="d-flex">
+                                    <form action="{{ route('daftar-po.set-ppn', $preorder->id) }}" method="POST" class="form">
+                                        @csrf
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <label for="totalPrice" class="mb-0">PPN</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
+                                                @if ($preorder->ppn_global == 0)
+                                                    <input type="number" max="100" required name="ppn_global" class="form-control" style="width: 70px;">
+                                                @else
+                                                    <input type="number" max="100" required name="ppn_global" value="{{ $preorder->ppn_global }}" class="form-control" style="width: 70px;">
+                                                @endif
+                                            </div>
+                                            <div class="col-auto">
+                                                <button type="submit" class="btn btn-sm btn-primary">UPDATE</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div class="mx-3">
+                                    </div>
+                                    <div class="mx-5">
+                                    </div>
                                 </div>
-                                <div class="mx-2">
-                                    <label for="totalOrder" class="mt-1">Jumlah Koli</label>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex">
                                 </div>
-                                <div class="mx-2">
-                                    <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
-                                </div>
-                                <div class="mx-2">
-                                    <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>
+                                <div class="d-flex">
+                                    <div class="mx-2">
+                                        <label for="totalPrice" class="mt-1">Grand Total</label>
+                                    </div>
+                                    <div class="mx-2">
+                                        <input type="text" id="totalPrice33" value="{{ number_format($preorder->grand_total) ?? number_format($preorder->total_harga) }}" disabled size="10" class="form-control">
+                                    </div>
+                                    <div class="mx-5">
+                                    </div>
+                                    <div class="mx-4">
+                                    </div>
+                                    <div class="mx-2">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    {{-- </form> --}}
+                </div>
             </div>
         </div>
     </div>
@@ -316,6 +392,8 @@
             var button = document.getElementById(buttonId);
             var buttonDId = "delete-save-" + selectedCheckbox.id.split('-')[1];
             var buttonD = document.getElementById(buttonDId);
+            var buttonBId = "bonus-save-" + selectedCheckbox.id.split('-')[1];
+            var buttonB = document.getElementById(buttonBId);
 
             // Apply or remove the discount based on the checkbox status
             if (selectedCheckbox.checked) {
@@ -326,6 +404,7 @@
                 // Show the corresponding button
                 button.style.display = 'inline-block';
                 buttonD.style.display = 'inline-block';
+                buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
                 // hapusButton.disabled = false;
             } else {
@@ -336,6 +415,7 @@
                 // Hide the corresponding button
                 button.style.display = 'none';
                 buttonD.style.display = 'none';
+                buttonB.style.display = 'none';
                 tambahButton.disabled = false;
                 // hapusButton.disabled = true;
             }
@@ -356,7 +436,40 @@
         }
 
         function handleDestroyClick(button) {
+            // Extract the index from the button's ID
+            const index = button.id.split('-')[2];
             
+            // Prepare data to be sent
+            var data = {
+                id: {{ $preorder->id }},
+                array: index - 1,
+            };
+
+            // Perform AJAX request
+            $.ajax({
+                url: '{{ route('daftar-po.destroy') }}', // Use the named route to generate URL
+                type: 'DELETE',
+                data: data,
+                headers: {
+                    // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.success) {
+                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                        window.location.href = redirectUrl;
+                    } else {
+                        // Handle error response if needed
+                        alert('Failed to save data.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.error('AJAX error:', status, error);
+                    alert('An error occurred while saving data.');
+                }
+            });
         }
 
         function handleSaveClick(button) {
@@ -376,10 +489,10 @@
             
             const nettoElement = document.getElementById(`netto-${index}`);
             let nettoElementValue = nettoElement.textContent;
-            nettoElementValue = nettoElementValue.replace(/,/g, '');
+            nettoElementValue = nettoElementValue.replace(/\./g, '');
             const fieldTotalElement = document.getElementById(`field-total-${index}`);
             let fieldTotalElementValue = fieldTotalElement.textContent;
-            fieldTotalElementValue = fieldTotalElementValue.replace(/,/g, '');
+            fieldTotalElementValue = fieldTotalElementValue.replace(/\./g, '');
 
             const priceText = document.getElementById(`price-text-${index}`);
             priceText.textContent = nettoElement.textContent;
@@ -393,6 +506,7 @@
                 netto: nettoElementValue,
                 total: fieldTotalElementValue
             };
+            console.log(data)
 
             // Perform AJAX request
             $.ajax({
@@ -406,6 +520,8 @@
                 success: function(response) {
                     // Handle success response
                     if (response.success) {
+                        document.getElementById(`totalPrice22`).value = response.newTotalHarga;
+                        document.getElementById(`totalPrice33`).value = response.newGrandTotal;
                         // var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
                         // window.location.href = redirectUrl;
                         tambahButton.disabled = false;

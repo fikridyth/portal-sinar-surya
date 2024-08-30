@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Penjualan;
 use App\Models\Ppn;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
@@ -42,7 +44,7 @@ class PreOrderController extends Controller
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
         $penjualan = Supplier::where('id', $supplier1->id)->first();
         $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->where('kode_sumber', '=', null)->get() : collect();
-
+        
         $supplier2 = null;
         $products2 = collect();
         $supplier3 = null;
@@ -58,7 +60,31 @@ class PreOrderController extends Controller
             $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->where('kode_sumber', '=', null)->get() : collect();
         }
 
-        $allProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual'])
+        $now = Carbon::now();
+        $tanggalRange = [];
+        for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
+            $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
+        }
+
+        $stokMinimum = $penjualan->stok_minimum;
+        $stokMaksimum = $penjualan->stok_maksimum;
+        $rekapJualanByRange = Penjualan::whereIn('tanggal', $tanggalRange)->get()->groupBy('nama')
+            ->map(function ($items) use ($stokMinimum, $stokMaksimum){
+                $totalPerName = $items->sum('total'); // Hitung total
+                $averagePerName = (float)number_format($totalPerName / count($items), 2); // Hitung total
+                return [
+                    'total' => $totalPerName,
+                    'minimum' => $averagePerName * $stokMinimum,
+                    'average' => $averagePerName,
+                    'maximum' => $averagePerName * $stokMaksimum
+                ];
+            });
+
+        // Convert to array if needed
+        $getProductJual = $rekapJualanByRange->toArray();
+
+
+        $getAllProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual'])
             ->map(function ($product) {
                 // ambil semua stok child untuk digabungkan
                 $getChild = Product::where('kode_sumber', $product->kode)->get();
@@ -70,19 +96,82 @@ class PreOrderController extends Controller
                 $product->stok = $product->stok + $totalStok;
                 return $product;
             });
-        // dd($allProducts);
 
-        return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'allProducts', 'penjualan'));
+        // Convert $allProducts to a collection indexed by 'nama'
+        $allProductsByName = $getAllProducts->keyBy('nama');
+
+        // Merge sales data with product data
+        $allProducts = $getProductJual;
+
+        foreach ($allProducts as $name => $salesData) {
+            if ($allProductsByName->has($name)) {
+                $product = $allProductsByName->get($name);
+                $product->total = number_format($salesData['total'], 2);
+                $product->minimum = number_format($salesData['minimum'], 2);
+                $product->average = $salesData['average'];
+                $product->maximum = number_format($salesData['maximum'], 2);
+            }
+        }
+
+        // Convert to array if needed
+        $allProducts = $allProductsByName->toArray();
+        $previousUrl = url()->previous();
+        // DD($allProducts);
+
+        return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
     }
 
     public function processBarang(Request $request)
     {
         $title = 'List Barang';
-        $products = $request->input('products');
-        $supplier1 = Supplier::where('nama', $request->supplierName)->first();
-        $getProducts = Product::whereIn('id', $products)->orderBy('nama', 'asc')->get();
 
-        return view('preorder.add-po.list-barang', compact('title', 'getProducts', 'supplier1'));
+        $parameters = $request->request->all();
+
+        $names = isset($parameters["name"]) ? (array) $parameters["name"] : [];
+        $stocks = isset($parameters["stock"]) ? (array) $parameters["stock"] : [];
+        $orders = isset($parameters["orderPo"]) ? (array) $parameters["orderPo"] : [];
+        $harga = isset($parameters["harga"]) ? (array) $parameters["harga"] : [];
+        
+        // Prepare the formatted data
+        $data = $result = [];
+        $maxItems = max(count($names), count($stocks), count($orders), count($harga));
+
+        // Prepare the formatted data and fetch products
+        for ($i = 0; $i < count($names); $i++) {
+            if ($orders[$i] !== null && $orders[$i] !== 0) { // Skip items with null orders
+                $item = [
+                    'nama' => $names[$i] ?? null,
+                    'stok' => $stocks[$i] ?? null,
+                    'order' => $orders[$i] ?? null,
+                    'harga' => $harga[$i] ?? null
+                ];
+
+                // Fetch products based on the 'nama' field
+                $getProducts = Product::where('nama', $item['nama'])->where('kode_sumber', '=', null)->orderBy('nama', 'asc')->first();
+                
+                // Combine product details with item data
+                $results[] = [
+                    'product' => $getProducts,
+                    'details' => $item
+                ];
+            }
+        }
+        // dd($results);
+
+        $supplier1 = Supplier::where('nama', $request->supplierName)->first();
+
+        $explodeUrl = explode('/', $request->previous_url);
+        $prevUrl = end($explodeUrl);
+
+        if (empty($results)) {
+            if ($prevUrl == 'daftar-po') {
+                return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+            } else {
+                return redirect()->route('preorder.index')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+            }
+        }
+
+        return view('preorder.add-po.list-barang', compact('title', 'getProducts', 'supplier1', 'results'));
     }
 
     public function orderBarang(Request $request)
@@ -110,6 +199,7 @@ class PreOrderController extends Controller
             return response()->json(['error' => 'Array lengths do not match.'], 400);
         }
 
+        $totalHarga = 0;
         for ($i = 0; $i < $count; $i++) {
             $supplierId = $idSupplier[$i];
             $ppnId = $isPpn[$i];
@@ -120,7 +210,7 @@ class PreOrderController extends Controller
                 'nama' => $nama[$i],
                 'unit_jual' => $unitJual[$i],
                 'stok' => $stok[$i],
-                'order' => (int) $order[$i],
+                'order' => $order[$i],
                 'price' => (int) $price[$i],
                 'field_total' => (int) $fieldTotal[$i],
                 'kode_sumber' => $kodeSumber[$i],
@@ -133,7 +223,10 @@ class PreOrderController extends Controller
                 'stok_maksimum' => $supplier ? $supplier->stok_maksimum : null,
                 'is_ppn' => (int) $ppnId == 1 ? $ppnValue : 0
             ];
+
+            $totalHarga += (int) $fieldTotal[$i];
         }
+        $jumlahHarga = (int) $totalHarga;
         $detail = response()->json($dataDetail);
 
         $supplier1 = Supplier::where('nama', $request->supplierName)->first();
@@ -143,6 +236,8 @@ class PreOrderController extends Controller
             'date_first' => Carbon::now()->format('Y-m-d'),
             'date_last' => Carbon::now()->addDays(16)->format('Y-m-d'),
             'detail' => json_encode($detail->original),
+            'total_harga' => $jumlahHarga,
+            'grand_total' => $jumlahHarga,
         ];
         // dd($supplier1->id, $dataDetail);
 
@@ -156,12 +251,33 @@ class PreOrderController extends Controller
     public function daftarPo()
     {
         $title = 'Daftar PreOrder';
-        $preorders = Preorder::all();
-        $suppliers = Supplier::all();
-        $orderSupplier = $preorders->pluck('id_supplier')->toArray();
-        // dd($orderSupplier);
+        $supplierIds = Supplier::pluck('id')->toArray();
 
-        return view('preorder.detail-po.daftar-po', compact('title', 'preorders', 'suppliers', 'orderSupplier'));
+        // Fetch all preorders
+        $preorders = Preorder::all();
+        
+        // Initialize an array with supplier IDs as keys and null as default values
+        $supplierPreorders = array_fill_keys($supplierIds, null);
+        
+        // Populate the array with preorders where applicable
+        foreach ($preorders as $preorder) {
+            if (array_key_exists($preorder->id_supplier, $supplierPreorders)) {
+                // If a preorder exists for this supplier, update the map
+                $supplierPreorders[$preorder->id_supplier] = $preorder;
+            }
+        }
+
+        $listPreorders = array_map(function($preorder, $id) {
+            return [
+                'supplier' => Supplier::where('id', $id)->first(),
+                'preorder' => $preorder,
+            ];
+        }, $supplierPreorders, array_keys($supplierPreorders));
+
+        // foreach ($listPreorders as $po) {
+        // dd($po['preorder']['nomor_po']); }
+
+        return view('preorder.detail-po.daftar-po', compact('title', 'listPreorders'));
     }
 
     public function showDaftarPo($id)
@@ -176,15 +292,15 @@ class PreOrderController extends Controller
     {
         $title = 'Edit PreOrder';
         $preorder = Preorder::find($id);
-        $products = Product::orderBy('nama', 'asc')->get();
         $ppn = Ppn::pluck('ppn')->first();
-        $products = Product::all();
+        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
 
-        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products', 'products'));
+        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products'));
     }
 
     public function storeNewData(Request $request)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'data.*.kode' => 'required|string',
             'data.*.order' => 'required|numeric',
@@ -202,17 +318,24 @@ class PreOrderController extends Controller
         // ]);
         
         $preorder = Preorder::find($request->id);
+        $supplier = Supplier::find($preorder->id_supplier);
         $ppnValue = Ppn::pluck('ppn')->first();
         $detail = json_decode($preorder->detail, true);
         
         foreach ($request->input('data') as $item) {
             $product = Product::where('kode', $item['kode'])->first();
-            $supplier = Supplier::where('id', $product->id_supplier)->first();
+            // $supplier = Supplier::where('id', $product->id_supplier)->first();
+            $getChild = Product::where('kode_sumber', $product->kode)->get();
+            $totalStok = 0;
+            foreach ($getChild as $child) {
+                $convertChild = $child->stok / $child->konversi;
+                $totalStok += $convertChild;
+            }
             $newEntry = [
                 'kode' => $product->kode,
                 'nama' => $product->nama,
                 'unit_jual' => $product->unit_jual,
-                'stok' => $product->stok,
+                'stok' => number_format($product->stok + $totalStok, 2),
                 'order' => $item['order'],
                 'price' => $product->harga_jual,
                 'field_total' => $item['order'] * $product->harga_jual,
@@ -233,25 +356,57 @@ class PreOrderController extends Controller
 
         $preorder->detail = json_encode($detail);
         $preorder->save();
+        
+        $totalHarga = 0;
+        foreach ($detail as $dtl) {
+            $totalHarga += $dtl['field_total'];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => $jumlahHarga
+        ]);
     }
 
     public function updateEditedData(Request $request)
     {
         // dd($request->all());
 
+        $getNetto = str_replace(',', '', $request->netto);
+        $getTotal = str_replace(',', '', $request->total);
+
         $preorder = Preorder::find($request->id);
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
         $getArray['order'] = $request->order;
-        $getArray['price'] = $request->netto;
-        $getArray['field_total'] = $request->total;
+        $getArray['price'] = (int)$getNetto;
+        $getArray['field_total'] = (int)$getTotal;
         $getDetail[$request->array] = $getArray;
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
 
-        return response()->json(['success' => true]);
+        $totalHarga = 0;
+        foreach ($getDetail as $detail) {
+            $totalHarga += $detail['field_total'];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => number_format($jumlahHarga),
+            'newGrandTotal' => number_format($jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100))
+        ]);
     }
 
     public function destroyCurrentData(Request $request)
@@ -260,15 +415,61 @@ class PreOrderController extends Controller
 
         $preorder = Preorder::find($request->id);
         $getDetail = json_decode($preorder->detail, true);
-        $getArray = $getDetail[$request->array];
-        $getArray['order'] = $request->order;
-        $getArray['price'] = $request->netto;
-        $getArray['field_total'] = $request->total;
-        $getDetail[$request->array] = $getArray;
+        unset($getDetail[$request->array]);
+        
+        // Re-index the array to ensure sequential keys if needed
+        $getDetail = array_values($getDetail);
+
+        // Encode the array back to JSON and save it to the preorder record
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
 
-        return response()->json(['success' => true]);
+        // Calculate the new total harga
+        $totalHarga = 0;
+        foreach ($getDetail as $detail) {
+            $totalHarga += $detail['field_total'] ?? 0; // Ensure field_total exists
+        }
+
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => number_format($jumlahHarga)
+        ]);
+    }
+
+    public function setPpn(Request $request, $id)
+    {
+        $preorder = Preorder::find($id);
+        $preorder->update([
+            'total_harga' => $request->total_harga,
+            'ppn_global' => $request->ppn_global,
+            'grand_total' => $request->total_harga + ($request->total_harga * $request->ppn_global / 100),
+        ]);
+        return redirect()->back();
+    }
+
+    public function setDiskon(Request $request, $id)
+    {
+        $preorder = Preorder::find($id);
+        $getDetail = json_decode($preorder->detail, true);
+        foreach ($getDetail as &$item) {
+            if (isset($item['diskon1'])) {
+                $item['diskon1'] = $request->diskon_global;
+            }
+        }
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        $preorder->update([
+            'diskon_global' => $request->diskon_global,
+        ]);
+        return redirect()->back();
     }
 
     /**
