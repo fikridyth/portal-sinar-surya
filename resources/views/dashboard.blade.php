@@ -25,6 +25,7 @@
                             <a href="{{ route('master.supplier.show', $supplier->id) }}" class="btn btn-primary mb-2">SUPPLIER</a>
                             <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-primary mb-2">PERSEDIAAN</a>
                             <a href="{{ route('master.ppn.edit', $ppn->id) }}" class="btn btn-primary mb-2">PPN</a>
+                            <a href="{{ route('master.opname') }}" class="btn btn-primary mb-2">STOCK OPNAME</a>
                         </div>
                     </div>
                     <div class="mx-5">  
@@ -32,6 +33,8 @@
                         <div style="display: flex; flex-direction: column;">
                             <a href="{{ route('preorder.index') }}" class="btn btn-primary mb-2">PREORDER</a>
                             <a href="{{ route('daftar-po') }}" class="btn btn-primary mb-2">DAFTAR PREORDER</a>
+                            <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">RECEIVE - PO</a>
+                            <a href="#" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
                         </div>
                     </div>
                 </div>

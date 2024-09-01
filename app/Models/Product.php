@@ -23,4 +23,17 @@ class Product extends Model
     public function supplier() {
         return $this->belongsTo(Supplier::class, 'id_supplier', 'id');
     }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when(isset($filters['unit']) && $filters['unit'] !== '', function ($query) use ($filters) {
+            return $query->where('id_unit', $filters['unit']);
+        });
+        $query->when(isset($filters['departemen']) && $filters['departemen'] !== '', function ($query) use ($filters) {
+            return $query->where('id_departemen', $filters['departemen']);
+        });
+        $query->when(isset($filters['supplier']) && $filters['supplier'] !== '', function ($query) use ($filters) {
+            return $query->where('id_supplier', $filters['supplier']);
+        });
+    }
 }

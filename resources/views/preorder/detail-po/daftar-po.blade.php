@@ -15,28 +15,27 @@
 
         <div class="card">
             <div class="card-body">
+                <a href="{{ route('preorder.index') }}" class="btn btn-primary mb-2">BUAT PO MANUAL</a>
                 <div class="d-flex justify-content-between mt-2">
                     <div class="row w-100">
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG HARUS DIBUATKAN P.O</th>
                                     </tr>
                                     <tr>
-                                        <th class="text-center">Nama Supplier</th>
-                                        <th class="text-center">Nomor PO</th>
-                                        <th class="text-center">Ref</th>
-                                        <th class="text-center">Detail</th>
+                                        <th class="text-center">NAMA SUPPLIER</th>
+                                        <th class="text-center">DATANG</th>
+                                        <th class="text-center">DETAIL</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($listPreorders as $po)
-                                        @if ($po['preorder'] == null)
+                                        @if (empty($po['preorders']))
                                             <tr>
                                                 <td class="text-center">{{ $po['supplier']['nama'] }}</td>
-                                                <td></td>
-                                                <td></td>
+                                                <td class="text-center">{{ $po['supplier']['waktu_kunjungan'] }}</td>
                                                 <td class="text-center">
                                                     <form action="{{ route('preorder.get-list-barang') }}" method="POST">
                                                         @csrf
@@ -50,38 +49,42 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-8">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
                                     </tr>
                                     <tr>
-                                        <th class="text-center">Nama Supplier</th>
-                                        <th class="text-center">Nomor PO</th>
-                                        <th class="text-center">Ref</th>
-                                        <th class="text-center">Detail</th>
+                                        <th class="text-center">NAMA SUPPLIER</th>
+                                        <th class="text-center">NOMOR PO</th>
+                                        <th class="text-center">REF</th>
+                                        <th class="text-center">DETAIL</th>
+                                        <th class="text-center">CTK</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($listPreorders as $po)
-                                        @if ($po['preorder'] !== null)
-                                            <tr>
-                                                <td class="text-center">{{ $po['supplier']['nama'] }}</td>
-                                                <td class="text-center">{{ $po['preorder']['nomor_po'] ?? null }}</td>
-                                                @php
-                                                    $expiredDate = new DateTime(now()->format('Y-m-d'));
-                                                    $currentDate = new DateTime($po['preorder']['date_last'] ?? null );
-                                                    $interval = $expiredDate->diff($currentDate);
-                                                    $days = $interval->days;
-                                                @endphp
-                                                <td class="text-center">A{{ $days }}</td>
-                                                <td class="text-center">
-                                                    <a href="{{ route('daftar-po.show', $po['preorder']['id']) }}" class="btn btn-primary btn-sm">Detail PO</a>
-                                                    <a href="{{ route('daftar-po.edit', $po['preorder']['id']) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
-                                                </td>
-                                            </tr>
-                                        @endif
+                                        @foreach ($po['preorders'] as $order)
+                                            @if ($order !== [])
+                                                <tr>
+                                                    <td class="text-center">{{ $po['supplier']['nama'] }}</td>
+                                                    <td class="text-center">{{ $order['nomor_po'] ?? null }}</td>
+                                                    @php
+                                                        $expiredDate = new DateTime(now()->format('Y-m-d'));
+                                                        $currentDate = new DateTime($order['date_last'] ?? null );
+                                                        $interval = $expiredDate->diff($currentDate);
+                                                        $days = $interval->days;
+                                                    @endphp
+                                                    <td class="text-center">{{ $order['receive_type'] . $days }}</td>
+                                                    <td class="text-center">
+                                                        <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail PO</a>
+                                                        <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
+                                                    </td>
+                                                    <td class="text-center">{{ $order['is_cetak'] }}</td>
+                                                </tr>
+                                            @endif
+                                        @endforeach
                                     @endforeach
                                 </tbody>
                             </table>

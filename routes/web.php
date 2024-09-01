@@ -49,7 +49,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-ppn/{id}', [PreOrderController::class, 'setPpn'])->name('daftar-po.set-ppn');
     Route::post('/set-diskon/{id}', [PreOrderController::class, 'setDiskon'])->name('daftar-po.set-diskon');
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
-
+    Route::get('/receive-po/{id}/show', [PreOrderController::class, 'receivePo'])->name('receive-po');
+    Route::get('/receive-po/create', [PreOrderController::class, 'createReceivePo'])->name('receive-po.create');
+    
     Route::prefix('master')->name('master.')->group(function () {
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
@@ -63,5 +65,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
+        Route::get('/product-opname', [ProductController::class, 'stockOpname'])->name('opname');
+        Route::post('/product-opname/update', [ProductController::class, 'updateStockOpname'])->name('opname.update');
     });
 });

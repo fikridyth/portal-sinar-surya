@@ -164,10 +164,10 @@ class PreOrderController extends Controller
         $prevUrl = end($explodeUrl);
 
         if (empty($results)) {
-            if ($prevUrl == 'daftar-po') {
-                return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
-            } else {
+            if ($prevUrl == 'preorder') {
                 return redirect()->route('preorder.index')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+            } else {
+                return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
             }
         }
 
@@ -229,12 +229,25 @@ class PreOrderController extends Controller
         $jumlahHarga = (int) $totalHarga;
         $detail = response()->json($dataDetail);
 
+        // get nomor po
+        $sequence = '0001';
+        $dateNow = now()->format('ym');
+        $getLastPo = Preorder::max("nomor_po");
+        if ($getLastPo) $explodeLastPo = explode('-', $getLastPo);
+        if ($explodeLastPo[1] == $dateNow) {
+            $sequence = (int) $explodeLastPo[2] + 1;
+        } else {
+            (int) $sequence;
+        }
+        $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        // dd($getNomorPo);
+
         $supplier1 = Supplier::where('nama', $request->supplierName)->first();
         $data = [
-            'nomor_po' => 'PO-000001-01',
+            'nomor_po' => $getNomorPo,
             'id_supplier' => $supplier1->id,
             'date_first' => Carbon::now()->format('Y-m-d'),
-            'date_last' => Carbon::now()->addDays(16)->format('Y-m-d'),
+            'date_last' => Carbon::now()->addDays(15)->format('Y-m-d'),
             'detail' => json_encode($detail->original),
             'total_harga' => $jumlahHarga,
             'grand_total' => $jumlahHarga,
@@ -255,24 +268,26 @@ class PreOrderController extends Controller
 
         // Fetch all preorders
         $preorders = Preorder::all();
-        
-        // Initialize an array with supplier IDs as keys and null as default values
-        $supplierPreorders = array_fill_keys($supplierIds, null);
-        
+
+        // Initialize an array with supplier IDs as keys and empty arrays as default values
+        $supplierPreorders = array_fill_keys($supplierIds, []);
+
         // Populate the array with preorders where applicable
         foreach ($preorders as $preorder) {
             if (array_key_exists($preorder->id_supplier, $supplierPreorders)) {
-                // If a preorder exists for this supplier, update the map
-                $supplierPreorders[$preorder->id_supplier] = $preorder;
+                // If a preorder exists for this supplier, append it to the array
+                $supplierPreorders[$preorder->id_supplier][] = $preorder;
             }
         }
 
-        $listPreorders = array_map(function($preorder, $id) {
+        // Create the final list of suppliers with their associated preorders
+        $listPreorders = array_map(function($preorders, $id) {
             return [
                 'supplier' => Supplier::where('id', $id)->first(),
-                'preorder' => $preorder,
+                'preorders' => $preorders,
             ];
         }, $supplierPreorders, array_keys($supplierPreorders));
+        // dd($listPreorders);
 
         // foreach ($listPreorders as $po) {
         // dd($po['preorder']['nomor_po']); }
@@ -496,51 +511,111 @@ class PreOrderController extends Controller
         return redirect()->back();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function receivePo($id)
     {
-        //
+        $title = 'Receive PO';
+        $preorder = Preorder::find($id);
+        $ppn = Ppn::pluck('ppn')->first();
+        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+
+        return view('preorder.receive-po.index', compact('title', 'preorder', 'ppn', 'products'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function createReceivePo()
     {
-        //
+        $title = 'Create Receive PO';
+        $preorder = new Preorder;
+        $ppn = Ppn::pluck('ppn')->first();
+        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+
+        // get nomor po
+        $sequence = '0001';
+        $dateNow = now()->format('ym');
+        $getLastPo = Preorder::max("nomor_po");
+        if ($getLastPo) $explodeLastPo = explode('-', $getLastPo);
+        if ($explodeLastPo[1] == $dateNow) {
+            $sequence = (int) $explodeLastPo[2] + 1;
+        } else {
+            (int) $sequence;
+        }
+        $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+
+        return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo'));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function createNewPo(Request $request)
     {
-        //
-    }
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'data.*.kode' => 'required|string',
+            'data.*.order' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        // $request->validate([
+        //     'data.*.kode' => 'required|string',
+        //     'data.*.order' => 'required|numeric',
+        // ]);
+        
+        $preorder = Preorder::find($request->id);
+        $supplier = Supplier::find($preorder->id_supplier);
+        $ppnValue = Ppn::pluck('ppn')->first();
+        $detail = json_decode($preorder->detail, true);
+        
+        foreach ($request->input('data') as $item) {
+            $product = Product::where('kode', $item['kode'])->first();
+            // $supplier = Supplier::where('id', $product->id_supplier)->first();
+            $getChild = Product::where('kode_sumber', $product->kode)->get();
+            $totalStok = 0;
+            foreach ($getChild as $child) {
+                $convertChild = $child->stok / $child->konversi;
+                $totalStok += $convertChild;
+            }
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => number_format($product->stok + $totalStok, 2),
+                'order' => $item['order'],
+                'price' => $product->harga_jual,
+                'field_total' => $item['order'] * $product->harga_jual,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+            ];
+            
+            // Add the new entry to the detail array
+            $detail[] = $newEntry;
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $preorder->detail = json_encode($detail);
+        $preorder->save();
+        
+        $totalHarga = 0;
+        foreach ($detail as $dtl) {
+            $totalHarga += $dtl['field_total'];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => $jumlahHarga
+        ]);
     }
 }

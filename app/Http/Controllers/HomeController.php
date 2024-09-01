@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Departemen;
 use App\Models\Ppn;
+use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Unit;
@@ -21,7 +22,8 @@ class HomeController extends Controller
         $departemen = Departemen::orderBy('id', 'asc')->first();
         $supplier = Supplier::orderBy('id', 'asc')->first();
         $ppn = Ppn::first();
+        $preorder = Preorder::orderBy('id', 'asc')->first();
 
-        return view('dashboard', compact('title', 'user', 'product', 'unit', 'departemen', 'supplier', 'ppn'));
+        return view('dashboard', compact('title', 'user', 'product', 'unit', 'departemen', 'supplier', 'ppn', 'preorder'));
     }
 }
