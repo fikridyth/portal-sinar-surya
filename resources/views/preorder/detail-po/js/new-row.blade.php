@@ -34,7 +34,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tambahButton = document.getElementById('tambah-button');
         const tableBody = document.querySelector('#details-table tbody');
-        const currentIndex = parseInt(document.getElementById('current-index').value, 10);
+        const element = document.getElementById('current-index');
+        const currentIndex = element && element.value ? parseInt(element.value, 10) || 0 : 0;
 
         let index = currentIndex; // Start index from the current index
 

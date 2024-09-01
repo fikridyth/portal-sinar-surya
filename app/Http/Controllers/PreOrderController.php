@@ -44,7 +44,7 @@ class PreOrderController extends Controller
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
         $penjualan = Supplier::where('id', $supplier1->id)->first();
         $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->where('kode_sumber', '=', null)->get() : collect();
-        
+
         $supplier2 = null;
         $products2 = collect();
         $supplier3 = null;
@@ -131,7 +131,7 @@ class PreOrderController extends Controller
         $stocks = isset($parameters["stock"]) ? (array) $parameters["stock"] : [];
         $orders = isset($parameters["orderPo"]) ? (array) $parameters["orderPo"] : [];
         $harga = isset($parameters["harga"]) ? (array) $parameters["harga"] : [];
-        
+
         // Prepare the formatted data
         $data = $result = [];
         $maxItems = max(count($names), count($stocks), count($orders), count($harga));
@@ -148,7 +148,7 @@ class PreOrderController extends Controller
 
                 // Fetch products based on the 'nama' field
                 $getProducts = Product::where('nama', $item['nama'])->where('kode_sumber', '=', null)->orderBy('nama', 'asc')->first();
-                
+
                 // Combine product details with item data
                 $results[] = [
                     'product' => $getProducts,
@@ -255,7 +255,7 @@ class PreOrderController extends Controller
         // dd($supplier1->id, $dataDetail);
 
         Preorder::create($data);
-        
+
         return Redirect::route('daftar-po')
             ->with('alert.status', '00')
             ->with('alert.message', "Add PreOrder Success!");
@@ -267,7 +267,8 @@ class PreOrderController extends Controller
         $supplierIds = Supplier::pluck('id')->toArray();
 
         // Fetch all preorders
-        $preorders = Preorder::all();
+        // $preorders = Preorder::all();
+        $preorders = Preorder::where('receive_type', '!=', 'B')->get();
 
         // Initialize an array with supplier IDs as keys and empty arrays as default values
         $supplierPreorders = array_fill_keys($supplierIds, []);
@@ -331,12 +332,12 @@ class PreOrderController extends Controller
         //     'data.*.kode' => 'required|string',
         //     'data.*.order' => 'required|numeric',
         // ]);
-        
+
         $preorder = Preorder::find($request->id);
         $supplier = Supplier::find($preorder->id_supplier);
         $ppnValue = Ppn::pluck('ppn')->first();
         $detail = json_decode($preorder->detail, true);
-        
+
         foreach ($request->input('data') as $item) {
             $product = Product::where('kode', $item['kode'])->first();
             // $supplier = Supplier::where('id', $product->id_supplier)->first();
@@ -364,14 +365,14 @@ class PreOrderController extends Controller
                 'stok_maksimum' => $supplier->stok_maksimum,
                 'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
             ];
-            
+
             // Add the new entry to the detail array
             $detail[] = $newEntry;
         }
 
         $preorder->detail = json_encode($detail);
         $preorder->save();
-        
+
         $totalHarga = 0;
         foreach ($detail as $dtl) {
             $totalHarga += $dtl['field_total'];
@@ -431,7 +432,7 @@ class PreOrderController extends Controller
         $preorder = Preorder::find($request->id);
         $getDetail = json_decode($preorder->detail, true);
         unset($getDetail[$request->array]);
-        
+
         // Re-index the array to ensure sequential keys if needed
         $getDetail = array_values($getDetail);
 
@@ -472,14 +473,14 @@ class PreOrderController extends Controller
     public function setDiskon(Request $request, $id)
     {
         $preorder = Preorder::find($id);
-        $getDetail = json_decode($preorder->detail, true);
-        foreach ($getDetail as &$item) {
-            if (isset($item['diskon1'])) {
-                $item['diskon1'] = $request->diskon_global;
-            }
-        }
-        $preorder->detail = json_encode($getDetail);
-        $preorder->save();
+        // $getDetail = json_decode($preorder->detail, true);
+        // foreach ($getDetail as &$item) {
+        //     if (isset($item['diskon1'])) {
+        //         $item['diskon1'] = $request->diskon_global;
+        //     }
+        // }
+        // $preorder->detail = json_encode($getDetail);
+        // $preorder->save();
 
         $preorder->update([
             'diskon_global' => $request->diskon_global,
@@ -526,7 +527,9 @@ class PreOrderController extends Controller
         $title = 'Create Receive PO';
         $preorder = new Preorder;
         $ppn = Ppn::pluck('ppn')->first();
-        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        $products = Product::orderBy('nama', 'asc')->get();
+        $suppliers = Supplier::all();
 
         // get nomor po
         $sequence = '0001';
@@ -540,82 +543,52 @@ class PreOrderController extends Controller
         }
         $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
-        return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo'));
+        return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
     }
 
-    public function createNewPo(Request $request)
+    public function getPreorderData(Request $request)
+    {
+        $kode_supplier = $request->query('kode');
+        $supplier = Supplier::where('nomor', $kode_supplier)->first();
+        $preorder = Preorder::where('id_supplier', $supplier->id)->where('is_receive', '=', null)->get();
+
+        return response()->json($preorder);
+    }
+
+    public function storeReceiveData(Request $request)
     {
         // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'data.*.kode' => 'required|string',
-            'data.*.order' => 'required|numeric',
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'errors' => $validator->errors()->all()
-            ], 422);
-        }
+        $supplier = Supplier::where('nomor', $request->supplier)->first();
 
-        // $request->validate([
-        //     'data.*.kode' => 'required|string',
-        //     'data.*.order' => 'required|numeric',
-        // ]);
-        
-        $preorder = Preorder::find($request->id);
-        $supplier = Supplier::find($preorder->id_supplier);
-        $ppnValue = Ppn::pluck('ppn')->first();
-        $detail = json_decode($preorder->detail, true);
-        
-        foreach ($request->input('data') as $item) {
-            $product = Product::where('kode', $item['kode'])->first();
-            // $supplier = Supplier::where('id', $product->id_supplier)->first();
-            $getChild = Product::where('kode_sumber', $product->kode)->get();
-            $totalStok = 0;
-            foreach ($getChild as $child) {
-                $convertChild = $child->stok / $child->konversi;
-                $totalStok += $convertChild;
-            }
-            $newEntry = [
-                'kode' => $product->kode,
-                'nama' => $product->nama,
-                'unit_jual' => $product->unit_jual,
-                'stok' => number_format($product->stok + $totalStok, 2),
-                'order' => $item['order'],
-                'price' => $product->harga_jual,
-                'field_total' => $item['order'] * $product->harga_jual,
-                'kode_sumber' => $product->kode_sumber,
-                'diskon1' => $product->diskon1,
-                'diskon2' => $product->diskon2,
-                'diskon3' => $product->diskon3,
-                'penjualan_rata' => $supplier->penjualan_rata,
-                'waktu_kunjungan' => $supplier->waktu_kunjungan,
-                'stok_minimum' => $supplier->stok_minimum,
-                'stok_maksimum' => $supplier->stok_maksimum,
-                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
-            ];
-            
-            // Add the new entry to the detail array
-            $detail[] = $newEntry;
-        }
-
-        $preorder->detail = json_encode($detail);
-        $preorder->save();
-        
-        $totalHarga = 0;
-        foreach ($detail as $dtl) {
-            $totalHarga += $dtl['field_total'];
-        }
-        $jumlahHarga = (int) $totalHarga;
-        $preorder->update([
-            'total_harga' => $jumlahHarga,
-            'ppn_global' => $preorder->ppn_global,
-            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        $preorder = Preorder::create([
+            'nomor_po' => $request->nomor_po,
+            'id_supplier' => $supplier->id,
+            'date_last' => $request->tanggal_po,
+            'date_first' => $request->tanggal_po,
+            'is_cetak' => 1,
+            'receive_type' => 'B',
+            'is_receive' => 1,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'newTotalHarga' => $jumlahHarga
-        ]);
+        return redirect()->route('receive-po.create-detail', $preorder->id);
+        // return redirect()->route('receive-po.create-detail', $id);
+    }
+
+    public function createDetailReceivePo($id)
+    {
+        $title = 'Detail Receive PreOrder';
+        $preorder = Preorder::find($id);
+        $ppn = Ppn::pluck('ppn')->first();
+        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+
+        return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
+    }
+
+    public function daftarReceivePo()
+    {
+        $title = 'Daftar Receive PreOrder';
+        $preorders = Preorder::where('receive_type', 'B')->get();
+
+        return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
     }
 }

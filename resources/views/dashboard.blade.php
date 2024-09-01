@@ -33,7 +33,8 @@
                         <div style="display: flex; flex-direction: column;">
                             <a href="{{ route('preorder.index') }}" class="btn btn-primary mb-2">PREORDER</a>
                             <a href="{{ route('daftar-po') }}" class="btn btn-primary mb-2">DAFTAR PREORDER</a>
-                            <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">RECEIVE - PO</a>
+                            <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">PEMESANAN - P.O</a>
+                            <a href="{{ route('daftar-receive-po') }}" class="btn btn-primary mb-2">RECEIVE - P.O</a>
                             <a href="#" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
                         </div>
                     </div>

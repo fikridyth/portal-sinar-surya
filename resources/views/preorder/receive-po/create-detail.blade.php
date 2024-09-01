@@ -37,7 +37,7 @@
                 <div class="mt-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
+                            <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMESANAN BARANG - PURCHASE ORDER
                             </li>
                         </ol>
                     </nav>
@@ -49,56 +49,50 @@
                     {{-- <form action="{{ route('preorder.process-barang') }}" method="POST">
                         @csrf --}}
                         <div class="card-body">
-                            <div class="d-flex justify-content-center">
-                                <div class="row w-100">
-                                    <div class="col-2"></div>
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">Nomor PO</label>
-                                                {{-- <div class="col">
-                                                    <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                                </div> --}}
-                                            </div>
+                            <div class="row mb-5">
+                                <div class="col-1">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label>
                                         </div>
                                     </div>
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                {{-- <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label> --}}
-                                                <div class="col">
-                                                    <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="inputPassword3" class="col col-form-label d-flex justify-content-end">TANGGAL PO</label>
-                                                <div class="col">
-                                                    <input type="text" value="{{ $preorder->created_at->format('d/m/Y') }}" disabled class="form-control" id="inputPassword3">
-                                                </div>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col">
+                                                <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="d-flex justify-content-center mb-2">
-                                <div class="row w-100">
-                                    <div class="col-2"></div>
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">NAMA SUPPLIER</label>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label for="inputPassword3"
+                                                class="col col-form-label d-flex justify-content-end">TANGGAL PO</label>
+                                            <div class="col">
+                                                <input type="text" value="{{ $preorder->created_at->format('d/m/Y') }}" disabled class="form-control" id="inputPassword3">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-5">
-                                        <div class="col">
-                                            <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label for="nomorSupplier2"
+                                                class="col col-form-label d-flex justify-content-end">KODE SUPPLIER</label>
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <div class="col">
+                                        <input type="text" value="{{ $preorder->supplier->nomor }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="col">
+                                        <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
                                     </div>
                                 </div>
                             </div>
@@ -311,7 +305,7 @@
                                         <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                     </div> --}}
                                     <div class="mx-2">
-                                        <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>
+                                        <a class="btn btn-danger" href="{{ route('daftar-receive-po') }}">KEMBALI</a>
                                     </div>
                                 </div>
                             </div>
