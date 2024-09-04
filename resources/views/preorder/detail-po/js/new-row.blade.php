@@ -57,8 +57,8 @@
                     </div>
                 </td>
                 <td class="text-center data-kode" id="data-kode"></td>
-                <td>
-                    <select id="products-${index}" class="product-select" style="width: 200px;" onchange="handleSelectChange(event)">
+                <td colspan="2">
+                    <select id="products-${index}" class="product-select" style="width: 270px;" onchange="handleSelectChange(event)">
                         <option value="">---Select Product---</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-isi="{{ $product->unit_jual }}" data-isi2="{{ $product->unit_jual }}"
@@ -66,7 +66,7 @@
                         @endforeach
                     </select>
                 </td>
-                <td class="text-end" id="data-isi"></td>
+                <td class="text-end" hidden id="data-isi"></td>
                 <td class="text-end" id="data-isi2"></td>
                 <td class="text-end" id="data-jual"></td>
                 <td class="text-end"><input type="number" size="1" class="order-input" min="1" step="1" style="width: 50px;"></td>

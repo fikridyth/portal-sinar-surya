@@ -4,7 +4,7 @@
     .custom-select-supplier {
         position: relative;
         display: inline-block;
-        width: 200px;
+        width: 500px;
     }
 
     .custom-select-supplier select {

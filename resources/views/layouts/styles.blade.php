@@ -32,4 +32,9 @@
         flex: 0 0 5.33%; /* Lebar 1/12 dari lebar kontainer (5.33% x 12 = 100%) */
         max-width: 5.33%;
     }
+
+    .col-0-7 {
+        flex: 0 0 7.33%; /* Lebar 1/12 dari lebar kontainer (7.33% x 12 = 100%) */
+        max-width: 7.33%;
+    }
 </style>

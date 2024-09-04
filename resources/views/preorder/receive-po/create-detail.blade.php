@@ -285,9 +285,17 @@
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
                                     </div> --}}
-                                    {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
-                                    </div> --}}
+                                    <div class="mx-2">
+                                        @if ($preorder->is_pay !== 1)
+                                            <form action="{{ route('daftar-po.store-pembayaran') }}" method="POST" class="form">
+                                                @csrf
+                                                <input type="text" name="id_po" hidden value="{{ $preorder->id }}">
+                                                <button type="submit" class="btn btn-warning">BUAT PEMBAYARAN</button>
+                                            </form>
+                                        @else
+                                            <button type="button" disabled class="btn btn-warning">BUAT PEMBAYARAN</button>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -456,7 +464,7 @@
                 success: function(response) {
                     // Handle success response
                     if (response.success) {
-                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                        var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
                         window.location.href = redirectUrl;
                     } else {
                         // Handle error response if needed
@@ -520,7 +528,7 @@
                 success: function(response) {
                     // Handle success response
                     if (response.success) {
-                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                        var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
                         window.location.href = redirectUrl;
 
                         // document.getElementById(`totalPrice22`).value = response.newTotalHarga;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pembayaran;
 use App\Models\Penjualan;
 use App\Models\Ppn;
 use App\Models\Preorder;
@@ -176,6 +177,7 @@ class PreOrderController extends Controller
 
     public function orderBarang(Request $request)
     {
+        // dd($request->all());
         $idSupplier = $request->input('id_supplier');
         $getSupplier = Supplier::whereIn('id', $idSupplier)->get()->keyBy('id');
 
@@ -233,12 +235,16 @@ class PreOrderController extends Controller
         $sequence = '0001';
         $dateNow = now()->format('ym');
         $getLastPo = Preorder::max("nomor_po");
-        if ($getLastPo) $explodeLastPo = explode('-', $getLastPo);
-        if ($explodeLastPo[1] == $dateNow) {
-            $sequence = (int) $explodeLastPo[2] + 1;
+        if ($getLastPo) {
+            $explodeLastPo = explode('-', $getLastPo);
+            if ($explodeLastPo[1] == $dateNow) {
+                $sequence = (int) $explodeLastPo[2] + 1;
+            } else {
+                (int) $sequence;
+            }
         } else {
             (int) $sequence;
-        }
+        } 
         $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         // dd($getNomorPo);
 
@@ -251,6 +257,7 @@ class PreOrderController extends Controller
             'detail' => json_encode($detail->original),
             'total_harga' => $jumlahHarga,
             'grand_total' => $jumlahHarga,
+            'receive_type' => 'A',
         ];
         // dd($supplier1->id, $dataDetail);
 
@@ -551,6 +558,7 @@ class PreOrderController extends Controller
         $kode_supplier = $request->query('kode');
         $supplier = Supplier::where('nomor', $kode_supplier)->first();
         $preorder = Preorder::where('id_supplier', $supplier->id)->where('is_receive', '=', null)->get();
+        // dd($kode_supplier, $supplier, $preorder);
 
         return response()->json($preorder);
     }
@@ -587,6 +595,31 @@ class PreOrderController extends Controller
     public function daftarReceivePo()
     {
         $title = 'Daftar Receive PreOrder';
+        $preorders = Preorder::where('receive_type', 'B')->get();
+
+        return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
+    }
+
+    public function storePembayaran(Request $request)
+    {
+        $preorder = Preorder::find($request->id_po);
+        $data = [
+            'id_supplier' => $preorder->id_supplier,
+            'date' => now()->format('Y-m-d'),
+            'total' => $preorder->grand_total,
+        ];
+        
+        Pembayaran::create($data);
+        $preorder->update(['is_pay' => 1]);
+
+        return Redirect::route('daftar-receive-po')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Add Pembayaran Success!");
+    }
+
+    public function daftarHargaJualKecil()
+    {
+        $title = 'Daftar Harga Jual Kecil';
         $preorders = Preorder::where('receive_type', 'B')->get();
 
         return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));

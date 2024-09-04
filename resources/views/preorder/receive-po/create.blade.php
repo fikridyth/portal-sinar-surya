@@ -152,6 +152,7 @@
                                 kode: searchInputSupplier.value
                             },
                             success: function(response) {
+                                console.log(response)
                                 if (Array.isArray(response)) {
                                     // Clear previous data
                                     $('#po_details').empty();

@@ -18,8 +18,8 @@
                 <a href="{{ route('preorder.index') }}" class="btn btn-primary mb-2">BUAT PO MANUAL</a>
                 <div class="d-flex justify-content-between mt-2">
                     <div class="row w-100">
-                        <div class="form-group col-4">
-                            <table class="table table-bordered">
+                        <div class="form-group col-5">
+                            <table class="table table-bordered" style="font-size: 13px;">
                                 <thead>
                                     <tr>
                                         <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG HARUS DIBUATKAN P.O</th>
@@ -49,8 +49,8 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="form-group col-8">
-                            <table class="table table-bordered">
+                        <div class="form-group col-7">
+                            <table class="table table-bordered" style="font-size: 13px;">
                                 <thead>
                                     <tr>
                                         <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
@@ -78,8 +78,8 @@
                                                     @endphp
                                                     <td class="text-center">{{ $order['receive_type'] . $days }}</td>
                                                     <td class="text-center">
-                                                        <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail PO</a>
-                                                        <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-2">Detail</a>
+                                                        <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail</a>
+                                                        <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
                                                     </td>
                                                     <td class="text-center">{{ $order['is_cetak'] }}</td>
                                                 </tr>

@@ -15,11 +15,17 @@ return new class extends Migration
             $table->id();
             $table->string('nomor_po');
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
-            $table->json('detail');
-            $table->date('date_first');
-            $table->date('date_last');
-            $table->bigInteger('ppn_global')->default(0);
+            $table->json('detail')->nullable();
+            $table->date('date_first')->nullable();
+            $table->date('date_last')->nullable();
             $table->bigInteger('total_harga')->default(0);
+            $table->bigInteger('ppn_global')->default(0);
+            $table->bigInteger('grand_total')->default(0);
+            $table->bigInteger('diskon_global')->default(0);
+            $table->smallInteger('is_cetak')->nullable();
+            $table->smallInteger('is_receive')->nullable();
+            $table->smallInteger('is_pay')->nullable();
+            $table->string('receive_type')->nullable();
             $table->timestamps();
         });
     }

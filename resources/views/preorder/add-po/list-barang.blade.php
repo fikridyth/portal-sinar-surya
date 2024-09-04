@@ -80,7 +80,7 @@
                                                     <input type="text" name="unit_jual[]" hidden value="{{ $result['product']->unit_jual }}">
                                                     <input type="text" name="kode[]" hidden value="{{ $result['product']->kode }}">
                                                     <input type="text" name="kode_sumber[]" hidden value="{{ $result['product']->kode_sumber }}">
-                                                    <input type="text" name="is_ppn[]" hidden value="{{ $result['product']->is_ppn }}">
+                                                    <input type="text" name="is_ppn[]" hidden value="{{ $supplier1->is_ppn }}">
                                                     <input type="text" name="diskon1[]" hidden value="{{ $result['product']->diskon1 }}">
                                                     <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
                                                     <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">

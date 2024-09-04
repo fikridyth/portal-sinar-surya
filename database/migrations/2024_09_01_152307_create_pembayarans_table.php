@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('penjualans', function (Blueprint $table) {
+        Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_supplier')->references('id')->on('suppliers'); 
-            $table->foreignId('id_product')->references('id')->on('products'); 
-            $table->string('nama');
-            $table->date('tanggal');
-            $table->decimal('total', 5, 2);
+            $table->smallInteger('id_parent')->nullable();
+            $table->date('date');
+            $table->integer('total')->nullable();
+            $table->string('nomor_giro')->nullable();
+            $table->smallInteger('is_bayar')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('penjualans');
+        Schema::dropIfExists('pembayarans');
     }
 };
