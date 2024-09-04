@@ -18,7 +18,7 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th colspan="5" class="text-center">RECEIVE P.O</th>
+                            <th colspan="5" class="text-center">DAFTAR PENERIMAAN BARANG</th>
                         </tr>
                         <tr>
                             <th class="text-center">NAMA SUPPLIER</th>

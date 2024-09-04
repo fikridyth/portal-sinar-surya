@@ -617,6 +617,56 @@ class PreOrderController extends Controller
             ->with('alert.message', "Add Pembayaran Success!");
     }
 
+    public function persetujuanHargaJual()
+    {
+        $title = 'Daftar Persetujuan Harga Jual';
+        $preorders = Preorder::where('receive_type', 'B')->get();
+
+        return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'preorders'));
+    }
+
+    public function editPersetujuanHargaJual($id)
+    {
+        $title = 'Edit Persetujuan Harga Jual';
+        $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+
+        return view('preorder.receive-po.persetujuan-harga-jual-edit', compact('title', 'preorder', 'detail'));
+    }
+
+    public function updatePersetujuanHargaJual(Request $request, $id)
+    {
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'mark_up.*' => 'required|numeric|min:0',
+        ]);
+    
+        // Check if validation fails
+        if ($validator->fails()) { return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!"); }
+        
+        $newData = array_map(function($kode, $harga_pokok, $harga_jual, $mark_up) {
+            return [
+                'kode' => $kode,
+                'harga_pokok' => $harga_pokok,
+                'harga_jual' => $harga_jual,
+                'mark_up' => $mark_up
+            ];
+        }, $request->kode, $request->harga_pokok, $request->harga_jual, $request->mark_up);
+
+        foreach ($newData as $new) {
+            $product = Product::where('kode', $new['kode'])->first();
+            $product->update([
+                'harga_pokok' => $new['harga_pokok'],
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
+        }
+
+        $preorder = Preorder::find($id);
+        dd($preorder);
+    }
+
     public function daftarHargaJualKecil()
     {
         $title = 'Daftar Harga Jual Kecil';

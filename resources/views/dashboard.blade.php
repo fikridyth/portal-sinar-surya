@@ -41,6 +41,7 @@
                             <div style="display: flex; flex-direction: column;">
                                 <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">PEMESANAN - P.O</a>
                                 <a href="{{ route('daftar-receive-po') }}" class="btn btn-primary mb-2">PENERIMAAN BARANG</a>
+                                <a href="{{ route('persetujuan-harga-jual') }}" class="btn btn-primary mb-2">PERSETUJUAN HARGA JUAL</a>
                             </div>
                         </div>
                         <div class="mx-5">  

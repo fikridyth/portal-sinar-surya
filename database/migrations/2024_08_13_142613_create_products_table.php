@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('konversi');
             $table->bigInteger('harga_pokok');
             $table->bigInteger('harga_jual');
-            $table->bigInteger('profit');
+            $table->decimal('profit', 5, 2)->default(0);
             $table->bigInteger('merek')->nullable();
             $table->bigInteger('label')->nullable();
             $table->decimal('stok', 5, 2)->default(0);
