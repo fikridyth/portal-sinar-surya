@@ -85,10 +85,11 @@
             const index = nettoElement.id.split('-')[1];
             const orderInput = document.getElementById('order-input-' + index);
 
-            let nettoValue = nettoElement.textContent.replace(/\./g, '');
+            nettoValue = nettoElement.textContent.replace(/[.,]/g, '');
             let orderValue = parseFloat(orderInput.value) || 0;
             // Hitung field-total
             let fieldTotal = nettoValue * orderValue;
+            console.log(nettoValue,orderValue,fieldTotal)
 
             // Update nilai field-total
             const fieldTotalElement = document.getElementById('field-total-' + index);

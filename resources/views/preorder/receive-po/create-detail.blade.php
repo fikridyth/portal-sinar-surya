@@ -1,5 +1,7 @@
 @extends('main')
 
+@include('master.product.add-on.styles')
+
 @php
     $totalPrice = 0;
     $totalOrder = 0;
@@ -285,7 +287,7 @@
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
                                     </div> --}}
-                                    <div class="mx-2">
+                                    {{-- <div class="mx-2">
                                         @if ($preorder->is_pay !== 1)
                                             <form action="{{ route('daftar-po.store-pembayaran') }}" method="POST" class="form">
                                                 @csrf
@@ -295,7 +297,7 @@
                                         @else
                                             <button type="button" disabled class="btn btn-warning">BUAT PEMBAYARAN</button>
                                         @endif
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -321,7 +323,7 @@
                                 <div class="d-flex">
                                 </div>
                                 <div class="d-flex">
-                                    <form action="{{ route('daftar-po.set-ppn', $preorder->id) }}" method="POST" class="form">
+                                    <form action="{{ route('create-receive.set-ppn-receive', $preorder->id) }}" id="ppnForm" method="POST" class="form">
                                         @csrf
                                         <div class="row align-items-center">
                                             <div class="col-auto">
@@ -329,20 +331,18 @@
                                             </div>
                                             <div class="col-auto">
                                                 <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
-                                                @if ($preorder->ppn_global == 0)
-                                                    <input type="number" max="100" required name="ppn_global" class="form-control" style="width: 70px;">
-                                                @else
-                                                    <input type="number" max="100" required name="ppn_global" value="{{ $preorder->ppn_global }}" class="form-control" style="width: 70px;">
-                                                @endif
-                                            </div>
-                                            <div class="col-auto">
-                                                <button type="submit" class="btn btn-sm btn-primary">UPDATE</button>
+                                                <div class="slider-container">
+                                                    <input type="checkbox" name="ppn" id="ppn" {{ $preorder->ppn_global ? 'checked' : '' }} class="slider-checkbox">
+                                                    <label for="ppn" class="slider-label"></label>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
-                                    <div class="mx-3">
+                                    <div class="mx-5">
                                     </div>
                                     <div class="mx-5">
+                                    </div>
+                                    <div class="mx-4">
                                     </div>
                                 </div>
                             </div>
@@ -374,7 +374,7 @@
 
 @section('scripts')
     @include('preorder.detail-po.js.netto')
-    @include('preorder.detail-po.js.new-row')
+    @include('preorder.detail-po.js.new-row-receive')
     <script>
         function handleCheckboxChange(selectedCheckbox) {
             const index = selectedCheckbox.id.split('-')[1];
@@ -518,7 +518,7 @@
 
             // Perform AJAX request
             $.ajax({
-                url: '{{ route('daftar-po.update') }}', // Use the named route to generate URL
+                url: '{{ route('create-receive.update') }}', // Use the named route to generate URL
                 type: 'POST',
                 data: data,
                 headers: {
@@ -704,5 +704,16 @@
         // Add event listeners once the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', initializeButtons);
 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ambil elemen form dan checkbox
+            const form = document.getElementById('ppnForm');
+            const checkbox = document.getElementById('ppn');
+
+            // Tambahkan event listener pada checkbox
+            checkbox.addEventListener('change', function() {
+                // Kirimkan form saat checkbox diubah
+                form.submit();
+            });
+        });
     </script>
 @endsection

@@ -44,7 +44,7 @@ class PreOrderController extends Controller
         $title = 'Get Barang';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
         $penjualan = Supplier::where('id', $supplier1->id)->first();
-        $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->where('kode_sumber', '=', null)->get() : collect();
+        $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->whereNull('kode_sumber')->get() : collect();
 
         $supplier2 = null;
         $products2 = collect();
@@ -53,12 +53,12 @@ class PreOrderController extends Controller
 
         if ($request->dataSupplier2) {
             $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
-            $products2 = $supplier2 ? Product::where('id_supplier', $supplier2->id)->where('kode_sumber', '=', null)->get() : collect();
+            $products2 = $supplier2 ? Product::where('id_supplier', $supplier2->id)->whereNull('kode_sumber')->get() : collect();
         }
 
         if ($request->dataSupplier3) {
             $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
-            $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->where('kode_sumber', '=', null)->get() : collect();
+            $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->whereNull('kode_sumber')->get() : collect();
         }
 
         $now = Carbon::now();
@@ -117,21 +117,86 @@ class PreOrderController extends Controller
         // Convert to array if needed
         $allProducts = $allProductsByName->toArray();
         $previousUrl = url()->previous();
-        // DD($allProducts);
+        // dd($allProducts);
 
         return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
+    }
+
+    public function getProductsByKodePo($kode)
+    {
+        $allProducts = Product::where('kode_sumber', $kode)->get();
+
+        // Ekstrak angka setelah 'P' dan urutkan berdasarkan angka tersebut secara menurun
+        $sortedProducts = $allProducts->sort(function ($a, $b) {
+            // Ekstrak angka setelah 'P' dari kode_sumber
+            $aNumber = intval(substr(strrchr($a->unit_jual, 'P'), 1));
+            $bNumber = intval(substr(strrchr($b->unit_jual, 'P'), 1));
+            
+            // Urutkan secara menurun
+            return $aNumber - $bNumber;
+        });
+
+        // Jika Anda ingin mengubah koleksi menjadi array
+        $products = $sortedProducts->values()->all();
+        // dd($products);
+        return response()->json(['products' => $products]);
     }
 
     public function processBarang(Request $request)
     {
         $title = 'List Barang';
+        $sortProduct = $request->name;
+        function splitName($item) {
+            $parts = explode('/', $item);
+            return [
+                'name' => $parts[0],
+                'quantity' => (int) $parts[1]
+            ];
+        }
+        
+        // Function to sort the array
+        usort($sortProduct, function($a, $b) {
+            $aParts = splitName($a);
+            $bParts = splitName($b);
+        
+            // Compare base names
+            $nameComparison = strcmp($aParts['name'], $bParts['name']);
+            if ($nameComparison !== 0) {
+                return $nameComparison;
+            }
+            
+            // If base names are the same, compare numeric parts
+            return $aParts['quantity'] <=> $bParts['quantity'];
+        });
 
+        $sortName = [];
+        $sortStock = [];
+        $sortPrice = [];
+
+        // Memproses inputArray untuk mendapatkan hasil yang diinginkan
+        foreach ($sortProduct as $item) {
+            // Memisahkan item berdasarkan '/'
+            $parts = explode('/', $item);
+
+            // Bagian pertama adalah deskripsi dan kuantitas
+            $description = "{$parts[0]}/{$parts[1]}";
+            $price = $parts[2];
+            $quantity = $parts[3];
+
+            // Menyimpan hasil ke dalam array yang sesuai
+            $sortName[] = $description;
+            $sortStock[] = $price;
+            $sortPrice[] = $quantity;
+        }
+        // dd($descriptions, $prices, $quantities, $request->all());
         $parameters = $request->request->all();
 
-        $names = isset($parameters["name"]) ? (array) $parameters["name"] : [];
-        $stocks = isset($parameters["stock"]) ? (array) $parameters["stock"] : [];
+        $names = isset($sortName) ? (array) $sortName : [];
+        $stocks = isset($sortStock) ? (array) $sortStock : [];
         $orders = isset($parameters["orderPo"]) ? (array) $parameters["orderPo"] : [];
-        $harga = isset($parameters["harga"]) ? (array) $parameters["harga"] : [];
+        $harga = isset($sortPrice) ? (array) $sortPrice : [];
+
+        // dd($stocks, $stocks2);
 
         // Prepare the formatted data
         $data = $result = [];
@@ -148,7 +213,8 @@ class PreOrderController extends Controller
                 ];
 
                 // Fetch products based on the 'nama' field
-                $getProducts = Product::where('nama', $item['nama'])->where('kode_sumber', '=', null)->orderBy('nama', 'asc')->first();
+                $splitItemNama = explode('/', $item['nama']);
+                $getProducts = Product::where('nama', $splitItemNama[0])->where('unit_jual', $splitItemNama[1])->orderBy('nama', 'asc')->first();
 
                 // Combine product details with item data
                 $results[] = [
@@ -397,6 +463,89 @@ class PreOrderController extends Controller
         ]);
     }
 
+    public function storeNewReceive(Request $request)
+    {
+        // dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'data.*.kode' => 'required|string',
+            'data.*.order' => 'required|numeric',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()->all()
+            ], 422);
+        }
+
+        // $request->validate([
+        //     'data.*.kode' => 'required|string',
+        //     'data.*.order' => 'required|numeric',
+        // ]);
+
+        $preorder = Preorder::find($request->id);
+        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+
+        $supplier = Supplier::find($preorder->id_supplier);
+        $ppnValue = Ppn::pluck('ppn')->first();
+        $detail = json_decode($preorder->detail, true);
+
+        foreach ($request->input('data') as $item) {
+            $product = Product::where('kode', $item['kode'])->first();
+            // $supplier = Supplier::where('id', $product->id_supplier)->first();
+            $getChild = Product::where('kode_sumber', $product->kode)->get();
+            $totalStok = 0;
+            foreach ($getChild as $child) {
+                $convertChild = $child->stok / $child->konversi;
+                $totalStok += $convertChild;
+            }
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => number_format($product->stok + $totalStok, 2),
+                'order' => $item['order'],
+                'price' => $product->harga_jual,
+                'field_total' => $item['order'] * $product->harga_jual,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+            ];
+
+            // Add the new entry to the detail array
+            $detail[] = $newEntry;
+        }
+
+        $preorder->detail = json_encode($detail);
+        $preorder->save();
+
+        $totalHarga = 0;
+        foreach ($detail as $dtl) {
+            $totalHarga += $dtl['field_total'];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+        $getPayment->update([
+            'total' => $jumlahHarga ?? 0,
+            'ppn' => $preorder->ppn_global ?? 0,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => $jumlahHarga
+        ]);
+    }
+
     public function updateEditedData(Request $request)
     {
         // dd($request->all());
@@ -423,6 +572,45 @@ class PreOrderController extends Controller
             'total_harga' => $jumlahHarga,
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => number_format($jumlahHarga),
+            'newGrandTotal' => number_format($jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100))
+        ]);
+    }
+
+    public function updateReceiveData(Request $request)
+    {
+        $getNetto = str_replace(',', '', $request->netto);
+        $getTotal = str_replace(',', '', $request->total);
+        
+        $preorder = Preorder::find($request->id);
+        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+        $getDetail = json_decode($preorder->detail, true);
+        $getArray = $getDetail[$request->array];
+        $getArray['order'] = $request->order;
+        $getArray['price'] = (int)$getNetto;
+        $getArray['field_total'] = (int)$getTotal;
+        $getDetail[$request->array] = $getArray;
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        $totalHarga = 0;
+        foreach ($getDetail as $detail) {
+            $totalHarga += $detail['field_total'];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+        $getPayment->update([
+            'total' => $jumlahHarga ?? 0,
+            'ppn' => $preorder->ppn_global ?? 0,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
         ]);
 
         return response()->json([
@@ -468,11 +656,40 @@ class PreOrderController extends Controller
 
     public function setPpn(Request $request, $id)
     {
+        // dd($request->all(), $id);
+        if ($request->ppn == 'on') {
+            $valuePpn = 11;
+        } else {
+            $valuePpn = null;
+        }
         $preorder = Preorder::find($id);
         $preorder->update([
             'total_harga' => $request->total_harga,
-            'ppn_global' => $request->ppn_global,
-            'grand_total' => $request->total_harga + ($request->total_harga * $request->ppn_global / 100),
+            'ppn_global' => $valuePpn ?? 0,
+            'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100),
+        ]);
+        return redirect()->back();
+    }
+
+    public function setPpnReceive(Request $request, $id)
+    {
+        // dd($request->all(), $id);
+        if ($request->ppn == 'on') {
+            $valuePpn = 11;
+        } else {
+            $valuePpn = null;
+        }
+        $preorder = Preorder::find($id);
+        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+        $preorder->update([
+            'total_harga' => $request->total_harga,
+            'ppn_global' => $valuePpn ?? 0,
+            'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100),
+        ]);
+        $getPayment->update([
+            'total' => $request->total_harga ?? 0,
+            'ppn' => $preorder->ppn_global ?? 0,
+            'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100) ?? 0,
         ]);
         return redirect()->back();
     }
@@ -490,7 +707,7 @@ class PreOrderController extends Controller
         // $preorder->save();
 
         $preorder->update([
-            'diskon_global' => $request->diskon_global,
+            'diskon_global' => $request->diskon_global ?? 0,
         ]);
         return redirect()->back();
     }
@@ -573,10 +790,19 @@ class PreOrderController extends Controller
             'id_supplier' => $supplier->id,
             'date_last' => $request->tanggal_po,
             'date_first' => $request->tanggal_po,
-            'is_cetak' => 1,
             'receive_type' => 'B',
             'is_receive' => 1,
         ]);
+
+        $data = [
+            'id_supplier' => $preorder->id_supplier,
+            'nomor_po' => $preorder->nomor_po,
+            'date' => now()->format('Y-m-d'),
+            'total' => $preorder->grand_total ?? 0,
+        ];
+        
+        Pembayaran::create($data);
+        // $preorder->update(['is_pay' => 1]);
 
         return redirect()->route('receive-po.create-detail', $preorder->id);
         // return redirect()->route('receive-po.create-detail', $id);
@@ -600,27 +826,27 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
     }
 
-    public function storePembayaran(Request $request)
-    {
-        $preorder = Preorder::find($request->id_po);
-        $data = [
-            'id_supplier' => $preorder->id_supplier,
-            'date' => now()->format('Y-m-d'),
-            'total' => $preorder->grand_total,
-        ];
+    // public function storePembayaran(Request $request)
+    // {
+    //     $preorder = Preorder::find($request->id_po);
+    //     $data = [
+    //         'id_supplier' => $preorder->id_supplier,
+    //         'date' => now()->format('Y-m-d'),
+    //         'total' => $preorder->grand_total,
+    //     ];
         
-        Pembayaran::create($data);
-        $preorder->update(['is_pay' => 1]);
+    //     Pembayaran::create($data);
+    //     $preorder->update(['is_pay' => 1]);
 
-        return Redirect::route('daftar-receive-po')
-            ->with('alert.status', '00')
-            ->with('alert.message', "Add Pembayaran Success!");
-    }
+    //     return Redirect::route('daftar-receive-po')
+    //         ->with('alert.status', '00')
+    //         ->with('alert.message', "Add Pembayaran Success!");
+    // }
 
     public function persetujuanHargaJual()
     {
         $title = 'Daftar Persetujuan Harga Jual';
-        $preorders = Preorder::where('receive_type', 'B')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNotNull('detail')->get();
 
         return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'preorders'));
     }
@@ -632,6 +858,13 @@ class PreOrderController extends Controller
         $detail = json_decode($preorder->detail, true);
 
         return view('preorder.receive-po.persetujuan-harga-jual-edit', compact('title', 'preorder', 'detail'));
+    }
+
+    public function getProductsByKode($kode)
+    {
+        $products = Product::where('kode_sumber', $kode)->get();
+        // dd($products);
+        return response()->json(['products' => $products]);
     }
 
     public function updatePersetujuanHargaJual(Request $request, $id)
@@ -652,8 +885,15 @@ class PreOrderController extends Controller
                 'mark_up' => $mark_up
             ];
         }, $request->kode, $request->harga_pokok, $request->harga_jual, $request->mark_up);
-
+        // dd($newData);
+        
         foreach ($newData as $new) {
+            // update detail preorder
+            // $preorder = Preorder::find($id);
+            // $detail = json_decode($preorder->detail, true);
+            // dd($preorder, $detail);
+
+            // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
             $product->update([
                 'harga_pokok' => $new['harga_pokok'],
@@ -663,8 +903,7 @@ class PreOrderController extends Controller
             ]);
         }
 
-        $preorder = Preorder::find($id);
-        dd($preorder);
+        return Redirect::back()->with('alert.status', '00')->with('alert.message', "Sukses Ubah Harga Product!");
     }
 
     public function daftarHargaJualKecil()

@@ -39,7 +39,7 @@ class PembayaranController extends Controller
         Pembayaran::create([
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
-            'total' => $request->payment ?? 0,
+            'grand_total' => $request->payment ?? 0,
             'nomor_giro' => 'TUNAI',
             'id_parent' => $id
         ]);
@@ -47,7 +47,7 @@ class PembayaranController extends Controller
         Pembayaran::create([
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
-            'total' => $request->other_income ?? 0,
+            'grand_total' => $request->other_income ?? 0,
             'nomor_giro' => 'OTHER INCOME',
             'id_parent' => $id
         ]);

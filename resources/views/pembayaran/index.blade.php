@@ -120,12 +120,16 @@
                                                 @endif
                                             </td>
                                             <td>{{ $pmb->supplier->nama }}</td>
-                                            <td class="text-end">{{ number_format($pmb->total) }}</td>
+                                            <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
                                             <td>{{ $pmb->nomor_giro }}</td>
                                             @if ($pmb->nomor_giro == null)
-                                                <td class="text-center"><a href="{{ route('pembayaran.show', $pmb->id) }}" class="btn btn-sm btn-primary">BAYAR</a></td>
-                                                {{-- <td class="text-center"><button class="btn btn-sm btn-primary" disabled>HAPUS</button></td> --}}
+                                                @if ($pmb->total !== 0)
+                                                    <td class="text-center"><a href="{{ route('pembayaran.show', $pmb->id) }}" class="btn btn-sm btn-primary">BAYAR</a></td>
+                                                    {{-- <td class="text-center"><button class="btn btn-sm btn-primary" disabled>HAPUS</button></td> --}}
                                                 @else
+                                                    <td></td>
+                                                @endif
+                                            @else
                                                 {{-- <td class="text-center"><button class="btn btn-sm btn-primary" disabled>BAYAR</button></td> --}}
                                                 <td class="text-center">
                                                     <form action="{{ route('pembayaran.destroy', $pmb->id) }}" method="POST" style="display: inline;">

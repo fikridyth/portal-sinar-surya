@@ -39,7 +39,11 @@
                         <div class="mx-5">  
                             <h5 class="text-center">RECEIVE</h5>
                             <div style="display: flex; flex-direction: column;">
-                                <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">PEMESANAN - P.O</a>
+                                @if (isset($preorder->id))
+                                    <a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-primary mb-2">PEMESANAN - P.O</a>
+                                @else
+                                    <a href="#" class="btn btn-primary mb-2">PEMESANAN - P.O</a>
+                                @endif
                                 <a href="{{ route('daftar-receive-po') }}" class="btn btn-primary mb-2">PENERIMAAN BARANG</a>
                                 <a href="{{ route('persetujuan-harga-jual') }}" class="btn btn-primary mb-2">PERSETUJUAN HARGA JUAL</a>
                             </div>

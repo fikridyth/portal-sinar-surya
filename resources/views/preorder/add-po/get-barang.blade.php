@@ -131,6 +131,7 @@
                                                 <th class="text-center">ORDER</th>
                                                 <th class="text-center">HARGA</th>
                                                 <th class="text-center">JUMLAH</th>
+                                                <th class="text-center">CHILD</th>
                                                 {{-- <th class="text-center">Harga Jual</th> --}}
                                                 {{-- <th class="text-center">Pilih</th> --}}
                                             </tr>
@@ -139,7 +140,7 @@
                                             @foreach ($allProducts as $index => $product)
                                                 <tr>
                                                     <td>{{ $product['nama'] . '/' . $product['unit_jual'] }}</td>
-                                                    <input type="text" hidden name="name[]" value="{{ $product['nama'] }}">
+                                                    <input type="text" hidden name="name[]" value="{{ $product['nama'] . '/' . $product['unit_jual'] . '/' . number_format($product['stok'], 2) . '/' . $product['harga_pokok']}}">
                                                     <input type="text" hidden name="stock[]" value="{{ number_format($product['stok'], 2)}}">
                                                     <input type="text" hidden name="harga[]" value="{{ $product['harga_pokok'] }}">
                                                     <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
@@ -148,10 +149,14 @@
                                                     <td class="text-end">{{ $product['minimum'] ?? '' }}</td>
                                                     <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
                                                     <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
-                                                    <td class="text-center"><input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"></td>
+                                                    <td class="text-center">
+                                                        <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"
+                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                                    </td>
                                                     <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                     <td class="text-end" id="total-{{ $index }}">0</td>
                                                     <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
+                                                    <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td>
                                                     {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
                                                     {{-- <td class="text-center"><input type="checkbox" id="products[]"
                                                             name="products[]" value="{{ $product->id }}"></td> --}}
@@ -187,6 +192,115 @@
 
 @section('scripts')
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let index = document.querySelectorAll('table tbody tr').length;
+
+            // Handle changes to product selection checkboxes
+            document.querySelectorAll('.select-product').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function(event) {
+                    const kode = event.target.getAttribute('data-kode');
+                    if (event.target.checked) {
+                        event.target.disabled = true;
+                        
+                        // Fetch product data based on kode
+                        fetch(`/get-products-by-kode-po/${kode}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.products) {
+                                const tbody = document.querySelector('table tbody');
+                                const parentRow = event.target.closest('tr');
+                                data.products.forEach(product => {
+                                    // Create a new row
+                                        const newRow = document.createElement('tr');
+                                        const stokValue = parseFloat(product.stok);
+                                        const formattedStok = isNaN(stokValue) ? '' : stokValue.toFixed(2);
+
+                                        newRow.innerHTML = `
+                                            <input type="text" hidden name="name[]" value="${product.nama}/${product.unit_jual}/${formattedStok}/${product.harga_pokok}">
+                                            <input type="text" hidden name="stock[]" value="${formattedStok}">
+                                            <input type="text" hidden name="harga[]" value="${product.harga_pokok}">
+                                            <td>${product.nama}/${product.unit_jual}</td>
+                                            <td class="text-end">${product.unit_jual.replace('P', '')}</td>
+                                            <td class="text-end">-</td>
+                                            <td class="text-end">-</td>
+                                            <td class="text-end">${formattedStok}</td>
+                                            <td class="text-end">-</td>
+                                            <td class="text-center">
+                                                <input type="text" name="orderPo[]" size="3" data-index="${index}" 
+                                                oninput="updateTotal(this)" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                            </td>
+                                            <td class="text-end" id="price-${index}">${number_format(product.harga_pokok)}</td>
+                                            <td class="text-end" id="total-${index}">0</td>
+                                            <td class="text-end totally" hidden id="total-hidden-${index}">0</td>
+                                            <td class="text-center"></td>
+                                        `;
+
+                                    // Insert the new row immediately after the parent row
+                                    parentRow.insertAdjacentElement('afterend', newRow);
+
+                                    // Increment index for next row
+                                    index++;
+                                });
+                                // Update overall total price after adding new rows
+                                updateTotalPrice();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        // Function to update the total price for a specific product
+        function updateTotal(input) {
+            // Get the index of the product from the input field's data attribute
+            const index = input.getAttribute('data-index');
+
+            // Get the quantity from the input field
+            const quantity = parseFloat(input.value) || 0;
+
+            // Get the product price from the element with a specific id
+            const priceElement = document.getElementById('price-' + index);
+            if (!priceElement) {
+                console.error(`Price element with id 'price-${index}' not found.`);
+                return;
+            }
+            const price = parseFloat(priceElement.textContent.replace(/,/g, '')) || 0;
+
+            // Calculate the total
+            const total = quantity * price;
+
+            // Update the total element with the calculated value
+            const totalElement = document.getElementById('total-' + index);
+            const totalHiddenElement = document.getElementById('total-hidden-' + index);
+            if (totalElement) {
+                totalElement.textContent = total.toLocaleString();
+                if (totalHiddenElement) {
+                    totalHiddenElement.textContent = total;
+                }
+            } else {
+                console.error(`Total element with id 'total-${index}' not found.`);
+            }
+
+            // Recalculate and update the overall total price
+            updateTotalPrice();
+        }
+
+        // Function to update the overall total price
+        function updateTotalPrice() {
+            let totalPrice = 0;
+            document.querySelectorAll('.totally').forEach(element => {
+                let value = element.textContent.replace(/,/g, '');
+                totalPrice += parseInt(value, 10) || 0;
+            });
+
+            // Update the total-price input field
+            document.getElementById('total-price').value = totalPrice.toLocaleString();
+        }
+
+        function number_format(number) {
+            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
         $(document).ready(function() {
             var selectedProducts = [];
             $('input[name="products[]"]:checked').each(function() {
@@ -238,53 +352,6 @@
                     }
                 }
             });
-        }
-
-        // Function to update the total price for a specific product
-        function updateTotal(input) {
-            // Get the index of the product from the input field's data attribute
-            const index = input.getAttribute('data-index');
-
-            // Get the quantity from the input field
-            const quantity = parseFloat(input.value) || 0;
-
-            // Get the product price from the element with a specific id
-            const priceElement = document.getElementById('price-' + index);
-            if (!priceElement) {
-                console.error(`Price element with id 'price-${index}' not found.`);
-                return;
-            }
-            const price = parseFloat(priceElement.textContent.replace(/,/g, '')) || 0;
-
-            // Calculate the total
-            const total = quantity * price;
-
-            // Update the total element with the calculated value
-            const totalElement = document.getElementById('total-' + index);
-            const totalHiddenElement = document.getElementById('total-hidden-' + index);
-            if (totalElement) {
-                totalElement.textContent = total.toLocaleString();
-                if (totalHiddenElement) {
-                    totalHiddenElement.textContent = total;
-                }
-            } else {
-                console.error(`Total element with id 'total-${index}' not found.`);
-            }
-
-            // Recalculate and update the overall total price
-            updateTotalPrice();
-        }
-
-        // Function to update the overall total price
-        function updateTotalPrice() {
-            let totalPrice = 0;
-            document.querySelectorAll('.totally').forEach(element => {
-                let value = element.textContent.replace(/,/g, '');
-                totalPrice += parseInt(value, 10) || 0;
-            });
-
-            // Update the total-price input field
-            document.getElementById('total-price').value = totalPrice.toLocaleString();
         }
     </script>
 @endsection

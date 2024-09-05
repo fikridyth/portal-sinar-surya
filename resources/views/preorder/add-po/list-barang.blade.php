@@ -85,13 +85,13 @@
                                                     <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
                                                     <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">
                                                     <input type="text" name="id_supplier[]" hidden value="{{ $result['product']->id_supplier }}">
-                                                    <td>{{ $result['product']->nama }}</td>
+                                                    <td>{{ $result['product']->nama . '/' . $result['product']->unit_jual }}</td>
                                                     <td class="text-end">{{ $result['details']['stok'] }}</td>
                                                     <td class="text-end">
                                                         <input type="number" required class="form-control order" value="{{ $result['details']['order'] }}">
                                                     </td>
                                                     <td class="text-end">
-                                                        <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) }}</h6>
+                                                        <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) . '/' . number_format($result['product']->harga_pokok, 2) }}</h6>
                                                         <input type="number" hidden class="form-control price" name="price[]"
                                                             value="{{ $result['details']['harga'] }}" step="0.01">
                                                     </td>

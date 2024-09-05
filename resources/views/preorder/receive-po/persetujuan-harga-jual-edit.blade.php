@@ -74,7 +74,7 @@
                                 @endphp
                                 <tr>
                                     <td class="text-center"></td>
-                                    <td class="text-center">{{ $dtl['nama'] }}</td>
+                                    <td class="text-center">{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}</td>
                                     <td class="text-center">{{ $dtl['order'] }}</td>
                                     <input type="text" hidden name="kode[{{ $index }}]" value="{{ $dtl['kode'] }}">
                                     <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
@@ -84,12 +84,12 @@
                                     <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                     <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product->harga_jual }}" size="10"></td>
                                     <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td>
-                                    <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                    <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="row mt-4" style="margin-left: 25px;">
+                    {{-- <div class="row mt-4" style="margin-left: 25px;">
                         <div class="col-7"></div>
                         <div class="col-5">
                             <div class="form-group mx-2">
@@ -97,7 +97,7 @@
                                 <input type="text" class="text-end mx-2 readonly-input" id="total_faktur" size="12" readonly>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="d-flex justify-content-center align-items-center mt-4">
                         <div class="mx-2">
                             <a class="btn btn-danger" href="{{ route('persetujuan-harga-jual') }}">KEMBALI</a>
@@ -114,37 +114,92 @@
 
 @section('scripts')
     <script>
-        function validateNumberInput(event) {
-            var charCode = event.charCode || event.keyCode;
-            var char = String.fromCharCode(charCode);
-
-            // Allow digits (0-9) and dot (.)
-            if ((charCode >= 48 && charCode <= 57) || char === '.' || char === '-') {
-                return true;
-            }
-            return false;
-        }
-        
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize index counter
+            let indexCounter = document.querySelectorAll('table tbody tr').length;
+
+            // Handle changes to product selection checkboxes
+            document.querySelectorAll('.select-product').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function(event) {
+                    const kode = event.target.getAttribute('data-kode');
+                    if (event.target.checked) {
+                        event.target.disabled = true;
+
+                        // Fetch product data based on kode
+                        fetch(`/get-products-by-kode/${kode}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.products) {
+                                    const tbody = document.querySelector('table tbody');
+                                    const parentRow = event.target.closest('tr');
+                                    data.products.forEach(product => {
+                                        // Create a new row
+                                        const newRow = document.createElement('tr');
+                                        newRow.innerHTML = `
+                                            <td class="text-center"></td>
+                                            <td class="text-center">${product.nama}/${product.unit_jual}</td>
+                                            <td class="text-center">0</td>
+                                            <input type="text" hidden name="kode[${indexCounter}]" value="${product.kode}">
+                                            <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${product.harga_pokok}">
+                                            <td class="text-center">${number_format(product.harga_pokok)}</td>
+                                            <td class="text-center">${number_format(product.harga_pokok)}</td>
+                                            <td class="text-center">0</td>
+                                            <td class="text-center">${number_format(product.harga_jual)}</td>
+                                            <td class="text-center">
+                                                <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${product.harga_jual}" size="10">
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${number_format((product.harga_jual - product.harga_pokok) / product.harga_pokok * 100, 2)}" size="5">
+                                            </td>
+                                            <td class="text-center"></td>
+                                        `;
+                                        // tbody.appendChild(newRow);
+                                        parentRow.insertAdjacentElement('afterend', newRow);
+                                        
+                                        // Attach event listeners for newly added rows
+                                        attachEventListeners(indexCounter);
+                                        indexCounter++;
+                                    });
+                                }
+                            });
+                    } else {
+                        // Optional: Remove rows based on the unselected checkbox
+                        const tbody = document.querySelector('table tbody');
+                        tbody.querySelectorAll(`input[name="kode[]"][value="${kode}"]`).forEach(input => input.closest('tr').remove());
+                        updateTotalFaktur();
+                    }
+                });
+            });
+
+            // Attach event listeners for pre-existing rows
+            function attachEventListeners(index) {
+                document.getElementById(`persetujuan_harga_jual_${index}`).addEventListener('input', function() {
+                    updateMarkUp(index);
+                });
+                document.getElementById(`persetujuan_mark_up_${index}`).addEventListener('input', function() {
+                    updateHargaJual(index);
+                });
+            }
+
+            // Update markup percentage
             function updateMarkUp(index) {
-            var hargaPokok = parseFloat(document.getElementById('persetujuan_harga_pokok_' + index).value) || 0;
-            var hargaJual = parseFloat(document.getElementById('persetujuan_harga_jual_' + index).value) || 0;
-            var hargaHarga = parseFloat(document.getElementById('persetujuan_harga_pokok_' + index).value) || 0;
-            var markUp = parseFloat(document.getElementById('persetujuan_mark_up_' + index).value) || 0;
-                if (!isNaN(hargaPokok) && !isNaN(hargaJual) && hargaHarga !== 0) {
-                    var markUpValue = ((hargaJual - hargaHarga) / hargaHarga) * 100;
-                    document.getElementById('persetujuan_mark_up_' + index).value = markUpValue.toFixed(2);
+                const hargaPokok = parseFloat(document.getElementById(`persetujuan_harga_pokok_${index}`).value) || 0;
+                const hargaJual = parseFloat(document.getElementById(`persetujuan_harga_jual_${index}`).value) || 0;
+
+                if (!isNaN(hargaPokok) && hargaPokok > 0) {
+                    const markUpValue = ((hargaJual - hargaPokok) / hargaPokok) * 100;
+                    document.getElementById(`persetujuan_mark_up_${index}`).value = markUpValue.toFixed(2);
                 }
             }
 
+            // Update selling price based on markup
             function updateHargaJual(index) {
-            var hargaPokok = parseFloat(document.getElementById('persetujuan_harga_pokok_' + index).value) || 0;
-            var hargaJual = parseFloat(document.getElementById('persetujuan_harga_jual_' + index).value) || 0;
-            var hargaHarga = parseFloat(document.getElementById('persetujuan_harga_pokok_' + index).value) || 0;
-            var markUp = parseFloat(document.getElementById('persetujuan_mark_up_' + index).value) || 0;
-                if (!isNaN(hargaPokok) && !isNaN(hargaJual) && hargaHarga !== 0) {
-                    var hargaJualValue = ((hargaHarga * markUp) / 100) + hargaHarga;
-                    document.getElementById('persetujuan_harga_jual_' + index).value = hargaJualValue;
+                const hargaPokok = parseFloat(document.getElementById(`persetujuan_harga_pokok_${index}`).value) || 0;
+                const markUp = parseFloat(document.getElementById(`persetujuan_mark_up_${index}`).value) || 0;
+
+                if (!isNaN(hargaPokok) && hargaPokok > 0) {
+                    const hargaJualValue = ((hargaPokok * markUp) / 100) + hargaPokok;
+                    document.getElementById(`persetujuan_harga_jual_${index}`).value = hargaJualValue;
                 }
             }
 
@@ -160,9 +215,7 @@
             // Function to calculate the total of persetujuan_harga_jual fields
             function updateTotalFaktur() {
                 let total = 0;
-                const elements = document.querySelectorAll('[id^=persetujuan_harga_jual_]');
-                
-                elements.forEach(element => {
+                document.querySelectorAll('[id^=persetujuan_harga_jual_]').forEach(element => {
                     const value = parseFloat(element.value.replace(/,/g, ''));
                     if (!isNaN(value)) {
                         total += value;
@@ -181,5 +234,20 @@
             // Initial calculation in case there are pre-filled values
             updateTotalFaktur();
         });
+
+        function validateNumberInput(event) {
+            var charCode = event.charCode || event.keyCode;
+            var char = String.fromCharCode(charCode);
+
+            // Allow digits (0-9) and dot (.)
+            if ((charCode >= 48 && charCode <= 57) || char === '.' || char === '-') {
+                return true;
+            }
+            return false;
+        }
+
+        function number_format(number) {
+            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
     </script>
 @endsection

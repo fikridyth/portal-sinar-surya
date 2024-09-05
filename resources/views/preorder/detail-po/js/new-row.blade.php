@@ -62,7 +62,7 @@
                         <option value="">---Select Product---</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-isi="{{ $product->unit_jual }}" data-isi2="{{ $product->unit_jual }}"
-                                data-jual="{{ $product->harga_jual }}">{{ $product->nama }}/{{ $product->unit_jual }}</option>
+                                data-jual="{{ $product->harga_pokok }}">{{ $product->nama }}/{{ $product->unit_jual }}</option>
                         @endforeach
                     </select>
                 </td>

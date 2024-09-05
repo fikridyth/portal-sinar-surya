@@ -2,7 +2,7 @@
     function disableAllCheckboxes() {
         // Select all checkboxes with the class 'select-checkbox'
         const checkboxes = document.querySelectorAll('.select-checkbox');
-
+        
         // Iterate over each checkbox and disable it
         checkboxes.forEach(checkbox => {
             checkbox.disabled = true;
@@ -18,7 +18,7 @@
         const isi2 = selectedOption.getAttribute('data-isi2');
         const numericIsi2 = isi2.replace(/\D/g, '');
         const jual = selectedOption.getAttribute('data-jual');
-
+        
         // Find the closest row and update the data-kode cell
         const row = selectElement.closest('tr');
         const kodeCell = row.querySelector('#data-kode');
@@ -34,7 +34,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tambahButton = document.getElementById('tambah-button');
         const tableBody = document.querySelector('#details-table tbody');
-        const currentIndex = 0;
+        const element = document.getElementById('current-index');
+        const currentIndex = element && element.value ? parseInt(element.value, 10) || 0 : 0;
 
         let index = currentIndex; // Start index from the current index
 
@@ -43,10 +44,10 @@
             simpanButton.disabled = false;
 
             index++;
-
+            
             const newRow = document.createElement('tr');
             newRow.classList.add('fs-need');
-
+            
             newRow.innerHTML = `
                 <td>${index}</td>
                 <td class="text-center">
@@ -56,16 +57,16 @@
                     </div>
                 </td>
                 <td class="text-center data-kode" id="data-kode"></td>
-                <td>
-                    <select id="products-${index}" class="product-select" style="width: 200px;" onchange="handleSelectChange(event)">
+                <td colspan="2">
+                    <select id="products-${index}" class="product-select" style="width: 270px;" onchange="handleSelectChange(event)">
                         <option value="">---Select Product---</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-isi="{{ $product->unit_jual }}" data-isi2="{{ $product->unit_jual }}"
-                                data-jual="{{ $product->harga_jual }}">{{ $product->nama }}/{{ $product->unit_jual }}</option>
+                                data-jual="{{ $product->harga_pokok }}">{{ $product->nama }}/{{ $product->unit_jual }}</option>
                         @endforeach
                     </select>
                 </td>
-                <td class="text-end" id="data-isi"></td>
+                <td class="text-end" hidden id="data-isi"></td>
                 <td class="text-end" id="data-isi2"></td>
                 <td class="text-end" id="data-jual"></td>
                 <td class="text-end"><input type="number" size="1" class="order-input" min="1" step="1" style="width: 50px;"></td>
@@ -74,7 +75,7 @@
                 <td class="text-center">-</td>
                 <td class="text-center">-</td>
             `;
-
+            
             tableBody.appendChild(newRow);
 
             // Initialize Select2 on the newly added select element
@@ -112,29 +113,24 @@
                 }
             });
 
-            fetch('{{ route('daftar-po.store') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                            .getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        id: preorderId,
-                        data: data
-                    })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        var redirectUrl = @json(route('daftar-po'));
-                        window.location.href = redirectUrl;
-                    } else {
-                        alert(`Validation Errors:\n${result.errors.join('\n')}`);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+            fetch('{{ route("create-receive.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ id: preorderId, data: data })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
+                    window.location.href = redirectUrl;
+                } else {
+                    alert(`Validation Errors:\n${result.errors.join('\n')}`);
+                }
+            })
+            .catch(error => console.error('Error:', error));
         });
     });
 </script>
-{{-- var redirectUrl = @json(route('receive-po', $preorder->id)); --}}

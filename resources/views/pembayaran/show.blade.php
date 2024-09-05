@@ -159,9 +159,9 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <input type="text" id="amount-total" value="{{ $pembayaran->total }}" hidden>
-                                                    <input type="text" hidden id="amount1-1" name="payment" value="{{ $pembayaran->total }}">
-                                                    <td class="text-end" id="amount1">{{ number_format($pembayaran->total) }}</td>
+                                                    <input type="text" id="amount-total" value="{{ $pembayaran->grand_total }}" hidden>
+                                                    <input type="text" hidden id="amount1-1" name="payment" value="{{ $pembayaran->grand_total }}">
+                                                    <td class="text-end" id="amount1">{{ number_format($pembayaran->grand_total) }}</td>
                                                     <td>{{ $pembayaran->nomor_giro ?? 'TUNAI' }}</td>
                                                     <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
@@ -184,7 +184,7 @@
                                 <div class="row mt-2">
                                     <div class="col-3"></div>
                                     <div class="col-3">
-                                        <input type="text" class="btn-block readonly-input text-end" value="{{ number_format($pembayaran->total) }}" readonly>
+                                        <input type="text" class="btn-block readonly-input text-end" value="{{ number_format($pembayaran->grand_total) }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row mt-3">

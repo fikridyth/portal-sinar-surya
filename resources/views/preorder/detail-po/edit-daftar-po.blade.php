@@ -1,5 +1,7 @@
 @extends('main')
 
+@include('master.product.add-on.styles')
+
 @php
     $totalPrice = 0;
     $totalOrder = 0;
@@ -319,7 +321,7 @@
                                 <div class="d-flex">
                                 </div>
                                 <div class="d-flex">
-                                    <form action="{{ route('daftar-po.set-ppn', $preorder->id) }}" method="POST" class="form">
+                                    <form action="{{ route('daftar-po.set-ppn', $preorder->id) }}" id="ppnForm" method="POST" class="form">
                                         @csrf
                                         <div class="row align-items-center">
                                             <div class="col-auto">
@@ -327,20 +329,18 @@
                                             </div>
                                             <div class="col-auto">
                                                 <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
-                                                @if ($preorder->ppn_global == 0)
-                                                    <input type="number" max="100" required name="ppn_global" class="form-control" style="width: 70px;">
-                                                @else
-                                                    <input type="number" max="100" required name="ppn_global" value="{{ $preorder->ppn_global }}" class="form-control" style="width: 70px;">
-                                                @endif
-                                            </div>
-                                            <div class="col-auto">
-                                                <button type="submit" class="btn btn-sm btn-primary">UPDATE</button>
+                                                <div class="slider-container">
+                                                    <input type="checkbox" name="ppn" id="ppn" {{ $preorder->ppn_global ? 'checked' : '' }} class="slider-checkbox">
+                                                    <label for="ppn" class="slider-label"></label>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
-                                    <div class="mx-3">
+                                    <div class="mx-5">
                                     </div>
                                     <div class="mx-5">
+                                    </div>
+                                    <div class="mx-4">
                                     </div>
                                 </div>
                             </div>
@@ -376,22 +376,22 @@
     <script>
         function handleCheckboxChange(selectedCheckbox) {
             const index = selectedCheckbox.id.split('-')[1];
-            
+
             // Get the discount value from the checkbox's data attribute
             const diskonValue = parseFloat(selectedCheckbox.getAttribute('data-diskon4-value'));
-            
+
             // Get the netto element by its ID
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
             // const hapusButton = document.getElementById('hapus-button');
-            
+
             // Get the current price and parse it as a float
             let currentPrice = parseFloat(priceInput.value.replace(/[^0-9.-]+/g, ""));
-            
+
             // Get the current netto value and parse it as a float
             let currentNetto = parseFloat(nettoElement.textContent.replace(/[^0-9.-]+/g, ""));
-            
+
             // handle button
             var buttonId = "edit-save-" + selectedCheckbox.id.split('-')[1];
             var button = document.getElementById(buttonId);
@@ -443,7 +443,7 @@
         function handleDestroyClick(button) {
             // Extract the index from the button's ID
             const index = button.id.split('-')[2];
-            
+
             // Prepare data to be sent
             var data = {
                 id: {{ $preorder->id }},
@@ -485,7 +485,7 @@
             const deleteButton = document.getElementById(buttonId);
             const buttonBId = `bonus-save-${index}`;
             const bonusButton = document.getElementById(buttonBId);
-            
+
             // Get the price input and netto elements by their IDs
             const priceInput = document.getElementById(`price-input-${index}`);
             const orderInput = document.getElementById(`order-input-${index}`);
@@ -493,7 +493,7 @@
             orderViewText.textContent = orderInput.value;
             const orderText = document.getElementById(`order-text-${index}`);
             orderText.textContent = orderInput.value;
-            
+
             const nettoElement = document.getElementById(`netto-${index}`);
             let nettoElementValue = nettoElement.textContent;
             nettoElementValue = nettoElementValue.replace(/\./g, '');
@@ -503,7 +503,7 @@
 
             const priceText = document.getElementById(`price-text-${index}`);
             priceText.textContent = nettoElement.textContent;
-            
+
             // Prepare data to be sent
             var data = {
                 id: {{ $preorder->id }},
@@ -701,6 +701,18 @@
 
         // Add event listeners once the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', initializeButtons);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ambil elemen form dan checkbox
+            const form = document.getElementById('ppnForm');
+            const checkbox = document.getElementById('ppn');
+
+            // Tambahkan event listener pada checkbox
+            checkbox.addEventListener('change', function() {
+                // Kirimkan form saat checkbox diubah
+                form.submit();
+            });
+        });
 
     </script>
 @endsection

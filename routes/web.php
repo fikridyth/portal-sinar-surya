@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     // Preorder
     Route::resource('/preorder', PreOrderController::class, ['parameters' => ['preorder' => 'id']]);
     Route::get('/preorder-get-supplier-data', [PreOrderController::class, 'getSupplierData']);
+    Route::get('/get-products-by-kode-po/{kode}', [PreOrderController::class, 'getProductsByKodePo']);
     Route::prefix('preorder')->name('preorder.')->group(function () {
         Route::post('/get-list-barang', [PreOrderController::class, 'getListBarang'])->name('get-list-barang');
         Route::post('/process-barang', [PreOrderController::class, 'processBarang'])->name('process-barang');
@@ -56,12 +57,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/persetujuan-harga-jual', [PreOrderController::class, 'persetujuanHargaJual'])->name('persetujuan-harga-jual');
     Route::get('/persetujuan-harga-jual/{id}/edit', [PreOrderController::class, 'editPersetujuanHargaJual'])->name('persetujuan-harga-jual-edit');
     Route::put('/persetujuan-harga-jual/{id}/update', [PreOrderController::class, 'updatePersetujuanHargaJual'])->name('persetujuan-harga-jual-update');
+    Route::get('/get-products-by-kode/{kode}', [PreOrderController::class, 'getProductsByKode']);
 
     // Func in PO & Receive
-    Route::post('/update-edited-data', [PreOrderController::class, 'updateEditedData'])->name('daftar-po.update');
     Route::post('/store-new-data', [PreOrderController::class, 'storeNewData'])->name('daftar-po.store');
+    Route::post('/store-new-receive', [PreOrderController::class, 'storeNewReceive'])->name('create-receive.store');
+    Route::post('/update-edited-data', [PreOrderController::class, 'updateEditedData'])->name('daftar-po.update');
+    Route::post('/update-receive-data', [PreOrderController::class, 'updateReceiveData'])->name('create-receive.update');
     Route::delete('/destroy-current-data', [PreOrderController::class, 'destroyCurrentData'])->name('daftar-po.destroy');
     Route::post('/set-ppn/{id}', [PreOrderController::class, 'setPpn'])->name('daftar-po.set-ppn');
+    Route::post('/set-ppn-receive/{id}', [PreOrderController::class, 'setPpnReceive'])->name('create-receive.set-ppn-receive');
     Route::post('/set-diskon/{id}', [PreOrderController::class, 'setDiskon'])->name('daftar-po.set-diskon');
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
