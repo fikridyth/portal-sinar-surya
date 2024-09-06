@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bank;
 use App\Models\Pembayaran;
+use App\Models\Preorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -31,6 +32,7 @@ class PembayaranController extends Controller
     {
         // dd($id, $request->all());
         $pembayaran = Pembayaran::find($id);
+        $getPreorder = Preorder::where('nomor_po', $pembayaran->nomor_po)->first();
 
         $pembayaran->update([
             'is_bayar' => 1,
@@ -39,6 +41,7 @@ class PembayaranController extends Controller
         Pembayaran::create([
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
+            'nomor_po' => $pembayaran->nomor_po,
             'grand_total' => $request->payment ?? 0,
             'nomor_giro' => 'TUNAI',
             'id_parent' => $id
@@ -47,9 +50,14 @@ class PembayaranController extends Controller
         Pembayaran::create([
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
+            'nomor_po' => $pembayaran->nomor_po,
             'grand_total' => $request->other_income ?? 0,
             'nomor_giro' => 'OTHER INCOME',
             'id_parent' => $id
+        ]);
+
+        $getPreorder->update([
+            'is_pay' => 1,
         ]);
 
         return Redirect::route('pembayaran.index')
@@ -61,9 +69,11 @@ class PembayaranController extends Controller
     {
         $pembayaran = Pembayaran::find($id);
         $parent = Pembayaran::find($pembayaran->id_parent);
+        $getPreorder = Preorder::where('nomor_po', $parent->nomor_po)->first();
         
         Pembayaran::where('id_parent', $parent->id)->delete();
         $parent->update(['is_bayar' => null]);
+        $getPreorder->update(['is_pay' => null]);
         
         return Redirect::route('pembayaran.index')
             ->with('alert.status', '00')

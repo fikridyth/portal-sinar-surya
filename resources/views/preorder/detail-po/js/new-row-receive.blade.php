@@ -28,7 +28,7 @@
         kodeCell.textContent = kode;
         isiCell.textContent = numericIsi;
         isi2Cell.textContent = numericIsi2;
-        jualCell.textContent = jual;
+        jualCell.value = jual;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -68,7 +68,7 @@
                 </td>
                 <td class="text-end" hidden id="data-isi"></td>
                 <td class="text-end" id="data-isi2"></td>
-                <td class="text-end" id="data-jual"></td>
+                <td class="text-end"><input type="number" id="data-jual" size="1" class="price-input" min="1" step="1" style="width: 100px;"></td>
                 <td class="text-end"><input type="number" size="1" class="order-input" min="1" step="1" style="width: 50px;"></td>
                 <td class="text-center">-</td>
                 <td class="text-center">-</td>
@@ -101,14 +101,17 @@
                 // Use class selectors for cells if ids are not unique
                 const kodeElement = row.querySelector('.data-kode');
                 const orderElement = row.querySelector('.order-input');
+                const priceElement = row.querySelector('.price-input');
 
                 const kode = kodeElement ? kodeElement.textContent.trim() : '';
                 const order = orderElement ? orderElement.value.trim() : '';
+                const price = priceElement ? priceElement.value.trim() : '';
 
-                if (kode && order) {
+                if (kode && order && price) {
                     data.push({
                         kode: kode,
                         order: order,
+                        price: price,
                     });
                 }
             });

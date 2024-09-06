@@ -89,7 +89,7 @@
             let orderValue = parseFloat(orderInput.value) || 0;
             // Hitung field-total
             let fieldTotal = nettoValue * orderValue;
-            console.log(nettoValue,orderValue,fieldTotal)
+            // console.log(nettoValue,orderValue,fieldTotal)
 
             // Update nilai field-total
             const fieldTotalElement = document.getElementById('field-total-' + index);

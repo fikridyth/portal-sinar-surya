@@ -76,8 +76,10 @@
                                     <td class="text-center"></td>
                                     <td class="text-center">{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}</td>
                                     <td class="text-center">{{ $dtl['order'] }}</td>
-                                    <input type="text" hidden name="kode[{{ $index }}]" value="{{ $dtl['kode'] }}">
+                                    {{-- <input type="text" hidden name="kode[{{ $index }}]" value="{{ $dtl['kode'] }}">
+                                    <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}"> --}}
                                     <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
+                                    <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                     <td class="text-center">{{ number_format($product->harga_pokok) }}</td>
                                     <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
                                     <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</td>
@@ -139,11 +141,11 @@
                                             <td class="text-center"></td>
                                             <td class="text-center">${product.nama}/${product.unit_jual}</td>
                                             <td class="text-center">0</td>
-                                            <input type="text" hidden name="kode[${indexCounter}]" value="${product.kode}">
+                                            <input type="text" hidden name="nama[${indexCounter}]" value="${product.nama}/${product.unit_jual}/${product.kode}/${product.harga_pokok}">
                                             <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${product.harga_pokok}">
                                             <td class="text-center">${number_format(product.harga_pokok)}</td>
                                             <td class="text-center">${number_format(product.harga_pokok)}</td>
-                                            <td class="text-center">0</td>
+                                            <td class="text-center">0.00</td>
                                             <td class="text-center">${number_format(product.harga_jual)}</td>
                                             <td class="text-center">
                                                 <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${product.harga_jual}" size="10">

@@ -146,7 +146,7 @@ class PreOrderController extends Controller
     {
         $title = 'List Barang';
         $sortProduct = $request->name;
-        function splitName($item) {
+        function splitNamePo($item) {
             $parts = explode('/', $item);
             return [
                 'name' => $parts[0],
@@ -156,8 +156,8 @@ class PreOrderController extends Controller
         
         // Function to sort the array
         usort($sortProduct, function($a, $b) {
-            $aParts = splitName($a);
-            $bParts = splitName($b);
+            $aParts = splitNamePo($a);
+            $bParts = splitNamePo($b);
         
             // Compare base names
             $nameComparison = strcmp($aParts['name'], $bParts['name']);
@@ -426,8 +426,8 @@ class PreOrderController extends Controller
                 'unit_jual' => $product->unit_jual,
                 'stok' => number_format($product->stok + $totalStok, 2),
                 'order' => $item['order'],
-                'price' => $product->harga_jual,
-                'field_total' => $item['order'] * $product->harga_jual,
+                'price' => $product->harga_pokok,
+                'field_total' => $item['order'] * $product->harga_pokok,
                 'kode_sumber' => $product->kode_sumber,
                 'diskon1' => $product->diskon1,
                 'diskon2' => $product->diskon2,
@@ -491,6 +491,7 @@ class PreOrderController extends Controller
 
         foreach ($request->input('data') as $item) {
             $product = Product::where('kode', $item['kode'])->first();
+            $product->update(['harga_pokok' => $item['price']]);
             // $supplier = Supplier::where('id', $product->id_supplier)->first();
             $getChild = Product::where('kode_sumber', $product->kode)->get();
             $totalStok = 0;
@@ -504,8 +505,8 @@ class PreOrderController extends Controller
                 'unit_jual' => $product->unit_jual,
                 'stok' => number_format($product->stok + $totalStok, 2),
                 'order' => $item['order'],
-                'price' => $product->harga_jual,
-                'field_total' => $item['order'] * $product->harga_jual,
+                'price' => $item['price'],
+                'field_total' => $item['order'] * $item['price'],
                 'kode_sumber' => $product->kode_sumber,
                 'diskon1' => $product->diskon1,
                 'diskon2' => $product->diskon2,
@@ -583,6 +584,8 @@ class PreOrderController extends Controller
 
     public function updateReceiveData(Request $request)
     {
+        // dd($request->all());
+
         $getNetto = str_replace(',', '', $request->netto);
         $getTotal = str_replace(',', '', $request->total);
         
@@ -612,6 +615,9 @@ class PreOrderController extends Controller
             'ppn' => $preorder->ppn_global ?? 0,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
         ]);
+        
+        $product = Product::where('kode', $request->kode)->first();
+        $product->update(['harga_pokok' => $request->price]);
 
         return response()->json([
             'success' => true,
@@ -782,7 +788,6 @@ class PreOrderController extends Controller
 
     public function storeReceiveData(Request $request)
     {
-        // dd($request->all());
         $supplier = Supplier::where('nomor', $request->supplier)->first();
 
         $preorder = Preorder::create([
@@ -862,7 +867,20 @@ class PreOrderController extends Controller
 
     public function getProductsByKode($kode)
     {
-        $products = Product::where('kode_sumber', $kode)->get();
+        $allProducts = Product::where('kode_sumber', $kode)->get();
+
+        // Ekstrak angka setelah 'P' dan urutkan berdasarkan angka tersebut secara menurun
+        $sortedProducts = $allProducts->sort(function ($a, $b) {
+            // Ekstrak angka setelah 'P' dari kode_sumber
+            $aNumber = intval(substr(strrchr($a->unit_jual, 'P'), 1));
+            $bNumber = intval(substr(strrchr($b->unit_jual, 'P'), 1));
+            
+            // Urutkan secara menurun
+            return $aNumber - $bNumber;
+        });
+
+        // Jika Anda ingin mengubah koleksi menjadi array
+        $products = $sortedProducts->values()->all();
         // dd($products);
         return response()->json(['products' => $products]);
     }
@@ -877,14 +895,60 @@ class PreOrderController extends Controller
         // Check if validation fails
         if ($validator->fails()) { return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!"); }
         
-        $newData = array_map(function($kode, $harga_pokok, $harga_jual, $mark_up) {
+        $sortProduct = $request->nama;
+        function splitNameApprove($item) {
+            $parts = explode('/', $item);
             return [
+                'name' => $parts[0],
+                'quantity' => (int) $parts[1]
+            ];
+        }
+        
+        // Function to sort the array
+        usort($sortProduct, function($a, $b) {
+            $aParts = splitNameApprove($a);
+            $bParts = splitNameApprove($b);
+        
+            // Compare base names
+            $nameComparison = strcmp($aParts['name'], $bParts['name']);
+            if ($nameComparison !== 0) {
+                return $nameComparison;
+            }
+            
+            // If base names are the same, compare numeric parts
+            return $aParts['quantity'] <=> $bParts['quantity'];
+        });
+
+        $sortName = [];
+        $sortCode = [];
+        $sortPrice = [];
+
+        // Memproses inputArray untuk mendapatkan hasil yang diinginkan
+        foreach ($sortProduct as $item) {
+            // Memisahkan item berdasarkan '/'
+            $parts = explode('/', $item);
+
+            // Bagian pertama adalah deskripsi dan kuantitas
+            $description = "{$parts[0]}/{$parts[1]}";
+            $code = $parts[2];
+            $price = $parts[3];
+
+            // Menyimpan hasil ke dalam array yang sesuai
+            $sortName[] = $description;
+            $sortCode[] = $code;
+            $sortPrice[] = $price;
+        }
+
+        $newData = array_map(function($name, $kode, $harga_pokok, $harga_jual, $mark_up) {
+            return [
+                'name' => $name,
                 'kode' => $kode,
                 'harga_pokok' => $harga_pokok,
                 'harga_jual' => $harga_jual,
                 'mark_up' => $mark_up
             ];
-        }, $request->kode, $request->harga_pokok, $request->harga_jual, $request->mark_up);
+        }, $sortName, $sortCode, $sortPrice, $request->harga_jual, $request->mark_up);
+        // masih error data harga_jual dan mark_up pada child
         // dd($newData);
         
         foreach ($newData as $new) {

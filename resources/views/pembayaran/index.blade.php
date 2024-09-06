@@ -127,7 +127,7 @@
                                                     <td class="text-center"><a href="{{ route('pembayaran.show', $pmb->id) }}" class="btn btn-sm btn-primary">BAYAR</a></td>
                                                     {{-- <td class="text-center"><button class="btn btn-sm btn-primary" disabled>HAPUS</button></td> --}}
                                                 @else
-                                                    <td></td>
+                                                    <td class="text-center"><button disabled class="btn btn-sm btn-primary">BAYAR</button></td>
                                                 @endif
                                             @else
                                                 {{-- <td class="text-center"><button class="btn btn-sm btn-primary" disabled>BAYAR</button></td> --}}

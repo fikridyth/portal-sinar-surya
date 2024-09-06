@@ -196,10 +196,10 @@
                                                     <th class="text-center">NAMA BARANG</th>
                                                     <th class="text-center">ISI</th>
                                                     <th class="text-center">SAT</th>
-                                                    <th class="text-center">SATUAN</th>
+                                                    <th class="text-center">HARGA</th>
                                                     <th class="text-center">ORDER</th>
                                                     <th class="text-center">TERIMA</th>
-                                                    <th class="text-center">HARGA</th>
+                                                    <th class="text-center">SATUAN</th>
                                                     <th class="text-center">NETTO</th>
                                                     <th class="text-center">JUMLAH</th>
                                                     <th class="text-center">BNS</th>
@@ -233,7 +233,7 @@
                                                                 <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
                                                                 <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
                                                             </td>
-                                                            <td class="text-center">{{ $detail['kode'] }}</td>
+                                                            <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
                                                             <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
@@ -505,11 +505,13 @@
 
             const priceText = document.getElementById(`price-text-${index}`);
             priceText.textContent = nettoElement.textContent;
+            const kodeText = document.getElementById(`kode-text-${index}`);
             
             // Prepare data to be sent
             var data = {
                 id: {{ $preorder->id }},
                 array: index - 1,
+                kode: kodeText.textContent,
                 price: priceInput.value,
                 order: orderInput.value,
                 netto: nettoElementValue,

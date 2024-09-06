@@ -34,8 +34,11 @@
                                 <td class="text-center">{{ $po->nomor_po }}</td>
                                 <td class="text-center">{{ $po->receive_type . 0 }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('receive-po.create-detail', $po->id) }}"
-                                        class="btn btn-primary btn-sm mx-2">Detail</a>
+                                    @if ($po->is_pay !== 1)
+                                        <a href="{{ route('receive-po.create-detail', $po->id) }}" class="btn btn-primary btn-sm mx-2">DETAIL</a>
+                                    @else
+                                        <button disabled class="btn btn-primary btn-sm mx-2">SUDAH BAYAR</button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
