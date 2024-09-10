@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KartuStokController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PpnController;
 use App\Http\Controllers\PreOrderController;
@@ -90,6 +91,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
+        Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
         Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
         Route::get('/product/create/{id}', [ProductController::class, 'create'])->name('product.create');
         Route::get('/product/parent/{id}', [ProductController::class, 'productParent'])->name('product.parent');
