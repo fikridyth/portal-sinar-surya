@@ -30,7 +30,7 @@
                                         <div class="col-sm-6">
                                             <input type="email" disabled class="form-control" id="inputEmail3"
                                                 value="{{ $supplier1->nama }}" placeholder="Email">
-                                            <input type="hidden" name="supplierName" value="{{ $supplier1->nama }}">
+                                                <input type="hidden" name="supplierId" value="{{ $supplier1->id }}">
                                         </div>
                                     </div>
                                 </div>
@@ -111,7 +111,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button>
+                            {{-- <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button> --}}
                             <button type="submit" class="btn btn-primary">BUAT PO</button>
                         </div>
                     </div>

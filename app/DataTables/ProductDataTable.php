@@ -74,13 +74,20 @@ class ProductDataTable extends DataTable
             //->dom('Bfrtip')
             ->orderBy(1, 'asc')
             ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
+            // ->parameters([
+            //     'paging' => false,
+            //     // 'searching' => false,
+            //     'dom' => '<"top"f>rt<"bottom"ilp><"clear">',
+            //     'ordering' => false,
+            //     'lengthMenu' => [[-1], ['All']],
+            //     'info' => false
+            // ])
             ->parameters([
-                'paging' => false,
-                // 'searching' => false,
-                'dom' => '<"top"f>rt<"bottom"ilp><"clear">',
-                'ordering' => false,
-                'lengthMenu' => [[-1], ['All']],
-                'info' => false
+                "lengthMenu" => [
+                    [5, 10, 25, 50, 100],
+                    [5, 10, 25, 50, 100]
+                ],
+                'pageLength' => 100
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

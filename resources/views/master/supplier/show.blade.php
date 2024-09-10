@@ -18,187 +18,523 @@
             </div> --}}
         </div>
 
-        <form action="#" method="POST" class="form"
-            enctype="multipart/form-data">
-            @csrf
-            @method('put')
-            <div class="container mb-4" style="border: 1px solid #000000; padding: 15px;">
-                <div class="row mb-2">
-                    <div class="col-6 mb-2">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="kode">NOMOR</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="kode" name="kode"
-                                    value="{{ old('kode', $supplier->nomor) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                                @error('kode')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+        <div class="container mb-4" style="border: 1px solid #000000; padding: 15px;">
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">NOMOR SUPPLIER</label>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="nama_sumber">NAMA</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="kode" name="kode"
-                                    value="{{ old('kode', $supplier->nama) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                            </div>
+                        <div class="col-3">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->nomor }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
                         </div>
                     </div>
                 </div>
-
-                <div class="row mb-2">
-                    <div class="col-6 mb-2">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="kode">ALAMAT 1</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="kode" name="kode"
-                                    value="{{ old('kode', $supplier->alamat1) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                                @error('kode')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">WILAYAH</label>
                         </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="nama_sumber">ALAMAT 2</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="kode" name="kode"
-                                    value="{{ old('kode', $supplier->alamat2) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                            </div>
+                        <div class="col-3">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
                         </div>
                     </div>
                 </div>
-
-                <div class="row mb-2">
-                    <div class="col-6 mb-2">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="kode">PENJUALAN RATA</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="penjualan_rata" name="kode"
-                                    value="{{ old('kode', $supplier->penjualan_rata) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                                @error('kode')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="nama_sumber">WAKTU KUNJUNGAN</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="waktu_kunjungan" name="kode"
-                                    value="{{ old('kode', $supplier->waktu_kunjungan) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-2">
-                    <div class="col-6 mb-2">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="kode">STOK MINIMUM</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="stok_minimum" name="kode"
-                                    value="{{ old('kode', $supplier->stok_minimum) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                                @error('kode')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="nama_sumber">STOK MAKSIMUM</label>
-                            </div>
-                            <div class="col-5">
-                                <input type="text" id="stok_maksimum" name="kode"
-                                    value="{{ old('kode', $supplier->stok_maksimum) }}"
-                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
-                                    autocomplete="off" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-6 mb-2">
-                        <div class="row align-items-center">
-                            <div class="col-3">
-                                <label class="form-label h6 mt-2" for="kode">PPN</label>
-                            </div>
-                            <div class="col-5">
-                                <div class="slider-container">
-                                    <input type="checkbox" id="ppn" name="ppn" {{ $supplier->is_ppn ? 'checked' : '' }} @disabled(true) class="slider-checkbox">
-                                    <label for="ppn" class="slider-label"></label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {{-- end border --}}
             </div>
 
-            <div class="row d-flex justify-content-start mb-7">
-                <div class="col-0-5">
-                    <a href="{{ route('master.supplier.create', $supplier->id) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">NAMA SUPPLIER</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->nama }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
                 </div>
-                <div class="col-0-5">
-                    <a href="{{ route('master.supplier.edit', $supplier->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
-                </div>
-                <div class="col-0-5">
-                    <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>
-                </div>
-                <div class="col-8"></div>
-                <div class="col-0-5 ml-auto">
-                    <a href="{{ route('master.supplier.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
-                </div>
-                <div class="col-0-5">
-                    <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
-                </div>
-                <div class="col-0-5">
-                    <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">KONTAK - 1</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->kontak }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
                 </div>
             </div>
-        </form>
+
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">ALAMAT - 1</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->alamat1 }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">KONTAK - 2</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->kontak1 }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">ALAMAT - 2</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->alamat2 }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">TELEPON</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->no_telp }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">KOTA</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->alamat3 }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">FAX</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->fax }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">LAMA KREDIT</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->tcrd }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="kode">HARI</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">NPWP</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">JENIS</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->tipe == 1 ? 'PKP' : 'Non PKP' }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="nama_sumber">HP</label>
+                        </div>
+                        <div class="col-5">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">PEMBAYARAN</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="TUNAI / KREDIT / KONSINYASI"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">DISKON</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">%</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">FREELANCE (Y/T)</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="T"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">KUNJUNGAN SALESMAN</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->waktu_kunjungan }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">Hari</label>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">HARI</label>
+                        </div>
+                        <div class="col-3">
+                            <input type="text" id="kode" name="kode" value="MINGGU"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">NILAI ORDER</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">STOK MINIMUM</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->stok_minimum }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">Hari</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">JUMLAH DIBAYAR</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">STOK MAKSIMUM</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->stok_maksimum }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">Hari</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">SALDO RP</label>
+                        </div>
+                        <div class="col-7">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">PENJUALAN RATA2</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->penjualan_rata }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">Hari</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-4 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">ORDER TERAKHIR</label>
+                        </div>
+                        <div class="col-5" style="margin-left: 20px;">
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->lastord }}"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" for="nama_sumber">RETUR PPN</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="0.00"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">%</label>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" for="nama_sumber">BIAYA MATERAI</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-8 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">KETERANGAN</label>
+                        </div>
+                        <div class="col-8" style="margin-left: 20px;">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">UPAH / KOLI</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" id="kode" name="kode" value="0"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-8 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">KODE PERKIRAAN</label>
+                        </div>
+                        <div class="col-8" style="margin-left: 20px;">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row align-items-center">
+                        <div class="col-4">
+                            <label class="form-label h6 mt-2" for="nama_sumber">BONUS PRODUK</label>
+                        </div>
+                        <div class="col-4">
+                            <input type="text" id="kode" name="kode" value="10.00"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">%</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-1">
+                <div class="col-8 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">F. PAJAK GABUNG</label>
+                        </div>
+                        <div class="col-1" style="margin-left: 20px;">
+                            <input type="text" id="kode" name="kode" value="1"
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">1 = Ya &nbsp;&nbsp; 2 = Tidak</label>
+                        </div>
+                        <div class="col-1">
+                        </div>
+                        <div class="col-2">
+                            <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">TOLERANSI</label>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="kode" name="kode" value=""
+                                class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                autocomplete="off" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6 mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <label class="form-label h6 mt-2" for="kode">PPN</label>
+                        </div>
+                        <div class="col-5">
+                            <div class="slider-container">
+                                <input type="checkbox" id="ppn" name="ppn" {{ $supplier->is_ppn ? 'checked' : '' }} @disabled(true) class="slider-checkbox">
+                                <label for="ppn" class="slider-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{-- end border --}}
+        </div>
+
+        <div class="row d-flex justify-content-start mb-7">
+            <div class="col-0-5">
+                <a href="{{ route('master.supplier.create', $supplier->id) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+            </div>
+            <div class="col-0-5">
+                <a href="{{ route('master.supplier.edit', $supplier->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
+            </div>
+            <div class="col-0-5">
+                <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>
+            </div>
+            <div class="col-8"></div>
+            <div class="col-0-5 ml-auto">
+                <a href="{{ route('master.supplier.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
+            </div>
+            <div class="col-0-5">
+                <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
+            </div>
+            <div class="col-0-5">
+                <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
     </div>
 @endsection
 

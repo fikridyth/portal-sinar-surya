@@ -55,7 +55,7 @@
                                 <div class="col-1">
                                     <div class="form-group">
                                         <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label>
+                                            <label for="nomorSupplier2" class="col col-form-label">Nomor</label>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col">
-                                                <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                                <input type="text" value="{{ $preorder->nomor_receive }}" disabled class="form-control" id="nomorSupplier2" value="">
                                             </div>
                                         </div>
                                     </div>

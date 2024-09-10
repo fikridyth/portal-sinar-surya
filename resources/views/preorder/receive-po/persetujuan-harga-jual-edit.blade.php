@@ -84,8 +84,10 @@
                                     <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
                                     <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</td>
                                     <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
-                                    <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product->harga_jual }}" size="10"></td>
-                                    <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td>
+                                    {{-- <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product->harga_jual }}" size="10"></td> --}}
+                                    <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ (($dtl['price'] * $product->profit) / 100) + $dtl['price'] }}" size="10"></td>
+                                    <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
+                                    {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
                                     <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>
                                 </tr>
                             @endforeach
@@ -151,7 +153,7 @@
                                                 <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${product.harga_jual}" size="10">
                                             </td>
                                             <td class="text-center">
-                                                <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${number_format((product.harga_jual - product.harga_pokok) / product.harga_pokok * 100, 2)}" size="5">
+                                                <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${number_format_mark_up((product.harga_jual - product.harga_pokok) / product.harga_pokok * 100, 2)}" size="5">
                                             </td>
                                             <td class="text-center"></td>
                                         `;
@@ -250,6 +252,10 @@
 
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function number_format_mark_up(number) {
+            return Number(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
     </script>
 @endsection

@@ -196,7 +196,7 @@
                                 <input id="totalOrder" type="text" value="{{ number_format($totalOrder, 2) }}" disabled size="5" class="form-control">
                             </div>
                             <div class="mx-2">
-                                <button class="btn btn-primary">CETAK</button>
+                                <a href="{{ route('daftar-po.cetak', $preorder->id) }}" class="btn btn-primary">CETAK</a>
                             </div>
                             <div class="mx-2">
                                 <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>

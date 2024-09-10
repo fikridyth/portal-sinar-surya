@@ -46,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/daftar-po', [PreOrderController::class, 'daftarPo'])->name('daftar-po');
     Route::get('/daftar-po/{id}', [PreOrderController::class, 'showDaftarPo'])->name('daftar-po.show');
     Route::get('/daftar-po/{id}/edit', [PreOrderController::class, 'editDaftarPo'])->name('daftar-po.edit');
+    Route::get('/daftar-po/{id}/cetak', [PreOrderController::class, 'cetakDaftarPo'])->name('daftar-po.cetak');
 
     // Receive
     Route::get('/receive-po/{id}/show', [PreOrderController::class, 'receivePo'])->name('receive-po');

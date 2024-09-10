@@ -26,7 +26,7 @@
                                 <div class="col-1">
                                     <div class="form-group">
                                         <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label>
+                                            <label for="nomorSupplier2" class="col col-form-label">Nomor</label>
                                         </div>
                                     </div>
                                 </div>

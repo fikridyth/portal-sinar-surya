@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
@@ -39,40 +40,149 @@ class PreOrderController extends Controller
         }
     }
 
+    // public function getListBarang(Request $request)
+    // {
+    //     $title = 'Get Barang';
+    //     $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
+    //     $penjualan = Supplier::where('id', $supplier1->id)->first();
+    //     $products1 = $supplier1 ? Product::select(['kode', 'nama', 'unit_jual', 'harga_pokok', 'stok'])->where('id_supplier', $supplier1->id)->whereNull('kode_sumber')->limit(40)->get() : collect();
+    //     // dd($products1);
+
+    //     $supplier2 = null;
+    //     $products2 = collect();
+    //     $supplier3 = null;
+    //     $products3 = collect();
+
+    //     if ($request->dataSupplier2) {
+    //         $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
+    //         $products2 = $supplier2 ? Product::select(['kode', 'nama', 'unit_jual', 'harga_pokok', 'stok'])->where('id_supplier', $supplier2->id)->whereNull('kode_sumber')->limit(40)->get() : collect();
+    //     }
+
+    //     if ($request->dataSupplier3) {
+    //         $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
+    //         $products3 = $supplier3 ? Product::select(['kode', 'nama', 'unit_jual', 'harga_pokok', 'stok'])->where('id_supplier', $supplier3->id)->whereNull('kode_sumber')->limit(40)->get() : collect();
+    //     }
+
+    //     $now = Carbon::now();
+    //     $tanggalRange = [];
+    //     for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
+    //         $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
+    //     }
+
+    //     $stokMinimum = $penjualan->stok_minimum;
+    //     $stokMaksimum = $penjualan->stok_maksimum;
+    //     $rekapJualanByRange = Penjualan::whereIn('tanggal', $tanggalRange)->get()->groupBy('nama')
+    //         ->map(function ($items) use ($stokMinimum, $stokMaksimum){
+    //             $totalPerName = $items->sum('total'); // Hitung total
+    //             $averagePerName = (float)number_format($totalPerName / count($items), 2); // Hitung total
+    //             return [
+    //                 'total' => $totalPerName,
+    //                 'minimum' => $averagePerName * $stokMinimum,
+    //                 'average' => $averagePerName,
+    //                 'maximum' => $averagePerName * $stokMaksimum
+    //             ];
+    //         });
+
+    //     // Convert to array if needed
+    //     $getProductJual = $rekapJualanByRange->toArray();
+
+
+    //     $getAllProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual'])
+    //         ->map(function ($product) {
+    //             // ambil semua stok child untuk digabungkan
+    //             $getChild = Product::where('kode_sumber', $product->kode)->get();
+    //             $totalStok = 0;
+    //             foreach ($getChild as $child) {
+    //                 $convertChild = $child->stok / $child->konversi;
+    //                 $totalStok += $convertChild;
+    //             }
+    //             $product->stok = $product->stok + $totalStok;
+    //             return $product;
+    //         });
+
+    //     // Convert $allProducts to a collection indexed by 'nama'
+    //     $allProductsByName = $getAllProducts->keyBy('nama');
+
+    //     // Merge sales data with product data
+    //     $allProducts = $getProductJual;
+
+    //     foreach ($allProducts as $name => $salesData) {
+    //         if ($allProductsByName->has($name)) {
+    //             $product = $allProductsByName->get($name);
+    //             $product->total = number_format($salesData['total'], 2);
+    //             $product->minimum = number_format($salesData['minimum'], 2);
+    //             $product->average = $salesData['average'];
+    //             $product->maximum = number_format($salesData['maximum'], 2);
+    //         }
+    //     }
+
+    //     // Convert to array if needed
+    //     $allProducts = $allProductsByName->toArray();
+    //     $previousUrl = url()->previous();
+    //     // dd($allProducts);
+
+    //     return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
+    // }
+
     public function getListBarang(Request $request)
     {
         $title = 'Get Barang';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
+        $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
+        $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
         $penjualan = Supplier::where('id', $supplier1->id)->first();
-        $products1 = $supplier1 ? Product::where('id_supplier', $supplier1->id)->whereNull('kode_sumber')->get() : collect();
+        // Ambil semua supplier dalam satu query
+        $supplierNames = array_filter([
+            $request->dataSupplier1,
+            $request->dataSupplier2,
+            $request->dataSupplier3
+        ]);
 
-        $supplier2 = null;
-        $products2 = collect();
-        $supplier3 = null;
-        $products3 = collect();
+        $suppliers = Supplier::whereIn('nama', $supplierNames)->get()->keyBy('nama');
 
-        if ($request->dataSupplier2) {
-            $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
-            $products2 = $supplier2 ? Product::where('id_supplier', $supplier2->id)->whereNull('kode_sumber')->get() : collect();
+        // Ambil semua ID supplier
+        $supplierIds = $suppliers->pluck('id');
+
+        // Ambil produk berdasarkan ID supplier secara batch
+        $products = Product::whereIn('id_supplier', $supplierIds)
+            ->whereNull('kode_sumber')
+            ->limit(150)
+            ->get()
+            ->groupBy('id_supplier');
+
+        // Proses stok anak dalam satu query
+        $productCodes = $products->flatMap(function ($items) {
+            return $items->pluck('kode');
+        });
+        $childProducts = Product::whereIn('kode_sumber', $productCodes)->get()->groupBy('kode_sumber');
+
+        // Tambahkan stok anak ke produk
+        foreach ($products as $supplierId => $supplierProducts) {
+            foreach ($supplierProducts as $product) {
+                if ($childProducts->has($product->kode)) {
+                    $childStok = $childProducts->get($product->kode)->sum(function ($child) {
+                        return $child->stok / $child->konversi;
+                    });
+                    $product->stok += $childStok;
+                }
+            }
         }
 
-        if ($request->dataSupplier3) {
-            $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
-            $products3 = $supplier3 ? Product::where('id_supplier', $supplier3->id)->whereNull('kode_sumber')->get() : collect();
-        }
+        if ($penjualan) {
+            $now = Carbon::now();
+            $tanggalRange = [];
+            for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
+                $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
+            }
 
-        $now = Carbon::now();
-        $tanggalRange = [];
-        for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
-            $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
-        }
+            $penjualanRata = $penjualan->penjualan_rata;
+            $stokMinimum = $penjualan->stok_minimum;
+            $stokMaksimum = $penjualan->stok_maksimum;
 
-        $stokMinimum = $penjualan->stok_minimum;
-        $stokMaksimum = $penjualan->stok_maksimum;
-        $rekapJualanByRange = Penjualan::whereIn('tanggal', $tanggalRange)->get()->groupBy('nama')
-            ->map(function ($items) use ($stokMinimum, $stokMaksimum){
+            $rekapJualanByRange = Penjualan::whereIn('tanggal', $tanggalRange)->get()->groupBy('nama')
+            ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata){
                 $totalPerName = $items->sum('total'); // Hitung total
-                $averagePerName = (float)number_format($totalPerName / count($items), 2); // Hitung total
+                $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
                 return [
                     'total' => $totalPerName,
                     'minimum' => $averagePerName * $stokMinimum,
@@ -80,44 +190,33 @@ class PreOrderController extends Controller
                     'maximum' => $averagePerName * $stokMaksimum
                 ];
             });
-
-        // Convert to array if needed
-        $getProductJual = $rekapJualanByRange->toArray();
-
-
-        $getAllProducts = $products1->concat($products2)->concat($products3)->sortBy(['nama', 'unit_jual'])
-            ->map(function ($product) {
-                // ambil semua stok child untuk digabungkan
-                $getChild = Product::where('kode_sumber', $product->kode)->get();
-                $totalStok = 0;
-                foreach ($getChild as $child) {
-                    $convertChild = $child->stok / $child->konversi;
-                    $totalStok += $convertChild;
-                }
-                $product->stok = $product->stok + $totalStok;
-                return $product;
-            });
-
-        // Convert $allProducts to a collection indexed by 'nama'
-        $allProductsByName = $getAllProducts->keyBy('nama');
-
-        // Merge sales data with product data
-        $allProducts = $getProductJual;
-
-        foreach ($allProducts as $name => $salesData) {
-            if ($allProductsByName->has($name)) {
-                $product = $allProductsByName->get($name);
-                $product->total = number_format($salesData['total'], 2);
-                $product->minimum = number_format($salesData['minimum'], 2);
-                $product->average = $salesData['average'];
-                $product->maximum = number_format($salesData['maximum'], 2);
-            }
+            // dd($rekapJualanByRange);
         }
 
-        // Convert to array if needed
+        // Gabungkan produk dari semua supplier
+        $getAllProducts = $products->collapse()->sortBy(['nama', 'unit_jual']);
+        $allProductsByName = $getAllProducts->keyBy('nama');
+
+        foreach ($allProductsByName as $name => $product) {
+            // Jika nama tidak ada dalam rekap penjualan, beri nilai default 0
+            $salesData = $rekapJualanByRange[$name] ?? [
+                'total' => 0,
+                'minimum' => 0,
+                'average' => 0,
+                'maximum' => 0
+            ];
+        
+            $product->total = number_format($salesData['total'], 2);
+            $product->minimum = number_format($salesData['minimum'], 2);
+            $product->average = $salesData['average'];
+            $product->maximum = number_format($salesData['maximum'], 2);
+        }
+        
+        // Convert $allProductsByName to an array if needed
         $allProducts = $allProductsByName->toArray();
-        $previousUrl = url()->previous();
         // dd($allProducts);
+        $previousUrl = url()->previous();
+        // dd(count($allProducts));
 
         return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
     }
@@ -196,7 +295,7 @@ class PreOrderController extends Controller
         $orders = isset($parameters["orderPo"]) ? (array) $parameters["orderPo"] : [];
         $harga = isset($sortPrice) ? (array) $sortPrice : [];
 
-        // dd($stocks, $stocks2);
+        // dd($names, $stocks, $orders, $harga);
 
         // Prepare the formatted data
         $data = $result = [];
@@ -204,7 +303,8 @@ class PreOrderController extends Controller
 
         // Prepare the formatted data and fetch products
         for ($i = 0; $i < count($names); $i++) {
-            if ($orders[$i] !== null && $orders[$i] !== 0) { // Skip items with null orders
+            // dd($orders);
+            if ($orders[$i] !== null && $orders[$i] !== '0' && $orders[$i] !== 0) { // Skip items with null orders
                 $item = [
                     'nama' => $names[$i] ?? null,
                     'stok' => $stocks[$i] ?? null,
@@ -225,7 +325,13 @@ class PreOrderController extends Controller
         }
         // dd($results);
 
-        $supplier1 = Supplier::where('nama', $request->supplierName)->first();
+        $supplier1 = Supplier::find($request->supplierId);
+        $supplier1->update([
+            'penjualan_rata' => $request->penjualan_rata,
+            'waktu_kunjungan' => $request->waktu_kunjungan,
+            'stok_minimum' => $request->stok_minimum,
+            'stok_maksimum' => $request->stok_maksimum,
+        ]);
 
         $explodeUrl = explode('/', $request->previous_url);
         $prevUrl = end($explodeUrl);
@@ -314,10 +420,9 @@ class PreOrderController extends Controller
         $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         // dd($getNomorPo);
 
-        $supplier1 = Supplier::where('nama', $request->supplierName)->first();
         $data = [
             'nomor_po' => $getNomorPo,
-            'id_supplier' => $supplier1->id,
+            'id_supplier' => $request->supplierId,
             'date_first' => Carbon::now()->format('Y-m-d'),
             'date_last' => Carbon::now()->addDays(15)->format('Y-m-d'),
             'detail' => json_encode($detail->original),
@@ -375,6 +480,15 @@ class PreOrderController extends Controller
         $preorder = Preorder::find($id);
 
         return view('preorder.detail-po.show-daftar-po', compact('title', 'preorder'));
+    }
+
+    public function cetakDaftarPo($id)
+    {
+        $title = 'Cetak PreOrder';
+        $preorder = Preorder::find($id);
+        $preorder->update(['is_cetak' => $preorder->is_cetak + 1]);
+
+        return view('preorder.detail-po.cetak-daftar-po', compact('title', 'preorder'));
     }
 
     public function editDaftarPo($id)
@@ -771,7 +885,7 @@ class PreOrderController extends Controller
         } else {
             (int) $sequence;
         }
-        $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        $getNomorPo = 'RP-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
         return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
     }
@@ -789,9 +903,12 @@ class PreOrderController extends Controller
     public function storeReceiveData(Request $request)
     {
         $supplier = Supplier::where('nomor', $request->supplier)->first();
+        $nomor_receive = str_replace('PO', 'RP', $request->nomor_po);
+        // dd($nomor_receive);
 
         $preorder = Preorder::create([
             'nomor_po' => $request->nomor_po,
+            'nomor_receive' => $nomor_receive,
             'id_supplier' => $supplier->id,
             'date_last' => $request->tanggal_po,
             'date_first' => $request->tanggal_po,
@@ -802,6 +919,7 @@ class PreOrderController extends Controller
         $data = [
             'id_supplier' => $preorder->id_supplier,
             'nomor_po' => $preorder->nomor_po,
+            'nomor_receive' => $nomor_receive,
             'date' => now()->format('Y-m-d'),
             'total' => $preorder->grand_total ?? 0,
         ];
@@ -973,8 +1091,37 @@ class PreOrderController extends Controller
     public function daftarHargaJualKecil()
     {
         $title = 'Daftar Harga Jual Kecil';
+        $allMatchingProducts = new Collection();
+        $trackedKodes = [];
         $preorders = Preorder::where('receive_type', 'B')->get();
 
-        return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
+        foreach ($preorders as $preorder) {
+            // Decode preorder details
+            $details = json_decode($preorder->detail, true);
+
+            foreach ($details as $detail) {
+                if (!isset($trackedKodes[$detail['kode']])) {
+                    // Query products matching the code and price condition
+                    $matchingProduct = Product::where('kode', $detail['kode'])->where('harga_jual', '<', $detail['price'])->first();
+                    
+                    // If a product is found, add it to the collection and track the kode
+                    if ($matchingProduct) {
+                        $markupAmount = $matchingProduct->harga_jual - (int)$detail['price'];
+                        $markupPercentage = ($markupAmount / (int)$detail['price']) * 100;
+                        $allMatchingProducts->push([
+                            'kode' => $matchingProduct->kode,
+                            'nama' => $matchingProduct->nama . '/' . $matchingProduct->unit_jual,
+                            'unit' => $matchingProduct->unit_jual,
+                            'harga_pokok' => (int)$detail['price'],
+                            'harga_jual' => $matchingProduct->harga_jual,
+                            'mark_up' => number_format($markupPercentage, 2)
+                        ]);
+                        $trackedKodes[$detail['kode']] = true; // Mark this kode as tracked
+                    }
+                }
+            }
+        }
+
+        return view('preorder.harga-jual-kurang.index', compact('title', 'allMatchingProducts'));
     }
 }

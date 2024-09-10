@@ -40,7 +40,7 @@
                                                     <form action="{{ route('preorder.get-list-barang') }}" method="POST">
                                                         @csrf
                                                         <input type="text" hidden name="dataSupplier1" value="{{ $po['supplier']['nama'] }}">
-                                                        <button type="submit" class="btn btn-sm btn-primary">BUAT PO</button>
+                                                        <button type="submit" class="btn btn-sm btn-primary" style="font-size: 10px;">BUAT PO</button>
                                                     </form>
                                                 </td>
                                             </tr>

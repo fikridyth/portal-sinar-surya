@@ -30,7 +30,7 @@
                                         <div class="col-sm-6">
                                             <input type="email" disabled class="form-control" id="inputEmail3"
                                                 value="{{ $supplier1->nama }}" placeholder="Email">
-                                            <input type="hidden" name="supplierName" value="{{ $supplier1->nama }}">
+                                            <input type="hidden" name="supplierId" value="{{ $supplier1->id }}">
                                         </div>
                                     </div>
                                 </div>
@@ -38,7 +38,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Penjualan Rata2</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualan->penjualan_rata }}" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->penjualan_rata }}" name="penjualan_rata" class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -65,7 +65,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Waktu Kunjungan</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualan->waktu_kunjungan }}" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->waktu_kunjungan }}" name="waktu_kunjungan" class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -92,7 +92,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Minimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualan->stok_minimum }}" disabled class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->stok_minimum }}" name="stok_minimum" oninput="updateStokMin(this)" class="form-control" id="inputStokMinimum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -108,7 +108,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Maksimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
+                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" name="stok_maksimum" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -146,12 +146,12 @@
                                                     <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
                                                     <td class="text-end">{{ str_replace('P', '', $product['unit_jual']) }}</td>
                                                     <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? '' }}</td>
-                                                    <td class="text-end">{{ $product['minimum'] ?? '' }}</td>
+                                                    <td class="text-end minimum" id="minimum-{{ $index }}">{{ $product['minimum'] ?? '' }}</td>
                                                     <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
                                                     <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
                                                     <td class="text-center">
                                                         <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"
-                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
+                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['maximum']),0) }}">
                                                     </td>
                                                     <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                     <td class="text-end" id="total-{{ $index }}">0</td>
@@ -349,6 +349,36 @@
 
                         // Update the maximum value in the table
                         maximumElement.textContent = newMaximum.toFixed(2); // Display with 2 decimal places
+                    }
+                }
+            });
+        }
+
+        // Function to update the stock minimum values
+        function updateStokMin(inputElement) {
+            // Get the value from the input field
+            const stokMinimum = parseFloat(inputElement.value);
+
+            // Check if the input value is a valid number
+            if (isNaN(stokMinimum)) {
+                console.error('Invalid stok_maksimum value');
+                return;
+            }
+
+            // Iterate over each row to update minimum values
+            document.querySelectorAll('tr').forEach(row => {
+                const averageElement = row.querySelector('.average');
+                const minimumElement = row.querySelector('.minimum');
+
+                if (averageElement && minimumElement) {
+                    const averageValue = parseFloat(averageElement.textContent.trim());
+
+                    if (!isNaN(averageValue)) {
+                        // Calculate the new minimum value
+                        const newMinimum = stokMinimum * averageValue;
+
+                        // Update the minimum value in the table
+                        minimumElement.textContent = newMinimum.toFixed(2); // Display with 2 decimal places
                     }
                 }
             });

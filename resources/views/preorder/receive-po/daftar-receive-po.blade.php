@@ -22,7 +22,7 @@
                         </tr>
                         <tr>
                             <th class="text-center">NAMA SUPPLIER</th>
-                            <th class="text-center">NOMOR PO</th>
+                            <th class="text-center">NOMOR RECEIVE</th>
                             <th class="text-center">REF</th>
                             <th class="text-center">DETAIL</th>
                         </tr>
@@ -31,7 +31,7 @@
                         @foreach ($preorders as $po)
                             <tr>
                                 <td class="text-center">{{ $po->supplier->nama }}</td>
-                                <td class="text-center">{{ $po->nomor_po }}</td>
+                                <td class="text-center">{{ $po->nomor_receive }}</td>
                                 <td class="text-center">{{ $po->receive_type . 0 }}</td>
                                 <td class="text-center">
                                     @if ($po->is_pay !== 1)
