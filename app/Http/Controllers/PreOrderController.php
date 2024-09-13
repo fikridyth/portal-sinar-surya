@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\ReceiveDataTable;
+use App\Models\Hutang;
 use App\Models\Pembayaran;
 use App\Models\Penjualan;
 use App\Models\Ppn;
@@ -597,7 +599,7 @@ class PreOrderController extends Controller
         // ]);
 
         $preorder = Preorder::find($request->id);
-        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+        $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
 
         $supplier = Supplier::find($preorder->id_supplier);
         $ppnValue = Ppn::pluck('ppn')->first();
@@ -704,7 +706,7 @@ class PreOrderController extends Controller
         $getTotal = str_replace(',', '', $request->total);
         
         $preorder = Preorder::find($request->id);
-        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+        $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
         $getArray['order'] = $request->order;
@@ -800,7 +802,7 @@ class PreOrderController extends Controller
             $valuePpn = null;
         }
         $preorder = Preorder::find($id);
-        $getPayment = Pembayaran::where('nomor_po', $preorder->nomor_po)->first();
+        $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
         $preorder->update([
             'total_harga' => $request->total_harga,
             'ppn_global' => $valuePpn ?? 0,
@@ -885,7 +887,7 @@ class PreOrderController extends Controller
         } else {
             (int) $sequence;
         }
-        $getNomorPo = 'RP-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
         return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
     }
@@ -921,10 +923,12 @@ class PreOrderController extends Controller
             'nomor_po' => $preorder->nomor_po,
             'nomor_receive' => $nomor_receive,
             'date' => now()->format('Y-m-d'),
-            'total' => $preorder->grand_total ?? 0,
+            'total' => $preorder->total_harga ?? 0,
+            'ppn' => $preorder->ppn_global ?? 0,
+            'grand_total' => $preorder->grand_total ?? 0,
         ];
         
-        Pembayaran::create($data);
+        Hutang::create($data);
         // $preorder->update(['is_pay' => 1]);
 
         return redirect()->route('receive-po.create-detail', $preorder->id);
@@ -941,12 +945,13 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
     }
 
-    public function daftarReceivePo()
+    public function daftarReceivePo(ReceiveDataTable $dataTable)
     {
         $title = 'Daftar Receive PreOrder';
-        $preorders = Preorder::where('receive_type', 'B')->get();
+        // $preorders = Preorder::where('receive_type', 'B')->get();
 
-        return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
+        // return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
+        return $dataTable->render('preorder.receive-po.daftar-receive-po', compact('title'));
     }
 
     // public function storePembayaran(Request $request)

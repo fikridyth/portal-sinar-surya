@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('preorders', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_po');
+            $table->string('nomor_receive')->nullable();
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
             $table->json('detail')->nullable();
             $table->date('date_first')->nullable();

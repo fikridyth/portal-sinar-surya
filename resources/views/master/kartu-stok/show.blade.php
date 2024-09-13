@@ -137,14 +137,36 @@
                                         <tbody>
                                             <tr>
                                                 <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
-                                                <td>SALDO</td>
+                                                <td>STOK</td>
                                                 <td class="text-center"><input type="checkbox" name="" id=""></td>
                                                 @foreach ($allProducts as $prd)
                                                     <td class="text-end">{{ $prd['stok'] }}</td>
                                                 @endforeach
-                                                <td class="text-end">{{ $totalMasuk }}</td>
+                                                <td class="text-end"></td>
                                                 <td class="text-end"></td>
                                                 <td class="text-end">{{ $totalMasuk }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
+                                                <td>POS</td>
+                                                <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                @foreach ($allProducts as $prd)
+                                                    <td class="text-end"></td>
+                                                @endforeach
+                                                <td class="text-end"></td>
+                                                <td class="text-end">10</td>
+                                                <td class="text-end"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
+                                                <td>SALDO</td>
+                                                <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                @foreach ($allProducts as $prd)
+                                                    <td class="text-end"></td>
+                                                @endforeach
+                                                <td class="text-end"></td>
+                                                <td class="text-end"></td>
+                                                <td class="text-end">44</td>
                                             </tr>
                                         </tbody>
                                     </table>

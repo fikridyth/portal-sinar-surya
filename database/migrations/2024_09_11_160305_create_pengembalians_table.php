@@ -11,18 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembayarans', function (Blueprint $table) {
+        Schema::create('pengembalians', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
-            $table->string('nomor_po')->nullable();
-            $table->string('nomor_receive')->nullable();
-            $table->smallInteger('id_parent')->nullable();
-            $table->date('date');
-            $table->string('nomor_giro')->nullable();
+            $table->string('nomor_return');
+            $table->string('nomor_bukti')->nullable();
+            $table->date('date_first');
+            $table->date('date_last');
             $table->bigInteger('total')->default(0);
-            $table->bigInteger('ppn')->default(0);
-            $table->bigInteger('grand_total')->default(0);
-            $table->smallInteger('is_bayar')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pembayarans');
+        Schema::dropIfExists('pengembalians');
     }
 };

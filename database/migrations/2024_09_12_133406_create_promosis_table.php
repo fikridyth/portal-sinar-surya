@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembayarans', function (Blueprint $table) {
+        Schema::create('promosis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
-            $table->string('nomor_po')->nullable();
-            $table->string('nomor_receive')->nullable();
-            $table->smallInteger('id_parent')->nullable();
-            $table->date('date');
-            $table->string('nomor_giro')->nullable();
+            $table->string('tipe')->nullable();
             $table->bigInteger('total')->default(0);
-            $table->bigInteger('ppn')->default(0);
-            $table->bigInteger('grand_total')->default(0);
-            $table->smallInteger('is_bayar')->nullable();
+            $table->string('nomor_bukti')->nullable();
+            $table->date('date');
             $table->timestamps();
         });
     }
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pembayarans');
+        Schema::dropIfExists('promosis');
     }
 };

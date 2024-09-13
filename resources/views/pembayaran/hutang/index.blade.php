@@ -6,7 +6,7 @@
             <div class="mt-4">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMESANAN BARANG - PURCHASE ORDER
+                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMBAYARAN HUTANG
                         </li>
                     </ol>
                 </nav>
@@ -15,7 +15,6 @@
 
         <div class="card">
             <div class="card-body">
-                <h5 class="text-center">DAFTAR PENERIMAAN BARANG</h5>
                 {{ $dataTable->table() }}
             </div>
         </div>

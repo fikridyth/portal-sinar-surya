@@ -73,6 +73,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
 
+    // Pembayaran Hutang
+    Route::get('/pembayaran-hutang', [PembayaranController::class, 'indexHutang'])->name('pembayaran-hutang.index');
+    Route::get('/pembayaran-hutang/{id}', [PembayaranController::class, 'showHutang'])->name('pembayaran-hutang.show');
+    Route::post('/pembayaran-hutang/{id}/process', [PembayaranController::class, 'processHutang'])->name('pembayaran-hutang.process');
+    Route::post('/pembayaran-hutang/{id}/process-final', [PembayaranController::class, 'processFinalHutang'])->name('pembayaran-hutang.process-final');
+    Route::post('/pembayaran-hutang/{id}/store', [PembayaranController::class, 'storeHutang'])->name('pembayaran-hutang.store');
+
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');

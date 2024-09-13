@@ -51,6 +51,7 @@
                         <div class="mx-5">  
                             <h5 class="text-center">PEMBAYARAN</h5>
                             <div style="display: flex; flex-direction: column;">
+                                <a href="{{ route('pembayaran-hutang.index') }}" class="btn btn-primary mb-2">PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran.index') }}" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
                             </div>
                         </div>
