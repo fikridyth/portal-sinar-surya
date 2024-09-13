@@ -79,6 +79,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/pembayaran-hutang/{id}/process', [PembayaranController::class, 'processHutang'])->name('pembayaran-hutang.process');
     Route::post('/pembayaran-hutang/{id}/process-final', [PembayaranController::class, 'processFinalHutang'])->name('pembayaran-hutang.process-final');
     Route::post('/pembayaran-hutang/{id}/store', [PembayaranController::class, 'storeHutang'])->name('pembayaran-hutang.store');
+    Route::get('/pembayaran-hutang-hapus', [PembayaranController::class, 'indexHutangHapus'])->name('pembayaran-hutang.index-hapus');
+    Route::get('/pembayaran-hutang-hapus/{id}/detail', [PembayaranController::class, 'detailHutangHapus'])->name('pembayaran-hutang.detail-hapus');
+    Route::delete('/destroy-hutang/{id}', [PembayaranController::class, 'destroyHutang'])->name('pembayaran-hutang.destroy-hutang');
 
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');

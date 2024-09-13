@@ -82,18 +82,17 @@
                         <tbody>
                             @foreach ($getHutangPromosi as $index => $hutang)
                                 @php
-                                    $isTarget = $hutang['nomor'] == 'TARGET';
-                                    $isGondola = $hutang['nomor'] == 'GONDOLA';
+                                    $isPromosi = explode('-', $hutang['nomor']);
                                 @endphp
                                 <tr id="row-{{ $index }}">
                                     <input type="text" hidden name="nomor[]" value="{{ $hutang['nomor'] }}" data-row-id="{{ $index }}">
                                     <input type="text" hidden name="date[]" value="{{ $hutang['date'] }}" data-row-id="{{ $index }}">
                                     <input type="text" hidden name="total[]" value="{{ $hutang['total'] }}" data-row-id="{{ $index }}">
-                                    <td class="text-center" style="{{ $isTarget || $isGondola ? 'color: red;' : '' }}">{{ $hutang['date'] }}</td>
-                                    <td class="text-center" style="{{ $isTarget || $isGondola ? 'color: red;' : '' }}">{{ $hutang['nomor'] }}</td>
-                                    <td class="text-center" style="{{ $isTarget || $isGondola ? 'color: red;' : '' }}">IND</td>
-                                    <td class="text-end" style="{{ $isTarget || $isGondola ? 'color: red;' : '' }}">1</td>
-                                    <td class="text-end" style="{{ $isTarget || $isGondola ? 'color: red;' : '' }}">{{ number_format($hutang['total'], 0) }}</td>
+                                    <td class="text-center" style="{{ $isPromosi[0] == 'AM' ? 'color: red;' : '' }}">{{ $hutang['date'] }}</td>
+                                    <td class="text-center" style="{{ $isPromosi[0] == 'AM' ? 'color: red;' : '' }}">{{ $hutang['nomor'] }}</td>
+                                    <td class="text-center" style="{{ $isPromosi[0] == 'AM' ? 'color: red;' : '' }}">IND</td>
+                                    <td class="text-end" style="{{ $isPromosi[0] == 'AM' ? 'color: red;' : '' }}">1</td>
+                                    <td class="text-end" style="{{ $isPromosi[0] == 'AM' ? 'color: red;' : '' }}">{{ number_format($hutang['total'], 0) }}</td>
                                     <td class="text-center"><input type="checkbox" class="remove-checkbox" data-row-id="{{ $index }}"></td>
                                </tr>
                             @endforeach

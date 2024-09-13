@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\HutangDataTable;
+use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
 use App\Models\Hutang;
 use App\Models\Pembayaran;
@@ -69,8 +70,10 @@ class PembayaranController extends Controller
     public function processHutang(Request $request, $id)
     {
         $title = 'Proses Pembayaran Hutang';
+
+        
         $supplier = Supplier::find($id);
-        $promosi = Promosi::select('tipe as nomor', 'date_last as date', 'total')
+        $promosi = Promosi::select('nomor_promosi as nomor', 'date_last as date', 'total')
                                 ->where('id_supplier', $supplier->id)
                                 ->where('date_last', '<=', now()->format('Y-m-d'))
                                 ->whereNull('nomor_bukti')
@@ -84,6 +87,9 @@ class PembayaranController extends Controller
 
         $selectedIndicesString = implode($request->input('selectedIndices', '[]'));
         $selectedIndices = json_decode($selectedIndicesString, true);
+        if (empty($selectedIndices)) {
+            return redirect()->route('pembayaran-hutang.show', $supplier->id)->with('alert.status', '99')->with('alert.message', 'KODE HARUS DIPILIH!');
+        }
 
         // Sample $allData from request
         $allData = $request->only(['nomor', 'date', 'total']);
@@ -180,7 +186,6 @@ class PembayaranController extends Controller
 
     public function storeHutang(Request $request, $id)
     {
-        $supplier = Supplier::find($id);
         $dataArray = array_filter($request->all(), function($value) {
             return is_array($value);
         });
@@ -204,9 +209,12 @@ class PembayaranController extends Controller
             if ($tipeData[0] == 'RR') {
                 Pengembalian::where('nomor_return', $data['nomor'])->update(['nomor_bukti' => $request->nomor_bukti]);
             }
-            if ($tipeData[0] == 'TARGET' || $tipeData[0] == 'GONDOLA') {
-                $total = explode('-', $data['total']);
-                Promosi::where('tipe', $data['nomor'])->where('date_last', $data['date'])->where('total', $total[1])->update(['nomor_bukti' => $request->nomor_bukti]);
+            // if ($tipeData[0] == 'TARGET' || $tipeData[0] == 'GONDOLA') {
+            //     $total = explode('-', $data['total']);
+            //     Promosi::where('tipe', $data['nomor'])->where('date_last', $data['date'])->where('total', $total[1])->update(['nomor_bukti' => $request->nomor_bukti]);
+            // }
+            if ($tipeData[0] == 'AM') {
+                Promosi::where('nomor_promosi', $data['nomor'])->update(['nomor_bukti' => $request->nomor_bukti]);
             }
         }
 
@@ -224,6 +232,64 @@ class PembayaranController extends Controller
         return Redirect::route('pembayaran-hutang.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Update Pembayaran Hutang Success!");
+    }
+
+    public function indexHutangHapus(PembayaranDataTable $dataTable)
+    {
+        $title = 'Hapus Pembayaran Hutang';
+        
+        return $dataTable->render('pembayaran.hutang.hapus.index', compact('title'));
+    }
+
+    public function detailHutangHapus($id)
+    {
+        $title = 'Detail Hapus Pembayaran Hutang';
+        $pembayaran = Pembayaran::find($id);
+        $hutang = Hutang::select('nomor_receive as nomor', 'grand_total as total')
+            ->where('nomor_bukti', $pembayaran->nomor_bukti)
+            ->get()
+            ->map(function($item) {
+                $item->keterangan = 'PEMBAYARAN HUTANG';
+                return $item;
+            });
+
+        $pengembalian = Pengembalian::select('nomor_return as nomor', 'total')
+            ->where('nomor_bukti', $pembayaran->nomor_bukti)
+            ->get()
+            ->map(function($item) {
+                $item->keterangan = 'PEMBAYARAN HUTANG';
+                $item->total = -$item->total;
+                return $item;
+            });
+
+        $promosi = Promosi::select('nomor_promosi as nomor', 'total')
+            ->where('nomor_bukti', $pembayaran->nomor_bukti)
+            ->get()
+            ->map(function($item) {
+                $item->keterangan = 'BIAYA PROMOSI';
+                $item->total = -$item->total;
+                return $item;
+            });
+        $dataBukti = $hutang->concat($pengembalian)->concat($promosi);
+        $totalHutang = array_sum(array_column($dataBukti->toArray(), 'total'));
+        // dd($dataBukti);
+        
+        return view('pembayaran.hutang.hapus.show', compact('title', 'pembayaran', 'dataBukti', 'totalHutang'));
+    }
+
+    public function destroyHutang($id)
+    {
+        $pembayaran = Pembayaran::find($id);
+
+        Hutang::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
+        Pengembalian::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
+        Promosi::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
+        
+        $pembayaran->delete();
+        
+        return Redirect::route('pembayaran-hutang.index-hapus')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Delete Hutang Success!");
     }
 
     public function index()

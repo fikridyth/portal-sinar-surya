@@ -21,7 +21,7 @@ class HutangDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->select('id_supplier')->groupBy('id_supplier')))
+        return (new EloquentDataTable($query->select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 $detailUrl = route('pembayaran-hutang.show', $row->id_supplier);
@@ -38,7 +38,7 @@ class HutangDataTable extends DataTable
                     $q->where('nama', 'like', "%{$keyword}%");
                 });
             })
-            ->rawColumns(['supplier_name', 'action']);
+            ->rawColumns(['supplier_name']);
     }
 
     /**

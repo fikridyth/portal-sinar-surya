@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('promosis', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
+            $table->string('nomor_promosi');
+            $table->string('nomor_bukti')->nullable();
             $table->string('tipe')->nullable();
             $table->bigInteger('total')->default(0);
-            $table->string('nomor_bukti')->nullable();
             $table->date('date');
             $table->timestamps();
         });
