@@ -185,9 +185,9 @@
                                 <div class="column"><div class="form-group"><input type="text" id="diskon3-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="ppn-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="price-ppn-input" disabled size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" id="diskon4-input" size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" id="diskon5-input" size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" id="diskon6-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon4-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon5-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon6-input" size="9"></div></div>
                             </div>
 
                             <div class="d-flex justify-content-between mt-2">

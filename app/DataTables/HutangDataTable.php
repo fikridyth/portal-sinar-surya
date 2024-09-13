@@ -21,7 +21,7 @@ class HutangDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')))
+        return (new EloquentDataTable($query->select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->groupBy('id_supplier')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 $detailUrl = route('pembayaran-hutang.show', $row->id_supplier);

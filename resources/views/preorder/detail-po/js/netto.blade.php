@@ -3,6 +3,10 @@
         // Ambil nilai diskon
         const discountInput = document.getElementById('diskon4-input');
         const discountValue = parseFloat(discountInput.value) || 0;
+        const discount2Input = document.getElementById('diskon5-input');
+        const discount2Value = parseFloat(discount2Input.value) || 0;
+        const discount3Input = document.getElementById('diskon6-input');
+        const discount3Value = parseFloat(discount3Input.value) || 0;
 
         // Ambil semua elemen input harga
         const priceInputs = document.querySelectorAll('.price-input');
@@ -28,6 +32,13 @@
         discountInput.addEventListener('input', function() {
             updateNettoForAll();
         });
+        discount2Input.addEventListener('input', function() {
+            updateNettoForAll();
+        });
+        discount3Input.addEventListener('input', function() {
+            updateNettoForAll();
+        });
+
 
         // Tambahkan event listener untuk checkbox
         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -48,10 +59,11 @@
         // Ambil nilai diskon
         const discountInput = document.getElementById('diskon4-input');
         const discountValue = parseFloat(discountInput.value) || 0;
-        // const discount2Input = document.getElementById('diskon5-input');
-        // const discount2Value = parseFloat(discount2Input.value) || 0;
-        // const discount2Input = document.getElementById('diskon6-input');
-        // const discount2Value = parseFloat(discount2Input.value) || 0;
+        const discount2Input = document.getElementById('diskon5-input');
+        const discount2Value = parseFloat(discount2Input.value) || 0;
+        const discount3Input = document.getElementById('diskon6-input');
+        const discount3Value = parseFloat(discount3Input.value) || 0;
+        // console.log(discountValue, discount2Value, discount3Value)
 
         // Update semua elemen netto
         document.querySelectorAll('.netto').forEach(nettoElement => {
@@ -60,18 +72,34 @@
             const checkbox = document.getElementById('checkbox-' + index);
 
             let initialPrice = parseFloat(priceInput.value.replace(/[^0-9.-]+/g, '')) || 0;
-
+            
             // Cek status checkbox dan diskon
             if (checkbox && checkbox.checked) {
                 if (discountValue >= 1 && discountValue <= 99) {
                     // Diskon persentase
-                    initialPrice -= (initialPrice * discountValue) / 100;
+                    initialPrice -= Math.round((initialPrice * discountValue) / 100);
                 } else if (discountValue > 99) {
                     // Diskon flat
                     initialPrice -= discountValue;
                 }
-            }
 
+                if (discount2Value >= 1 && discount2Value <= 99) {
+                    // Diskon persentase kedua
+                    initialPrice -= Math.round((initialPrice * discount2Value) / 100);
+                } else if (discount2Value > 99) {
+                    // Diskon flat kedua
+                    initialPrice -= discount2Value;
+                }
+
+                if (discount3Value >= 1 && discount3Value <= 99) {
+                    // Diskon persentase ketiga
+                    initialPrice -= Math.round((initialPrice * discount3Value) / 100);
+                } else if (discount3Value > 99) {
+                    // Diskon flat ketiga
+                    initialPrice -= discount3Value;
+                }
+            }
+            
             // Perbarui nilai netto
             nettoElement.textContent = new Intl.NumberFormat().format(initialPrice);
         });
