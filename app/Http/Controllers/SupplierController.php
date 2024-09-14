@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SupplierDataTable;
+use App\Models\Promosi;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -99,7 +100,82 @@ class SupplierController extends Controller
         Supplier::find($id)->delete();
 
         return Redirect::route('master.supplier.index')
-            ->with('alert.status', '01')
+            ->with('alert.status', '00')
             ->with('alert.message', "Delete Supplier Success!");
+    }
+    
+    public function indexPromosi()
+    {
+        $title = 'Master Promosi';
+        $promosi = Promosi::whereNull('nomor_bukti')->get();
+        $suppliers = Supplier::all();
+        $now = now()->format('Y-m-d');
+
+        return view('master/supplier/promosi/index', compact('title', 'promosi', 'suppliers', 'now'));
+    }
+    
+    public function indexAllPromosi()
+    {
+        $title = 'Master Promosi';
+        $promosi = Promosi::all();
+
+        return view('master/supplier/promosi/index-all', compact('title', 'promosi'));
+    }
+
+    public function storePromosi(Request $request)
+    {
+        // dd($request->all());
+
+        // get nomor promosi
+        $sequence = '0001';
+        $dateNow = now()->format('ym');
+        $getLastPo = Promosi::max("nomor_promosi");
+        if ($getLastPo) {
+            $explodeLastPo = explode('-', $getLastPo);
+            if ($explodeLastPo[1] == $dateNow) {
+                $sequence = (int) $explodeLastPo[2] + 1;
+            } else {
+                (int) $sequence;
+            }
+        } else {
+            (int) $sequence;
+        } 
+        $getNomorPromo = 'AM-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+
+        Promosi::create([
+            'id_supplier' => $request->supplier_id,
+            'nomor_promosi' => $getNomorPromo,
+            'tipe' => $request->tipe,
+            'total' => $request->total,
+            'date_first' => $request->date_first,
+            'date_last' => $request->date_last,
+        ]);
+
+        return Redirect::route('master.promosi.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Tambah Promosi Success!");
+    }
+
+    public function updatePromosi(Request $request, $id)
+    {
+        // dd($request->id_supplier, $id);
+        Promosi::find($id)->update([
+            'id_supplier' => $request->id_supplier,
+            'tipe' => $request->tipe,
+            'total' => $request->total,
+            'date_first' => $request->date_first,
+            'date_last' => $request->date_last,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Data saved successfully.']);
+    }
+
+    public function destroyPromosi(string $id)
+    {
+        Promosi::find($id)->delete();
+
+        return Redirect::route('master.promosi.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Delete Promosi Success!");
     }
 }

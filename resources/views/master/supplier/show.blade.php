@@ -497,18 +497,27 @@
             </div>
 
             <div class="row">
-                <div class="col-6 mb-2">
+                <div class="col-2-5 mb-2">
                     <div class="row align-items-center">
-                        <div class="col-3">
+                        <div class="col-7-5">
                             <label class="form-label h6 mt-2" for="kode">PPN</label>
                         </div>
-                        <div class="col-5">
+                        <div class="col-4">
                             <div class="slider-container">
                                 <input type="checkbox" id="ppn" name="ppn" {{ $supplier->is_ppn ? 'checked' : '' }} @disabled(true) class="slider-checkbox">
                                 <label for="ppn" class="slider-label"></label>
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="col-1-5">
+                    <a href="{{ route('master.promosi.index') }}" class="btn btn-success" style="width: 100%">DATA PROMOSI</a>
+                </div>
+                <div class="col-1-5">
+                    <a href="{{ route('master.promosi.index-all') }}" class="btn btn-success" style="width: 100%">LIST PROMOSI</a>
+                </div>
+                <div class="col-1-5">
+                    <a href="" class="btn btn-success" style="width: 100%">MATERAI</a>
                 </div>
             </div>
             {{-- end border --}}

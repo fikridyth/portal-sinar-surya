@@ -99,6 +99,11 @@ Route::middleware('auth')->group(function () {
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
         Route::get('/get-departemen', [DepartemenController::class, 'getDepartemenByUnit'])->name('get-departemen');
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
+        Route::get('/promosi', [SupplierController::class, 'indexPromosi'])->name('promosi.index');
+        Route::get('/promosi-all', [SupplierController::class, 'indexAllPromosi'])->name('promosi.index-all');
+        Route::post('/promosi/store', [SupplierController::class, 'storePromosi'])->name('promosi.store');
+        Route::put('/promosi/{id}/update', [SupplierController::class, 'updatePromosi'])->name('promosi.update');
+        Route::delete('/promosi/{id}/destroy', [SupplierController::class, 'destroyPromosi'])->name('promosi.destroy');
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);

@@ -37,4 +37,19 @@
         flex: 0 0 7.33%; /* Lebar 1/12 dari lebar kontainer (7.33% x 12 = 100%) */
         max-width: 7.33%;
     }
+
+    .col-1-5 {
+        flex: 0 0 12.33%; /* Lebar 1/12 dari lebar kontainer (12.33% x 12 = 100%) */
+        max-width: 12.33%;
+    }
+
+    .col-2-5 {
+        flex: 0 0 20.33%; /* Lebar 1/12 dari lebar kontainer (12.33% x 12 = 100%) */
+        max-width: 20.33%;
+    }
+
+    .col-7-5 {
+        flex: 0 0 61.33%; /* Lebar 1/17 dari lebar kontainer (17.33% x 17 = 100%) */
+        max-width: 61.33%;
+    }
 </style>
