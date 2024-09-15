@@ -230,12 +230,16 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">DISKON</label>
                         </div>
                         <div class="col-2">
-                            <input type="text" id="kode" name="kode" value="0"
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->disc }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
                                 autocomplete="off" readonly />
                         </div>
                         <div class="col-1">
                             <label class="form-label h6 mt-2" for="nama_sumber">%</label>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-4">
+                            <a href="{{ route('master.history-preorder.index') }}" class="btn btn-sm btn-primary">SEJARAH PEMBELIAN</a>
                         </div>
                     </div>
                 </div>
@@ -272,7 +276,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">HARI</label>
                         </div>
                         <div class="col-3">
-                            <input type="text" id="kode" name="kode" value="MINGGU"
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->hari }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -401,7 +405,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">BIAYA MATERAI</label>
                         </div>
                         <div class="col-2">
-                            <input type="text" id="kode" name="kode" value="0"
+                            <input type="text" id="kode" name="kode" value="{{ number_format($supplier->materai) }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
                                 autocomplete="off" readonly />
                         </div>
@@ -428,7 +432,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">UPAH / KOLI</label>
                         </div>
                         <div class="col-4">
-                            <input type="text" id="kode" name="kode" value="0"
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->koli }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
                                 autocomplete="off" readonly />
                         </div>
@@ -517,7 +521,7 @@
                     <a href="{{ route('master.promosi.index-all') }}" class="btn btn-success" style="width: 100%">LIST PROMOSI</a>
                 </div>
                 <div class="col-1-5">
-                    <a href="" class="btn btn-success" style="width: 100%">MATERAI</a>
+                    <a href="{{ route('master.materai.index') }}" class="btn btn-success" style="width: 100%">MATERAI</a>
                 </div>
             </div>
             {{-- end border --}}
@@ -549,28 +553,28 @@
 
 @section('scripts')
 <script>
-    // Mengambil elemen input dengan ID 'kode'
-    var rataElement = document.getElementById('penjualan_rata');
-    var waktuElement = document.getElementById('waktu_kunjungan');
-    var minElement = document.getElementById('stok_minimum');
-    var maxElement = document.getElementById('stok_maksimum');
+    // // Mengambil elemen input dengan ID 'kode'
+    // var rataElement = document.getElementById('penjualan_rata');
+    // var waktuElement = document.getElementById('waktu_kunjungan');
+    // var minElement = document.getElementById('stok_minimum');
+    // var maxElement = document.getElementById('stok_maksimum');
     
-    // Mengambil nilai saat ini dari elemen input
-    var rataValue = rataElement.value;
-    var waktuValue = waktuElement.value;
-    var minValue = minElement.value;
-    var maxValue = maxElement.value;
+    // // Mengambil nilai saat ini dari elemen input
+    // var rataValue = rataElement.value;
+    // var waktuValue = waktuElement.value;
+    // var minValue = minElement.value;
+    // var maxValue = maxElement.value;
     
-    // Menambahkan teks 'hari' ke nilai saat ini
-    var rataNewValue = rataValue + ' Hari';
-    var WaktuNewValue = waktuValue + ' Hari';
-    var minNewValue = minValue + ' Hari';
-    var maxNewValue = maxValue + ' Hari';
+    // // Menambahkan teks 'hari' ke nilai saat ini
+    // var rataNewValue = rataValue + ' Hari';
+    // var WaktuNewValue = waktuValue + ' Hari';
+    // var minNewValue = minValue + ' Hari';
+    // var maxNewValue = maxValue + ' Hari';
     
-    // Mengupdate nilai elemen input
-    rataElement.value = rataNewValue;
-    waktuElement.value = WaktuNewValue;
-    minElement.value = minNewValue;
-    maxElement.value = maxNewValue;
+    // // Mengupdate nilai elemen input
+    // rataElement.value = rataNewValue;
+    // waktuElement.value = WaktuNewValue;
+    // minElement.value = minNewValue;
+    // maxElement.value = maxNewValue;
 </script>
 @endsection

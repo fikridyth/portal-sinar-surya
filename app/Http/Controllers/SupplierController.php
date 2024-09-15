@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\HistoryPoDataTable;
+use App\DataTables\MateraiDataTable;
 use App\DataTables\SupplierDataTable;
 use App\Models\Promosi;
 use App\Models\Supplier;
@@ -177,5 +179,28 @@ class SupplierController extends Controller
         return Redirect::route('master.promosi.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Delete Promosi Success!");
+    }
+    
+    public function indexMaterai(MateraiDataTable $dataTable)
+    {
+        $title = 'Master Materai';
+
+        return $dataTable->render('master.supplier.index-materai', compact('title'));
+    }
+
+    public function updateMaterai($id)
+    {
+        $supplier = Supplier::find($id);
+        if ($supplier->materai == 10000) $supplier->update(['materai' => 0]);
+        else $supplier->update(['materai' => 10000]);
+
+        return response()->json(['success' => true, 'message' => 'Data saved successfully.']);
+    }
+
+    public function indexHistoryPo(HistoryPoDataTable $dataTable)
+    {
+        $title = 'Master History Preorder';
+
+        return $dataTable->render('master.supplier.index-history', compact('title'));
     }
 }

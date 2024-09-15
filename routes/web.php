@@ -104,6 +104,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/promosi/store', [SupplierController::class, 'storePromosi'])->name('promosi.store');
         Route::put('/promosi/{id}/update', [SupplierController::class, 'updatePromosi'])->name('promosi.update');
         Route::delete('/promosi/{id}/destroy', [SupplierController::class, 'destroyPromosi'])->name('promosi.destroy');
+        Route::get('/materai', [SupplierController::class, 'indexMaterai'])->name('materai.index');
+        Route::put('/materai/{id}/update', [SupplierController::class, 'updateMaterai'])->name('materai.update');
+        Route::get('/history-preorder', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
