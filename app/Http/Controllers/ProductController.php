@@ -104,7 +104,7 @@ class ProductController extends Controller
     public function stockOpname()
     {
         $title = 'Stock Opname';
-        $products = Product::Filter(request(['unit', 'departemen', 'supplier']))->orderBy('nama', 'asc')->get();
+        $products = Product::Filter(request(['unit', 'departemen', 'supplier']))->orderBy('nama', 'asc')->limit(10)->get();
         $units = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::all();

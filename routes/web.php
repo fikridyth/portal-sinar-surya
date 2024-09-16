@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/pembayaran-history/{id}/destroy', [PembayaranController::class, 'destroyHistory'])->name('pembayaran.destroy-history');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
-    Route::delete('/pembayaran/{id}/destroy', [PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
+    Route::delete('/pembayaran/destroy-payment/{id}', [PembayaranController::class, 'destroyPayment'])->name('pembayaran.destroy-payment');
     // Route::get('/default-bank', [PembayaranController::class, 'defaultBank'])->name('pembayaran.default-bank');
 
     // Laporan
@@ -114,9 +114,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/giro', [GiroController::class, 'index'])->name('giro.index');
         Route::get('/giro/create/{id}', [GiroController::class, 'create'])->name('giro.create');
         Route::post('/giro/store/{id}', [GiroController::class, 'store'])->name('giro.store');
+        Route::get('/giro/show/{id}', [GiroController::class, 'show'])->name('giro.show');
         Route::get('/get-data-giro', [GiroController::class, 'getData']);
+        Route::get('/get-bayar-giro', [GiroController::class, 'getDataBayar']);
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
-        Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
+        Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id'], 'except' => ['create']]);
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
         Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
         Route::get('/product/create/{id}', [ProductController::class, 'create'])->name('product.create');

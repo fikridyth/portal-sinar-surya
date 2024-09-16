@@ -52,7 +52,7 @@
                             <th class="text-center">C/G</th>
                             <th class="text-center">STATUS</th>
                             <th class="text-center">DETAIL</th>
-                            <th class="text-center">HAPUS</th>
+                            {{-- <th class="text-center">HAPUS</th> --}}
                         </tr>
                     </thead>
                     <tbody id="data-tbody">
@@ -100,8 +100,7 @@
                                     <td class="text-center">/ /</td>
                                     <td class="text-center">GIRO</td>
                                     <td class="text-center">${item.status}</td>
-                                    <td class="text-center"><button class="btn btn-info btn-sm">Detail</button></td>
-                                    <td class="text-center"><button class="btn btn-danger btn-sm">Hapus</button></td>
+                                    <td class="text-center"><a href="giro/show/${item.id}" class="btn btn-info btn-sm">Detail</a></td>
                                 `;
                                 tbody.appendChild(row2);
                             });
@@ -112,15 +111,6 @@
 
             bankSelect.addEventListener('change', updateTable);
             rekeningRadios.forEach(radio => radio.addEventListener('change', updateTable));
-        });
-
-        const buatGiroButton = document.querySelector('button.btn-primary');
-        const giroModal = document.getElementById('giroModal');
-
-        // Tambahkan event listener ke tombol
-        buatGiroButton.addEventListener('click', () => {
-            // Tampilkan modal
-            $(giroModal).modal('show');
         });
     </script>
 @endsection

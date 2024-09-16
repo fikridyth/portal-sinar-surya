@@ -33,7 +33,7 @@
                                         <input type="number" hidden name="id" value="1">
                                         <button type="submit" class="btn btn-sm btn-danger">DEFAULT BANK</button>
                                     </form> --}}
-                                    <a href="{{ route('pembayaran.index') }}" class="btn btn-sm btn-danger">DEFAULT BANK</a>
+                                    {{-- <a href="{{ route('pembayaran.index') }}" class="btn btn-sm btn-danger">DEFAULT BANK</a> --}}
                                 </div>
                             </div>
                             <div class="row mb-1">
@@ -41,7 +41,7 @@
                                     <label for="">BANK</label>
                                 </div>
                                 <div class="col-8">
-                                    <select id="select-banks" class="product-select btn-block">
+                                    <select id="bank-select" class="bank-select btn-block">
                                         @foreach ($banks as $bank)
                                             <option value="{{ $bank->id }}" data-no-rekening="{{ $bank->no_rekening }}">{{ $bank->nama }}</option>
                                         @endforeach
@@ -59,15 +59,15 @@
                             <div class="row mb-1 mt-3">
                                 <div class="col-2"></div>
                                 <div class="col-2" style="background-color: brown;">
-                                    <input type="radio" id="cek" name="rekening" value="cek">
+                                    <input type="radio" id="cek" name="rekening" value="CK">
                                     <label for="cek" style="color: white;">CEK</label>
                                 </div>
                                 <div class="col-2" style="background-color: brown;">
-                                    <input type="radio" id="giro" name="rekening" value="giro">
+                                    <input type="radio" id="giro" name="rekening" value="GR">
                                     <label for="giro" style="color: white;">GIRO</label>
                                 </div>
                                 <div class="col-3" style="background-color: brown;">
-                                    <input type="radio" id="transfer" name="rekening" value="transfer">
+                                    <input type="radio" id="transfer" name="rekening" value="TR">
                                     <label for="transfer" style="color: white;">TRANSFER</label>
                                 </div>
                             </div>
@@ -90,22 +90,19 @@
                             </table>
                             <hr>
                             <h6 class="text-center">BUKU CEK/GIRO</h6>
-                            <table class="table table-bordered">
+                            <table id="data-table" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">TANGGAL</th>
-                                        <th class="text-center">JUMLAH RP</th>
-                                        <th class="text-center">SALDO RP</th>
+                                        <th class="text-center">DARI NOMOR</th>
+                                        <th class="text-center">SAMPAI NOMOR</th>
+                                        <th class="text-center">SISA</th>
+                                        <th class="text-center">RUSAK</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
+                                <tbody id="data-tbody">
                                 </tbody>
                             </table>
+                            <hr>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('index') }}" class="btn btn-danger">SELESAI</a>
                             </div>
@@ -117,6 +114,12 @@
                                     <a href="{{ route('index') }}" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
                                     <a href="{{ route('index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a>
+                                    <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a>
+                                    <form id="delete-form" method="POST" style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="id" id="delete-id">
+                                    </form>
                                 </div>
                                 
                                 <!-- Bagian Tabel -->
@@ -172,30 +175,28 @@
                                             </td>
                                             <td>{{ $pmb->supplier->nama }}</td>
                                             <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
-                                            <td>{{ $pmb->nomor_giro }}</td>
+                                            <td class="keterangan_bayar">{{ $pmb->nomor_giro }}</td>
                                             <td class="text-center"><input type="checkbox" class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}"></td>
-                                            {{-- @if ($pmb->nomor_giro == null)
-                                                @if ($pmb->total !== 0)
-                                                    <td class="text-center"><a href="{{ route('pembayaran.show', $pmb->id) }}" class="btn btn-sm btn-primary">BAYAR</a></td>
-                                                @else
-                                                    <td class="text-center"><button disabled class="btn btn-sm btn-primary">BAYAR</button></td>
-                                                @endif
-                                            @else
-                                                <td class="text-center">
-                                                    <form action="{{ route('pembayaran.destroy', $pmb->id) }}" method="POST" style="display: inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger">HAPUS</button>
-                                                    </form>
-                                                </td>
-                                            @endif --}}
                                         </tr>
                                         @if ($pmb->id_supplier)
                                             @php $previousIdParent = $pmb->id_supplier; @endphp
                                         @endif
                                     @endforeach
+                                </tbody>
+                            </table>
+                            <hr>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">NOMOR GIRO</th>
+                                        <th class="text-center">JATUH TEMPO</th>
+                                        <th class="text-center">JUMLAH</th>
+                                        <th class="text-center">KETERANGAN</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="data-tbody-2">
                                 </tbody>
                             </table>
                         </div>
@@ -209,9 +210,9 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#select-banks').select2();
+            $('#bank-select').select2();
 
-            $('#select-banks').on('select2:select', function(e) {
+            $('#bank-select').on('select2:select', function(e) {
                 var selectedOption = e.params.data.element;
                 var noRekening = $(selectedOption).data('no-rekening');
                 $('#no-rekening').val(noRekening);
@@ -222,6 +223,7 @@
                 const nomorBukti = $(this).data('nomor');
                 const tanggalBukti = $(this).data('tanggal');
                 const jumlahBukti = $(this).data('jumlah');
+                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     // other table
                     $('#nomor-bukti').text(nomorBukti);
@@ -229,8 +231,22 @@
                     $('#jumlah-bukti').text(jumlahBukti);
 
                     // link
-                    $('#button-bayar').removeClass('disabled-link');
-                    $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
+                    if (keteranganBayar === '') {
+                        // keterangan bayar null, aktifkan button-bayar dan nonaktifkan button-hapus
+                        $('#button-bayar').removeClass('disabled-link');
+                        $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
+                        
+                        $('#button-hapus').addClass('disabled-link');
+                        $('#button-hapus').attr('href', '#');
+                    } else {
+                        // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-bayar
+                        $('#button-bayar').addClass('disabled-link');
+                        $('#button-bayar').attr('href', '#');
+                        
+                        $('#button-hapus').removeClass('disabled-link');
+                        $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
+                        $('#button-hapus').data('id', id); // Simpan ID untuk penghapusan
+                    }
 
                     // other checkbox
                     $('input[type="checkbox"]').not(this).prop('disabled', true);
@@ -241,10 +257,80 @@
 
                     $('#button-bayar').addClass('disabled-link');
                     $('#button-bayar').attr('href', '#');
+                    $('#button-hapus').addClass('disabled-link');
+                    $('#button-hapus').attr('href', '#');
 
                     $('input[type="checkbox"]').prop('disabled', false);
                 }
             });
+
+            $('#button-hapus').click(function (e) {
+                e.preventDefault(); // Mencegah navigasi default
+
+                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                    // Set ID ke formulir dan kirim formulir
+                    var id = $(this).data('id');
+                    // Set the ID to the hidden input field
+                    $('#delete-id').val(id);
+                    // Set the action URL of the form
+                    $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
+                    // Submit the form
+                    $('#delete-form').submit();
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const bankSelect = document.querySelector('.bank-select');
+            const rekeningRadios = document.querySelectorAll('input[name="rekening"]');
+
+            function updateTable() {
+                const idBank = bankSelect.value;
+                const rekening = Array.from(rekeningRadios).find(radio => radio.checked)?.value;
+
+                if (idBank && rekening) {
+                    fetch(`/master/get-bayar-giro?id_bank=${idBank}&rekening=${rekening}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const tbody = document.getElementById('data-tbody');
+                            tbody.innerHTML = ''; // Clear existing data
+
+                            data.dataHeader.forEach(item => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td class="text-center">${item.kode} ${item.dari}</td>
+                                    <td class="text-center">${item.kode} ${item.sampai}</td>
+                                    <td class="text-center">${item.remainingAmount}</td>
+                                    <td class="text-center">0</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+
+                            
+                            const tbody2 = document.getElementById('data-tbody-2');
+                            tbody2.innerHTML = ''; // Clear existing data
+
+                            data.dataDetail.forEach(item => {
+                                const row2 = document.createElement('tr');
+                                row2.innerHTML = `
+                                    <td class="text-center">${item.nomor}</td>
+                                    <td class="text-center">${item.tanggal_akhir}</td>
+                                    <td class="text-end">${number_format(item.jumlah) ?? 0}</td>
+                                    <td class="text-center"></td>
+                                `;
+                                tbody2.appendChild(row2);
+                            });
+
+                            function number_format(number) {
+                                return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            }
+                        })
+                    .catch(error => console.error('Error fetching data:', error));
+                }
+            }
+
+            bankSelect.addEventListener('change', updateTable);
+            rekeningRadios.forEach(radio => radio.addEventListener('change', updateTable));
         });
     </script>
 @endsection

@@ -129,4 +129,47 @@ class GiroController extends Controller
             ->with('alert.status', '00')
             ->with('alert.message', "Buat Giro Success!");
     }
+
+    public function show($id)
+    {
+        $title = 'Detail Giro';
+        $giroHeader = GiroHeader::find($id);
+        $giroDetail = GiroDetail::where('dari', $giroHeader->dari)->get();
+        // $banks = Bank::find($giroHeader->id_bank);
+        // dd($giroDetail);
+
+        return view('master.giro.show', compact('title', 'giroDetail'));
+    }
+
+    public function getDataBayar(Request $request)
+    {
+        $idBank = $request->input('id_bank');
+        $rekening = $request->input('rekening');
+
+        // Fetch data from database
+        $dataHeader = GiroHeader::where('id_bank', $idBank)->where('kode', $rekening)->orderBy('dari', 'desc')->limit(10)->get();
+        foreach ($dataHeader as $data) {
+            $dataDetails = GiroDetail::where('id_bank', $idBank)->where('kode', $rekening)->where('dari', $data->dari)->get();
+
+            $data->remainingAmount = count($dataDetails);
+
+            foreach ($dataDetails as $detail) {
+                // Check if 'jumlah' is not null or empty and add to remaining amount
+                if (!is_null($detail->jumlah) && $detail->jumlah !== '') {
+                    // Accumulate the amount
+                    $data->remainingAmount -= 1;
+                }
+            }
+        }
+
+        $filledData = GiroDetail::where('id_bank', $idBank)->whereNotNull('jumlah')->orderBy('nomor', 'desc')->limit(5)->get()->reverse();
+        $emptyData = GiroDetail::where('id_bank', $idBank)->whereNull('jumlah')->limit(5)->get();
+        $dataDetail = $filledData->merge($emptyData);
+        // dd($dataDetails);
+        
+        return response()->json([
+            'dataHeader' => $dataHeader,
+            'dataDetail' => $dataDetail
+        ]);
+    }
 }
