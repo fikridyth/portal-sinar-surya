@@ -88,19 +88,56 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            <hr>
+                            <h6 class="text-center">BUKU CEK/GIRO</h6>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">TANGGAL</th>
+                                        <th class="text-center">JUMLAH RP</th>
+                                        <th class="text-center">SALDO RP</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <div class="d-flex justify-content-center">
                                 <a href="{{ route('index') }}" class="btn btn-danger">SELESAI</a>
                             </div>
                         </div>
                         <div class="form-group col-7">
-                            <div class="d-flex mb-2">
-                                <a href="{{ route('index') }}" style="width: 20%;" id="button-gabung" class="btn btn-sm btn-danger disabled-link">PROSES GABUNG</a>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <a href="{{ route('index') }}" style="width: 20%;" id="button-cetak" class="btn btn-sm btn-danger disabled-link">CETAK GIRO</a>
-                            </div>
-                            <div class="d-flex mb-2">
-                                <a href="{{ route('index') }}" style="width: 20%;" id="button-bayar" class="btn btn-sm btn-danger disabled-link">BAYAR CABANG</a>
+                            <div class="d-flex mb-2 align-items-center">
+                                <!-- Bagian Link -->
+                                <div class="d-flex flex-column" style="width: 20%;">
+                                    <a href="{{ route('index') }}" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
+                                    <a href="{{ route('index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
+                                    <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a>
+                                </div>
+                                
+                                <!-- Bagian Tabel -->
+                                <div class="flex-grow-1">
+                                    <table class="table table-bordered mx-5" style="width: 90%">
+                                        <thead>
+                                            <tr>
+                                                <th>DOKUMEN</th>
+                                                <th>TANGGAL BAYAR</th>
+                                                <th>JUMLAH</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td id="nomor-bukti">
+                                                <td id="tanggal-bukti"></td>
+                                                <td id="jumlah-bukti"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <table class="table table-bordered">
                                 <thead>
@@ -125,8 +162,8 @@
                                     @foreach ($pembayarans as $index => $pmb)
                                         <tr>
                                             {{-- <td class="text-center">{{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}</td> --}}
-                                            <td class="text-center">
-                                                @if ($pmb->id_parent !== $previousIdParent)
+                                            <td class="text-center" style="color: <?= $pmb->nomor_giro !== null ? 'red' : 'black'; ?>">
+                                                @if ($pmb->id_supplier !== $previousIdParent)
                                                     {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
                                                     @php $counter++; @endphp
                                                 @else
@@ -136,7 +173,7 @@
                                             <td>{{ $pmb->supplier->nama }}</td>
                                             <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
                                             <td>{{ $pmb->nomor_giro }}</td>
-                                            <td class="text-center"><input type="checkbox" class="input-check" id="input-check-{{ $index }}"></td>
+                                            <td class="text-center"><input type="checkbox" class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}"></td>
                                             {{-- @if ($pmb->nomor_giro == null)
@@ -155,8 +192,8 @@
                                                 </td>
                                             @endif --}}
                                         </tr>
-                                        @if ($pmb->id_parent)
-                                            @php $previousIdParent = $pmb->id_parent; @endphp
+                                        @if ($pmb->id_supplier)
+                                            @php $previousIdParent = $pmb->id_supplier; @endphp
                                         @endif
                                     @endforeach
                                 </tbody>
@@ -181,11 +218,30 @@
             });
 
             $('.input-check').change(function () {
+                const id = $(this).data('id');
+                const nomorBukti = $(this).data('nomor');
+                const tanggalBukti = $(this).data('tanggal');
+                const jumlahBukti = $(this).data('jumlah');
                 if ($(this).is(':checked')) {
+                    // other table
+                    $('#nomor-bukti').text(nomorBukti);
+                    $('#tanggal-bukti').text(tanggalBukti);
+                    $('#jumlah-bukti').text(jumlahBukti);
+
+                    // link
                     $('#button-bayar').removeClass('disabled-link');
+                    $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
+
+                    // other checkbox
                     $('input[type="checkbox"]').not(this).prop('disabled', true);
                 } else {
+                    $('#nomor-bukti').text('');
+                    $('#tanggal-bukti').text('');
+                    $('#jumlah-bukti').text('');
+
                     $('#button-bayar').addClass('disabled-link');
+                    $('#button-bayar').attr('href', '#');
+
                     $('input[type="checkbox"]').prop('disabled', false);
                 }
             });

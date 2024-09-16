@@ -1,0 +1,33 @@
+@extends('main')
+
+@section('content')
+    <div class="container mb-7">
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="mt-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active h3 text-center" aria-current="page">HISTORY PEMBAYARAN CEK/GIRO
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                {{ $dataTable->table() }}
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    {{ $dataTable->scripts() }}
+    <script>
+        function deleteData(id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                document.getElementById('delete-form-' + id).submit();
+            }
+        }
+    </script>
+@endsection

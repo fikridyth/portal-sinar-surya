@@ -23,6 +23,7 @@
                                 <div class="row form-group">
                                     <div class="col-4"><label for="">NOMOR BUKTI</label></div>
                                     <div class="col-8"><input type="text" name="nomor_bukti" class="mx-2 readonly-input" size="42" readonly value="{{ $getNomorBukti }}"></div>
+                                    <input type="text" hidden name="nomor_po" value="">
                                 </div>
                             </div>
                         </div>

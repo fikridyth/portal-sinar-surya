@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\HistoryPembayaranDataTable;
 use App\DataTables\HutangDataTable;
 use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
@@ -205,6 +206,7 @@ class PembayaranController extends Controller
             $tipeData = explode('-', $data['nomor']);
             if ($tipeData[0] == 'RP') {
                 Hutang::where('nomor_receive', $data['nomor'])->update(['nomor_bukti' => $request->nomor_bukti]);
+                Preorder::where('nomor_receive', $data['nomor'])->update(['nomor_bukti' => $request->nomor_bukti]);
             }
             if ($tipeData[0] == 'RR') {
                 Pengembalian::where('nomor_return', $data['nomor'])->update(['nomor_bukti' => $request->nomor_bukti]);
@@ -282,6 +284,7 @@ class PembayaranController extends Controller
         $pembayaran = Pembayaran::find($id);
 
         Hutang::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
+        Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
         Pengembalian::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
         Promosi::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
         
@@ -296,7 +299,7 @@ class PembayaranController extends Controller
     {
         $title = 'List Pembayaran';
         $pembayarans = Pembayaran::whereNull('is_bayar')->get();
-        $banks = Bank::orderBy('nama', 'desc')->get();
+        $banks = Bank::orderByRaw('is_default desc')->get();
         
         return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
     }
@@ -314,7 +317,8 @@ class PembayaranController extends Controller
     {
         // dd($id, $request->all());
         $pembayaran = Pembayaran::find($id);
-        $getPreorder = Preorder::where('nomor_po', $pembayaran->nomor_po)->first();
+        $getPreorder = Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->first();
+        // dd($getPreorder);
 
         $pembayaran->update([
             'is_bayar' => 1,
@@ -324,8 +328,10 @@ class PembayaranController extends Controller
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
             'nomor_po' => $pembayaran->nomor_po,
+            'nomor_bukti' => $pembayaran->nomor_bukti,
             'grand_total' => $request->payment ?? 0,
             'nomor_giro' => 'TUNAI',
+            'is_bayar' => 1,
             'id_parent' => $id
         ]);
 
@@ -333,8 +339,10 @@ class PembayaranController extends Controller
             'id_supplier' => $pembayaran->id_supplier,
             'date' => now()->format('Y-m-d'),
             'nomor_po' => $pembayaran->nomor_po,
+            'nomor_bukti' => $pembayaran->nomor_bukti,
             'grand_total' => $request->other_income ?? 0,
             'nomor_giro' => 'OTHER INCOME',
+            'is_bayar' => 1,
             'id_parent' => $id
         ]);
 
@@ -360,5 +368,23 @@ class PembayaranController extends Controller
         return Redirect::route('pembayaran.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Delete Pembayaran Success!");
+    }
+
+    public function indexHistory(HistoryPembayaranDataTable $dataTable)
+    {
+        $title = 'Hapus Pembayaran Hutang';
+        
+        return $dataTable->render('pembayaran.index-history', compact('title'));
+    }
+
+    public function destroyHistory($id)
+    {
+        $pembayaran = Pembayaran::find($id);
+        Pembayaran::where('id_parent', $pembayaran->id_parent)->delete();
+        Pembayaran::where('id', $pembayaran->id_parent)->update(['is_bayar' => null]);
+        
+        return Redirect::route('pembayaran.index-history')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Hapus History Pembayaran Success!");
     }
 }

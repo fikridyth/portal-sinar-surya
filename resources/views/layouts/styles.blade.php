@@ -52,4 +52,13 @@
         flex: 0 0 61.33%; /* Lebar 1/17 dari lebar kontainer (17.33% x 17 = 100%) */
         max-width: 61.33%;
     }
+
+    .table thead th {
+        background-color: aquamarine !important;
+        border: 1px solid black;
+    }
+
+    .table tbody td {
+        border: 1px solid black; /* Mengatur warna border menjadi hitam */
+    }
 </style>

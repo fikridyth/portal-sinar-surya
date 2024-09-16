@@ -63,6 +63,7 @@
                                         <table id="details-table" class="table table-bordered">
                                             <thead>
                                                 <tr class="fs-need">
+                                                    <th class="text-center">NOMOR PO</th>
                                                     <th class="text-center">KODE</th>
                                                     <th class="text-center">NAMA</th>
                                                     <th class="text-center">UNIT</th>
@@ -70,12 +71,13 @@
                                                     <th class="text-center">H JUAL B OFFICE</th>
                                                     <th class="text-center">H JUAL POS</th>
                                                     <th class="text-center">MARK UP</th>
-                                                    {{-- <th class="text-center">ANAK</th> --}}
+                                                    <th class="text-center">ACTION</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($allMatchingProducts as $product)
                                                     <tr class="fs-need">
+                                                        <td class="text-center">{{ $product['preorder'] }}</td>
                                                         <td class="text-center">{{ $product['kode'] }}</td>
                                                         <td>{{ $product['nama'] }}</td>
                                                         <td>{{ $product['unit'] }}</td>
@@ -83,6 +85,7 @@
                                                         <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
                                                         <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
                                                         <td class="text-end">{{ $product['mark_up'] }}</td>
+                                                        <td class="text-center"><a href="{{ route('persetujuan-harga-jual-edit', $product['id']) }}" class="btn btn-sm btn-primary">DETAIL</a></td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

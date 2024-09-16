@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\HistoryPoDataTable;
+use App\DataTables\KunjunganDataTable;
 use App\DataTables\MateraiDataTable;
 use App\DataTables\SupplierDataTable;
 use App\Models\Promosi;
@@ -202,5 +203,12 @@ class SupplierController extends Controller
         $title = 'Master History Preorder';
 
         return $dataTable->render('master.supplier.index-history', compact('title'));
+    }
+    
+    public function indexKunjungan(KunjunganDataTable $dataTable)
+    {
+        $title = 'Master Kunjungan';
+
+        return $dataTable->render('master.supplier.index-kunjungan', compact('title'));
     }
 }

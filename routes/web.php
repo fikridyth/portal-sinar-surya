@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
+use App\Http\Controllers\GiroController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KartuStokController;
 use App\Http\Controllers\PembayaranController;
@@ -85,6 +86,8 @@ Route::middleware('auth')->group(function () {
 
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran-history', [PembayaranController::class, 'indexHistory'])->name('pembayaran.index-history');
+    Route::delete('/pembayaran-history/{id}/destroy', [PembayaranController::class, 'destroyHistory'])->name('pembayaran.destroy-history');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
     Route::delete('/pembayaran/{id}/destroy', [PembayaranController::class, 'destroy'])->name('pembayaran.destroy');
@@ -99,6 +102,7 @@ Route::middleware('auth')->group(function () {
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
         Route::get('/get-departemen', [DepartemenController::class, 'getDepartemenByUnit'])->name('get-departemen');
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
+        Route::get('/kunjungan', [SupplierController::class, 'indexKunjungan'])->name('kunjungan.index');
         Route::get('/promosi', [SupplierController::class, 'indexPromosi'])->name('promosi.index');
         Route::get('/promosi-all', [SupplierController::class, 'indexAllPromosi'])->name('promosi.index-all');
         Route::post('/promosi/store', [SupplierController::class, 'storePromosi'])->name('promosi.store');
@@ -107,6 +111,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/materai', [SupplierController::class, 'indexMaterai'])->name('materai.index');
         Route::put('/materai/{id}/update', [SupplierController::class, 'updateMaterai'])->name('materai.update');
         Route::get('/history-preorder', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
+        Route::get('/giro', [GiroController::class, 'index'])->name('giro.index');
+        Route::get('/giro/create/{id}', [GiroController::class, 'create'])->name('giro.create');
+        Route::post('/giro/store/{id}', [GiroController::class, 'store'])->name('giro.store');
+        Route::get('/get-data-giro', [GiroController::class, 'getData']);
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id']]);
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);

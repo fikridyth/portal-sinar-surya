@@ -160,6 +160,7 @@
                                             <tbody>
                                                 <tr>
                                                     <input type="text" id="amount-total" value="{{ $pembayaran->grand_total }}" hidden>
+                                                    <input type="text" name="nomor_bukti" value="{{ $pembayaran->nomor_bukti }}" hidden>
                                                     <input type="text" hidden id="amount1-1" name="payment" value="{{ $pembayaran->grand_total }}">
                                                     <td class="text-end" id="amount1">{{ number_format($pembayaran->grand_total) }}</td>
                                                     <td>{{ $pembayaran->nomor_giro ?? 'TUNAI' }}</td>

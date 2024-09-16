@@ -1030,6 +1030,8 @@ class PreOrderController extends Controller
                         $markupAmount = $matchingProduct->harga_jual - (int)$detail['price'];
                         $markupPercentage = ($markupAmount / (int)$detail['price']) * 100;
                         $allMatchingProducts->push([
+                            'id' => $preorder->id,
+                            'preorder' => $preorder->nomor_po,
                             'kode' => $matchingProduct->kode,
                             'nama' => $matchingProduct->nama . '/' . $matchingProduct->unit_jual,
                             'unit' => $matchingProduct->unit_jual,

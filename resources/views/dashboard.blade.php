@@ -24,9 +24,10 @@
                                 <a href="{{ route('master.unit.show', $unit->id) }}" class="btn btn-primary mb-2">UNIT</a>
                                 <a href="{{ route('master.departemen.show', $departemen->id) }}" class="btn btn-primary mb-2">DEPARTEMEN</a>
                                 <a href="{{ route('master.supplier.show', $supplier->id) }}" class="btn btn-primary mb-2">SUPPLIER</a>
-                                <a href="{{ route('master.supplier.show', $supplier->id) }}" class="btn btn-primary mb-2">KUNJUNGAN SPLR</a>
+                                <a href="{{ route('master.kunjungan.index') }}" class="btn btn-primary mb-2">KUNJUNGAN SUPPLIER</a>
                                 <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-primary mb-2">PERSEDIAAN</a>
                                 <a href="{{ route('master.kartu-stok.index') }}" class="btn btn-primary mb-2">KARTU STOK</a>
+                                <a href="{{ route('master.giro.index') }}" class="btn btn-primary mb-2">PENDAFTARAN GIRO</a>
                                 <a href="{{ route('master.ppn.edit', $ppn->id) }}" class="btn btn-primary mb-2">PPN</a>
                             </div>
                         </div>
@@ -55,6 +56,7 @@
                                 <a href="{{ route('pembayaran-hutang.index') }}" class="btn btn-primary mb-2">PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran-hutang.index-hapus') }}" class="btn btn-primary mb-2">HAPUS PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran.index') }}" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
+                                <a href="{{ route('pembayaran.index-history') }}" class="btn btn-primary mb-2">HISTORY PEMBAYARAN CEK/GIRO</a>
                             </div>
                         </div>
                         <div class="mx-5">  
