@@ -112,8 +112,8 @@
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
                                     <a href="{{ route('index') }}" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
-                                    <a href="{{ route('index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a>
+                                    <a href="#" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a>
                                     <form id="delete-form" method="POST" style="display: none;">
                                         @csrf
@@ -236,12 +236,18 @@
                         $('#button-bayar').removeClass('disabled-link');
                         $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
                         
+                        $('#button-cetak').addClass('disabled-link');
+                        $('#button-cetak').attr('href', '#');
+
                         $('#button-hapus').addClass('disabled-link');
                         $('#button-hapus').attr('href', '#');
                     } else {
                         // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-bayar
                         $('#button-bayar').addClass('disabled-link');
                         $('#button-bayar').attr('href', '#');
+                        
+                        $('#button-cetak').removeClass('disabled-link');
+                        $('#button-cetak').attr('href', `{{ route('pembayaran.cetak-payment', '') }}/${id}`);
                         
                         $('#button-hapus').removeClass('disabled-link');
                         $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
@@ -257,6 +263,8 @@
 
                     $('#button-bayar').addClass('disabled-link');
                     $('#button-bayar').attr('href', '#');
+                    $('#button-cetak').addClass('disabled-link');
+                    $('#button-cetak').attr('href', '#');
                     $('#button-hapus').addClass('disabled-link');
                     $('#button-hapus').attr('href', '#');
 

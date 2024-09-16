@@ -441,6 +441,11 @@ class PembayaranController extends Controller
             ->with('alert.message', "Delete Pembayaran Success!");
     }
 
+    public function cetakPayment($id)
+    {
+        dd($id, 'yeah');
+    }
+
     public function indexHistory(HistoryPembayaranDataTable $dataTable)
     {
         $title = 'Hapus Pembayaran Hutang';

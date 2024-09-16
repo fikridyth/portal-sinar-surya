@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
     Route::delete('/pembayaran/destroy-payment/{id}', [PembayaranController::class, 'destroyPayment'])->name('pembayaran.destroy-payment');
+    Route::get('/pembayaran/cetak-payment/{id}', [PembayaranController::class, 'cetakPayment'])->name('pembayaran.cetak-payment');
     // Route::get('/default-bank', [PembayaranController::class, 'defaultBank'])->name('pembayaran.default-bank');
 
     // Laporan
