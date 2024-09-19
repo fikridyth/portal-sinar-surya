@@ -239,7 +239,7 @@
                         </div>
                         <div class="col-1"></div>
                         <div class="col-4">
-                            <a href="{{ route('master.history-preorder.index') }}" class="btn btn-sm btn-primary">SEJARAH PEMBELIAN</a>
+                            <a href="{{ route('master.history-preorder.index', $supplier->id) }}" class="btn btn-sm btn-primary">SEJARAH PEMBELIAN</a>
                         </div>
                     </div>
                 </div>

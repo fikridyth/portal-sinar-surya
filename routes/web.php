@@ -111,7 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/promosi/{id}/destroy', [SupplierController::class, 'destroyPromosi'])->name('promosi.destroy');
         Route::get('/materai', [SupplierController::class, 'indexMaterai'])->name('materai.index');
         Route::put('/materai/{id}/update', [SupplierController::class, 'updateMaterai'])->name('materai.update');
-        Route::get('/history-preorder', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
+        Route::get('/history-preorder/{id}', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
         Route::get('/giro', [GiroController::class, 'index'])->name('giro.index');
         Route::get('/giro/create/{id}', [GiroController::class, 'create'])->name('giro.create');
         Route::post('/giro/store/{id}', [GiroController::class, 'store'])->name('giro.store');

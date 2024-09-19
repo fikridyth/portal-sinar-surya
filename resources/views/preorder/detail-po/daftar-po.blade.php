@@ -19,75 +19,79 @@
                 <div class="d-flex justify-content-between mt-2">
                     <div class="row w-100">
                         <div class="form-group col-5">
-                            <table class="table table-bordered" style="font-size: 13px;">
-                                <thead>
-                                    <tr>
-                                        <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG HARUS DIBUATKAN P.O</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">NAMA SUPPLIER</th>
-                                        <th class="text-center">DATANG</th>
-                                        <th class="text-center">DETAIL</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($listPreorders as $po)
-                                        @if (empty($po['preorders']))
-                                            <tr>
-                                                <td class="text-center">{{ $po['supplier']['nama'] }}</td>
-                                                <td class="text-center">{{ $po['supplier']['waktu_kunjungan'] }}</td>
-                                                <td class="text-center">
-                                                    <form action="{{ route('preorder.get-list-barang') }}" method="POST">
-                                                        @csrf
-                                                        <input type="text" hidden name="dataSupplier1" value="{{ $po['supplier']['nama'] }}">
-                                                        <button type="submit" class="btn btn-sm btn-primary" style="font-size: 10px;">BUAT PO</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="form-group col-7">
-                            <table class="table table-bordered" style="font-size: 13px;">
-                                <thead>
-                                    <tr>
-                                        <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">NAMA SUPPLIER</th>
-                                        <th class="text-center">NOMOR PO</th>
-                                        <th class="text-center">REF</th>
-                                        <th class="text-center">DETAIL</th>
-                                        <th class="text-center">CTK</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($listPreorders as $po)
-                                        @foreach ($po['preorders'] as $order)
-                                            @if ($order !== [])
+                            <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG HARUS DIBUATKAN P.O</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">NAMA SUPPLIER</th>
+                                            <th class="text-center">DATANG</th>
+                                            <th class="text-center">DETAIL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($listPreorders as $po)
+                                            @if (empty($po['preorders']))
                                                 <tr>
                                                     <td class="text-center">{{ $po['supplier']['nama'] }}</td>
-                                                    <td class="text-center">{{ $order['nomor_po'] ?? null }}</td>
-                                                    @php
-                                                        $expiredDate = new DateTime(now()->format('Y-m-d'));
-                                                        $currentDate = new DateTime($order['date_last'] ?? null );
-                                                        $interval = $expiredDate->diff($currentDate);
-                                                        $days = $interval->days;
-                                                    @endphp
-                                                    <td class="text-center">{{ $order['receive_type'] . $days }}</td>
+                                                    <td class="text-center">{{ $po['supplier']['waktu_kunjungan'] }}</td>
                                                     <td class="text-center">
-                                                        <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail</a>
-                                                        <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                                                        <form action="{{ route('preorder.get-list-barang') }}" method="POST">
+                                                            @csrf
+                                                            <input type="text" hidden name="dataSupplier1" value="{{ $po['supplier']['nama'] }}">
+                                                            <button type="submit" class="btn btn-sm btn-primary" style="font-size: 10px;">BUAT</button>
+                                                        </form>
                                                     </td>
-                                                    <td class="text-center">{{ $order['is_cetak'] }}</td>
                                                 </tr>
                                             @endif
                                         @endforeach
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group col-7">
+                            <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-center">NAMA SUPPLIER</th>
+                                            <th class="text-center">NOMOR PO</th>
+                                            <th class="text-center">REF</th>
+                                            <th class="text-center">DETAIL</th>
+                                            <th class="text-center">CTK</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($listPreorders as $po)
+                                            @foreach ($po['preorders'] as $order)
+                                                @if ($order !== [])
+                                                    <tr>
+                                                        <td class="text-center">{{ $po['supplier']['nama'] }}</td>
+                                                        <td class="text-center">{{ $order['nomor_po'] ?? null }}</td>
+                                                        @php
+                                                            $expiredDate = new DateTime(now()->format('Y-m-d'));
+                                                            $currentDate = new DateTime($order['date_last'] ?? null );
+                                                            $interval = $expiredDate->diff($currentDate);
+                                                            $days = $interval->days;
+                                                        @endphp
+                                                        <td class="text-center">{{ $order['receive_type'] . $days }}</td>
+                                                        <td class="text-center">
+                                                            <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail</a>
+                                                            <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                                                        </td>
+                                                        <td class="text-center">{{ $order['is_cetak'] }}</td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

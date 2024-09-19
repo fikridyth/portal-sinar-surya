@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\HistoryPoDataTable;
 use App\DataTables\KunjunganDataTable;
 use App\DataTables\MateraiDataTable;
 use App\DataTables\SupplierDataTable;
+use App\Models\Pengembalian;
+use App\Models\Preorder;
 use App\Models\Promosi;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -198,11 +199,16 @@ class SupplierController extends Controller
         return response()->json(['success' => true, 'message' => 'Data saved successfully.']);
     }
 
-    public function indexHistoryPo(HistoryPoDataTable $dataTable)
+    public function indexHistoryPo($id)
     {
         $title = 'Master History Preorder';
+        $supplier = Supplier::find($id);
+        $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->whereNotNull('nomor_receive')->orderBy('date_first')->get();
+        $getRetur = Pengembalian::select('nomor_return as nomor', 'date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->orderBy('date')->get();
+        $getData = $getPo->concat($getRetur)->sortBy('date')->values()->toArray();
+        // dd($getData);
 
-        return $dataTable->render('master.supplier.index-history', compact('title'));
+        return view('master.supplier.index-history', compact('title', 'supplier', 'getData'));
     }
     
     public function indexKunjungan(KunjunganDataTable $dataTable)

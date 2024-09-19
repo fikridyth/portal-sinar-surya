@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Pengembalian extends Model
 {
     use HasFactory;
+    
+    protected $table = 'pengembalians';
+    protected $guarded = ['id'];
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['periode'] ?? false, function ($query, $periode) {
+            $arrPeriode = explode(' - ', $periode);
+            $query->whereBetween('date', $arrPeriode);
+        });
+    }
 }
