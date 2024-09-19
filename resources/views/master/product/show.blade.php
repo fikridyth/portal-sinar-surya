@@ -387,7 +387,7 @@
                             </div>
                             <div class="col-7">
                                 <input type="text" id="jumlah_stok" name="jumlah_stok"
-                                    value="{{ old('jumlah_stok') }}" readonly
+                                    value="{{ number_format($product->stok,0) }}" readonly
                                     class="form-control readonly-input @error('jumlah_stok') is-invalid @enderror"
                                     autocomplete="off" />
                                 @error('jumlah_stok')

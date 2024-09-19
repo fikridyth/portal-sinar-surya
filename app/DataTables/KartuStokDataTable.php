@@ -26,12 +26,6 @@ class KartuStokDataTable extends DataTable
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
         })
-        ->editColumn('harga_pokok', function ($row) {
-            return number_format($row->harga_pokok);
-        })
-        ->editColumn('harga_jual', function ($row) {
-            return number_format($row->harga_jual);
-        })
         ->editColumn('stok', function ($row) {
             return number_format($row->stok, 0);
         })
@@ -41,12 +35,18 @@ class KartuStokDataTable extends DataTable
         ->addColumn('tingkat', function ($row) {
             return $row->kode_sumber === null ? 'SUMBER' : 'ANAK';
         })
+        ->addColumn('status', function ($row) {
+            $status = null;
+            if ($row->stok <= 0) $status = '<span class="badge badge-danger p-2">TIDAK AKTIF</span>';
+            else $status = '<span class="badge badge-primary p-2">AKTIF</span>';
+            return $status;
+        })
         ->addColumn('action', function ($row) {
             $btnShow = '<a href="' . route('master.kartu-stok.show', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
             $button = '<div class="d-flex justify-content-center">' . $btnShow . '</div>';
             return $button;
         })
-        ->rawColumns(['nama', 'action']);
+        ->rawColumns(['nama', 'status', 'action']);
     }
 
     /**
@@ -98,6 +98,9 @@ class KartuStokDataTable extends DataTable
             Column::make('nama')->title('NAMA BARANG'),
             Column::make('unit_jual')->title('UNIT JUAL')->addClass('text-center'),
             Column::make('stok')->title('STOK')->addClass('text-center'),
+            Column::make('status')->title('STATUS')->addClass('text-center'),
+            Column::make('tanggal')->title('TANGGAL')->addClass('text-center'),
+            Column::make('jam')->title('JAM')->addClass('text-center'),
             // Column::computed('action')
             //     ->exportable(false)
             //     ->printable(false)

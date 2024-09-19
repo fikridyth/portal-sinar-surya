@@ -111,7 +111,7 @@
                             <div class="d-flex mb-2 align-items-center">
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
-                                    <a href="{{ route('index') }}" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
+                                    <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
                                     <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a>
                                     <a href="#" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a>
@@ -269,6 +269,77 @@
                     $('#button-hapus').attr('href', '#');
 
                     $('input[type="checkbox"]').prop('disabled', false);
+                }
+            });
+
+            $('.input-gabung').change(function () {
+                const id = $(this).data('id');
+                const nomorBukti = $(this).data('nomor');
+                const tanggalBukti = $(this).data('tanggal');
+                const jumlahBukti = $(this).data('jumlah');
+                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
+                if ($(this).is(':checked')) {
+                    // other table
+                    $('#nomor-bukti').text(nomorBukti);
+                    $('#tanggal-bukti').text(tanggalBukti);
+                    $('#jumlah-bukti').text(jumlahBukti);
+
+                    // link
+                    if (keteranganBayar === '') {
+                        // keterangan bayar null, aktifkan button-gabung dan nonaktifkan button-hapus
+                        $('#button-gabung').removeClass('disabled-link');
+                        $('#button-gabung').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
+                        
+                        $('#button-cetak').addClass('disabled-link');
+                        $('#button-cetak').attr('href', '#');
+                    } else {
+                        // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-gabung
+                        $('#button-gabung').addClass('disabled-link');
+                        $('#button-gabung').attr('href', '#');
+                        
+                        $('#button-cetak').removeClass('disabled-link');
+                        $('#button-cetak').attr('href', `{{ route('pembayaran.cetak-payment', '') }}/${id}`);
+                    }
+
+                    // other checkbox
+                    $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
+                    $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
+                } else {
+                    $('#nomor-bukti').text('');
+                    $('#tanggal-bukti').text('');
+                    $('#jumlah-bukti').text('');
+
+                    $('#button-gabung').addClass('disabled-link');
+                    $('#button-gabung').attr('href', '#');
+                    $('#button-cetak').addClass('disabled-link');
+                    $('#button-cetak').attr('href', '#');
+
+                    $('input[type="checkbox"].input-check').prop('disabled', false);
+                    $('input[type="checkbox"].input-konfirmasi').prop('disabled', false);
+                }
+            });
+
+            $('.input-konfirmasi').change(function () {
+                const id = $(this).data('id');
+                const nomorBukti = $(this).data('nomor');
+                const tanggalBukti = $(this).data('tanggal');
+                const jumlahBukti = $(this).data('jumlah');
+                if ($(this).is(':checked')) {
+                    // other table
+                    $('#nomor-bukti').text(nomorBukti);
+                    $('#tanggal-bukti').text(tanggalBukti);
+                    $('#jumlah-bukti').text(jumlahBukti);
+
+                    // other checkbox
+                    $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
+                    $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
+                } else {
+                    $('#nomor-bukti').text('');
+                    $('#tanggal-bukti').text('');
+                    $('#jumlah-bukti').text('');
+
+                    $('input[type="checkbox"].input-check').prop('disabled', false);
+                    $('input[type="checkbox"].input-gabung').prop('disabled', false);
                 }
             });
 

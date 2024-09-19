@@ -23,10 +23,10 @@
                 </div> --}}
 
                 <div class="card-body">
-                    <div class="row">
+                    <h6>INVENTORY</h6>
+                    {{ $dataTable->table() }}
+                    {{-- <div class="row">
                         <div class="col-8">
-                            <h6>INVENTORY</h6>
-                            {{ $dataTable->table() }}
                         </div>
                         <div class="col-4">
                             <h6>INVENTORY HISTORICAL</h6>
@@ -47,7 +47,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 
                 <div class="text-center">

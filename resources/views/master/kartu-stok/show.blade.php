@@ -120,56 +120,77 @@
                         <div class="d-flex justify-content-between mt-4">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">TANGGAL/SUPPLIER / LANGGANAN</th>
-                                                <th class="text-center">TIPE</th>
-                                                <th class="text-center"></th>
-                                                @foreach ($allProducts as $prd)
-                                                    <th class="text-center">{{ $prd['unit_jual'] }}</th>
+                                    <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">NO</th>
+                                                    <th class="text-center">TANGGAL/SUPPLIER / LANGGANAN</th>
+                                                    <th class="text-center">TIPE</th>
+                                                    <th class="text-center"></th>
+                                                    @foreach ($allProducts as $prd)
+                                                        <th class="text-center">{{ $prd['unit_jual'] }}</th>
+                                                    @endforeach
+                                                    <th class="text-center">MASUK</th>
+                                                    <th class="text-center">KELUAR</th>
+                                                    <th class="text-center">STOK AKHIR</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($productFlow as $flow)
+                                                    @php
+                                                        $getTipe = explode('-', $flow['tipe']);
+                                                        if ($getTipe[0] == 'RP') $flow['tipe'] = 'RCV';
+                                                        else if ($getTipe[0] == 'RR') $flow['tipe'] = 'RETUR';
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $loop->iteration }}</td>
+                                                        <td>{{ \Carbon\Carbon::parse($flow['tanggal'])->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
+                                                        <td>{{ $flow['tipe'] }}</td>
+                                                        <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                        @foreach ($allProducts as $prd)
+                                                            {{-- @dd($prd, $flow) --}}
+                                                            @if ($prd['kode'] == $flow['kode'])
+                                                                <td class="text-end">{{ $flow['qty'] }}</td>
+                                                            @else
+                                                                <td class="text-end"></td>
+                                                            @endif
+                                                        @endforeach
+                                                        <td class="text-end">@if ($flow['qty'] > 0) {{ $flow['qty'] }} @endif</td>
+                                                        <td class="text-end">@if ($flow['qty'] <= 0) {{ str_replace('-', '', $flow['qty']) }} @endif</td>
+                                                        <td class="text-end"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        {{-- <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td> --}}
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td style="color: red;">SALDO</td>
+                                                        <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                        @foreach ($allProducts as $prd)
+                                                            {{-- <td class="text-end" style="color: red;">{{ $prd['stok'] }}</td> --}}
+                                                            <td class="text-end" style="color: red;"></td>
+                                                        @endforeach
+                                                        <td class="text-end" style="color: red;"></td>
+                                                        <td class="text-end" style="color: red;"></td>
+                                                        {{-- <td class="text-end" style="color: red;">{{ $totalMasuk }}</td> --}}
+                                                        <td class="text-end" style="color: red;"></td>
+                                                    </tr>
                                                 @endforeach
-                                                <th class="text-center">MASUK</th>
-                                                <th class="text-center">KELUAR</th>
-                                                <th class="text-center">STOK AKHIR</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
-                                                <td>STOK</td>
-                                                <td class="text-center"><input type="checkbox" name="" id=""></td>
-                                                @foreach ($allProducts as $prd)
-                                                    <td class="text-end">{{ $prd['stok'] }}</td>
-                                                @endforeach
-                                                <td class="text-end"></td>
-                                                <td class="text-end"></td>
-                                                <td class="text-end">{{ $totalMasuk }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
-                                                <td>POS</td>
-                                                <td class="text-center"><input type="checkbox" name="" id=""></td>
-                                                @foreach ($allProducts as $prd)
-                                                    <td class="text-end"></td>
-                                                @endforeach
-                                                <td class="text-end"></td>
-                                                <td class="text-end">10</td>
-                                                <td class="text-end"></td>
-                                            </tr>
-                                            <tr>
-                                                <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
-                                                <td>SALDO</td>
-                                                <td class="text-center"><input type="checkbox" name="" id=""></td>
-                                                @foreach ($allProducts as $prd)
-                                                    <td class="text-end"></td>
-                                                @endforeach
-                                                <td class="text-end"></td>
-                                                <td class="text-end"></td>
-                                                <td class="text-end">44</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                                <tr>
+                                                    <td></td>
+                                                    <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td>
+                                                    <td style="color: red;">STOK</td>
+                                                    <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                    @foreach ($allProducts as $prd)
+                                                        <td class="text-end" style="color: red;">{{ $prd['stok'] }}</td>
+                                                    @endforeach
+                                                    <td class="text-end" style="color: red;"></td>
+                                                    <td class="text-end" style="color: red;"></td>
+                                                    <td class="text-end" style="color: red;">{{ $totalMasuk }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
