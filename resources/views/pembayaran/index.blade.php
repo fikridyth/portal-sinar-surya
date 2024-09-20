@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                             <hr>
-                            <table class="table table-bordered">
+                            {{-- <table class="table table-bordered">
                                 <thead>
                                     <tr>
                                         <th class="text-center">TANGGAL</th>
@@ -88,7 +88,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <hr>
+                            <hr> --}}
                             <h6 class="text-center">BUKU CEK/GIRO</h6>
                             <table id="data-table" class="table table-bordered">
                                 <thead>
@@ -104,7 +104,8 @@
                             </table>
                             <hr>
                             <div class="d-flex justify-content-center">
-                                <a href="{{ route('index') }}" class="btn btn-danger">SELESAI</a>
+                                <a href="{{ route('index') }}" class="btn btn-danger mx-4">KEMBALI</a>
+                                <a href="#" id="button-selesai" class="btn btn-primary disabled-link mx-4">SELESAI</a>
                             </div>
                         </div>
                         <div class="form-group col-7">
@@ -166,7 +167,7 @@
                                         <tr>
                                             {{-- <td class="text-center">{{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}</td> --}}
                                             <td class="text-center" style="color: <?= $pmb->nomor_giro !== null ? 'red' : 'black'; ?>">
-                                                @if ($pmb->id_supplier !== $previousIdParent)
+                                                @if ($pmb->nomor_bukti !== $previousIdParent)
                                                     {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
                                                     @php $counter++; @endphp
                                                 @else
@@ -177,11 +178,11 @@
                                             <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
                                             <td class="keterangan_bayar">{{ $pmb->nomor_giro }}</td>
                                             <td class="text-center"><input type="checkbox" class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}"></td>
-                                            <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}"></td>
+                                            <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                         </tr>
-                                        @if ($pmb->id_supplier)
-                                            @php $previousIdParent = $pmb->id_supplier; @endphp
+                                        @if ($pmb->nomor_bukti)
+                                            @php $previousIdParent = $pmb->nomor_bukti; @endphp
                                         @endif
                                     @endforeach
                                 </tbody>
@@ -247,7 +248,7 @@
                         $('#button-bayar').attr('href', '#');
                         
                         $('#button-cetak').removeClass('disabled-link');
-                        $('#button-cetak').attr('href', `{{ route('pembayaran.cetak-payment', '') }}/${id}`);
+                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${id}`);
                         
                         $('#button-hapus').removeClass('disabled-link');
                         $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
@@ -272,6 +273,7 @@
                 }
             });
 
+            let selectedIds = [];
             $('.input-gabung').change(function () {
                 const id = $(this).data('id');
                 const nomorBukti = $(this).data('nomor');
@@ -280,9 +282,16 @@
                 const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     // other table
+                    selectedIds.push(id);
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
                     $('#jumlah-bukti').text(jumlahBukti);
+
+                    $('.input-gabung[data-nomor="' + nomorBukti + '"]').each(function () {
+                        if (!$(this).is(':checked')) {
+                            $(this).prop('checked', true).change(); // Trigger change event
+                        }
+                    });
 
                     // link
                     if (keteranganBayar === '') {
@@ -298,16 +307,22 @@
                         $('#button-gabung').attr('href', '#');
                         
                         $('#button-cetak').removeClass('disabled-link');
-                        $('#button-cetak').attr('href', `{{ route('pembayaran.cetak-payment', '') }}/${id}`);
+                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
                     }
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
                     $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
                 } else {
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
                     $('#nomor-bukti').text('');
                     $('#tanggal-bukti').text('');
                     $('#jumlah-bukti').text('');
+
+                    const index = selectedIds.indexOf(id);
+                    if (index > -1) {
+                        selectedIds.splice(index, 1); // Remove the unchecked ID
+                    }
 
                     $('#button-gabung').addClass('disabled-link');
                     $('#button-gabung').attr('href', '#');
@@ -316,6 +331,14 @@
 
                     $('input[type="checkbox"].input-check').prop('disabled', false);
                     $('input[type="checkbox"].input-konfirmasi').prop('disabled', false);
+
+                    if (selectedIds.length === 0) {
+                        $('#button-cetak').addClass('disabled-link');
+                        $('#button-cetak').attr('href', '#');
+                    } else {
+                        $('#button-cetak').removeClass('disabled-link');
+                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
+                    }
                 }
             });
 
@@ -324,19 +347,45 @@
                 const nomorBukti = $(this).data('nomor');
                 const tanggalBukti = $(this).data('tanggal');
                 const jumlahBukti = $(this).data('jumlah');
+                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     // other table
+                    selectedIds.push(id);
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
                     $('#jumlah-bukti').text(jumlahBukti);
+
+                    $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
+                        if (!$(this).is(':checked')) {
+                            $(this).prop('checked', true).change(); // Trigger change event
+                        }
+                    });
+
+                    if (keteranganBayar === '') {
+                        // keterangan bayar null, aktifkan button-gabung dan nonaktifkan button-hapus
+                        $('#button-selesai').addClass('disabled-link');
+                        $('#button-selesai').attr('href', '#');
+                    } else {
+                        $('#button-selesai').removeClass('disabled-link');
+                        $('#button-selesai').attr('href', `{{ route('pembayaran.konfirmasi-payment', '') }}/${selectedIds.join(',')}`);
+                    }
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
                     $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
                 } else {
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
                     $('#nomor-bukti').text('');
                     $('#tanggal-bukti').text('');
                     $('#jumlah-bukti').text('');
+
+                    const index = selectedIds.indexOf(id);
+                    if (index > -1) {
+                        selectedIds.splice(index, 1); // Remove the unchecked ID
+                    }
+                    
+                    $('#button-selesai').addClass('disabled-link');
+                    $('#button-selesai').attr('href', '#');
 
                     $('input[type="checkbox"].input-check').prop('disabled', false);
                     $('input[type="checkbox"].input-gabung').prop('disabled', false);

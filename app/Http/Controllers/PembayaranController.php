@@ -317,7 +317,7 @@ class PembayaranController extends Controller
 
     public function update(Request $request, $id)
     {
-        // dd($id, $request->all());
+        dd($id, $request->all());
         $typePayment = (int)$request->type_payment;
         $pembayaran = Pembayaran::find($id);
         $getPreorder = Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->first();
@@ -441,9 +441,54 @@ class PembayaranController extends Controller
             ->with('alert.message', "Delete Pembayaran Success!");
     }
 
-    public function cetakPayment($id)
+    public function paramCetakPayment($ids)
     {
-        dd($id, 'yeah');
+        $title = 'Parameter Pembayaran';
+        $idArray = explode(',', $ids);
+
+        return view('pembayaran.param-cetak-bayar', compact('title', 'ids'));
+    }
+
+    public function cetakPayment(Request $request)
+    {
+        $title = 'Cetak Pembayaran';
+        $parameter = $request->param;
+        $idArray = explode(',', $request->ids);
+        $pembayaran = Pembayaran::whereIn('id', $idArray)->where('nomor_giro', '!=', 'OTHER INCOME')->whereNotNull('nomor_giro')->get()->groupBy('nomor_bukti');
+        // dd($pembayaran);
+
+        $pembayaran1 = $pembayaran->filter(function ($item) {
+            $explode = explode('-', $item->first()->nomor_bukti);
+            return $explode[2] % 2 !== 0; // Ganjil
+        });
+        
+        $pembayaran2 = $pembayaran->filter(function ($item) {
+            $explode = explode('-', $item->first()->nomor_bukti);
+            return $explode[2] % 2 === 0; // Genap
+        });
+
+        if ($pembayaran1->isEmpty()) {
+            if ($pembayaran2->count() >= 2) {
+                // Bagi data genap ke pembayaran1 dan pembayaran2
+                $pembayaran1 = $pembayaran2->take(1); // Ambil satu item untuk pembayaran1
+                $pembayaran2 = $pembayaran2->slice(1); // Sisanya untuk pembayaran2
+            } else {
+                $pembayaran1 = $pembayaran2; // Semua genap dipindahkan ke pembayaran1
+                $pembayaran2 = collect(); // Kosongkan pembayaran2 jika semua dipindahkan
+            }
+        }
+
+        return view('pembayaran.cetak-bayar', compact('title', 'parameter', 'pembayaran1', 'pembayaran2'));
+    }
+
+    public function konfirmasiPayment($ids)
+    {
+        $idArray = explode(',', $ids);
+        Pembayaran::whereIn('id', $idArray)->update(['is_bayar' => 1]);
+
+        return Redirect::route('index')
+        ->with('alert.status', '00')
+        ->with('alert.message', "Konfirmasi Pembayaran Success!");
     }
 
     public function indexHistory(HistoryPembayaranDataTable $dataTable)
