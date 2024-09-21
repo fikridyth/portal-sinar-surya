@@ -195,7 +195,7 @@
                                                     <input type="text" hidden id="amount3-1" name="giro_payment" value="{{ $pembayaran->grand_total }}">
                                                     <td class="text-end" id="amount3">{{ number_format($pembayaran->grand_total) }}</td>
                                                     <td>{{ $giro->nomor }}</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td><input type="date" name="date_last" style="width: 50px;"></td>
                                                 </tr>
                                                 <tr>
                                                     <input type="text" hidden id="amount4-1" name="giro_tunai_payment">

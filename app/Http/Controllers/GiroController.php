@@ -13,7 +13,7 @@ class GiroController extends Controller
     public function index(Request $request)
     {
         $title = 'Master Giro';
-        $banks = Bank::all();
+        $banks = Bank::whereNotNull('created_at')->get();
 
         return view('master.giro.index', compact('title', 'banks'));
     }

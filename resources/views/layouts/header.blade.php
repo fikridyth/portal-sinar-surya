@@ -56,7 +56,21 @@ $user = User::where('id', auth()->user()->id)->first();
         </div>
 
         <div class="d-flex align-items-center me-4">
-            <div class="dropdown">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {{-- <li class="nav-item mx-4">
+                    <p class="nav-link disabled" style="color: #6c757d">{{ $user->name }} -
+                        {{ str_replace('_', ' ', $user->role) }}</p>
+                </li> --}}
+                <li class="nav-item mx-4">
+                    <a class="nav-link" href="{{ route('auth.logout') }}">Logout</a>
+                </li>
+                {{-- <li>
+                    <p class="dropdown-item mb-n1 disabled" style="color: #6c757d">{{ $user->name }} -
+                        {{ str_replace('_', ' ', $user->role) }}</p>
+                    <a class="dropdown-item" href="{{ route('auth.logout') }}">Logout</a>
+                </li> --}}
+            </ul>
+            {{-- <div class="dropdown">
                 <a data-mdb-dropdown-init class="dropdown-toggle d-flex align-items-center hidden-arrow" href="#"
                     id="navbarDropdownMenuAvatar" role="button" aria-expanded="false">
                     <img src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp" class="rounded-circle" height="25"
@@ -69,7 +83,7 @@ $user = User::where('id', auth()->user()->id)->first();
                         <a class="dropdown-item" href="{{ route('auth.logout') }}">Logout</a>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
         </div>
     </div>
 </nav>
