@@ -74,7 +74,7 @@ class KartuStokController extends Controller
 
         $productFlow = []; // Inisialisasi array untuk menyimpan hasil
         foreach ($allProducts as $prd) {
-            $productFlows = ProductStock::select('tipe', 'tanggal', 'qty', 'kode')
+            $productFlows = ProductStock::select('tipe', 'tanggal', 'total', 'kode')
                 ->where('kode', $prd['kode'])
                 ->get();
 

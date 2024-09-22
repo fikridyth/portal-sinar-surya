@@ -11,4 +11,8 @@ class Supplier extends Model
 
     protected $table = 'suppliers';
     protected $guarded = ['id'];
+
+    public function products() {
+        return $this->hasMany(Product::class, 'id_supplier', 'id');
+    }
 }

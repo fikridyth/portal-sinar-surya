@@ -150,8 +150,8 @@
                                                     <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
                                                     <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
                                                     <td class="text-center">
-                                                        <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)"
-                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['maximum']),0) }}">
+                                                        <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
+                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['stok'] - $product['maximum']),0) }}">
                                                     </td>
                                                     <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                     <td class="text-end" id="total-{{ $index }}">0</td>
@@ -223,7 +223,7 @@
                                             <td class="text-end">${product.unit_jual.replace('P', '')}</td>
                                             <td class="text-end">-</td>
                                             <td class="text-end">-</td>
-                                            <td class="text-end">${formattedStok}</td>
+                                            <td class="text-end">-</td>
                                             <td class="text-end">-</td>
                                             <td class="text-center">
                                                 <input type="text" name="orderPo[]" size="3" data-index="${index}" 
@@ -256,7 +256,12 @@
             const index = input.getAttribute('data-index');
 
             // Get the quantity from the input field
-            const quantity = parseFloat(input.value) || 0;
+            let quantity = parseFloat(input.value) || 0;
+
+            if (quantity < 0) {
+                quantity = -quantity; // Convert negative to positive
+            }
+            input.value = quantity; // Update input field to reflect the change
 
             // Get the product price from the element with a specific id
             const priceElement = document.getElementById('price-' + index);
@@ -318,6 +323,12 @@
             // Ensure the updateTotal function is called on quantity input change
             document.querySelectorAll('input[data-index]').forEach(input => {
                 input.addEventListener('input', () => updateTotal(input));
+            });
+
+            const inputs = document.querySelectorAll('input[name="orderPo[]"]');
+            // console.log(inputs)
+            inputs.forEach(input => {
+                updateTotal(input);
             });
 
             // Update total price initially

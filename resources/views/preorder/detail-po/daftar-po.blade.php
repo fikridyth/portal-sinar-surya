@@ -82,7 +82,11 @@
                                                         <td class="text-center">{{ $order['receive_type'] . $days }}</td>
                                                         <td class="text-center">
                                                             <a href="{{ route('daftar-po.show', $order['id']) }}" class="btn btn-primary btn-sm">Detail</a>
-                                                            <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                                                            @if ($order['is_cetak'] == null)
+                                                                <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1">Edit</a>
+                                                            @else
+                                                                <a href="{{ route('daftar-po.edit', $order['id']) }}" class="btn btn-primary btn-sm mx-1 disabled-link">Edit</a>
+                                                            @endif
                                                         </td>
                                                         <td class="text-center">{{ $order['is_cetak'] }}</td>
                                                     </tr>

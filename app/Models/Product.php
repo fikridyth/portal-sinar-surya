@@ -24,6 +24,10 @@ class Product extends Model
         return $this->belongsTo(Supplier::class, 'id_supplier', 'id');
     }
 
+    public function productstocks() {
+        return $this->hasMany(ProductStock::class, 'kode', 'kode');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when(isset($filters['unit']) && $filters['unit'] !== '', function ($query) use ($filters) {
