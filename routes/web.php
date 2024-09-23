@@ -55,12 +55,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/receive-po/create', [PreOrderController::class, 'createReceivePo'])->name('receive-po.create');
     Route::get('/receive-get-preorder-data', [PreOrderController::class, 'getPreorderData']);
     Route::post('/store-receive-data', [PreOrderController::class, 'storeReceiveData'])->name('receive-po.store');
+    Route::delete('/destroy-receive-data', [PreOrderController::class, 'destroyReceiveData'])->name('receive-po.destroy');
     Route::get('/receive-po/create-detail/{id}', [PreOrderController::class, 'createDetailReceivePo'])->name('receive-po.create-detail');
     Route::get('/daftar-receive-po', [PreOrderController::class, 'daftarReceivePo'])->name('daftar-receive-po');
     Route::get('/persetujuan-harga-jual', [PreOrderController::class, 'persetujuanHargaJual'])->name('persetujuan-harga-jual');
     Route::get('/persetujuan-harga-jual/{id}/edit', [PreOrderController::class, 'editPersetujuanHargaJual'])->name('persetujuan-harga-jual-edit');
     Route::put('/persetujuan-harga-jual/{id}/update', [PreOrderController::class, 'updatePersetujuanHargaJual'])->name('persetujuan-harga-jual-update');
     Route::get('/get-products-by-kode/{kode}', [PreOrderController::class, 'getProductsByKode']);
+
+    // Return
+    Route::get('/return-po', [PreOrderController::class, 'returnPo'])->name('return-po');
+    Route::post('/store-return-data', [PreOrderController::class, 'storeReturnData'])->name('return-po.store');
+    Route::get('/daftar-return-po', [PreOrderController::class, 'daftarReturnPo'])->name('daftar-return-po');
 
     // Func in PO & Receive
     Route::post('/store-new-data', [PreOrderController::class, 'storeNewData'])->name('daftar-po.store');

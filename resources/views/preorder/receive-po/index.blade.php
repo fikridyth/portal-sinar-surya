@@ -46,7 +46,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                PEMESANAN BARANG - PURCHASE ORDER
+                                PENERIMAAN BARANG - PURCHASE ORDER
                             </li>
                         </ol>
                     </nav>

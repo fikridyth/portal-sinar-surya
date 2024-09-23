@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\ReceiveDataTable;
 use App\Models\Hutang;
 use App\Models\Pembayaran;
+use App\Models\Pengembalian;
 use App\Models\Penjualan;
 use App\Models\Ppn;
 use App\Models\Preorder;
@@ -394,7 +395,7 @@ class PreOrderController extends Controller
         $currentDate = now()->toDateString();
         // dd($currentDate);
         foreach ($preorders as $preorder) {
-            if (array_key_exists($preorder->id_supplier, $supplierPreorders) && $preorder->date_last > $currentDate) {
+            if (array_key_exists($preorder->id_supplier, $supplierPreorders) && $preorder->date_last > $currentDate && $preorder->is_receive == null) {
                 // If a preorder exists for this supplier, append it to the array
                 $supplierPreorders[$preorder->id_supplier][] = $preorder;
             }
@@ -835,7 +836,8 @@ class PreOrderController extends Controller
     {
         $kode_supplier = $request->query('kode');
         $supplier = Supplier::where('nomor', $kode_supplier)->first();
-        $preorder = Preorder::where('id_supplier', $supplier->id)->where('is_receive', '=', null)->get();
+        $currentDate = now()->toDateString();
+        $preorder = Preorder::where('id_supplier', $supplier->id)->where('is_receive', '=', null)->where('date_last', '>', $currentDate)->get();
         // dd($kode_supplier, $supplier, $preorder);
 
         return response()->json($preorder);
@@ -843,19 +845,41 @@ class PreOrderController extends Controller
 
     public function storeReceiveData(Request $request)
     {
+        // dd($request->all());
         $supplier = Supplier::where('nomor', $request->supplier)->first();
         $nomor_receive = str_replace('PO', 'RP', $request->nomor_po);
-        // dd($nomor_receive);
 
-        $preorder = Preorder::create([
-            'nomor_po' => $request->nomor_po,
-            'nomor_receive' => $nomor_receive,
-            'id_supplier' => $supplier->id,
-            'date_last' => $request->tanggal_po,
-            'date_first' => $request->tanggal_po,
-            'receive_type' => 'B',
-            'is_receive' => 1,
-        ]);
+        if ($request->old_nomor_po !== null) {
+            $oldPo = Preorder::where('nomor_po', $request->old_nomor_po)->first();
+
+            $preorder = Preorder::create([
+                'nomor_po' => $request->nomor_po,
+                'nomor_receive' => $nomor_receive,
+                'id_supplier' => $supplier->id,
+                'detail' => $request->details,
+                'date_last' => $request->tanggal_po,
+                'date_first' => $request->tanggal_po,
+                'receive_type' => 'B',
+                'is_receive' => 1,
+                'total_harga' => $oldPo->total_harga,
+                'ppn_global' => $oldPo->ppn_global,
+                'grand_total' => $oldPo->grand_total,
+                'diskon_global' => $oldPo->diskon_global,
+            ]);
+
+            $oldPo->update(['is_receive' => 1]);
+        } else {
+            $preorder = Preorder::create([
+                'nomor_po' => $request->nomor_po,
+                'nomor_receive' => $nomor_receive,
+                'id_supplier' => $supplier->id,
+                'detail' => $request->details,
+                'date_last' => $request->tanggal_po,
+                'date_first' => $request->tanggal_po,
+                'receive_type' => 'B',
+                'is_receive' => 1,
+            ]);
+        }
 
         $data = [
             'id_supplier' => $preorder->id_supplier,
@@ -868,10 +892,22 @@ class PreOrderController extends Controller
         ];
         
         Hutang::create($data);
-        // $preorder->update(['is_pay' => 1]);
 
         return redirect()->route('receive-po.create-detail', $preorder->id);
         // return redirect()->route('receive-po.create-detail', $id);
+    }
+
+    public function destroyReceiveData(Request $request)
+    {
+        $nomorPos = $request->input('nomor_po');
+
+        // Perform delete operation
+        foreach ($nomorPos as $nomorPo) {
+            // Assuming you have a model to handle PO records
+            Preorder::where('nomor_po', $nomorPo)->delete();
+        }
+
+        return response()->json(['message' => 'PO deleted successfully.']);
     }
 
     public function createDetailReceivePo($id)
@@ -1069,5 +1105,39 @@ class PreOrderController extends Controller
         }
 
         return view('preorder.harga-jual-kurang.index', compact('title', 'allMatchingProducts'));
+    }
+
+    public function returnPo()
+    {
+        $title = 'Return PO';
+        $suppliers = Supplier::where('status', 1)->get();
+        $preorders = Preorder::whereNotNull('nomor_receive')->get();
+
+        return view('preorder.return-po.index', compact('title', 'suppliers', 'preorders'));
+    }
+
+    public function storeReturnData(Request $request)
+    {
+        // get nomor return
+        $sequence = '0001';
+        $dateNow = now()->format('ym');
+        $getLastReturn = Pengembalian::max("nomor_return");
+        if ($getLastReturn) {
+            $explodeLastReturn = explode('-', $getLastReturn);
+            if ($explodeLastReturn[1] == $dateNow) {
+                $sequence = (int) $explodeLastReturn[2] + 1;
+            } else {
+                (int) $sequence;
+            }
+        } else {
+            (int) $sequence;
+        } 
+        $getNomorReturn = 'RR-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        dd($request->all(), $getNomorReturn);
+    }
+
+    public function daftarReturnPo()
+    {
+        dd('ok');
     }
 }

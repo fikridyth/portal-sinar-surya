@@ -39,7 +39,7 @@
                 <div class="mt-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMESANAN BARANG - PURCHASE ORDER
+                            <li class="breadcrumb-item active h3 text-center" aria-current="page">PENERIMAAN BARANG - PURCHASE ORDER
                             </li>
                         </ol>
                     </nav>

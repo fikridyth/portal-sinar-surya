@@ -93,7 +93,7 @@ class ReceiveDataTable extends DataTable
             // Column::make('DT_RowIndex')->title('NO.')->searchable(false)->orderable(false)->addClass('text-center'),
             Column::make('supplier_name')->title('NAMA SUPPLIER')->addClass('text-center'),
             Column::make('nomor_receive')->title('NOMOR RECEIVE')->addClass('text-center'),
-            Column::make('receive_type')->title('REF')->addClass('text-center'),
+            // Column::make('receive_type')->title('REF')->addClass('text-center'),
             Column::computed('action')
                 ->exportable(false)
                 ->printable(false)

@@ -10,7 +10,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                PEMESANAN BARANG - PURCHASE ORDER
+                                PENERIMAAN BARANG - PURCHASE ORDER
                             </li>
                         </ol>
                     </nav>
@@ -98,18 +98,19 @@
                                                     <th class="text-center">JUMLAH RP</th>
                                                     <th class="text-center">NOMOR P.O</th>
                                                     <th class="text-center">TANGGAL</th>
+                                                    <th class="text-center">PILIH</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="po_details">
                                                 <tr>
-                                                    <td id="targetRow4" colspan="6" class="text-center">Tidak ada data yang dipilih</td>
+                                                    <td id="targetRow4" colspan="7" class="text-center">Tidak ada data yang dipilih</td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                         <div class="d-flex justify-content-center">
-                                            <button type="submit" id="button-baru" hidden class="btn btn-primary mx-3">PO BARU</button>
-                                            <button type="button" id="button-tetap" hidden class="btn btn-primary mx-3">TETAP</button>
-                                            <button type="button" id="button-dihapus" hidden class="btn btn-danger mx-3">DIHAPUS</button>
+                                            <button type="submit" id="button-baru" hidden class="btn btn-primary mx-3">BUAT PENERIMAAN</button>
+                                            <button type="button" id="button-dihapus" hidden class="btn btn-danger mx-3">HAPUS PO</button>
+                                            {{-- <button type="button" id="button-tetap" hidden class="btn btn-primary mx-3">TETAP</button> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -156,37 +157,81 @@
                                 if (Array.isArray(response)) {
                                     // Clear previous data
                                     $('#po_details').empty();
+                                    const groupedPreorders = {};
                                     
                                     // Loop through each preorder
                                     response.forEach(function(preorder) {
-                                        console.log(preorder);
+                                        // console.log(preorder);
 
                                         // Parse the details JSON
                                         try {
                                             const details = JSON.parse(preorder.detail);
 
-                                            // Loop through each detail item
+                                            // Group items by nomor_po
+                                            if (!groupedPreorders[preorder.nomor_po]) {
+                                                groupedPreorders[preorder.nomor_po] = {
+                                                    items: [],
+                                                    date_first: preorder.date_first // Store date_first for this nomor_po
+                                                };
+                                            }
+
                                             details.forEach(function(item) {
-                                                $('#po_details').append(
-                                                    `<tr>
-                                                        <td>${item.nama}</td>
-                                                        <td>${item.order}</td>
-                                                        <td>${item.price}</td>
-                                                        <td>${item.field_total}</td>
-                                                        <td>${preorder.nomor_po}</td>
-                                                        <td>${preorder.date_first}</td>
-                                                    </tr>`
-                                                );
+                                                groupedPreorders[preorder.nomor_po].items.push(item);
                                             });
                                         } catch (e) {
                                             console.error('Failed to parse detail JSON:', e);
                                         }
                                     });
 
+                                    Object.keys(groupedPreorders).forEach(nomor_po => {
+                                        const group = groupedPreorders[nomor_po];
+                                        group.items.forEach(function(item, index) {
+                                            $('#po_details').append(
+                                                `<tr>
+                                                    <td hidden>${item.kode}</td>
+                                                    <td hidden>${item.nama}</td>
+                                                    <td hidden>${item.unit_jual}</td>
+                                                    <td hidden>${item.stok}</td>
+                                                    <td hidden>${item.order}</td>
+                                                    <td hidden>${item.price}</td>
+                                                    <td hidden>${item.field_total}</td>
+                                                    <td hidden>${item.kode_sumber}</td>
+                                                    <td hidden>${item.diskon1}</td>
+                                                    <td hidden>${item.diskon2}</td>
+                                                    <td hidden>${item.diskon3}</td>
+                                                    <td hidden>${item.penjualan_rata}</td>
+                                                    <td hidden>${item.waktu_kunjungan}</td>
+                                                    <td hidden>${item.stok_minimum}</td>
+                                                    <td hidden>${item.stok_maksimum}</td>
+                                                    <td hidden>${item.is_ppn}</td>
+                                                    <td hidden>${nomor_po}</td>
+                                                    <td>${item.nama}</td>
+                                                    <td class="text-end">${item.order}</td>
+                                                    <td class="text-end">${number_format(item.price)}</td>
+                                                    <td class="text-end">${number_format(item.field_total)}</td>
+                                                    <td class="text-center">${nomor_po}</td>
+                                                    <td class="text-center">${group.date_first}</td>
+                                                    <td class="text-center">
+                                                        <input type="checkbox" class="checkbox-group" data-nomor-po="${nomor_po}" id="checkbox-${nomor_po}-${index}">
+                                                    </td>
+                                                </tr>`
+                                            );
+                                        });
+                                    });
+
+                                    // Attach event listener for checkboxes
+                                    $('.checkbox-group').on('change', function() {
+                                        const nomorPo = $(this).data('nomor-po');
+                                        const isChecked = this.checked;
+
+                                        // Check or uncheck all checkboxes with the same nomor_po
+                                        $(`.checkbox-group[data-nomor-po="${nomorPo}"]`).prop('checked', isChecked);
+                                    });
+
                                     // Hide or show specific rows as needed
                                     $('#targetRow4').attr('hidden', 'hidden');
                                     $('#button-baru').removeAttr('hidden');
-                                    $('#button-tetap').removeAttr('hidden');
+                                    // $('#button-tetap').removeAttr('hidden');
                                     $('#button-dihapus').removeAttr('hidden');
                                 } else {
                                     console.warn('Expected an array but received:', response);
@@ -200,6 +245,10 @@
                     selectItemsSupplier.appendChild(div);
                 }
             });
+
+            function number_format(number) {
+                return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
 
             function filterFunction() {
                 const input = searchInputSupplier.value.toUpperCase();
@@ -231,6 +280,96 @@
             });
 
             closeAllSelect();
+        });
+
+        document.getElementById('button-baru').addEventListener('click', function() {
+            // Collect selected data
+            const selectedItems = [];
+            const nomorPos = new Set();
+
+            $('#po_details tr').each(function() {
+                const checkbox = $(this).find('input[type="checkbox"]');
+                if (checkbox.is(':checked')) {
+                    const rowData = {
+                        kode: $(this).find('td:nth-child(1)').text(),
+                        nama: $(this).find('td:nth-child(2)').text(),
+                        unit_jual: $(this).find('td:nth-child(3)').text(),
+                        stok: $(this).find('td:nth-child(4)').text(),
+                        order: $(this).find('td:nth-child(5)').text(),
+                        price: $(this).find('td:nth-child(6)').text(),
+                        field_total: $(this).find('td:nth-child(7)').text(),
+                        kode_sumber: $(this).find('td:nth-child(8)').text(),
+                        diskon1: $(this).find('td:nth-child(9)').text(),
+                        diskon2: $(this).find('td:nth-child(10)').text(),
+                        diskon3: $(this).find('td:nth-child(11)').text(),
+                        penjualan_rata: $(this).find('td:nth-child(12)').text(),
+                        waktu_kunjungan: $(this).find('td:nth-child(13)').text(),
+                        stok_minimum: $(this).find('td:nth-child(14)').text(),
+                        stok_maksimum: $(this).find('td:nth-child(15)').text(),
+                        is_ppn: $(this).find('td:nth-child(16)').text(),
+                    };
+                    selectedItems.push(rowData);
+
+                    // Collect nomor_po
+                    const nomorPo = $(this).find('td:nth-child(17)').text(); // Adjust the index for nomor_po
+                    nomorPos.add(nomorPo); // Add to Set
+                }
+            });
+
+            // Create a hidden input field to store the selected items as JSON
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'details';
+            input.value = JSON.stringify(selectedItems);
+            document.querySelector('form').appendChild(input);
+
+            const nomorPoInput = document.createElement('input');
+            nomorPoInput.type = 'hidden';
+            nomorPoInput.name = 'old_nomor_po'; // Set the name as needed
+            nomorPoInput.value = Array.from(nomorPos).join(','); // Join with a comma for submission
+            document.querySelector('form').appendChild(nomorPoInput);
+
+            // Now submit the form
+            document.querySelector('form').submit();
+        });
+
+        document.getElementById('button-dihapus').addEventListener('click', function() {
+            const nomorPos = new Set();
+
+            // Collect selected nomor_po
+            $('#po_details tr').each(function() {
+                const checkbox = $(this).find('input[type="checkbox"]');
+                if (checkbox.is(':checked')) {
+                    const nomorPo = $(this).find('td:nth-child(17)').text(); // Adjust index for nomor_po
+                    nomorPos.add(nomorPo);
+                }
+            });
+
+            const uniqueNomorPos = Array.from(nomorPos);
+
+            if (uniqueNomorPos.length === 0) {
+                alert('Silakan pilih PO yang ingin dihapus.');
+                return;
+            }
+
+            // Send delete request
+            $.ajax({
+                url: '/destroy-receive-data',
+                method: 'DELETE',
+                data: {
+                    nomor_po: uniqueNomorPos,
+                    _token: $('input[name="_token"]').val() // Include CSRF token if using Laravel
+                },
+                success: function(response) {
+                    // Handle success (e.g., refresh the table or show a message)
+                    alert('PO berhasil dihapus.');
+                    location.reload(); // Reload the page or update UI
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting PO:', error);
+                    alert('Gagal menghapus PO. Silakan coba lagi.');
+                }
+            });
         });
     </script>
 @endsection

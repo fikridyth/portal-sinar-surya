@@ -300,7 +300,7 @@ class PembayaranController extends Controller
     {
         $title = 'List Pembayaran';
         $pembayarans = Pembayaran::whereNull('is_bayar')->get();
-        $banks = Bank::orderByRaw('is_default desc')->get();
+        $banks = Bank::whereNotNull('created_at')->orderBy('nama', 'desc')->get();
         
         return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
     }
