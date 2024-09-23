@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 
 class KartuStokController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(KartuStokDataTable $dataTable)
     {
         $title = 'Master Kartu Stok';
@@ -19,25 +16,6 @@ class KartuStokController extends Controller
         return $dataTable->render('master.kartu-stok.index', compact('title'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $title = 'Show Master Kartu Stok';
@@ -88,29 +66,5 @@ class KartuStokController extends Controller
         });
 
         return view('master.kartu-stok.show', compact('title', 'product', 'allProducts', 'totalMasuk', 'productFlow'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

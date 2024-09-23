@@ -108,28 +108,52 @@ Route::middleware('auth')->group(function () {
     
     // Master
     Route::prefix('master')->name('master.')->group(function () {
+        // Unit
         Route::resource('/unit', UnitController::class, ['parameters' => ['unit' => 'id']]);
+
+        // Departemen
         Route::resource('/departemen', DepartemenController::class, ['parameters' => ['departemen' => 'id']]);
         Route::get('/get-departemen', [DepartemenController::class, 'getDepartemenByUnit'])->name('get-departemen');
+
+        // Supplier
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
+
+        // Kunjungan
         Route::get('/kunjungan', [SupplierController::class, 'indexKunjungan'])->name('kunjungan.index');
+
+        // Promosi
         Route::get('/promosi', [SupplierController::class, 'indexPromosi'])->name('promosi.index');
         Route::get('/promosi-all', [SupplierController::class, 'indexAllPromosi'])->name('promosi.index-all');
         Route::post('/promosi/store', [SupplierController::class, 'storePromosi'])->name('promosi.store');
         Route::put('/promosi/{id}/update', [SupplierController::class, 'updatePromosi'])->name('promosi.update');
         Route::delete('/promosi/{id}/destroy', [SupplierController::class, 'destroyPromosi'])->name('promosi.destroy');
+
+        // Materai
         Route::get('/materai', [SupplierController::class, 'indexMaterai'])->name('materai.index');
         Route::put('/materai/{id}/update', [SupplierController::class, 'updateMaterai'])->name('materai.update');
+
+        // History PO
         Route::get('/history-preorder/{id}', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
+
+        // Bank
+        Route::get('/bank', [GiroController::class, 'indexBank'])->name('bank.index');
+        Route::post('/bank/store', [GiroController::class, 'storeBank'])->name('bank.store');
+        Route::put('/bank/{id}/update', [GiroController::class, 'updateBank'])->name('bank.update');
+        Route::delete('/bank/{id}/destroy', [GiroController::class, 'destroyBank'])->name('bank.destroy');
+
+        // Giro
         Route::get('/giro', [GiroController::class, 'index'])->name('giro.index');
         Route::get('/giro/create/{id}', [GiroController::class, 'create'])->name('giro.create');
         Route::post('/giro/store/{id}', [GiroController::class, 'store'])->name('giro.store');
         Route::get('/giro/show/{id}', [GiroController::class, 'show'])->name('giro.show');
         Route::get('/get-data-giro', [GiroController::class, 'getData']);
         Route::get('/get-bayar-giro', [GiroController::class, 'getDataBayar']);
+
+        // PPN
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);
+
+        // Product
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id'], 'except' => ['create']]);
-        Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
         Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
         Route::get('/product/create/{id}', [ProductController::class, 'create'])->name('product.create');
         Route::get('/product/parent/{id}', [ProductController::class, 'productParent'])->name('product.parent');
@@ -138,5 +162,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
         Route::get('/product-opname', [ProductController::class, 'stockOpname'])->name('opname');
         Route::post('/product-opname/update', [ProductController::class, 'updateStockOpname'])->name('opname.update');
+
+        // Kartu Stok
+        Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
     });
 });

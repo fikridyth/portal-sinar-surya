@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Redirect;
 
 class GiroController extends Controller
 {
+    
+    public function indexBank(Request $request)
+    {
+        $title = 'Master Bank';
+        $banks = Bank::where('status', 1)->get();
+
+        return view('master.bank.index', compact('title', 'banks'));
+    }
+
     public function index(Request $request)
     {
         $title = 'Master Giro';
-        $banks = Bank::whereNotNull('created_at')->get();
+        $banks = Bank::where('status', 1)->get();
 
         return view('master.giro.index', compact('title', 'banks'));
     }
