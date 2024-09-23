@@ -78,7 +78,7 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <table class="table table-bordered">
+                                    <table id="details-table" class="table table-bordered">
                                         <thead>
                                             <tr>
                                                 <th class="text-center">NO</th>
@@ -86,12 +86,13 @@
                                                 <th class="text-center">NAMA BARANG</th>
                                                 <th class="text-center">KETERANGAN</th>
                                                 <th class="text-center">QTY</th>
-                                                <th class="text-center">NOMOR PO</th>
+                                                {{-- <th class="text-center">NOMOR PO</th> --}}
                                                 <th class="text-center">HARGA</th>
-                                                <th class="text-center">TOTAL RP</th>
+                                                {{-- <th class="text-center">TOTAL RP</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <tr class="fs-need"></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -101,11 +102,11 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    <button type="button" id="button-tambah" class="btn btn-success">TAMBAH</button>
+                                    <button type="button" id="tambah-button" class="btn btn-success">TAMBAH</button>
                                 </div>
-                                <div class="col-auto">
-                                    <button type="button" id="button-simpan" disabled class="btn btn-primary">SIMPAN</button>
-                                </div>
+                                {{-- <div class="col-auto">
+                                    <button type="button" id="simpan-button" disabled class="btn btn-primary">SIMPAN</button>
+                                </div> --}}
                             </div>
                             <div class="row align-items-center">
                                 <div class="col-auto">
@@ -119,7 +120,7 @@
 
                         <div class="d-flex justify-content-center">
                             <a href="{{ route('index') }}" class="btn btn-danger mx-5">BATAL</a>
-                            <button type="submit" class="btn btn-primary">PROSES</button>
+                            <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
                 </form>
@@ -139,6 +140,139 @@
             $(`.preorder-select`).select2({
                 placeholder: '---Select Receive---',
                 allowClear: true
+            });
+        });
+
+        function handleSelectChange(event) {
+            const selectElement = event.target;
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const kode = selectedOption.getAttribute('data-kode');
+            const jual = selectedOption.getAttribute('data-jual');
+            
+            // Find the closest row and update the data-kode cell
+            const row = selectElement.closest('tr');
+            const kodeCell = row.querySelector('#data-kode');
+            const jualCell = row.querySelector('#data-jual');
+            kodeCell.textContent = kode;
+            jualCell.value = jual;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tambahButton = document.getElementById('tambah-button');
+            const tableBody = document.querySelector('#details-table tbody');
+            // const element = document.getElementById('current-index');
+            // const currentIndex = element && element.value ? parseInt(element.value, 10) || 0 : 0;
+
+            let index = 0; // Start index from the current index
+
+            tambahButton.addEventListener('click', function() {
+                const simpanButton = document.getElementById('simpan-button');
+                simpanButton.disabled = false;
+
+                index++;
+                
+                const newRow = document.createElement('tr');
+                newRow.classList.add('fs-need');
+                
+                newRow.innerHTML = `
+                    <td>${index}</td>
+                    <td class="text-center data-kode" hidden id="data-kode"></td>
+                    <td colspan="3" class="text-center">
+                        <select id="products-${index}" class="product-select" onchange="handleSelectChange(event)">
+                            <option value="">---Select Product---</option>
+                            @foreach ($products as $product)
+                                <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-jual="{{ $product->harga_pokok }}">{{ $product->kode }} - {{ $product->nama }}/{{ $product->unit_jual }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td class="text-center"><input type="number" size="1" class="order-input" min="1" step="1"></td>
+                    <td class="text-center"><input type="number" id="data-jual" size="1" class="price-input" min="1" step="1"></td>
+                `;
+                
+                tableBody.appendChild(newRow);
+
+                // Initialize Select2 on the newly added select element
+                $(`#products-${index}`).select2({
+                    placeholder: '---Select Product---',
+                    allowClear: true
+                });
+            });
+        });
+
+        // Store Data
+        document.addEventListener('DOMContentLoaded', function() {
+            const simpanButton = document.getElementById('simpan-button');
+
+            simpanButton.addEventListener('click', function() {
+                event.preventDefault();
+
+                // Get the selected values from the dropdowns
+                const preorderSelect = document.getElementById('preorder-select');
+                const supplierSelect = document.getElementById('supplier-select');
+
+                const selectedPreorder = preorderSelect.value; // This gets the selected preorder value
+                const selectedSupplier = supplierSelect.value; // This gets the selected supplier value
+
+                if (!selectedPreorder) {
+                    alert('SILAHKAN PILIH BUKTI PENERIMAAN.');
+                    return; // Exit the function if validation fails
+                }
+
+                if (!selectedSupplier) {
+                    alert('SILAHKAN PILIH SUPPLIER.');
+                    return; // Exit the function if validation fails
+                }
+
+                const rows = document.querySelectorAll('#details-table tbody tr');
+                const data = [];
+
+                rows.forEach(row => {
+                    // Use class selectors for cells if ids are not unique
+                    const kodeElement = row.querySelector('.data-kode');
+                    const orderElement = row.querySelector('.order-input');
+                    const priceElement = row.querySelector('.price-input');
+
+                    const kode = kodeElement ? kodeElement.textContent.trim() : '';
+                    const order = orderElement ? orderElement.value.trim() : '';
+                    const price = priceElement ? priceElement.value.trim() : '';
+
+                    if (kode && order) {
+                        data.push({
+                            kode: kode,
+                            order: order,
+                            price: price,
+                        });
+                    }
+                });
+
+                if (data.length === 0) {
+                    alert('SILAHKAN ISI DATA PRODUCT.');
+                    return; // Exit the function if validation fails
+                }
+
+                fetch('{{ route("return-po.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        data: data,
+                        receive: selectedPreorder,
+                        supplier: selectedSupplier
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        var redirectUrl = @json(route('daftar-return-po'));
+                        window.location.href = redirectUrl;
+                    } else {
+                        alert('Proses Gagal');
+                        // alert(`Validation Errors:\n${result.errors.join('\n')}`);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
     </script>

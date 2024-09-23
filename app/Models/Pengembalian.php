@@ -12,6 +12,10 @@ class Pengembalian extends Model
     protected $table = 'pengembalians';
     protected $guarded = ['id'];
 
+    public function supplier() {
+        return $this->belongsTo(Supplier::class, 'id_supplier', 'id');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['periode'] ?? false, function ($query, $periode) {

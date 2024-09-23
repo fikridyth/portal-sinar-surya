@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/return-po', [PreOrderController::class, 'returnPo'])->name('return-po');
     Route::post('/store-return-data', [PreOrderController::class, 'storeReturnData'])->name('return-po.store');
     Route::get('/daftar-return-po', [PreOrderController::class, 'daftarReturnPo'])->name('daftar-return-po');
+    Route::delete('/destroy-return-data/{id}', [PreOrderController::class, 'destroyReturnData'])->name('return-po.destroy');
 
     // Func in PO & Receive
     Route::post('/store-new-data', [PreOrderController::class, 'storeNewData'])->name('daftar-po.store');

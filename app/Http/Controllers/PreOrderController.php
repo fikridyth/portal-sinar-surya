@@ -438,7 +438,9 @@ class PreOrderController extends Controller
         $title = 'Edit PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
-        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        // dd(count($products));
 
         return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products'));
     }
@@ -915,7 +917,9 @@ class PreOrderController extends Controller
         $title = 'Detail Receive PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
-        $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        // dd(count($products));
 
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
     }
@@ -1111,9 +1115,11 @@ class PreOrderController extends Controller
     {
         $title = 'Return PO';
         $suppliers = Supplier::where('status', 1)->get();
-        $preorders = Preorder::whereNotNull('nomor_receive')->get();
+        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('is_return')->get();
+        $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        // dd(count($products));
 
-        return view('preorder.return-po.index', compact('title', 'suppliers', 'preorders'));
+        return view('preorder.return-po.index', compact('title', 'suppliers', 'preorders', 'products'));
     }
 
     public function storeReturnData(Request $request)
@@ -1131,13 +1137,86 @@ class PreOrderController extends Controller
             }
         } else {
             (int) $sequence;
-        } 
+        }
         $getNomorReturn = 'RR-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
-        dd($request->all(), $getNomorReturn);
+
+        $preorder = Preorder::where('nomor_receive', $request->receive)->first();
+        $supplier = Supplier::find($request->supplier);
+        $detail = [];
+        $total = 0;
+
+        foreach ($request->input('data') as $item) {
+            $product = Product::where('kode', $item['kode'])->first();
+
+            // Menghitung field_total
+            $field_total = $item['order'] * $item['price'];
+            
+            // Menambahkan field_total ke total keseluruhan
+            $total += $field_total;
+
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => number_format($product->stok, 2),
+                'order' => $item['order'],
+                'price' => $item['price'],
+                'field_total' => $field_total,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => 0,
+            ];
+
+            // Add the new entry to the detail array
+            $detail[] = $newEntry;
+        }
+
+        date_default_timezone_set('Asia/Bangkok');
+        Pengembalian::create([
+            'id_supplier' => $request->supplier,
+            'nomor_return' => $getNomorReturn,
+            'date' => now()->format('Y-m-d'),
+            'jam' => now()->format('H:i:s'),
+            'total' => $total,
+            'created_by' => auth()->user()->name,
+            'detail' => json_encode($detail)
+        ]);
+
+        $preorder->update([
+            'is_return' => 1, 
+            'nomor_return' => $getNomorReturn
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function daftarReturnPo()
     {
-        dd('ok');
+        $title = 'Daftar Return PO';
+        $returs = Pengembalian::whereNull('nomor_bukti')->get();
+        // dd($returs);
+
+        return view('preorder.return-po.list', compact('title', 'returs'));
+    }
+
+    public function destroyReturnData($id)
+    {
+        $retur = Pengembalian::find($id);
+        $preorder = Preorder::where('nomor_return', $retur->nomor_return);
+
+        $preorder->update([
+            'is_return' => null, 
+            'nomor_return' => null
+        ]);
+
+        $retur->delete();
+
+        return response()->json(['success' => true]);
     }
 }
