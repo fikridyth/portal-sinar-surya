@@ -300,16 +300,16 @@ class PembayaranController extends Controller
     {
         $title = 'List Pembayaran';
         $pembayarans = Pembayaran::whereNull('is_bayar')->get();
-        $banks = Bank::where('status', 1)->orderBy('nama', 'desc')->get();
+        $banks = Bank::where('status', 1)->whereHas('giro')->orderByRaw('CASE WHEN nama = "MAYORA S" THEN 0 ELSE 1 END')->get();
         
         return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $title = 'Detail Pembayaran';
         $pembayaran = Pembayaran::find($id);
-        $bank = Bank::where('is_default', 1)->first();
+        $bank = Bank::find($request->bank_id);
         $giro = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->first();
         
         return view('pembayaran.show', compact('title', 'pembayaran', 'bank', 'giro'));
@@ -383,7 +383,7 @@ class PembayaranController extends Controller
                 'nama' => $request->supplier,
                 'nomor_bukti' => $request->nomor_bukti,
                 'tanggal_awal' => now()->format('Y-m-d'),
-                'tanggal_akhir' => $request->date_last,
+                'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'jumlah' => $request->giro_payment,
                 'tipe' => 'G',
                 'flag' => 2

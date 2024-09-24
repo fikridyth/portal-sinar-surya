@@ -11,4 +11,8 @@ class Bank extends Model
     
     protected $table = 'banks';
     protected $guarded = ['id'];
+
+    public function giro() {
+        return $this->hasMany(GiroHeader::class, 'id_bank', 'id');
+    }
 }

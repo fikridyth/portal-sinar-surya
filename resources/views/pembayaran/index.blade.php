@@ -113,9 +113,9 @@
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
                                     <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
-                                    <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a>
+                                    {{-- <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a> --}}
                                     <a href="#" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
-                                    <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a>
+                                    {{-- <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a> --}}
                                     <form id="delete-form" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
@@ -177,7 +177,7 @@
                                             <td>{{ $pmb->supplier->nama }}</td>
                                             <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
                                             <td class="keterangan_bayar">{{ $pmb->nomor_giro }}</td>
-                                            <td class="text-center"><input type="checkbox" class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent)) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                         </tr>
@@ -227,69 +227,101 @@
                 const jumlahBukti = $(this).data('jumlah');
                 const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
-                    // other table
-                    selectedIds.push(id);
+                    const selectedBankId = $('#bank-select').val();
+
+                    var redirectUrl = `{{ route('pembayaran.show', '') }}/${id}?bank_id=${selectedBankId}`;
+                    window.location.href = redirectUrl;
+                    
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
                     $('#jumlah-bukti').text(jumlahBukti);
 
-                    $('.input-check[data-nomor="' + nomorBukti + '"]').each(function () {
-                        if (!$(this).is(':checked')) {
-                            $(this).prop('checked', true).change(); // Trigger change event
-                        }
-                    });
-
-                    // link
-                    if (keteranganBayar === '') {
-                        // keterangan bayar null, aktifkan button-bayar dan nonaktifkan button-hapus
-                        $('#button-bayar').removeClass('disabled-link');
-                        $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
-                        
-                        $('#button-cetak').addClass('disabled-link');
-                        $('#button-cetak').attr('href', '#');
-
-                        $('#button-hapus').addClass('disabled-link');
-                        $('#button-hapus').attr('href', '#');
-
-                        // other checkbox
-                        $('input[type="checkbox"]').not(this).prop('disabled', true);
-                    } else {
-                        // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-bayar
-                        $('#button-bayar').addClass('disabled-link');
-                        $('#button-bayar').attr('href', '#');
-                        
-                        $('#button-cetak').removeClass('disabled-link');
-                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
-                        
-                        $('#button-hapus').removeClass('disabled-link');
-                        $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
-                        $('#button-hapus').data('id', selectedIds); // Simpan ID untuk penghapusan
-
-                        // other checkbox
-                        $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
-                        $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
-                    }
+                    selectedIds.push(id);
                 } else {
-                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
-                    $('#nomor-bukti').text('');
-                    $('#tanggal-bukti').text('');
-                    $('#jumlah-bukti').text('');
-
-                    const index = selectedIds.indexOf(id);
-                    if (index > -1) {
-                        selectedIds.splice(index, 1); // Remove the unchecked ID
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id); // Remove ID from array
+                    $(this).prop('checked', true);
+                    
+                    // Automatically submit the delete form if unchecked
+                    if (confirm('Apakah Anda yakin ingin mengembalikan pembayaran ini?')) {
+                        $('#delete-id').val(id); // Set the ID for deletion
+                        $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
+                        $('#delete-form').submit(); // Submit the form
                     }
+                }
 
-                    $('#button-bayar').addClass('disabled-link');
-                    $('#button-bayar').attr('href', '#');
-                    $('#button-cetak').addClass('disabled-link');
-                    $('#button-cetak').attr('href', '#');
-                    $('#button-hapus').addClass('disabled-link');
-                    $('#button-hapus').attr('href', '#');
+                // if ($(this).is(':checked')) {
+                //     // other table
+                //     selectedIds.push(id);
+                //     $('#nomor-bukti').text(nomorBukti);
+                //     $('#tanggal-bukti').text(tanggalBukti);
+                //     $('#jumlah-bukti').text(jumlahBukti);
 
-                    $('input[type="checkbox"]').prop('disabled', false);
+                //     $('.input-check[data-nomor="' + nomorBukti + '"]').each(function () {
+                //         if (!$(this).is(':checked')) {
+                //             $(this).prop('checked', true).change(); // Trigger change event
+                //         }
+                //     });
+
+                //     // link
+                //     if (keteranganBayar === '') {
+                //         // keterangan bayar null, aktifkan button-bayar dan nonaktifkan button-hapus
+                //         $('#button-bayar').removeClass('disabled-link');
+                //         $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
+                        
+                //         $('#button-cetak').addClass('disabled-link');
+                //         $('#button-cetak').attr('href', '#');
+
+                //         $('#button-hapus').addClass('disabled-link');
+                //         $('#button-hapus').attr('href', '#');
+
+                //         // other checkbox
+                //         $('input[type="checkbox"]').not(this).prop('disabled', true);
+                //     } else {
+                //         // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-bayar
+                //         $('#button-bayar').addClass('disabled-link');
+                //         $('#button-bayar').attr('href', '#');
+                        
+                //         $('#button-cetak').removeClass('disabled-link');
+                //         $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
+                        
+                //         $('#button-hapus').removeClass('disabled-link');
+                //         $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
+                //         $('#button-hapus').data('id', selectedIds); // Simpan ID untuk penghapusan
+
+                //         // other checkbox
+                //         $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
+                //         $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
+                //     // }
+                // } else {
+                //     selectedIds = selectedIds.filter(selectedId => selectedId !== id);
+                //     $('#nomor-bukti').text('');
+                //     $('#tanggal-bukti').text('');
+                //     $('#jumlah-bukti').text('');
+
+                //     const index = selectedIds.indexOf(id);
+                //     if (index > -1) {
+                //         selectedIds.splice(index, 1); // Remove the unchecked ID
+                //     }
+
+                //     $('#button-bayar').addClass('disabled-link');
+                //     $('#button-bayar').attr('href', '#');
+                //     $('#button-cetak').addClass('disabled-link');
+                //     $('#button-cetak').attr('href', '#');
+                //     $('#button-hapus').addClass('disabled-link');
+                //     $('#button-hapus').attr('href', '#');
+
+                //     $('input[type="checkbox"]').prop('disabled', false);
+                // }
+            });
+
+            $('.input-check').each(function() {
+                if ($(this).is(':checked')) {
+                    const id = $(this).data('id');
+                    selectedIds.push(id);
                 }
             });
+            $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0);
+            $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
 
             $('.input-gabung').change(function () {
                 const id = $(this).data('id');
@@ -406,21 +438,6 @@
 
                     $('input[type="checkbox"].input-check').prop('disabled', false);
                     $('input[type="checkbox"].input-gabung').prop('disabled', false);
-                }
-            });
-
-            $('#button-hapus').click(function (e) {
-                e.preventDefault(); // Mencegah navigasi default
-
-                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                    // Set ID ke formulir dan kirim formulir
-                    var id = $(this).data('id');
-                    // Set the ID to the hidden input field
-                    $('#delete-id').val(id);
-                    // Set the action URL of the form
-                    $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
-                    // Submit the form
-                    $('#delete-form').submit();
                 }
             });
         });

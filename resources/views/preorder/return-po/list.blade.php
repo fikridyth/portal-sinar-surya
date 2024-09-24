@@ -39,7 +39,7 @@
                                     </thead>
                                     <tbody id="preorderTableBody">
                                         @foreach ($returs as $retur)
-                                            <tr data-id="{{ $retur->id }}">
+                                            <tr data-id="{{ $retur->supplier->nama }}">
                                                 <td class="text-center">{{ $retur->supplier->nama }}</td>
                                                 <td class="text-center">{{ $retur->created_by }}</td>
                                                 <td class="text-center">{{ $retur->date }}</td>
@@ -123,7 +123,7 @@
                 const row = $(this).closest('tr');
                 const idToDelete = row.data('id');
 
-                const confirmation = confirm(`Apakah Anda yakin ingin menghapus item dengan ID: ${idToDelete}?`);
+                const confirmation = confirm(`Apakah Anda yakin ingin menghapus data ${idToDelete}?`);
                 if (confirmation) {
                     // AJAX request to delete the item
                     $.ajax({

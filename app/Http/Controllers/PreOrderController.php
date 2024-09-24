@@ -1115,7 +1115,7 @@ class PreOrderController extends Controller
     {
         $title = 'Return PO';
         $suppliers = Supplier::where('status', 1)->get();
-        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('is_return')->get();
+        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 

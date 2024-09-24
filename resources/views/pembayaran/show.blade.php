@@ -54,7 +54,7 @@
                                         <label for="">NO REKENING</label>
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" readonly class="btn-block readonly-input" id="no-rekening" value="23289">
+                                        <input type="text" readonly class="btn-block readonly-input" id="no-rekening" value="{{ $bank->no_rekening }}">
                                     </div>
                                 </div>
                                 <div class="row mb-1 mt-3">
