@@ -14,7 +14,7 @@
         </div>
 
         <div class="card">
-            <form action="{{ route('pembayaran.update', $pembayaran->id) }}" method="POST" class="form">
+            <form action="{{ route('pembayaran.update-gabung', $ids) }}" method="POST" class="form">
                 @csrf
                 @method('PUT')
                 <div class="card-body">
@@ -28,7 +28,8 @@
                                         <label for="date-input">TANGGAL</label>
                                     </div>
                                     <div class="col-4">
-                                        <input type="text" readonly id="date-input" class="form-control readonly-input" value="{{ now()->format('d/m/Y') }}">
+                                        <input type="text" readonly id="date-input" class="form-control readonly-input"
+                                            value="{{ now()->format('d/m/Y') }}">
                                     </div>
                                     <div class="col-4 text-right">
                                         {{-- <form action="{{ route('pembayaran.default-bank') }}" method="POST" class="form">
@@ -45,7 +46,8 @@
                                     </div>
                                     <div class="col-8">
                                         <select id="bank-select" class="bank-select btn-block" disabled>
-                                            <option value="{{ $bank->id }}" data-no-rekening="{{ $bank->no_rekening }}">{{ $bank->nama }}</option>
+                                            <option value="{{ $bank->id }}" data-no-rekening="{{ $bank->no_rekening }}">
+                                                {{ $bank->nama }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -54,7 +56,8 @@
                                         <label for="">NO REKENING</label>
                                     </div>
                                     <div class="col-8">
-                                        <input type="text" readonly class="btn-block readonly-input" id="no-rekening" value="{{ $bank->no_rekening }}">
+                                        <input type="text" readonly class="btn-block readonly-input" id="no-rekening"
+                                            value="{{ $bank->no_rekening }}">
                                     </div>
                                 </div>
                                 <div class="row mb-1 mt-3">
@@ -118,7 +121,8 @@
                                                 <label for="" style="font-size: 15px">SUPPLIER</label>
                                             </div>
                                             <div class="col-8">
-                                                <input type="text" readonly class="readonly-input btn-block" name="supplier" value="{{ $pembayaran->supplier->nama }}">
+                                                <input type="text" readonly class="readonly-input btn-block"
+                                                    name="supplier" value="{{ $pembayaran[0]->supplier->nama }}">
                                             </div>
                                         </div>
                                         <div class="row mb-1">
@@ -126,7 +130,9 @@
                                                 <label for="" style="font-size: 15px">JUMLAH CEK/GIRO</label>
                                             </div>
                                             <div class="col-2">
-                                                <input type="number" class="btn-block" required min="0" max="1" autocomplete="off" id="jumlah-check" name="type_payment">
+                                                <input type="number" class="btn-block" required min="0"
+                                                    max="1" autocomplete="off" id="jumlah-check"
+                                                    name="type_payment">
                                             </div>
                                         </div>
                                     </div>
@@ -135,31 +141,38 @@
                                 <div class="row mt-1">
                                     <div class="col-3"></div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio0" name="comma" value="0" onclick="updateTable('0')">
+                                        <input type="radio" id="radio0" name="comma" value="0"
+                                            onclick="updateTable('0')">
                                         <label for="cek" style="color: white;">0</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio1" name="comma" value="1" onclick="updateTable('1')">
+                                        <input type="radio" id="radio1" name="comma" value="1"
+                                            onclick="updateTable('1')">
                                         <label for="giro" style="color: white;">1</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio2" name="comma" value="2" onclick="updateTable('2')">
+                                        <input type="radio" id="radio2" name="comma" value="2"
+                                            onclick="updateTable('2')">
                                         <label for="transfer" style="color: white;">2</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio3" name="comma" value="3" onclick="updateTable('3')">
+                                        <input type="radio" id="radio3" name="comma" value="3"
+                                            onclick="updateTable('3')">
                                         <label for="transfer" style="color: white;">3</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio4" name="comma" value="4" onclick="updateTable('4')">
+                                        <input type="radio" id="radio4" name="comma" value="4"
+                                            onclick="updateTable('4')">
                                         <label for="transfer" style="color: white;">4</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio5" name="comma" value="5" onclick="updateTable('5')">
+                                        <input type="radio" id="radio5" name="comma" value="5"
+                                            onclick="updateTable('5')">
                                         <label for="transfer" style="color: white;">5</label>
                                     </div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
-                                        <input type="radio" id="radio6" name="comma" value="6" onclick="updateTable('6')">
+                                        <input type="radio" id="radio6" name="comma" value="6"
+                                            onclick="updateTable('6')">
                                         <label for="transfer" style="color: white;">6</label>
                                     </div>
                                 </div>
@@ -176,54 +189,68 @@
                                             </thead>
                                             <tbody id="tunai-table" style="display: none;">
                                                 <tr>
-                                                    <input type="text" id="amount-total" value="{{ $pembayaran->grand_total }}" hidden>
-                                                    <input type="text" name="nomor_bukti" value="{{ $pembayaran->nomor_bukti }}" hidden>
-                                                    <input type="text" hidden id="amount1-1" name="tunai_payment" value="{{ $pembayaran->grand_total }}">
-                                                    <td class="text-end" id="amount1">{{ number_format($pembayaran->grand_total) }}</td>
+                                                    <input type="text" id="amount-total"
+                                                        value="{{ $pembayaran->sum('grand_total') }}" hidden>
+                                                    <input type="text" hidden id="amount1-1" name="tunai_payment"
+                                                        value="{{ $pembayaran->sum('grand_total') }}">
+                                                    <td class="text-end" id="amount1">
+                                                        {{ number_format($pembayaran->sum('grand_total')) }}</td>
                                                     <td>TUNAI</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td><input class="form-check-input" style="opacity: 1;"
+                                                            type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <input type="text" hidden id="amount2-1" name="tunai_other_income">
+                                                    <input type="text" hidden id="amount2-1"
+                                                        name="tunai_other_income">
                                                     <td class="text-end" id="amount2">0</td>
                                                     <td>OTHER INCOME</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td><input class="form-check-input" style="opacity: 1;"
+                                                            type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                             <tbody id="giro-table" style="display: none;">
                                                 <tr>
-                                                    <input type="text" hidden name="nomor_giro" value="{{ $giro->nomor }}">
-                                                    <input type="text" hidden id="amount3-1" name="giro_payment" value="{{ $pembayaran->grand_total }}">
-                                                    <td class="text-end" id="amount3">{{ number_format($pembayaran->grand_total) }}</td>
+                                                    <input type="text" hidden name="nomor_giro"
+                                                        value="{{ $giro->nomor }}">
+                                                    <input type="text" hidden id="amount3-1" name="giro_payment"
+                                                        value="{{ $pembayaran->sum('grand_total') }}">
+                                                    <td class="text-end" id="amount3">
+                                                        {{ number_format($pembayaran->sum('grand_total')) }}</td>
                                                     <td>{{ $giro->nomor }}</td>
                                                     <td><input type="date" name="date_last" style="width: 50px;"></td>
                                                 </tr>
                                                 <tr>
-                                                    <input type="text" hidden id="amount4-1" name="giro_tunai_payment">
+                                                    <input type="text" hidden id="amount4-1"
+                                                        name="giro_tunai_payment">
                                                     <td class="text-end" id="amount4">0</td>
                                                     <td>TUNAI</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td><input class="form-check-input" style="opacity: 1;"
+                                                            type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
                                                     <input type="text" hidden name="giro_other_income" value="0">
                                                     <td class="text-end">0</td>
                                                     <td>OTHER INCOME</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td><input class="form-check-input" style="opacity: 1;"
+                                                            type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                     <div class="col-2">
                                         <label for="" style="font-size: 12px;">MATERAI</label>
-                                        <input type="text" class="text-end btn-block" style="font-size: 12px;" value="0">
+                                        <input type="text" class="text-end btn-block" style="font-size: 12px;"
+                                            value="0">
                                         <label for="" style="font-size: 12px;">BEBAN MATERAI</label>
-                                        <input type="text" class="text-end btn-block" style="font-size: 12px;" value="0">
+                                        <input type="text" class="text-end btn-block" style="font-size: 12px;"
+                                            value="0">
                                     </div>
                                 </div>
                                 <div class="row mt-2">
                                     <div class="col-3"></div>
                                     <div class="col-3">
-                                        <input type="text" class="btn-block readonly-input text-end" value="{{ number_format($pembayaran->grand_total) }}" readonly>
+                                        <input type="text" class="btn-block readonly-input text-end"
+                                            value="{{ number_format($pembayaran->sum('grand_total')) }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -273,7 +300,7 @@
             let totalAmount = document.getElementById('amount-total').value;
             let amount1, amount2, amount3, amount4;
 
-            switch(value) {
+            switch (value) {
                 case '0':
                     // Extract last zero digits
                     let lastZeroDigits = totalAmount % 1;
@@ -369,7 +396,7 @@
                                 tbody.appendChild(row);
                             });
 
-                            
+
                             const tbody2 = document.getElementById('data-tbody-2');
                             tbody2.innerHTML = ''; // Clear existing data
 
@@ -388,7 +415,7 @@
                                 return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                             }
                         })
-                    .catch(error => console.error('Error fetching data:', error));
+                        .catch(error => console.error('Error fetching data:', error));
                 }
             }
 
@@ -399,10 +426,10 @@
             const jumlahCheck = document.getElementById('jumlah-check');
             const tunaiTable = document.getElementById('tunai-table');
             const giroTable = document.getElementById('giro-table');
-            
+
             jumlahCheck.addEventListener('input', function() {
                 const amount = parseFloat(this.value);
-                
+
                 if (amount === 0) {
                     tunaiTable.style.display = 'table-row-group';
                     giroTable.style.display = 'none';

@@ -177,8 +177,8 @@
                                             <td>{{ $pmb->supplier->nama }}</td>
                                             <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
                                             <td class="keterangan_bayar">{{ $pmb->nomor_giro }}</td>
-                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent)) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                         </tr>
                                         @if ($pmb->nomor_bukti)
@@ -320,6 +320,7 @@
                     selectedIds.push(id);
                 }
             });
+            
             $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0);
             $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
 
@@ -342,54 +343,43 @@
                         }
                     });
 
-                    // link
-                    if (keteranganBayar === '') {
-                        // keterangan bayar null, aktifkan button-gabung dan nonaktifkan button-hapus
-                        $('#button-gabung').removeClass('disabled-link');
-                        $('#button-gabung').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
-                        
-                        $('#button-cetak').addClass('disabled-link');
-                        $('#button-cetak').attr('href', '#');
-                    } else {
-                        // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-gabung
-                        $('#button-gabung').addClass('disabled-link');
-                        $('#button-gabung').attr('href', '#');
-                        
-                        $('#button-cetak').removeClass('disabled-link');
-                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
-                    }
+                    const selectedBankId = $('#bank-select').val();
+                    $('#button-gabung').removeClass('disabled-link');
+                    $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIds.join(',')}?bank_id=${selectedBankId}`);
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
                     $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
                 } else {
-                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
-                    $('#nomor-bukti').text('');
-                    $('#tanggal-bukti').text('');
-                    $('#jumlah-bukti').text('');
-
-                    const index = selectedIds.indexOf(id);
-                    if (index > -1) {
-                        selectedIds.splice(index, 1); // Remove the unchecked ID
-                    }
-
-                    $('#button-gabung').addClass('disabled-link');
-                    $('#button-gabung').attr('href', '#');
-                    $('#button-cetak').addClass('disabled-link');
-                    $('#button-cetak').attr('href', '#');
-
-                    $('input[type="checkbox"].input-check').prop('disabled', false);
-                    $('input[type="checkbox"].input-konfirmasi').prop('disabled', false);
-
-                    if (selectedIds.length === 0) {
-                        $('#button-cetak').addClass('disabled-link');
-                        $('#button-cetak').attr('href', '#');
-                    } else {
-                        $('#button-cetak').removeClass('disabled-link');
-                        $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
+                    selectedIds = selectedIds.filter(selectedId => selectedId !== id); // Remove ID from array
+                    $(this).prop('checked', true);
+                    
+                    // Automatically submit the delete form if unchecked
+                    if (confirm('Apakah Anda yakin ingin mengembalikan pembayaran ini?')) {
+                        $('#delete-id').val(id); // Set the ID for deletion
+                        $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
+                        $('#delete-form').submit(); // Submit the form
                     }
                 }
             });
+
+            // Initial setup when the route is accessed
+            function setupOnRouteAccess() {
+                selectedIds = []; // Reset selectedIds when entering the route
+                const selectedBankId = $('#bank-select').val();
+
+                $('.input-gabung:checked').each(function () {
+                    const id = $(this).data('id');
+                    selectedIds.push(id);
+                });
+
+                // Update the button state based on selectedIds
+                $('#button-gabung').toggleClass('disabled-link', selectedIds.length === 0);
+                $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIds.join(',')}?bank_id=${selectedBankId}`);
+            }
+
+            // Call this function when entering the show-gabung route
+            setupOnRouteAccess();
 
             $('.input-konfirmasi').change(function () {
                 const id = $(this).data('id');

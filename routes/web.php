@@ -96,7 +96,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran-history', [PembayaranController::class, 'indexHistory'])->name('pembayaran.index-history');
     Route::delete('/pembayaran-history/{id}/destroy', [PembayaranController::class, 'destroyHistory'])->name('pembayaran.destroy-history');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
+    Route::get('/pembayaran-gabung/{id}', [PembayaranController::class, 'showGabung'])->name('pembayaran.show-gabung');
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
+    Route::put('/pembayaran-gabung/{id}/update', [PembayaranController::class, 'updateGabung'])->name('pembayaran.update-gabung');
     Route::delete('/pembayaran/destroy-payment/{ids}', [PembayaranController::class, 'destroyPayment'])->name('pembayaran.destroy-payment');
     Route::get('/pembayaran/param-cetak-payment/{ids}', [PembayaranController::class, 'paramCetakPayment'])->name('pembayaran.param-cetak-payment');
     Route::get('/pembayaran/cetak-payment/{ids}', [PembayaranController::class, 'cetakPayment'])->name('pembayaran.cetak-payment');
