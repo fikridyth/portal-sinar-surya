@@ -151,13 +151,13 @@
                                                         @foreach ($allProducts as $prd)
                                                             {{-- @dd($prd, $flow) --}}
                                                             @if ($prd['kode'] == $flow['kode'])
-                                                                <td class="text-end">{{ $flow['qty'] }}</td>
+                                                                <td class="text-end">{{ $flow['total'] }}</td>
                                                             @else
                                                                 <td class="text-end"></td>
                                                             @endif
                                                         @endforeach
-                                                        <td class="text-end">@if ($flow['qty'] > 0) {{ $flow['qty'] }} @endif</td>
-                                                        <td class="text-end">@if ($flow['qty'] <= 0) {{ str_replace('-', '', $flow['qty']) }} @endif</td>
+                                                        <td class="text-end">@if ($flow['total'] > 0) {{ $flow['total'] }} @endif</td>
+                                                        <td class="text-end">@if ($flow['total'] <= 0) {{ str_replace('-', '', $flow['total']) }} @endif</td>
                                                         <td class="text-end"></td>
                                                     </tr>
                                                     <tr>

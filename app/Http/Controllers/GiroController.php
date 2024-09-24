@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Redirect;
 
 class GiroController extends Controller
 {
-    
-    public function indexBank(Request $request)
+    public function indexBank()
     {
         $title = 'Master Bank';
         $banks = Bank::where('status', 1)->get();
@@ -19,7 +18,42 @@ class GiroController extends Controller
         return view('master.bank.index', compact('title', 'banks'));
     }
 
-    public function index(Request $request)
+    public function storeBank(Request $request)
+    {
+        // dd($request->all());
+        Bank::create([
+            'nama' => $request->bank_nama,
+            'no_rekening' => $request->bank_no_rekening,
+            'milik' => $request->bank_milik,
+            'status' => 1
+        ]);
+
+        return Redirect::route('master.bank.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Tambah Bank Success!");
+    }
+
+    public function updateBank(Request $request, $id)
+    {
+        Bank::find($id)->update([
+            'nama' => $request->bank_nama,
+            'no_rekening' => $request->bank_no_rekening,
+            'milik' => $request->bank_milik
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Data saved successfully.']);
+    }
+
+    public function destroyBank($id)
+    {
+        Bank::find($id)->delete();
+
+        return Redirect::route('master.bank.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Delete Bank Success!");
+    }
+
+    public function index()
     {
         $title = 'Master Giro';
         $banks = Bank::where('status', 1)->get();
@@ -110,7 +144,7 @@ class GiroController extends Controller
 
         $startNumberIntDetail = (int) $startNumber;
         $allDetails = [];
-        
+
         for ($i = 0; $i < $total; $i++) {
             $currentTo = $startNumberIntDetail;
             // dd($startNumberIntDetail);
@@ -133,7 +167,7 @@ class GiroController extends Controller
 
         // Bulk insert all generated details
         GiroDetail::insert($allDetails);
-        
+
         return Redirect::route('master.giro.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Buat Giro Success!");
@@ -175,7 +209,7 @@ class GiroController extends Controller
         $emptyData = GiroDetail::where('id_bank', $idBank)->whereNull('jumlah')->limit(5)->get();
         $dataDetail = $filledData->merge($emptyData);
         // dd($dataDetails);
-        
+
         return response()->json([
             'dataHeader' => $dataHeader,
             'dataDetail' => $dataDetail
