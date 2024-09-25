@@ -320,10 +320,8 @@
                     selectedIds.push(id);
                 }
             });
-            
-            $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0);
-            $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
 
+            let selectedIdg = [];
             $('.input-gabung').change(function () {
                 const id = $(this).data('id');
                 const nomorBukti = $(this).data('nomor');
@@ -332,7 +330,7 @@
                 const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     // other table
-                    selectedIds.push(id);
+                    selectedIdg.push(id);
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
                     $('#jumlah-bukti').text(jumlahBukti);
@@ -345,13 +343,13 @@
 
                     const selectedBankId = $('#bank-select').val();
                     $('#button-gabung').removeClass('disabled-link');
-                    $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIds.join(',')}?bank_id=${selectedBankId}`);
+                    $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIdg.join(',')}?bank_id=${selectedBankId}`);
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
                     $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
                 } else {
-                    selectedIds = selectedIds.filter(selectedId => selectedId !== id); // Remove ID from array
+                    selectedIdg = selectedIdg.filter(selectedId => selectedId !== id); // Remove ID from array
                     $(this).prop('checked', true);
                     
                     // Automatically submit the delete form if unchecked
@@ -365,21 +363,32 @@
 
             // Initial setup when the route is accessed
             function setupOnRouteAccess() {
-                selectedIds = []; // Reset selectedIds when entering the route
+                selectedIdg = []; // Reset selectedIdg when entering the route
                 const selectedBankId = $('#bank-select').val();
 
                 $('.input-gabung:checked').each(function () {
                     const id = $(this).data('id');
-                    selectedIds.push(id);
+                    selectedIdg.push(id);
                 });
 
-                // Update the button state based on selectedIds
-                $('#button-gabung').toggleClass('disabled-link', selectedIds.length === 0);
-                $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIds.join(',')}?bank_id=${selectedBankId}`);
+                // Update the button state based on selectedIdg
+                $('#button-gabung').toggleClass('disabled-link', selectedIdg.length === 0);
+                $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${selectedIdg.join(',')}?bank_id=${selectedBankId}`);
             }
 
             // Call this function when entering the show-gabung route
             setupOnRouteAccess();
+            
+            if (selectedIds.length !== 0 && selectedIdg.length == 0) {
+                $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0);
+                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
+            } else if (selectedIds.length == 0 && selectedIdg.length !== 0) {
+                $('#button-cetak').toggleClass('disabled-link', selectedIdg.length === 0);
+                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIdg.join(',')}`);
+            } else if (selectedIds.length !== 0 && selectedIdg.length !== 0) {
+                $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0 || selectedIdg.length === 0);
+                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')},${selectedIdg.join(',')}`);
+            }
 
             $('.input-konfirmasi').change(function () {
                 const id = $(this).data('id');

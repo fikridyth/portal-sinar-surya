@@ -589,13 +589,30 @@ class PembayaranController extends Controller
         // dd($pembayaran);
 
         $pembayaran1 = $pembayaran->filter(function ($item) {
-            $explode = explode('-', $item->first()->nomor_bukti);
-            return $explode[2] % 2 !== 0; // Ganjil
+            // dd($item[0]->nomor_bukti);
+            if (isset($item[0]->nomor_bukti)) {
+                if (strpos($item[0]->nomor_bukti, ',') !== false) {
+                    $getFirst = explode(',', $item[0]->nomor_bukti);
+                    $explode = explode('-', $getFirst[0]);
+                    return isset($explode[2]) && $explode[2] % 2 !== 0; // Ganjil
+                } else {
+                    $explode = explode('-', $item->first()->nomor_bukti);
+                    return isset($explode[2]) && $explode[2] % 2 !== 0; // Ganjil
+                }
+            }
         });
         
         $pembayaran2 = $pembayaran->filter(function ($item) {
-            $explode = explode('-', $item->first()->nomor_bukti);
-            return $explode[2] % 2 === 0; // Genap
+            if (isset($item[0]->nomor_bukti)) {
+                if (strpos($item[0]->nomor_bukti, ',') !== false) {
+                    $getFirst = explode(',', $item[0]->nomor_bukti);
+                    $explode = explode('-', $getFirst[0]);
+                    return $explode[2] % 2 === 0; // Genap
+                } else {
+                    $explode = explode('-', $item->first()->nomor_bukti);
+                    return $explode[2] % 2 === 0; // Genap
+                }
+            }
         });
 
         if ($pembayaran1->isEmpty()) {
