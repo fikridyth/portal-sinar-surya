@@ -24,14 +24,14 @@
                     <div class="col-1">T</div>
                     <div class="col-2">-{{ $bayar[0]->nomor_giro }}</div>
                     <div class="col-5 d-flex justify-content-end">{{ $bayar[0]->date_last }}</div>
-                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->grand_total, 0) }}
+                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->total_with_materai) }}
                     </div>
                 </div>
                 @if (isset($bayar[1]))
                     <div class="row">
                         <div class="col-3"></div>
                         <div class="col-5 d-flex justify-content-end">{{ $bayar[1]->nomor_giro }}</div>
-                        <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[1]->grand_total, 0) }}
+                        <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[1]->total_with_materai) }}
                         </div>
                     </div>
                 @else
@@ -103,7 +103,7 @@
                     <div class="col-1">T</div>
                     <div class="col-2">-{{ $bayar[0]->nomor_giro }}</div>
                     <div class="col-5 d-flex justify-content-end">{{ $bayar[0]->date_last }}</div>
-                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->grand_total, 0) }}
+                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->total_with_materai) }}
                     </div>
                 </div>
                 @if (isset($bayar[1]))
@@ -111,7 +111,7 @@
                         <div class="col-3"></div>
                         <div class="col-5 d-flex justify-content-end">{{ $bayar[1]->nomor_giro }}</div>
                         <div class="col-4 d-flex justify-content-end">RP.
-                            {{ number_format($bayar[1]->grand_total, 0) }}</div>
+                            {{ number_format($bayar[1]->total_with_materai) }}</div>
                     </div>
                 @else
                     <div class="row">

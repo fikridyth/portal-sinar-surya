@@ -352,6 +352,8 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->tunai_payment ?? 0,
+                'beban_materai' => $request->beban_materai,
+                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
                 'id_parent' => $id
             ]);
@@ -361,6 +363,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->tunai_other_income ?? 0,
+                'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'id_parent' => $id
             ]);
@@ -373,6 +376,8 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_payment ?? 0,
+                'beban_materai' => $request->beban_materai,
+                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
@@ -384,6 +389,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_tunai_payment ?? 0,
+                'total_with_materai' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id
@@ -394,6 +400,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_other_income ?? 0,
+                'total_with_materai' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id
@@ -433,6 +440,8 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->tunai_payment ?? 0,
+                'beban_materai' => $request->beban_materai,
+                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
                 'id_parent' => $pembayaran[0]->id
             ]);
@@ -442,6 +451,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->tunai_other_income ?? 0,
+                'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'id_parent' => $pembayaran[0]->id
             ]);
@@ -454,6 +464,8 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_payment ?? 0,
+                'beban_materai' => $request->beban_materai,
+                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id,
@@ -465,6 +477,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_tunai_payment ?? 0,
+                'total_with_materai' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id
@@ -475,6 +488,7 @@ class PembayaranController extends Controller
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_other_income ?? 0,
+                'total_with_materai' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id

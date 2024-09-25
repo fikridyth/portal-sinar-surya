@@ -175,13 +175,17 @@
                                                 @endif
                                             </td>
                                             <td>{{ $pmb->supplier->nama }}</td>
-                                            <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
+                                            @if ($pmb->id_parent == null)
+                                                <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
+                                            @else
+                                                <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
+                                            @endif
                                             <td class="keterangan_bayar" style="background-color: {{ $pmb->is_cetak !== null ? 'rgba(255, 0, 0, 0.2)' : 'transparent' }};">
                                                 {{ $pmb->nomor_giro }}
                                             </td>
                                             <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->total_with_materai) }}"></td>
                                         </tr>
                                         @if ($pmb->nomor_bukti)
                                             @php $previousIdParent = $pmb->nomor_bukti; @endphp
