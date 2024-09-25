@@ -80,26 +80,32 @@
 
             <form action="{{ route('master.opname.update') }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="text-center">NO</th>
-                            <th class="text-center">KODE</th>
-                            <th>NAMA</th>
-                            <th>STOK</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($products as $product)
+                @if ($products->isNotEmpty())
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td class="text-center">{{ $product->kode }}</td>
-                                <td>{{ $product->nama . '/' . $product->unit_jual }}</td>
-                                <td><input type="number" name="order[{{ $product->id }}]" value="{{ $product->stok }}"></td>
+                                <th class="text-center">NO</th>
+                                <th class="text-center">KODE</th>
+                                <th>NAMA</th>
+                                <th>STOK</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($products as $product)
+                                <tr>
+                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                    <td class="text-center">{{ $product->kode }}</td>
+                                    <td>{{ $product->nama . '/' . $product->unit_jual }}</td>
+                                    <td><input type="number" name="order[{{ $product->id }}]" value="{{ number_format($product->stok, 0) }}"></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="alert alert-warning text-center">
+                        Pilih Data Filter
+                    </div>
+                @endif
             
 
                 <div class="row d-flex justify-content-start mb-7">

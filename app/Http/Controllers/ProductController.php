@@ -101,35 +101,6 @@ class ProductController extends Controller
         return view('master/product/show', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers'));
     }
 
-    public function stockOpname()
-    {
-        $title = 'Stock Opname';
-        $products = Product::Filter(request(['unit', 'departemen', 'supplier']))->orderBy('nama', 'asc')->limit(10)->get();
-        $units = Unit::all();
-        $departemens = Departemen::all();
-        $suppliers = Supplier::all();
-
-        return view('master/product/stock-opname', compact('title', 'products', 'units', 'departemens', 'suppliers'));
-    }
-
-    public function updateStockOpname(Request $request)
-    {
-        $orderData = $request->input('order');
-
-        // Loop melalui data order dan update stok setiap produk
-        foreach ($orderData as $productId => $stok) {
-            $product = Product::find($productId);
-            if ($product) {
-                $product->stok = $stok;
-                $product->save();
-            }
-        }
-
-        return Redirect::back()
-        ->with('alert.status', '00')
-        ->with('alert.message', "Update Stock Opname Success!");
-    }
-
     public function productChildView(string $id)
     {
         $title = 'Kelompok Product';
@@ -336,5 +307,46 @@ class ProductController extends Controller
         return Redirect::route('master.product.index')
             ->with('alert.status', '01')
             ->with('alert.message', "Delete Product Success!");
+    }
+
+    public function stockOpname()
+    {
+        $title = 'Stock Opname';
+
+        $filters = request(['unit', 'departemen', 'supplier']);
+        if (array_filter($filters)) {
+            $products = Product::where('status', 1)->where('stok', '>', 0)->Filter($filters)->orderBy('nama', 'asc')->get();
+        } else {
+            $products = collect();
+        }
+
+        $units = Unit::all();
+        $departemens = Departemen::all();
+        $suppliers = Supplier::all();
+
+        return view('master/product/stock-opname', compact('title', 'products', 'units', 'departemens', 'suppliers'));
+    }
+
+    public function updateStockOpname(Request $request)
+    {
+        $orderData = $request->input('order');
+        // dd($orderData);
+
+        // Loop melalui data order dan update stok setiap produk
+        if (isset($orderData)) {
+            foreach ($orderData as $productId => $stok) {
+                $product = Product::find($productId);
+                if ($product) {
+                    $product->stok = $stok;
+                    $product->save();
+                }
+            }
+        } else {
+            return Redirect::Back()->with('alert.status', '99')->with('alert.message', "FILTER DATA DAHULU");
+        }
+
+        return Redirect::back()
+        ->with('alert.status', '00')
+        ->with('alert.message', "Update Stock Opname Success!");
     }
 }

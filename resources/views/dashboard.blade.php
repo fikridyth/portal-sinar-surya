@@ -26,6 +26,7 @@
                                 <a href="{{ route('master.supplier.show', $supplier->id) }}" class="btn btn-primary mb-2">SUPPLIER</a>
                                 <a href="{{ route('master.kunjungan.index') }}" class="btn btn-primary mb-2">KUNJUNGAN</a>
                                 <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-primary mb-2">PERSEDIAAN</a>
+                                <a href="{{ route('master.harga.index') }}" class="btn btn-primary mb-2">HARGA</a>
                                 <a href="{{ route('master.kartu-stok.index') }}" class="btn btn-primary mb-2">KARTU STOK</a>
                                 <a href="{{ route('master.bank.index') }}" class="btn btn-primary mb-2">BANK</a>
                                 <a href="{{ route('master.giro.index') }}" class="btn btn-primary mb-2">PENDAFTARAN GIRO</a>
@@ -66,6 +67,7 @@
                             <h5 class="text-center">LAPORAN</h5>
                             <div style="display: flex; flex-direction: column;">
                                 <a href="{{ route('daftar-harga-jual-kecil') }}" class="btn btn-primary mb-2">HARGA JUAL < HARGA BELI</a>
+                                <a href="#" class="btn btn-primary mb-2">HARGA SEMENTARA</a>
                                 <a href="{{ route('master.opname') }}" class="btn btn-primary mb-2">STOCK OPNAME</a>
                             </div>
                         </div>

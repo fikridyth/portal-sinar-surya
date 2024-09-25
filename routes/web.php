@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\GiroController;
+use App\Http\Controllers\HargaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KartuStokController;
 use App\Http\Controllers\PembayaranController;
@@ -162,8 +163,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
+
+        // Stock Opname
         Route::get('/product-opname', [ProductController::class, 'stockOpname'])->name('opname');
         Route::post('/product-opname/update', [ProductController::class, 'updateStockOpname'])->name('opname.update');
+
+        // Harga
+        Route::get('/harga', [HargaController::class, 'index'])->name('harga.index');
+        Route::get('/harga/{id}', [HargaController::class, 'show'])->name('harga.show');
 
         // Kartu Stok
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
