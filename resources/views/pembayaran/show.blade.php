@@ -133,7 +133,9 @@
                                     <div class="col-2"></div>
                                 </div>
                                 <div class="row mt-1">
-                                    <div class="col-3"></div>
+                                    <div class="col-1"></div>
+                                    <div class="col-0-5"></div>
+                                    <div class="col-0-5"></div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
                                         <input type="radio" id="radio0" name="comma" value="0" onclick="updateTable('0')">
                                         <label for="cek" style="color: white;">0</label>
@@ -164,8 +166,8 @@
                                     </div>
                                 </div>
                                 <div class="row mt-2">
-                                    <div class="col-3"></div>
-                                    <div class="col-6">
+                                    <div class="col-2"></div>
+                                    <div class="col-7">
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -192,11 +194,19 @@
                                             </tbody>
                                             <tbody id="giro-table" style="display: none;">
                                                 <tr>
-                                                    <input type="text" hidden name="nomor_giro" value="{{ $giro->nomor }}">
+                                                    {{-- <input type="text" hidden name="nomor_giro" value="{{ $giro->nomor }}"> --}}
                                                     <input type="text" hidden id="amount3-1" name="giro_payment" value="{{ $pembayaran->grand_total }}">
                                                     <td class="text-end" id="amount3">{{ number_format($pembayaran->grand_total) }}</td>
-                                                    <td>{{ $giro->nomor }}</td>
-                                                    <td><input type="date" name="date_last" style="width: 50px;"></td>
+                                                    {{-- <td>{{ $giro->nomor }}</td> --}}
+                                                    <td>
+                                                        <select name="nomor_giro" style="width: 100px;">
+                                                            <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
+                                                            @foreach ($giros->slice(1) as $giro)
+                                                                <option value="{{ $giro->nomor }}" >{{ $giro->nomor }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="date" name="date_last" style="width: 100px;"></td>
                                                 </tr>
                                                 <tr>
                                                     <input type="text" hidden id="amount4-1" name="giro_tunai_payment">

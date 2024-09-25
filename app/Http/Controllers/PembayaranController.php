@@ -310,16 +310,16 @@ class PembayaranController extends Controller
         $title = 'Detail Pembayaran';
         $pembayaran = Pembayaran::find($id);
         $bank = Bank::find($request->bank_id);
-        $giro = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->first();
+        $giros = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->get();
         
-        return view('pembayaran.show', compact('title', 'pembayaran', 'bank', 'giro'));
+        return view('pembayaran.show', compact('title', 'pembayaran', 'bank', 'giros'));
     }
 
     public function showGabung(Request $request, $ids)
     {
         $title = 'Detail Pembayaran';
         $bank = Bank::find($request->bank_id);
-        $giro = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->first();
+        $giros = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->get();
 
         $idArray = explode(',', $ids);
         $pembayaran = Pembayaran::whereIn('id', $idArray)->get();
@@ -331,7 +331,7 @@ class PembayaranController extends Controller
             }
         }
         
-        return view('pembayaran.show-gabung', compact('title', 'ids', 'pembayaran', 'bank', 'giro'));
+        return view('pembayaran.show-gabung', compact('title', 'ids', 'pembayaran', 'bank', 'giros'));
     }
 
     public function update(Request $request, $id)

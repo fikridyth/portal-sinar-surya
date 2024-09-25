@@ -401,13 +401,14 @@
                 const nomorBukti = $(this).data('nomor');
                 const tanggalBukti = $(this).data('tanggal');
                 const jumlahBukti = $(this).data('jumlah');
-                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     // other table
                     selectedIds.push(id);
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
-                    $('#jumlah-bukti').text(jumlahBukti);
+                    if (jumlahBukti !== 0) {
+                        $('#jumlah-bukti').text(jumlahBukti);
+                    }
 
                     $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
                         if (!$(this).is(':checked')) {
@@ -415,14 +416,9 @@
                         }
                     });
 
-                    if (keteranganBayar === '') {
-                        // keterangan bayar null, aktifkan button-gabung dan nonaktifkan button-hapus
-                        $('#button-selesai').addClass('disabled-link');
-                        $('#button-selesai').attr('href', '#');
-                    } else {
-                        $('#button-selesai').removeClass('disabled-link');
-                        $('#button-selesai').attr('href', `{{ route('pembayaran.konfirmasi-payment', '') }}/${selectedIds.join(',')}`);
-                    }
+                    // buka button selesai
+                    $('#button-selesai').removeClass('disabled-link');
+                    $('#button-selesai').attr('href', `{{ route('pembayaran.konfirmasi-payment', '') }}/${selectedIds.join(',')}`);
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
