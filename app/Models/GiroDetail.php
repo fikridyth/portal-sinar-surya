@@ -11,4 +11,8 @@ class GiroDetail extends Model
     
     protected $table = 'giro_details';
     protected $guarded = ['id'];
+
+    public function bank() {
+        return $this->belongsTo(Bank::class, 'id_bank', 'id');
+    }
 }

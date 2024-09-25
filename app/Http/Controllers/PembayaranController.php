@@ -299,7 +299,7 @@ class PembayaranController extends Controller
     public function index()
     {
         $title = 'List Pembayaran';
-        $pembayarans = Pembayaran::whereNull('is_bayar')->get();
+        $pembayarans = Pembayaran::whereNull('is_bayar')->orderByRaw('CASE WHEN id_parent IS NOT NULL THEN 0 ELSE 1 END')->get();
         $banks = Bank::where('status', 1)->whereHas('giro')->orderByRaw('CASE WHEN nama = "MAYORA S" THEN 0 ELSE 1 END')->get();
         
         return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
@@ -365,12 +365,16 @@ class PembayaranController extends Controller
                 'id_parent' => $id
             ]);
         } else {
+            $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
+            // dd($giroDetail->bank->milik);
+
             Pembayaran::create([
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_payment ?? 0,
                 'nomor_giro' => $request->nomor_giro,
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
                 'date_last' => $request->date_last
             ]);
@@ -381,6 +385,7 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id
             ]);
 
@@ -390,10 +395,11 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id
             ]);
 
-            GiroDetail::where('nomor', $request->nomor_giro)->first()->update([
+            $giroDetail->update([
                 'nama' => $request->supplier,
                 'nomor_bukti' => $request->nomor_bukti,
                 'tanggal_awal' => now()->format('Y-m-d'),
@@ -440,12 +446,16 @@ class PembayaranController extends Controller
                 'id_parent' => $pembayaran[0]->id
             ]);
         } else {
+            $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
+            // dd($giroDetail->bank->milik);
+
             Pembayaran::create([
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_payment ?? 0,
                 'nomor_giro' => $request->nomor_giro,
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id,
                 'date_last' => $request->date_last
             ]);
@@ -456,6 +466,7 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id
             ]);
 
@@ -465,10 +476,11 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id
             ]);
 
-            GiroDetail::where('nomor', $request->nomor_giro)->first()->update([
+            $giroDetail->update([
                 'nama' => $request->supplier,
                 'nomor_bukti' => $request->nomor_bukti,
                 'tanggal_awal' => now()->format('Y-m-d'),
@@ -489,22 +501,6 @@ class PembayaranController extends Controller
             ->with('alert.message', "Update Pembayaran Success!");
     }
 
-    // public function destroy($id)
-    // {
-    //     dd($id);
-    //     $pembayaran = Pembayaran::find($id);
-    //     $parent = Pembayaran::find($pembayaran->id_parent);
-    //     $getPreorder = Preorder::where('nomor_po', $parent->nomor_po)->first();
-        
-    //     Pembayaran::where('id_parent', $parent->id)->delete();
-    //     $parent->update(['is_bayar' => null]);
-    //     $getPreorder->update(['is_pay' => null]);
-        
-    //     return Redirect::route('pembayaran.index')
-    //         ->with('alert.status', '00')
-    //         ->with('alert.message', "Delete Pembayaran Success!");
-    // }
-
     public function destroyPayment($ids)
     {
         $idArray = explode(',', $ids);
@@ -515,11 +511,6 @@ class PembayaranController extends Controller
             // GABUNG
             foreach ($pembayaran as $bayar)
             {
-                // foreach ($pembayaran as $bayar) {
-                //     $bayar->update(['is_bayar' => 1]);
-                //     Preorder::where('nomor_bukti', $bayar->nomor_bukti)->update(['is_pay' => 1]);
-                // }
-
                 $buktiArray = explode(',', $bayar->nomor_bukti);
                 $parent = Pembayaran::whereIn('nomor_bukti', $buktiArray)->get();
 
@@ -585,8 +576,7 @@ class PembayaranController extends Controller
         $title = 'Cetak Pembayaran';
         $parameter = $request->param;
         $idArray = explode(',', $request->ids);
-        $pembayaran = Pembayaran::whereIn('id', $idArray)->where('nomor_giro', '!=', 'OTHER INCOME')->whereNotNull('nomor_giro')->get()->groupBy('nomor_bukti');
-        // dd($pembayaran);
+        $pembayaran = Pembayaran::whereIn('id', $idArray)->where('nomor_giro', '!=', 'OTHER INCOME')->whereNotNull('nomor_giro')->whereNull('is_cetak')->get()->groupBy('nomor_bukti');
 
         $pembayaran1 = $pembayaran->filter(function ($item) {
             // dd($item[0]->nomor_bukti);
@@ -625,6 +615,9 @@ class PembayaranController extends Controller
                 $pembayaran2 = collect(); // Kosongkan pembayaran2 jika semua dipindahkan
             }
         }
+
+        // update cetak
+        $pembayaranAll = Pembayaran::whereIn('id', $idArray)->update(['is_cetak' => 1]);
 
         return view('pembayaran.cetak-bayar', compact('title', 'parameter', 'pembayaran1', 'pembayaran2'));
     }
