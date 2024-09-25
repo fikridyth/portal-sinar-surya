@@ -93,7 +93,7 @@ Route::middleware('auth')->group(function () {
 
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
-    Route::get('/pembayaran-history', [PembayaranController::class, 'indexHistory'])->name('pembayaran.index-history');
+    Route::get('/pembayaran-konfirmasi', [PembayaranController::class, 'indexKonfirmasi'])->name('pembayaran.index-konfirmasi');
     Route::delete('/pembayaran-history/{id}/destroy', [PembayaranController::class, 'destroyHistory'])->name('pembayaran.destroy-history');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::get('/pembayaran-gabung/{id}', [PembayaranController::class, 'showGabung'])->name('pembayaran.show-gabung');

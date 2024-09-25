@@ -105,7 +105,6 @@
                                 </table>
                                 <hr>
                                 <div class="d-flex justify-content-center">
-                                    <a href="{{ route('pembayaran.index') }}" class="btn btn-danger mx-4">KEMBALI</a>
                                     <a href="{{ route('index') }}" class="btn btn-primary mx-4">SELESAI</a>
                                 </div>
                             </div>
@@ -134,8 +133,7 @@
                                 </div>
                                 <div class="row mt-1">
                                     <div class="col-1"></div>
-                                    <div class="col-0-5"></div>
-                                    <div class="col-0-5"></div>
+                                    <div class="col-0-7"></div>
                                     <div class="col-0-7 text-center" style="background-color: darkblue;">
                                         <input type="radio" id="radio0" name="comma" value="0" onclick="updateTable('0')">
                                         <label for="cek" style="color: white;">0</label>
@@ -166,8 +164,8 @@
                                     </div>
                                 </div>
                                 <div class="row mt-2">
-                                    <div class="col-2"></div>
-                                    <div class="col-7">
+                                    <div class="col-1"></div>
+                                    <div class="col-8">
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -180,24 +178,19 @@
                                                 <tr>
                                                     <input type="text" id="amount-total" value="{{ $pembayaran->grand_total }}" hidden>
                                                     <input type="text" name="nomor_bukti" value="{{ $pembayaran->nomor_bukti }}" hidden>
-                                                    <input type="text" hidden id="amount1-1" name="tunai_payment" value="{{ $pembayaran->grand_total }}">
-                                                    <td class="text-end" id="amount1">{{ number_format($pembayaran->grand_total) }}</td>
+                                                    <td class="text-end"><input type="number" id="value1" name="tunai_payment" max="{{ $pembayaran->grand_total }}" style="width: 100px;" value="{{ $pembayaran->grand_total }}" oninput="updateValue2()"></td>
                                                     <td>TUNAI</td>
                                                     <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <input type="text" hidden id="amount2-1" name="tunai_other_income">
-                                                    <td class="text-end" id="amount2">0</td>
+                                                    <td class="text-end"><input type="number" class="readonly-input" id="value2" name="tunai_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
                                                     <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                             <tbody id="giro-table" style="display: none;">
                                                 <tr>
-                                                    {{-- <input type="text" hidden name="nomor_giro" value="{{ $giro->nomor }}"> --}}
-                                                    <input type="text" hidden id="amount3-1" name="giro_payment" value="{{ $pembayaran->grand_total }}">
-                                                    <td class="text-end" id="amount3">{{ number_format($pembayaran->grand_total) }}</td>
-                                                    {{-- <td>{{ $giro->nomor }}</td> --}}
+                                                    <td class="text-end"><input type="number" id="value3" name="giro_payment" max="{{ $pembayaran->grand_total }}" style="width: 100px;" value="{{ $pembayaran->grand_total }}" oninput="updateValue4()"></td>
                                                     <td>
                                                         <select name="nomor_giro" style="width: 100px;">
                                                             <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
@@ -209,14 +202,12 @@
                                                     <td><input type="date" name="date_last" style="width: 100px;"></td>
                                                 </tr>
                                                 <tr>
-                                                    <input type="text" hidden id="amount4-1" name="giro_tunai_payment">
-                                                    <td class="text-end" id="amount4">0</td>
+                                                    <td class="text-end"><input type="number" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td>
                                                     <td>TUNAI</td>
                                                     <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <input type="text" hidden name="giro_other_income" value="0">
-                                                    <td class="text-end">0</td>
+                                                    <td class="text-end"><input type="number" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
                                                     <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
@@ -231,13 +222,13 @@
                                     </div>
                                 </div>
                                 <div class="row mt-2">
-                                    <div class="col-3"></div>
+                                    <div class="col-1"></div>
                                     <div class="col-3">
                                         <input type="text" class="btn-block readonly-input text-end" value="{{ number_format($pembayaran->grand_total) }}" readonly>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
-                                    <div class="col-4"></div>
+                                    <div class="col-3"></div>
                                     <div class="col-2">
                                         <a href="{{ route('pembayaran.index') }}" class="btn btn-danger">BATAL</a>
                                     </div>
@@ -281,75 +272,72 @@
 
         function updateTable(value) {
             let totalAmount = document.getElementById('amount-total').value;
-            let amount1, amount2, amount3, amount4;
+            let value1, value2, value3, value4;
 
             switch(value) {
                 case '0':
                     // Extract last zero digits
                     let lastZeroDigits = totalAmount % 1;
-                    amount1 = totalAmount - lastZeroDigits;
-                    amount2 = lastZeroDigits;
-                    amount3 = totalAmount - lastZeroDigits;
-                    amount4 = lastZeroDigits;
+                    value1 = totalAmount - lastZeroDigits;
+                    value2 = lastZeroDigits;
+                    value3 = totalAmount - lastZeroDigits;
+                    value4 = lastZeroDigits;
                     break;
                 case '1':
                     // Extract last one digits
                     let lastOneDigits = totalAmount % 10;
-                    amount1 = totalAmount - lastOneDigits;
-                    amount2 = lastOneDigits;
-                    amount3 = totalAmount - lastOneDigits;
-                    amount4 = lastOneDigits;
+                    value1 = totalAmount - lastOneDigits;
+                    value2 = lastOneDigits;
+                    value3 = totalAmount - lastOneDigits;
+                    value4 = lastOneDigits;
                     break;
                 case '2':
                     // Extract last two digits
                     let lastTwoDigits = totalAmount % 100;
-                    amount1 = totalAmount - lastTwoDigits;
-                    amount2 = lastTwoDigits;
-                    amount3 = totalAmount - lastTwoDigits;
-                    amount4 = lastTwoDigits;
+                    value1 = totalAmount - lastTwoDigits;
+                    value2 = lastTwoDigits;
+                    value3 = totalAmount - lastTwoDigits;
+                    value4 = lastTwoDigits;
                     break;
                 case '3':
                     // Extract last three digits
                     let lastThreeDigits = totalAmount % 1000;
-                    amount1 = totalAmount - lastThreeDigits;
-                    amount2 = lastThreeDigits;
-                    amount3 = totalAmount - lastThreeDigits;
-                    amount4 = lastThreeDigits;
+                    value1 = totalAmount - lastThreeDigits;
+                    value2 = lastThreeDigits;
+                    value3 = totalAmount - lastThreeDigits;
+                    value4 = lastThreeDigits;
                     break;
                 case '4':
                     // Extract last four digits
                     let lastFourDigits = totalAmount % 10000;
-                    amount1 = totalAmount - lastFourDigits;
-                    amount2 = lastFourDigits;
-                    amount3 = totalAmount - lastFourDigits;
-                    amount4 = lastFourDigits;
+                    value1 = totalAmount - lastFourDigits;
+                    value2 = lastFourDigits;
+                    value3 = totalAmount - lastFourDigits;
+                    value4 = lastFourDigits;
                     break;
                 case '5':
                     // Extract last five digits
                     let lastFiveDigits = totalAmount % 100000;
-                    amount1 = totalAmount - lastFiveDigits;
-                    amount2 = lastFiveDigits;
-                    amount3 = totalAmount - lastFiveDigits;
-                    amount4 = lastFiveDigits;
+                    value1 = totalAmount - lastFiveDigits;
+                    value2 = lastFiveDigits;
+                    value3 = totalAmount - lastFiveDigits;
+                    value4 = lastFiveDigits;
                     break;
                 case '6':
                     // Extract last six digits
                     let lastSixDigits = totalAmount % 1000000;
-                    amount1 = totalAmount - lastSixDigits;
-                    amount2 = lastSixDigits;
-                    amount3 = totalAmount - lastSixDigits;
-                    amount4 = lastSixDigits;
+                    value1 = totalAmount - lastSixDigits;
+                    value2 = lastSixDigits;
+                    value3 = totalAmount - lastSixDigits;
+                    value4 = lastSixDigits;
                     break;
             }
 
-            document.getElementById('amount1').textContent = new Intl.NumberFormat('en-US').format(amount1);
-            document.getElementById('amount1-1').value = amount1;
-            document.getElementById('amount2').textContent = new Intl.NumberFormat('en-US').format(amount2);
-            document.getElementById('amount2-1').value = amount2;
-            document.getElementById('amount3').textContent = new Intl.NumberFormat('en-US').format(amount3);
-            document.getElementById('amount3-1').value = amount3;
-            document.getElementById('amount4').textContent = new Intl.NumberFormat('en-US').format(amount4);
-            document.getElementById('amount4-1').value = amount4;
+            document.getElementById('value1').value = value1;
+            document.getElementById('value2').value = value2;
+            document.getElementById('value3').value = value3;
+            document.getElementById('value4').value = value4;
+            document.getElementById('value5').value = 0;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -425,5 +413,32 @@
                 }
             });
         });
+
+        function updateValue2() {
+            const value1 = document.getElementById('value1').value;
+            const grandTotal = {{ $pembayaran->grand_total }};
+            const value2 = grandTotal - value1;
+
+            document.getElementById('value2').value = value2 >= 0 ? value2 : 0;
+        }
+
+        function updateValue4() {
+            const value3 = document.getElementById('value3').value;
+            const grandTotal = {{ $pembayaran->grand_total }};
+            const value4 = grandTotal - value3;
+
+            document.getElementById('value4').value = value4 >= 0 ? value4 : 0;
+            document.getElementById('value5').value = 0;
+            updateValue5();
+        }
+
+        function updateValue5() {
+            const value3 = document.getElementById('value3').value;
+            const value4 = document.getElementById('value4').value;
+            const grandTotal = {{ $pembayaran->grand_total }};
+            const value5 = grandTotal - value3 - value4;
+
+            document.getElementById('value5').value = value5 >= 0 ? value5 : 0;
+        }
     </script>
 @endsection

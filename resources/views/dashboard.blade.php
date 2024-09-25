@@ -59,7 +59,7 @@
                                 <a href="{{ route('pembayaran-hutang.index') }}" class="btn btn-primary mb-2">PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran-hutang.index-hapus') }}" class="btn btn-primary mb-2">HAPUS PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran.index') }}" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
-                                <a href="{{ route('pembayaran.index-history') }}" class="btn btn-primary mb-2">HISTORY PEMBAYARAN CEK/GIRO</a>
+                                <a href="{{ route('pembayaran.index-konfirmasi') }}" class="btn btn-primary mb-2">KONFIRMASI CEK/GIRO</a>
                             </div>
                         </div>
                         <div class="mx-5">  

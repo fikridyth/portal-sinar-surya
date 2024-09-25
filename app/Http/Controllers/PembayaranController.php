@@ -341,10 +341,6 @@ class PembayaranController extends Controller
         $pembayaran = Pembayaran::find($id);
         $getPreorder = Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->first();
         // dd($getPreorder);
-        
-        $pembayaran->update([
-            'is_bayar' => 1,
-        ]);
 
         if ($typePayment == 0) {
             Pembayaran::create([
@@ -417,9 +413,8 @@ class PembayaranController extends Controller
             ]);
         }
 
-        $getPreorder->update([
-            'is_pay' => 1,
-        ]);
+        $pembayaran->update(['is_bayar' => 1]);
+        $getPreorder->update(['is_pay' => 1]);
 
         return Redirect::route('pembayaran.index')
             ->with('alert.status', '00')
@@ -646,21 +641,10 @@ class PembayaranController extends Controller
         ->with('alert.message', "Konfirmasi Pembayaran Success!");
     }
 
-    public function indexHistory(HistoryPembayaranDataTable $dataTable)
+    public function indexKonfirmasi()
     {
-        $title = 'Hapus Pembayaran Hutang';
+        $title = 'Konfirmasi Pembayaran';
         
-        return $dataTable->render('pembayaran.index-history', compact('title'));
-    }
-
-    public function destroyHistory($id)
-    {
-        $pembayaran = Pembayaran::find($id);
-        Pembayaran::where('id_parent', $pembayaran->id_parent)->delete();
-        Pembayaran::where('id', $pembayaran->id_parent)->update(['is_bayar' => null]);
-        
-        return Redirect::route('pembayaran.index-history')
-            ->with('alert.status', '00')
-            ->with('alert.message', "Hapus History Pembayaran Success!");
+        return view('pembayaran.konfirmasi.index', compact('title'));
     }
 }
