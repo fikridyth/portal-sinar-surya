@@ -16,6 +16,7 @@
             <div class="card mb-8">
                 <div class="card-body">
                     <h5 class="mt-2">Welcome To Portal Sinar Surya.</h5>
+                    <a href="#" class="btn btn-primary mb-2">MASTER USER</a>
                     <div class="dropdown-divider mt-3 mb-3"></div>
                     <div class="d-flex justify-content-center">
                         <div class="mx-5">
@@ -60,14 +61,15 @@
                                 <a href="{{ route('pembayaran-hutang.index') }}" class="btn btn-primary mb-2">PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran-hutang.index-hapus') }}" class="btn btn-primary mb-2">HAPUS PEMBAYARAN HUTANG</a>
                                 <a href="{{ route('pembayaran.index') }}" class="btn btn-primary mb-2">PEMBAYARAN CEK/GIRO</a>
-                                <a href="{{ route('pembayaran.index-konfirmasi') }}" class="btn btn-primary mb-2">KONFIRMASI CEK/GIRO</a>
+                                <a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-primary mb-2">KONFIRMASI CEK/GIRO</a>
+                                <a href="{{ route('pembayaran-piutang.index') }}" class="btn btn-primary mb-2">PEMBAYARAN PIUTANG</a>
                             </div>
                         </div>
                         <div class="mx-5">  
                             <h5 class="text-center">LAPORAN</h5>
                             <div style="display: flex; flex-direction: column;">
                                 <a href="{{ route('daftar-harga-jual-kecil') }}" class="btn btn-primary mb-2">HARGA JUAL < HARGA BELI</a>
-                                <a href="#" class="btn btn-primary mb-2">HARGA SEMENTARA</a>
+                                <a href="{{ route('master.harga-sementara.index') }}" class="btn btn-primary mb-2">HARGA SEMENTARA</a>
                                 <a href="{{ route('master.opname') }}" class="btn btn-primary mb-2">STOCK OPNAME</a>
                             </div>
                         </div>

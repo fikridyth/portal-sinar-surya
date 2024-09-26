@@ -8,6 +8,7 @@ use App\Http\Controllers\HargaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KartuStokController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\PpnController;
 use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
@@ -82,7 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
 
-    // Pembayaran Hutang
+    // Hutang
     Route::get('/pembayaran-hutang', [PembayaranController::class, 'indexHutang'])->name('pembayaran-hutang.index');
     Route::get('/pembayaran-hutang/{id}', [PembayaranController::class, 'showHutang'])->name('pembayaran-hutang.show');
     Route::post('/pembayaran-hutang/{id}/process', [PembayaranController::class, 'processHutang'])->name('pembayaran-hutang.process');
@@ -94,8 +95,6 @@ Route::middleware('auth')->group(function () {
 
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
-    Route::get('/pembayaran-konfirmasi', [PembayaranController::class, 'indexKonfirmasi'])->name('pembayaran.index-konfirmasi');
-    Route::delete('/pembayaran-history/{id}/destroy', [PembayaranController::class, 'destroyHistory'])->name('pembayaran.destroy-history');
     Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('pembayaran.show');
     Route::get('/pembayaran-gabung/{id}', [PembayaranController::class, 'showGabung'])->name('pembayaran.show-gabung');
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
@@ -104,7 +103,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran/param-cetak-payment/{ids}', [PembayaranController::class, 'paramCetakPayment'])->name('pembayaran.param-cetak-payment');
     Route::get('/pembayaran/cetak-payment/{ids}', [PembayaranController::class, 'cetakPayment'])->name('pembayaran.cetak-payment');
     Route::get('/pembayaran/konfirmasi-payment/{ids}', [PembayaranController::class, 'konfirmasiPayment'])->name('pembayaran.konfirmasi-payment');
-    // Route::get('/default-bank', [PembayaranController::class, 'defaultBank'])->name('pembayaran.default-bank');
+
+    // Konfirmasi
+    Route::get('/pembayaran-konfirmasi', [PembayaranController::class, 'indexKonfirmasi'])->name('pembayaran-konfirmasi.index');
+
+    // Piutang
+    Route::get('/pembayaran-piutang', [PiutangController::class, 'index'])->name('pembayaran-piutang.index');
 
     // Laporan
     Route::get('/daftar-harga-jual-kecil', [PreOrderController::class, 'daftarHargaJualKecil'])->name('daftar-harga-jual-kecil');
@@ -171,6 +175,9 @@ Route::middleware('auth')->group(function () {
         // Harga
         Route::get('/harga', [HargaController::class, 'index'])->name('harga.index');
         Route::get('/harga/{id}', [HargaController::class, 'show'])->name('harga.show');
+        Route::put('/harga/{id}/update', [HargaController::class, 'update'])->name('harga.update');
+        Route::get('/harga-sementara', [HargaController::class, 'indexHargaSementara'])->name('harga-sementara.index');
+        Route::get('/harga-sementara/{id}', [HargaController::class, 'showHargaSementara'])->name('harga-sementara.show');
 
         // Kartu Stok
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);

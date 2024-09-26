@@ -160,7 +160,7 @@
                         <div class="col-3">
                             <label class="form-label h6 mt-2" for="kode">LAMA KREDIT</label>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
                             <input type="text" id="kode" name="kode" value="{{ $supplier->tcrd }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
                                 autocomplete="off" readonly />
@@ -176,7 +176,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">NPWP</label>
                         </div>
                         <div class="col-5">
-                            <input type="text" id="kode" name="kode" value=""
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->npwp }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -190,8 +190,9 @@
                         <div class="col-3">
                             <label class="form-label h6 mt-2" for="kode">JENIS</label>
                         </div>
-                        <div class="col-2">
-                            <input type="text" id="kode" name="kode" value="{{ $supplier->tipe == 1 ? 'PKP' : 'Non PKP' }}"
+                        <div class="col-3">
+                            {{-- <input type="text" id="kode" name="kode" value="{{ $supplier->tipe == 1 ? 'PKP' : 'Non PKP' }}" --}}
+                            <input type="text" id="kode" name="kode"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -203,7 +204,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">HP</label>
                         </div>
                         <div class="col-5">
-                            <input type="text" id="kode" name="kode" value=""
+                            <input type="text" id="kode" name="kode" value="{{ $supplier->hp }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -218,7 +219,8 @@
                             <label class="form-label h6 mt-2" for="kode">PEMBAYARAN</label>
                         </div>
                         <div class="col-7">
-                            <input type="text" id="kode" name="kode" value="TUNAI / KREDIT / KONSINYASI"
+                            {{-- <input type="text" id="kode" name="kode" value="TUNAI / KREDIT / KONSINYASI" --}}
+                            <input type="text" id="kode" name="kode"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -251,7 +253,7 @@
                         <div class="col-3">
                             <label class="form-label h6 mt-2" for="kode">FREELANCE (Y/T)</label>
                         </div>
-                        <div class="col-2">
+                        <div class="col-3">
                             <input type="text" id="kode" name="kode" value="T"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
@@ -389,18 +391,19 @@
                 </div>
                 <div class="col-8">
                     <div class="row align-items-center">
-                        <div class="col-2">
-                            <label class="form-label h6 mt-2" for="nama_sumber">RETUR PPN</label>
-                        </div>
-                        <div class="col-2">
-                            <input type="text" id="kode" name="kode" value="0.00"
-                                class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
-                                autocomplete="off" readonly />
+                        <div class="col-2"></div>
+                        <div class="col-1">
+                            <label class="form-label h6 mt-2" for="nama_sumber">PPN</label>
                         </div>
                         <div class="col-1">
-                            <label class="form-label h6 mt-2" for="nama_sumber">%</label>
+                            <div class="row align-items-center">
+                                <div class="slider-container">
+                                    <input type="checkbox" id="ppn" name="ppn" {{ $supplier->is_ppn ? 'checked' : '' }} @disabled(true) class="slider-checkbox">
+                                    <label for="ppn" class="slider-label"></label>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-1"></div>
+                        <div class="col-2"></div>
                         <div class="col-2">
                             <label class="form-label h6 mt-2" for="nama_sumber">BIAYA MATERAI</label>
                         </div>
@@ -459,7 +462,7 @@
                             <label class="form-label h6 mt-2" for="nama_sumber">BONUS PRODUK</label>
                         </div>
                         <div class="col-4">
-                            <input type="text" id="kode" name="kode" value="10.00"
+                            <input type="text" id="kode" name="kode" value="{{ number_format($supplier->bonus, 2) }}"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror text-end"
                                 autocomplete="off" readonly />
                         </div>
@@ -477,7 +480,7 @@
                             <label class="form-label h6 mt-2" style="font-size: 14px" for="kode">F. PAJAK GABUNG</label>
                         </div>
                         <div class="col-1" style="margin-left: 20px;">
-                            <input type="text" id="kode" name="kode" value="1"
+                            <input type="text" id="kode" name="kode"
                                 class="form-control readonly-input @error('kode') is-invalid @enderror"
                                 autocomplete="off" readonly />
                         </div>
@@ -501,19 +504,7 @@
             </div>
 
             <div class="row">
-                <div class="col-2-5 mb-2">
-                    <div class="row align-items-center">
-                        <div class="col-7-5">
-                            <label class="form-label h6 mt-2" for="kode">PPN</label>
-                        </div>
-                        <div class="col-4">
-                            <div class="slider-container">
-                                <input type="checkbox" id="ppn" name="ppn" {{ $supplier->is_ppn ? 'checked' : '' }} @disabled(true) class="slider-checkbox">
-                                <label for="ppn" class="slider-label"></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="col-2-5 mb-2"></div>
                 <div class="col-1-5">
                     <a href="{{ route('master.promosi.index') }}" class="btn btn-success" style="width: 100%">DATA PROMOSI</a>
                 </div>
@@ -529,7 +520,7 @@
 
         <div class="row d-flex justify-content-start mb-7">
             <div class="col-0-5">
-                <a href="{{ route('master.supplier.create', $supplier->id) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+                <a href="{{ route('master.supplier.create') }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
             </div>
             <div class="col-0-5">
                 <a href="{{ route('master.supplier.edit', $supplier->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>

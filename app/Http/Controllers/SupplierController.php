@@ -39,11 +39,34 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $data = [
             'nomor' => $request->nomor,
+            'wilayah' => $request->wilayah,
             'nama' => $request->nama,
             'alamat1' => $request->alamat1,
             'alamat2' => $request->alamat2,
+            'alamat3' => $request->alamat3,
+            'kontak' => $request->kontak,
+            'kontak1' => $request->kontak1,
+            'no_telp' => $request->no_telp,
+            'fax' => $request->fax,
+            'tcrd' => $request->tcrd,
+            'npwp' => $request->npwp,
+            'hp' => $request->hp,
+            'disc' => $request->disc,
+            'tanda' => $request->tanda,
+            'waktu_kunjungan' => $request->waktu_kunjungan,
+            'hari' => $request->hari,
+            'stok_minimum' => $request->stok_minimum,
+            'stok_maksimum' => $request->stok_maksimum,
+            'penjualan_rata' => $request->penjualan_rata,
+            'materai' => $request->materai,
+            'koli' => $request->koli,
+            'bonus' => $request->bonus,
+            'rpus' => $request->rpus,
+            'is_ppn' => ($request->ppn === 'on') ? 1 : 0,
+            'status' => 1
         ];
 
         $supplier = Supplier::create($data);
@@ -80,13 +103,36 @@ class SupplierController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request->all());
         $supplier = Supplier::find($id);
 
         $data = [
             'nomor' => $request->nomor,
+            'wilayah' => $request->wilayah,
             'nama' => $request->nama,
             'alamat1' => $request->alamat1,
             'alamat2' => $request->alamat2,
+            'alamat3' => $request->alamat3,
+            'kontak' => $request->kontak,
+            'kontak1' => $request->kontak1,
+            'no_telp' => $request->no_telp,
+            'fax' => $request->fax,
+            'tcrd' => $request->tcrd,
+            'npwp' => $request->npwp,
+            'hp' => $request->hp,
+            'disc' => $request->disc,
+            'tanda' => $request->tanda,
+            'waktu_kunjungan' => $request->waktu_kunjungan,
+            'hari' => $request->hari,
+            'stok_minimum' => $request->stok_minimum,
+            'stok_maksimum' => $request->stok_maksimum,
+            'penjualan_rata' => $request->penjualan_rata,
+            'materai' => $request->materai,
+            'koli' => $request->koli,
+            'bonus' => $request->bonus,
+            'rpus' => $request->rpus,
+            'is_ppn' => ($request->ppn === 'on') ? 1 : 0,
+            'status' => 1
         ];
 
         $supplier->update($data);
