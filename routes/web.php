@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('index');
     Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
     // Route::middleware('admin.transaction')->resource('/transaction', TransactionController::class, ['parameters' => ['transaction' => 'id']]);
-    
+
     // Preorder
     Route::resource('/preorder', PreOrderController::class, ['parameters' => ['preorder' => 'id']]);
     Route::get('/preorder-get-supplier-data', [PreOrderController::class, 'getSupplierData']);
@@ -106,13 +106,14 @@ Route::middleware('auth')->group(function () {
 
     // Konfirmasi
     Route::get('/pembayaran-konfirmasi', [PembayaranController::class, 'indexKonfirmasi'])->name('pembayaran-konfirmasi.index');
+    Route::get('/pembayaran-konfirmasi/show', [PembayaranController::class, 'showKonfirmasi'])->name('pembayaran-konfirmasi.show');
 
     // Piutang
     Route::get('/pembayaran-piutang', [PiutangController::class, 'index'])->name('pembayaran-piutang.index');
 
     // Laporan
     Route::get('/daftar-harga-jual-kecil', [PreOrderController::class, 'daftarHargaJualKecil'])->name('daftar-harga-jual-kecil');
-    
+
     // Master
     Route::prefix('master')->name('master.')->group(function () {
         // Unit
@@ -155,6 +156,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/giro/show/{id}', [GiroController::class, 'show'])->name('giro.show');
         Route::get('/get-data-giro', [GiroController::class, 'getData']);
         Route::get('/get-bayar-giro', [GiroController::class, 'getDataBayar']);
+        Route::get('/cek-giro', [GiroController::class, 'indexCekGiro'])->name('cek-giro.index');
+        Route::get('/cek-giro/show', [GiroController::class, 'showCekGiro'])->name('cek-giro.show');
 
         // PPN
         Route::resource('/ppn', PpnController::class, ['parameters' => ['ppn' => 'id']]);

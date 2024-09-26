@@ -376,6 +376,7 @@ class PembayaranController extends Controller
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
+                'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $id,
                 'date_last' => $request->date_last
             ]);
@@ -463,6 +464,7 @@ class PembayaranController extends Controller
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
+                'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $pembayaran[0]->id,
                 'date_last' => $request->date_last
             ]);
@@ -634,6 +636,7 @@ class PembayaranController extends Controller
     public function konfirmasiPayment($ids)
     {
         $idArray = explode(',', $ids);
+        // dd($idArray);
         Pembayaran::whereIn('id', $idArray)->update(['is_bayar' => 1]);
 
         return Redirect::route('index')
@@ -644,7 +647,65 @@ class PembayaranController extends Controller
     public function indexKonfirmasi()
     {
         $title = 'Konfirmasi Pembayaran';
+        $suppliers = Supplier::where('status', 1)->get();
         
-        return view('pembayaran.konfirmasi.index', compact('title'));
+        return view('pembayaran.konfirmasi.index', compact('title', 'suppliers'));
+    }
+
+    public function showKonfirmasi(Request $request)
+    {
+        $title = 'Show Konfirmasi Pembayaran';
+        $supplier = Supplier::find($request->id_supplier);
+
+        if ($request->range == 1) {
+            $explodeDate = explode(' - ', $request->periode);
+            $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('nomor_giro')
+                ->where('is_bayar', 1)
+                ->where('date', '>=', $explodeDate[0])
+                ->where('date', '<=', $explodeDate[1])
+                ->orderBy('date')
+                ->orderBy('nomor_bukti', 'desc')
+                ->orderBy('id')
+                ->get();
+        } else if ($request->range == 2) {
+            $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('nomor_giro')
+                ->where('is_bayar', 1)
+                ->where('date', '=', now()->format('Y-m-d'))
+                ->orderBy('date')
+                ->orderBy('nomor_bukti', 'desc')
+                ->orderBy('id')
+                ->get();
+        } else if ($request->range == 3) {
+            $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('nomor_giro')
+                ->where('is_bayar', 1)
+                ->whereBetween('date', [now()->subDays(7)->format('Y-m-d'), now()->format('Y-m-d')])
+                ->orderBy('date')
+                ->orderBy('nomor_bukti', 'desc')
+                ->orderBy('id')
+                ->get();
+        } else if ($request->range == 4) {
+            $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('nomor_giro')
+                ->where('is_bayar', 1)
+                ->whereBetween('date', [now()->subDays(30)->format('Y-m-d'), now()->format('Y-m-d')])
+                ->orderBy('date')
+                ->orderBy('nomor_bukti', 'desc')
+                ->orderBy('id')
+                ->get();
+        } else {
+            $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('nomor_giro')
+                ->where('is_bayar', 1)
+                ->orderBy('date')
+                ->orderBy('nomor_bukti', 'desc')
+                ->orderBy('id')
+                ->get();
+        }
+        // dd($request->all(), $pembayarans);
+        
+        return view('pembayaran.konfirmasi.show', compact('title', 'supplier', 'pembayarans'));
     }
 }

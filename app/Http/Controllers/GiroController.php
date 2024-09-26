@@ -53,6 +53,22 @@ class GiroController extends Controller
             ->with('alert.message', "Delete Bank Success!");
     }
 
+    public function indexCekGiro()
+    {
+        $title = 'Informasi Giro';
+
+        return view('master.giro.index-cek', compact('title'));
+    }
+
+    public function showCekGiro(Request $request)
+    {
+        $title = 'Show Informasi Giro';
+        $giroDetail = GiroDetail::where('nomor', $request->nomor)->first();
+        // dd($giroDetail);
+
+        return view('master.giro.show-cek', compact('title', 'giroDetail'));
+    }
+
     public function index()
     {
         $title = 'Master Giro';

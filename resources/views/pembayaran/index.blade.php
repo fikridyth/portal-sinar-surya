@@ -400,6 +400,7 @@
                 $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')},${selectedIdg.join(',')}`);
             }
 
+            let selectedIdk = [];
             $('.input-konfirmasi').change(function () {
                 const id = $(this).data('id');
                 const nomorBukti = $(this).data('nomor');
@@ -407,7 +408,7 @@
                 const jumlahBukti = $(this).data('jumlah');
                 if ($(this).is(':checked')) {
                     // other table
-                    selectedIds.push(id);
+                    selectedIdk.push(id);
                     $('#nomor-bukti').text(nomorBukti);
                     $('#tanggal-bukti').text(tanggalBukti);
                     if (jumlahBukti !== 0) {
@@ -422,13 +423,13 @@
 
                     // buka button selesai
                     $('#button-selesai').removeClass('disabled-link');
-                    $('#button-selesai').attr('href', `{{ route('pembayaran.konfirmasi-payment', '') }}/${selectedIds.join(',')}`);
+                    $('#button-selesai').attr('href', `{{ route('pembayaran.konfirmasi-payment', '') }}/${selectedIdk.join(',')}`);
 
                     // other checkbox
                     $('input[type="checkbox"].input-check').not(this).prop('disabled', true);
                     $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
                 } else {
-                    selectedIds = selectedIds.filter(selectedId => selectedId !== id);
+                    selectedIdk = selectedIdk.filter(selectedId => selectedId !== id);
                     $('#nomor-bukti').text('');
                     $('#tanggal-bukti').text('');
                     $('#jumlah-bukti').text('');
@@ -439,9 +440,9 @@
                         }
                     });
 
-                    const index = selectedIds.indexOf(id);
+                    const index = selectedIdk.indexOf(id);
                     if (index > -1) {
-                        selectedIds.splice(index, 1); // Remove the unchecked ID
+                        selectedIdk.splice(index, 1); // Remove the unchecked ID
                     }
                     
                     $('#button-selesai').addClass('disabled-link');

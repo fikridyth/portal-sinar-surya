@@ -41,10 +41,10 @@
                             <a class="nav-link active" id="tab-login" data-mdb-pill-init href="#pills-login"
                                 role="tab" aria-controls="pills-login" aria-selected="true">Login</a>
                         </li>
-                        <li class="nav-item" role="presentation">
+                        {{-- <li class="nav-item" role="presentation">
                             <a class="nav-link" id="tab-register" data-mdb-pill-init href="#pills-register"
                                 role="tab" aria-controls="pills-register" aria-selected="false">Register</a>
-                        </li>
+                        </li> --}}
                     </ul>
 
                     <div class="tab-content">
@@ -67,7 +67,7 @@
                                 <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
                             </form>
                         </div>
-                        <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                        {{-- <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
                             <form action="{{ route('auth.register-submit') }}" method="POST" class="form">
                                 @csrf
                                 <div data-mdb-input-init class="form-outline mb-4">
@@ -105,7 +105,7 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-block mb-3">Sign Up</button>
                             </form>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
