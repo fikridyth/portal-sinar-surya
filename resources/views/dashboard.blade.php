@@ -15,8 +15,17 @@
 
             <div class="card mb-8">
                 <div class="card-body">
-                    <h5 class="mt-2">Welcome To Portal Sinar Surya.</h5>
-                    <a href="#" class="btn btn-primary mb-2">MASTER USER</a>
+                    <div class="d-flex justify-content-start align-items-center">
+                        <h6 class="mb-2">{{ auth()->user()->name }} - {{ auth()->user()->role }}</h6>
+                    </div>
+                    <div class="d-flex justify-content-start align-items-center mt-2">
+                        @if (auth()->user()->role == 'SUPER_USER')
+                            <a href="{{ route('master.user.index') }}" class="btn btn-primary mb-2">MASTER USER & ROLE</a>
+                        @else
+                            <a href="{{ route('master.user.index') }}" class="btn btn-primary mb-2">UBAH DATA DIRI</a>
+                        @endif
+                        {{-- <a href="{{ route('master.role.index') }}" class="btn btn-primary mb-2 mx-3">MASTER ROLE</a> --}}
+                    </div>
                     <div class="dropdown-divider mt-3 mb-3"></div>
                     <div class="d-flex justify-content-center">
                         <div class="mx-5">

@@ -357,6 +357,7 @@ class PembayaranController extends Controller
                 'beban_materai' => $request->beban_materai,
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
+                'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
@@ -368,6 +369,7 @@ class PembayaranController extends Controller
                 'grand_total' => $request->tunai_other_income ?? 0,
                 'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
@@ -459,6 +461,7 @@ class PembayaranController extends Controller
                 'beban_materai' => $request->beban_materai,
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
+                'tipe_giro' => 'TUNAI',
                 'id_parent' => $pembayaran[0]->id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
@@ -470,6 +473,7 @@ class PembayaranController extends Controller
                 'grand_total' => $request->tunai_other_income ?? 0,
                 'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => 'TUNAI',
                 'id_parent' => $pembayaran[0]->id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);

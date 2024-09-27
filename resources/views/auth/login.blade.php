@@ -53,18 +53,18 @@
                             <form action="{{ route('auth.login-submit') }}" method="POST" class="form">
                                 @csrf
                                 <div data-mdb-input-init class="form-outline mb-4">
-                                    <input type="email" name="email" id="loginEmail" class="form-control"
-                                        placeholder="Enter a valid email address" autocomplete="off" required />
-                                    <label class="form-label" for="loginEmail">Email</label>
+                                    <input type="text" name="username" id="loginUsername" class="form-control"
+                                        placeholder="ENTER A VALID USERNAME" autocomplete="off" required style="text-transform: uppercase;"/>
+                                    <label class="form-label">USERNAME</label>
                                 </div>
 
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <input type="password" name="password" id="loginPassword" class="form-control"
-                                        placeholder="Enter a valid password" autocomplete="off" required />
-                                    <label class="form-label" for="loginPassword">Password</label>
+                                        placeholder="ENTER A VALID PASSWORD" autocomplete="off" required style="text-transform: uppercase;" />
+                                    <label class="form-label">PASSWORD</label>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+                                <button type="submit" class="btn btn-primary btn-block mb-4">SIGN IN</button>
                             </form>
                         </div>
                         {{-- <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
@@ -121,6 +121,13 @@
 
     {{-- Validation --}}
     <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            const usernameInput = document.getElementById('loginUsername');
+            usernameInput.value = usernameInput.value.toUpperCase();
+            const passwordInput = document.getElementById('loginPassword');
+            passwordInput.value = passwordInput.value.toUpperCase();
+        });
+
         $(document).ready(function() {
             $('#tab-register').change(function() {
                 $('#registerEmail, #registerPassword').val('');

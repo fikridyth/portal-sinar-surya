@@ -14,8 +14,8 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $collections = [
-            [ 'name' => 'Fikri', 'email' => 'fikri@gmail.com', 'password' => bcrypt('fikri'), 'role' => 'admin_ticket' ],
-            [ 'name' => 'Hidayat', 'email' => 'hidayat@gmail.com', 'password' => bcrypt('hidayat'), 'role' => 'admin_transaction' ],
+            [ 'name' => 'LO HARYANTO', 'username' => 'EDP', 'email' => 'tes@gmail.com', 'password' => bcrypt('ADMIN'), 'role' => 'SUPER_USER' ],
+            [ 'name' => 'LISTI', 'username' => 'ADMIN', 'email' => 'tes2@gmail.com', 'password' => bcrypt('ADMIN'), 'role' => 'ADMIN' ],
         ];
 
         collect($collections)->each(function ($data) {

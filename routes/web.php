@@ -14,6 +14,7 @@ use App\Http\Controllers\PreOrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -184,5 +185,11 @@ Route::middleware('auth')->group(function () {
 
         // Kartu Stok
         Route::resource('/kartu-stok', KartuStokController::class, ['parameters' => ['kartu-stok' => 'id']]);
+
+        // User
+        Route::get('/user', [UserController::class, 'index'])->name('user.index');
+        Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
+        Route::put('/user/{id}/update', [UserController::class, 'update'])->name('user.update');
+        Route::delete('/user/{id}/destroy', [UserController::class, 'destroy'])->name('user.destroy');
     });
 });
