@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bank;
 use App\Models\GiroDetail;
 use App\Models\GiroHeader;
+use App\Models\Pembayaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -197,7 +198,22 @@ class GiroController extends Controller
         // $banks = Bank::find($giroHeader->id_bank);
         // dd($giroDetail);
 
-        return view('master.giro.show', compact('title', 'giroDetail'));
+        return view('master.giro.show', compact('title', 'giroDetail', 'giroHeader'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $giroDetail = GiroDetail::find($id);
+        $getDataBayar = Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti);
+
+        if ($getDataBayar->exists()) {
+            $getDataBayar->update(['is_bayar' => null]);
+        }
+        $giroDetail->update(['flag' => 3]);
+
+        return Redirect::route('master.giro.show', $request->giro_header)
+            ->with('alert.status', '00')
+            ->with('alert.message', "Update Giro Success!");
     }
 
     public function getDataBayar(Request $request)

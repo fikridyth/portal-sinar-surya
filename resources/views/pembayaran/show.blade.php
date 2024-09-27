@@ -377,7 +377,7 @@
                                     <td class="text-center">${item.nomor}</td>
                                     <td class="text-center">${item.tanggal_akhir}</td>
                                     <td class="text-end">${number_format(item.jumlah) ?? 0}</td>
-                                    <td class="text-center"></td>
+                                    <td class="text-center">${item.flag === 3 ? 'RUSAK' : ''}</td>
                                 `;
                                 tbody2.appendChild(row2);
                             });

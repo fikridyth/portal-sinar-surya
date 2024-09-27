@@ -15,35 +15,45 @@
 
         <div class="card">
             <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th colspan="6" class="text-center">GIRO</th>
-                        </tr>
-                        <tr>
-                            <th class="text-center">NOMOR</th>
-                            <th class="text-center">DIBAYARKAN KEPADA</th>
-                            <th class="text-center">TANGGAL</th>
-                            <th class="text-center">JATUH TEMPO</th>
-                            <th class="text-center">JUMLAH</th>
-                            <th class="text-center">RUSAK</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($giroDetail as $detail)
+                <form action="{{ route('master.giro.update', '') }}" class="form" method="POST" enctype="multipart/form-data" id="giroForm">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="giro_id" id="giro_id" value="">
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td class="text-center">{{ $detail->nomor }}</td>
-                                <td>{{ $detail->nama }}</td>
-                                <td class="text-center">{{ $detail->tanggal_awal }}</td>
-                                <td class="text-center">{{ $detail->tanggal_akhir }}</td>
-                                <td class="text-end">{{ number_format($detail->jumlah, 0) }}</td>
-                                <td class="text-center">
-                                    <input type="checkbox" name="" id="">
-                                </td>
+                                <th colspan="6" class="text-center">GIRO</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                            <tr>
+                                <th class="text-center">NOMOR</th>
+                                <th class="text-center">DIBAYARKAN KEPADA</th>
+                                <th class="text-center">TANGGAL</th>
+                                <th class="text-center">JATUH TEMPO</th>
+                                <th class="text-center">JUMLAH</th>
+                                <th class="text-center">RUSAK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($giroDetail as $detail)
+                                <tr data-id="{{ $detail->id }}">
+                                    <input type="text" hidden name="giro_header" value="{{ $giroHeader->id }}">
+                                    <td class="text-center">{{ $detail->nomor }}</td>
+                                    <td>{{ $detail->nama }}</td>
+                                    <td class="text-center">{{ $detail->tanggal_awal }}</td>
+                                    <td class="text-center">{{ $detail->tanggal_akhir }}</td>
+                                    <td class="text-end">{{ number_format($detail->jumlah, 0) }}</td>
+                                    <td class="text-center">
+                                        @if ($detail->flag == 3)
+                                            RUSAK
+                                        @else
+                                            <input type="checkbox" class="giro-checkbox" data-id="{{ $detail->id }}">
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </form>
                 
                 <div class="align-items-center mt-4">
                     <div class="d-flex justify-content-center">
@@ -56,4 +66,22 @@
 @endsection
 
 @section('scripts')
+<script>
+    document.querySelectorAll('.giro-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                const giroId = this.getAttribute('data-id');
+                const confirmation = confirm("Kembalikan pembayaran? giro akan rusak setelah ini!");
+                
+                if (confirmation) {
+                    document.getElementById('giro_id').value = giroId; // Set the ID in the hidden input
+                    document.getElementById('giroForm').action = `{{ url('master/giro/update') }}/${giroId}`; // Update the form action
+                    document.getElementById('giroForm').submit(); // Submit the form
+                } else {
+                    this.checked = false; // Uncheck the checkbox if user selects "No"
+                }
+            }
+        });
+    });
+</script>
 @endsection

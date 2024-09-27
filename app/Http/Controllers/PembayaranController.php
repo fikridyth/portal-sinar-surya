@@ -417,11 +417,11 @@ class PembayaranController extends Controller
             ]);
 
             $giroDetail->update([
-                'nama' => $request->supplier,
-                'nomor_bukti' => $request->nomor_bukti,
                 'tanggal_awal' => now()->format('Y-m-d'),
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
+                'nama' => $request->supplier,
                 'jumlah' => $request->giro_payment,
+                'nomor_bukti' => $pembayaran->nomor_bukti,
                 'tipe' => 'G',
                 'flag' => 2
             ]);
@@ -521,11 +521,11 @@ class PembayaranController extends Controller
             ]);
 
             $giroDetail->update([
-                'nama' => $request->supplier,
-                'nomor_bukti' => $request->nomor_bukti,
                 'tanggal_awal' => now()->format('Y-m-d'),
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
+                'nama' => $request->supplier,
                 'jumlah' => $request->giro_payment,
+                'nomor_bukti' => $nomorBukti,
                 'tipe' => 'G',
                 'flag' => 2
             ]);
@@ -556,7 +556,7 @@ class PembayaranController extends Controller
 
                 $getGiro = Pembayaran::where('id_parent', $parent[0]->id)->whereNotIn('nomor_giro', ['TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro->nomor_giro)) {
-                    GiroDetail::where('nomor', $getGiro->nomor_giro)->first()->update([
+                    GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first()->update([
                         'nama' => null,
                         'nomor_bukti' => '',
                         'tanggal_awal' => null,
@@ -582,7 +582,7 @@ class PembayaranController extends Controller
                 $getPreorder = Preorder::where('nomor_bukti', $parent->nomor_bukti)->first();
                 $getGiro = Pembayaran::where('id_parent', $parent->id)->whereNotIn('nomor_giro', ['TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro->nomor_giro)) {
-                    GiroDetail::where('nomor', $getGiro->nomor_giro)->first()->update([
+                    GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first()->update([
                         'nama' => null,
                         'nomor_bukti' => '',
                         'tanggal_awal' => null,

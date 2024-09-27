@@ -155,6 +155,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/giro/create/{id}', [GiroController::class, 'create'])->name('giro.create');
         Route::post('/giro/store/{id}', [GiroController::class, 'store'])->name('giro.store');
         Route::get('/giro/show/{id}', [GiroController::class, 'show'])->name('giro.show');
+        Route::put('/giro/update/{id}', [GiroController::class, 'update'])->name('giro.update');
         Route::get('/get-data-giro', [GiroController::class, 'getData']);
         Route::get('/get-bayar-giro', [GiroController::class, 'getDataBayar']);
         Route::get('/cek-giro', [GiroController::class, 'indexCekGiro'])->name('cek-giro.index');
