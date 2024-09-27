@@ -133,12 +133,12 @@
                                                 <th>JUMLAH</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            <tr>
+                                        <tbody id="data-tbody-dok">
+                                            {{-- <tr>
                                                 <td id="nomor-bukti">
                                                 <td id="tanggal-bukti"></td>
                                                 <td id="jumlah-bukti"></td>
-                                            </tr>
+                                            </tr> --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -185,7 +185,7 @@
                                             </td>
                                             <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->total_with_materai) }}"></td>
+                                            <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
                                         </tr>
                                         @if ($pmb->nomor_bukti)
                                             @php $previousIdParent = $pmb->nomor_bukti; @endphp
@@ -228,19 +228,11 @@
             let selectedIds = [];
             $('.input-check').change(function () {
                 const id = $(this).data('id');
-                const nomorBukti = $(this).data('nomor');
-                const tanggalBukti = $(this).data('tanggal');
-                const jumlahBukti = $(this).data('jumlah');
-                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
                 if ($(this).is(':checked')) {
                     const selectedBankId = $('#bank-select').val();
 
                     var redirectUrl = `{{ route('pembayaran.show', '') }}/${id}?bank_id=${selectedBankId}`;
                     window.location.href = redirectUrl;
-                    
-                    $('#nomor-bukti').text(nomorBukti);
-                    $('#tanggal-bukti').text(tanggalBukti);
-                    $('#jumlah-bukti').text(jumlahBukti);
 
                     selectedIds.push(id);
                 } else {
@@ -254,70 +246,6 @@
                         $('#delete-form').submit(); // Submit the form
                     }
                 }
-
-                // if ($(this).is(':checked')) {
-                //     // other table
-                //     selectedIds.push(id);
-                //     $('#nomor-bukti').text(nomorBukti);
-                //     $('#tanggal-bukti').text(tanggalBukti);
-                //     $('#jumlah-bukti').text(jumlahBukti);
-
-                //     $('.input-check[data-nomor="' + nomorBukti + '"]').each(function () {
-                //         if (!$(this).is(':checked')) {
-                //             $(this).prop('checked', true).change(); // Trigger change event
-                //         }
-                //     });
-
-                //     // link
-                //     if (keteranganBayar === '') {
-                //         // keterangan bayar null, aktifkan button-bayar dan nonaktifkan button-hapus
-                //         $('#button-bayar').removeClass('disabled-link');
-                //         $('#button-bayar').attr('href', `{{ route('pembayaran.show', '') }}/${id}`);
-                        
-                //         $('#button-cetak').addClass('disabled-link');
-                //         $('#button-cetak').attr('href', '#');
-
-                //         $('#button-hapus').addClass('disabled-link');
-                //         $('#button-hapus').attr('href', '#');
-
-                //         // other checkbox
-                //         $('input[type="checkbox"]').not(this).prop('disabled', true);
-                //     } else {
-                //         // keterangan bayar tidak null, aktifkan button-hapus dan nonaktifkan button-bayar
-                //         $('#button-bayar').addClass('disabled-link');
-                //         $('#button-bayar').attr('href', '#');
-                        
-                //         $('#button-cetak').removeClass('disabled-link');
-                //         $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
-                        
-                //         $('#button-hapus').removeClass('disabled-link');
-                //         $('#button-hapus').attr('href', '#'); // Jangan gunakan href pada tombol hapus, gunakan JavaScript untuk meng-handle klik
-                //         $('#button-hapus').data('id', selectedIds); // Simpan ID untuk penghapusan
-
-                //         // other checkbox
-                //         $('input[type="checkbox"].input-gabung').not(this).prop('disabled', true);
-                //         $('input[type="checkbox"].input-konfirmasi').not(this).prop('disabled', true);
-                //     // }
-                // } else {
-                //     selectedIds = selectedIds.filter(selectedId => selectedId !== id);
-                //     $('#nomor-bukti').text('');
-                //     $('#tanggal-bukti').text('');
-                //     $('#jumlah-bukti').text('');
-
-                //     const index = selectedIds.indexOf(id);
-                //     if (index > -1) {
-                //         selectedIds.splice(index, 1); // Remove the unchecked ID
-                //     }
-
-                //     $('#button-bayar').addClass('disabled-link');
-                //     $('#button-bayar').attr('href', '#');
-                //     $('#button-cetak').addClass('disabled-link');
-                //     $('#button-cetak').attr('href', '#');
-                //     $('#button-hapus').addClass('disabled-link');
-                //     $('#button-hapus').attr('href', '#');
-
-                //     $('input[type="checkbox"]').prop('disabled', false);
-                // }
             });
 
             $('.input-check').each(function() {
@@ -334,7 +262,6 @@
 
             // Initial setup when the route is accessed
             function setupOnRouteAccess() {
-
                 $('.input-gabung').each(function () {
                     const id = $(this).data('id');
                     if ($(this).is(':checked')) {
@@ -347,25 +274,10 @@
 
             $('.input-gabung').change(function () {
                 const id = $(this).data('id');
-                const nomorBukti = $(this).data('nomor');
-                const tanggalBukti = $(this).data('tanggal');
-                const jumlahBukti = $(this).data('jumlah');
-                const keteranganBayar = $(this).closest('tr').find('.keterangan_bayar').text().trim(); // Ambil nilai keterangan bayar
-
                 if ($(this).is(':checked')) {
                     if (!selectedIdg.includes(id)) {
                         initiallyLoadedIds.push(id);
                     }
-
-                    $('#nomor-bukti').text(nomorBukti);
-                    $('#tanggal-bukti').text(tanggalBukti);
-                    $('#jumlah-bukti').text(jumlahBukti);
-
-                    $('.input-gabung[data-nomor="' + nomorBukti + '"]').each(function () {
-                        if (!$(this).is(':checked')) {
-                            $(this).prop('checked', true).change(); // Trigger change event
-                        }
-                    });
 
                     const selectedBankId = $('#bank-select').val();
                     $('#button-gabung').removeClass('disabled-link');
@@ -404,16 +316,23 @@
             $('.input-konfirmasi').change(function () {
                 const id = $(this).data('id');
                 const nomorBukti = $(this).data('nomor');
-                const tanggalBukti = $(this).data('tanggal');
-                const jumlahBukti = $(this).data('jumlah');
+                const dataBukti = $(this).data('bukti');
+                console.log(dataBukti)
                 if ($(this).is(':checked')) {
                     // other table
                     selectedIdk.push(id);
-                    $('#nomor-bukti').text(nomorBukti);
-                    $('#tanggal-bukti').text(tanggalBukti);
-                    if (jumlahBukti !== 0) {
-                        $('#jumlah-bukti').text(jumlahBukti);
-                    }
+
+                    // update table document
+                    const tableBody = $('#data-tbody-dok');
+                    tableBody.empty();
+                    dataBukti.forEach(item => {
+                        const newRow = `<tr>
+                            <td>${item.nomor_bukti}</td>
+                            <td>${item.date}</td>
+                            <td>${number_format(item.total)}</td>
+                        </tr>`;
+                        tableBody.append(newRow);
+                    });
 
                     $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
                         if (!$(this).is(':checked')) {
@@ -494,10 +413,6 @@
                                 `;
                                 tbody2.appendChild(row2);
                             });
-
-                            function number_format(number) {
-                                return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                            }
                         })
                     .catch(error => console.error('Error fetching data:', error));
                 }
@@ -506,5 +421,9 @@
             bankSelect.addEventListener('change', updateTable);
             rekeningRadios.forEach(radio => radio.addEventListener('change', updateTable));
         });
+
+        function number_format(number) {
+            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
     </script>
 @endsection

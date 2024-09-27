@@ -340,7 +340,13 @@ class PembayaranController extends Controller
         $typePayment = (int)$request->type_payment;
         $pembayaran = Pembayaran::find($id);
         $getPreorder = Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->first();
-        // dd($getPreorder);
+        $getParent = Pembayaran::where('nomor_bukti', $pembayaran->nomor_bukti)->whereNull('id_parent')->first();
+        $dataDetail[] = [
+            'nomor_bukti' => $getParent->nomor_bukti,
+            'date' => $getParent->date,
+            'total' => $getParent->grand_total,
+        ];
+        $dataBukti = response()->json($dataDetail);
 
         if ($typePayment == 0) {
             Pembayaran::create([
@@ -351,7 +357,8 @@ class PembayaranController extends Controller
                 'beban_materai' => $request->beban_materai,
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
-                'id_parent' => $id
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -361,7 +368,8 @@ class PembayaranController extends Controller
                 'grand_total' => $request->tunai_other_income ?? 0,
                 'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
-                'id_parent' => $id
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
         } else {
             $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
@@ -373,12 +381,13 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'grand_total' => $request->giro_payment ?? 0,
                 'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
+                'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $id,
-                'date_last' => $request->date_last
+                'date_last' => $request->date_last,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -389,7 +398,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
-                'id_parent' => $id
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -400,7 +410,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
-                'id_parent' => $id
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             $giroDetail->update([
@@ -429,6 +440,15 @@ class PembayaranController extends Controller
         $idArray = explode(',', $ids);
         $pembayaran = Pembayaran::whereIn('id', $idArray)->get();
         $nomorBukti = $pembayaran->pluck('nomor_bukti')->implode(',');
+        foreach (explode(',', $nomorBukti) as $nomorBkt) {
+            $getParent = Pembayaran::where('nomor_bukti', $nomorBkt)->whereNull('id_parent')->first();
+            $dataDetail[] = [
+                'nomor_bukti' => $getParent->nomor_bukti,
+                'date' => $getParent->date,
+                'total' => $getParent->grand_total,
+            ];
+        }
+        $dataBukti = response()->json($dataDetail);
 
         if ($typePayment == 0) {
             Pembayaran::create([
@@ -439,7 +459,8 @@ class PembayaranController extends Controller
                 'beban_materai' => $request->beban_materai,
                 'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => 'TUNAI',
-                'id_parent' => $pembayaran[0]->id
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -449,7 +470,8 @@ class PembayaranController extends Controller
                 'grand_total' => $request->tunai_other_income ?? 0,
                 'total_with_materai' => $request->tunai_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
-                'id_parent' => $pembayaran[0]->id
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
         } else {
             $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
@@ -461,12 +483,13 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $nomorBukti,
                 'grand_total' => $request->giro_payment ?? 0,
                 'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
+                'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $pembayaran[0]->id,
-                'date_last' => $request->date_last
+                'date_last' => $request->date_last,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -477,7 +500,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => $request->giro_tunai_payment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
-                'id_parent' => $pembayaran[0]->id
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             Pembayaran::create([
@@ -488,7 +512,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => $request->giro_other_income ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
-                'id_parent' => $pembayaran[0]->id
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
 
             $giroDetail->update([

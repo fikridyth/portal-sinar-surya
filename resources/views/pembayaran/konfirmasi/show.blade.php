@@ -28,63 +28,130 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-center mt-2">
-                        <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
-                            <table class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                <thead>
-                                    <tr style="border: 1px solid black; font-size: 12px;">
-                                        <th class="text-center">NO</th>
-                                        <th class="text-center">NAMA SUPPLIER</th>
-                                        <th class="text-center">DOKUMEN</th>
-                                        <th class="text-center">TANGGAL BAYAR</th>
-                                        <th class="text-center">JUMLAH RP</th>
-                                        <th class="text-center">NOMOR GIRO</th>
-                                        <th class="text-center">JATUH TEMPO</th>
-                                        <th class="text-center">V</th>
-                                        <th class="text-center">STATUS</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $counter = 1;
-                                        $previousIdParent = null;
-                                    @endphp
-                                    @foreach ($pembayarans as $index => $pmb)
-                                        <tr>
-                                            <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
-                                                @if ($pmb->nomor_bukti !== $previousIdParent)
-                                                    {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
-                                                    @php $counter++; @endphp
-                                                @else
-                                                    {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
+                    <div class="row w-100">
+                        <div class="form-group col-8">
+                            <div class="d-flex justify-content-center mt-2">
+                                <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                        <thead>
+                                            <h6 class="d-flex justify-content-center mt-2">DATA PEMBAYARAN</h6>
+                                            <tr style="border: 1px solid black; font-size: 12px;">
+                                                <th class="text-center">NO</th>
+                                                <th class="text-center">NAMA SUPPLIER</th>
+                                                <th class="text-center">TANGGAL BAYAR</th>
+                                                <th class="text-center">JUMLAH RP</th>
+                                                <th class="text-center">NOMOR GIRO</th>
+                                                <th class="text-center">JATUH TEMPO</th>
+                                                <th class="text-center">V</th>
+                                                <th class="text-center">STATUS</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $counter = 1;
+                                                $previousIdParent = null;
+                                            @endphp
+                                            @foreach ($pembayarans as $index => $pmb)
+                                                <tr>
+                                                    <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
+                                                        @if ($pmb->nomor_bukti !== $previousIdParent)
+                                                            {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
+                                                            @php $counter++; @endphp
+                                                        @else
+                                                            {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
+                                                        @endif
+                                                    </td>
+                                                    @if ($pmb->tipe_giro == 'CABANG')
+                                                        <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
+                                                    @else
+                                                        <td>{{ $pmb->supplier->nama }}</td>
+                                                    @endif
+                                                    <td class="text-center">{{ $pmb->date }}</td>
+                                                    <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
+                                                    <td class="text-center">{{ $pmb->nomor_giro }}</td>
+                                                    <td class="text-center">{{ $pmb->tanggal_akhir ?? '-' }}</td>
+                                                    <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
+                                                    <td>KONFORM</td>
+                                                </tr>
+                                                @if ($pmb->nomor_bukti)
+                                                    @php $previousIdParent = $pmb->nomor_bukti; @endphp
                                                 @endif
-                                            </td>
-                                            @if ($pmb->tipe_giro == 'CABANG')
-                                                <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
-                                            @else
-                                                <td>{{ $pmb->supplier->nama }}</td>
-                                            @endif
-                                            <td>{{ $pmb->nomor_bukti }}</td>
-                                            <td class="text-center">{{ $pmb->date }}</td>
-                                            <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
-                                            <td class="text-center">{{ $pmb->nomor_giro }}</td>
-                                            <td class="text-center">{{ $pmb->tanggal_akhir ?? '-' }}</td>
-                                            <td class="text-center"><input type="checkbox" checked></td>
-                                            <td>KONFORM</td>
-                                        </tr>
-                                        @if ($pmb->nomor_bukti)
-                                            @php $previousIdParent = $pmb->nomor_bukti; @endphp
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-4">
+                                <a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-danger">SELESAI</a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="d-flex justify-content-center mt-4">
-                        <a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-danger">SELESAI</a>
+                        
+                        <div class="form-group col-4">
+                            <div class="d-flex justify-content-center mt-2">
+                                <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                        <thead>
+                                            <h6 class="d-flex justify-content-center mt-2">DATA DOKUMEN</h6>
+                                            <tr style="border: 1px solid black; font-size: 12px;">
+                                                <th>DOKUMEN</th>
+                                                <th>TANGGAL BAYAR</th>
+                                                <th>JUMLAH</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-tbody-dok">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        let selectedIdk = [];
+        $('.input-konfirmasi').change(function () {
+            const id = $(this).data('id');
+            const nomorBukti = $(this).data('nomor');
+            const dataBukti = $(this).data('bukti');
+            console.log(dataBukti)
+            if ($(this).is(':checked')) {
+                // other table
+                selectedIdk.push(id);
+
+                // update table document
+                const tableBody = $('#data-tbody-dok');
+                tableBody.empty();
+                dataBukti.forEach(item => {
+                    const newRow = `<tr>
+                        <td>${item.nomor_bukti}</td>
+                        <td>${item.date}</td>
+                        <td>${number_format(item.total)}</td>
+                    </tr>`;
+                    tableBody.append(newRow);
+                });
+
+                $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
+                    if (!$(this).is(':checked')) {
+                        $(this).prop('checked', true).change(); // Trigger change event
+                    }
+                });
+                
+            } else {
+                $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
+                    if ($(this).is(':checked')) {
+                        $(this).prop('checked', false).change(); // Trigger change event
+                    }
+                });
+            }
+        });
+
+        function number_format(number) {
+            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    </script>
 @endsection
