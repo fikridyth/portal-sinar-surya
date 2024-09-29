@@ -15,12 +15,30 @@
 
         <div class="card">
             <div class="card-body">
-                {{ $dataTable->table() }}
+                {{-- {{ $dataTable->table() }} --}}
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>NAMA SUPPLIER</th>
+                            <th>ALAMAT -1</th>
+                            <th>ALAMAT -2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($getSupplier as $supplier)
+                            <tr>
+                                <td><a href="{{ route('pembayaran-hutang.show', $supplier->id) }}" class="mx-2">{{ $supplier->nama }}</a></td>
+                                <td>{{ $supplier->alamat1 }}</td>
+                                <td>{{ $supplier->alamat2 }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 @endsection
 
 @section('scripts')
-    {{ $dataTable->scripts() }}
+    {{-- {{ $dataTable->scripts() }} --}}
 @endsection

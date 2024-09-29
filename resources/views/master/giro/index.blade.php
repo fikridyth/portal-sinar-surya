@@ -31,11 +31,15 @@
                         <div class="row align-items-center">
                             <label for="nomorSupplier2" class="col-6 col-form-label">CEK / GIRO</label>
                             <div class="col-6">
-                                <div style="background-color: black;">
-                                    <input type="radio" id="cek" name="rekening" value="CK">
-                                    <label for="cek" style="color: white; font-size: 12px;">CEK</label>
-                                    <input type="radio" id="giro" name="rekening" value="GR">
-                                    <label for="giro" style="color: white; font-size: 12px;">GIRO</label>
+                                <div class="d-flex align-items-center" style="background-color: black; padding: 1px; width: 140px;">
+                                    <div class="form-check me-3">
+                                        <input type="radio" id="cek" name="rekening" value="CK" class="form-check-input">
+                                        <label for="cek" class="form-check-label" style="color: white; font-size: 12px;">CEK</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" id="giro" name="rekening" value="GR" class="form-check-input">
+                                        <label for="giro" class="form-check-label" style="color: white; font-size: 12px;">GIRO</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -65,9 +69,16 @@
 
 @section('scripts')
     <script>
-        $(`.bank-select`).select2({
-            placeholder: '---Select Bank---',
-            allowClear: true
+        $(document).ready(function() {
+            $('.bank-select').select2({
+                placeholder: '---Select Bank---',
+                allowClear: true
+            });
+
+            // Clear radio buttons when select box changes
+            $('.bank-select').on('select2:select', function(e) {
+                $('input[name="rekening"]').prop('checked', false);
+            });
         });
 
         document.addEventListener('DOMContentLoaded', function() {

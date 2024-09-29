@@ -43,11 +43,11 @@
                                     <td class="text-center">{{ $giroDetail->nomor }}</td>
                                     <td class="text-center">
                                         @if ($giroDetail->flag == 1)
-                                            Belum Dipakai
+                                            BELUM DIPAKAI
                                         @elseif ($giroDetail->flag == 2)
-                                            Terpakai
+                                            TERPAKAI
                                         @elseif ($giroDetail->flag == 3)
-                                            Rusak
+                                            RUSAK
                                         @endif
                                     </td>
                                     <td>{{ $giroDetail->nama }}</td>

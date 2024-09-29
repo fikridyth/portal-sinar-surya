@@ -19,11 +19,24 @@ use Illuminate\Support\Facades\Redirect;
 
 class PembayaranController extends Controller
 {
-    public function indexHutang(HutangDataTable $dataTable)
+    // public function indexHutang(HutangDataTable $dataTable)
+    // {
+    //     $title = 'List Pembayaran Hutang';
+        
+    //     return $dataTable->render('pembayaran.hutang.index', compact('title'));
+    // }
+
+    public function indexHutang()
     {
         $title = 'List Pembayaran Hutang';
+
+        $hutang = Hutang::select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->groupBy('id_supplier')->pluck('id_supplier');
+        $pengembalian = Pengembalian::select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')->pluck('id_supplier');
+
+        $mergedData = $hutang->merge($pengembalian)->unique();
+        $getSupplier = Supplier::whereIn('id', $mergedData)->get();
         
-        return $dataTable->render('pembayaran.hutang.index', compact('title'));
+        return view('pembayaran.hutang.index', compact('title', 'getSupplier'));
     }
 
     public function showHutang($id)
@@ -47,7 +60,11 @@ class PembayaranController extends Controller
                 'total' => '-' . $item->total,
             ];
         });
-        $allData = $hutangData->merge($returnData);
+        if ($getHutang->isEmpty()) {
+            $allData = $returnData;
+        } else {
+            $allData = $hutangData->merge($returnData);
+        }
         $getAllData = $allData->toArray();
 
         // get nomor bukti
@@ -162,9 +179,9 @@ class PembayaranController extends Controller
             ];
         }
         $totalHutang = array_sum(array_column($getHutang, 'total'));
-        if ($totalHutang < 0) {
-            return redirect()->route('pembayaran-hutang.show', $supplier->id)->with('alert.status', '99')->with('alert.message', 'TOTAL BAYAR TIDAK BOLEH NEGATIVE');
-        }
+        // if ($totalHutang < 0) {
+        //     return redirect()->route('pembayaran-hutang.show', $supplier->id)->with('alert.status', '99')->with('alert.message', 'TOTAL BAYAR TIDAK BOLEH NEGATIVE');
+        // }
         // dd($totalHutang);
         
         // get nomor bukti
@@ -428,7 +445,9 @@ class PembayaranController extends Controller
         }
 
         $pembayaran->update(['is_bayar' => 1]);
-        $getPreorder->update(['is_pay' => 1]);
+        if(isset($getPreorder)) {
+            $getPreorder->update(['is_pay' => 1]);
+        }
 
         return Redirect::route('pembayaran.index')
             ->with('alert.status', '00')
@@ -594,7 +613,9 @@ class PembayaranController extends Controller
                 }
                 Pembayaran::where('id_parent', $parent->id)->delete();
                 $parent->update(['is_bayar' => null]);
-                $getPreorder->update(['is_pay' => null]);
+                if(isset($getPreorder)) {
+                    $getPreorder->update(['is_pay' => 1]);
+                }
             }
         }
         

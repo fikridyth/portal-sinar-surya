@@ -176,7 +176,7 @@
                                             </td>
                                             <td>{{ $pmb->supplier->nama }}</td>
                                             @if ($pmb->id_parent == null)
-                                                <td class="text-end">{{ number_format($pmb->grand_total) }}</td>
+                                                <td class="text-end check-negative">{{ number_format($pmb->grand_total) }}</td>
                                             @else
                                                 <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
                                             @endif
@@ -223,6 +223,7 @@
                 var selectedOption = e.params.data.element;
                 var noRekening = $(selectedOption).data('no-rekening');
                 $('#no-rekening').val(noRekening);
+                $('input[name="rekening"]').prop('checked', false);
             });
 
             let selectedIds = [];
@@ -254,6 +255,17 @@
                     selectedIds.push(id);
                     $('.input-gabung[data-id="' + id + '"]').prop('disabled', true);
                     $('.input-konfirmasi[data-id="' + id + '"]').prop('disabled', false);
+                }
+            });
+
+            $('.check-negative').each(function() {
+                var value = parseFloat($(this).text().replace(/,/g, '')); // Remove commas for conversion
+                var id = $(this).closest('tr').find('.input-gabung').data('id'); // Get the associated id
+
+                // Check if the value is negative
+                if (value < 0) {
+                    // Disable the corresponding input-gabung if the condition is met
+                    $('.input-gabung[data-id="' + id + '"]').prop('disabled', true);
                 }
             });
 
@@ -399,7 +411,6 @@
                                 tbody.appendChild(row);
                             });
 
-                            
                             const tbody2 = document.getElementById('data-tbody-2');
                             tbody2.innerHTML = ''; // Clear existing data
 
@@ -414,13 +425,12 @@
                                 tbody2.appendChild(row2);
                             });
                         })
-                    .catch(error => console.error('Error fetching data:', error));
+                        .catch(error => console.error('Error fetching data:', error));
                 }
             }
-
-            bankSelect.addEventListener('change', updateTable);
             rekeningRadios.forEach(radio => radio.addEventListener('change', updateTable));
         });
+
 
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');

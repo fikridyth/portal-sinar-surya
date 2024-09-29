@@ -6,6 +6,7 @@ use App\Models\Bank;
 use App\Models\GiroDetail;
 use App\Models\GiroHeader;
 use App\Models\Pembayaran;
+use App\Models\Preorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -204,11 +205,28 @@ class GiroController extends Controller
     public function update(Request $request, $id)
     {
         $giroDetail = GiroDetail::find($id);
-        $getDataBayar = Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti);
 
-        if ($getDataBayar->exists()) {
-            $getDataBayar->update(['is_bayar' => null]);
+        // kembalikan saat belum bayar
+        $explodeData = explode(',', $giroDetail->nomor_bukti);
+        // dd(count($explodeData));
+        if (count($explodeData) > 1) {
+            foreach ($explodeData as $data) {
+                Pembayaran::where('nomor_bukti', $data)->whereNull('id_parent')->update(['is_bayar' => null]);
+                
+                // update po
+                Preorder::where('nomor_bukti', $data)->update(['is_pay' => null]);
+            }
+        } else {
+            Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNull('id_parent')->update(['is_bayar' => null]);
+
+            // update po
+            Preorder::where('nomor_bukti', $giroDetail->nomor_bukti)->update(['is_pay' => null]);
         }
+
+        // delete sudah bayar
+        Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNotNull('id_parent')->delete();
+
+        // buat rusak
         $giroDetail->update(['flag' => 3]);
 
         return Redirect::route('master.giro.show', $request->giro_header)
