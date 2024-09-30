@@ -403,9 +403,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
-                'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $id,
-                'date_last' => $request->date_last,
+                'date_last' => $request->date_last ?? now()->format('Y-m-d'),
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
 
@@ -509,9 +508,8 @@ class PembayaranController extends Controller
                 'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
-                'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'id_parent' => $pembayaran[0]->id,
-                'date_last' => $request->date_last,
+                'date_last' => $request->date_last ?? now()->format('Y-m-d'),
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
 

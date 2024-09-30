@@ -111,6 +111,11 @@ Route::middleware('auth')->group(function () {
 
     // Piutang
     Route::get('/pembayaran-piutang', [PiutangController::class, 'index'])->name('pembayaran-piutang.index');
+    Route::post('/pembayaran-piutang/store', [PiutangController::class, 'store'])->name('pembayaran-piutang.store');
+    Route::get('/daftar-tagihan-langganan', [PiutangController::class, 'indexTagihan'])->name('daftar-tagihan.index');
+    Route::get('/daftar-tagihan-langganan/{id}', [PiutangController::class, 'showTagihan'])->name('daftar-tagihan.show');
+    Route::get('/daftar-tagihan-langganan/{id}/cetak', [PiutangController::class, 'cetakTagihan'])->name('daftar-tagihan.cetak');
+    Route::delete('/daftar-tagihan-langganan/{id}/destroy', [PiutangController::class, 'destroyTagihan'])->name('daftar-tagihan.destroy');
 
     // Laporan
     Route::get('/daftar-harga-jual-kecil', [PreOrderController::class, 'daftarHargaJualKecil'])->name('daftar-harga-jual-kecil');

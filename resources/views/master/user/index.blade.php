@@ -84,7 +84,6 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
                 <td class="text-center">
                     <button type="submit" class="btn btn-sm btn-primary">SAVE</button>
                 </td>
@@ -116,7 +115,6 @@
 
                     // Replace <td> with input fields
                     row.innerHTML = `
-                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
