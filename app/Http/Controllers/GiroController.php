@@ -204,10 +204,18 @@ class GiroController extends Controller
 
     public function update(Request $request, $id)
     {
-        $giroDetail = GiroDetail::find($id);
+        // dd($request->all());
+        $pembayaran = Pembayaran::find($id);
+
+        // buat rusak
+        $getAllData = Pembayaran::where('id_parent', $pembayaran->id_parent)->get();
+        if ($getAllData[0]->nomor_giro !== 'TUNAI') {
+            $giroDetail = GiroDetail::where('nomor', $getAllData[0]->nomor_giro)->first();
+            $giroDetail->update(['flag' => 3]);
+        }
 
         // kembalikan saat belum bayar
-        $explodeData = explode(',', $giroDetail->nomor_bukti);
+        $explodeData = explode(',', $pembayaran->nomor_bukti);
         // dd(count($explodeData));
         if (count($explodeData) > 1) {
             foreach ($explodeData as $data) {
@@ -217,22 +225,52 @@ class GiroController extends Controller
                 Preorder::where('nomor_bukti', $data)->update(['is_pay' => null]);
             }
         } else {
-            Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNull('id_parent')->update(['is_bayar' => null]);
+            Pembayaran::where('nomor_bukti', $pembayaran->nomor_bukti)->whereNull('id_parent')->update(['is_bayar' => null]);
 
             // update po
-            Preorder::where('nomor_bukti', $giroDetail->nomor_bukti)->update(['is_pay' => null]);
+            Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['is_pay' => null]);
         }
 
         // delete sudah bayar
-        Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNotNull('id_parent')->delete();
+        Pembayaran::where('nomor_bukti', $pembayaran->nomor_bukti)->whereNotNull('id_parent')->delete();
 
-        // buat rusak
-        $giroDetail->update(['flag' => 3]);
-
-        return Redirect::route('master.giro.show', $request->giro_header)
+        return Redirect::route('pembayaran.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Update Giro Success!");
     }
+
+    // public function update(Request $request, $id)
+    // {
+    //     dd($request->all(), $id);
+    //     $giroDetail = GiroDetail::find($id);
+
+    //     // kembalikan saat belum bayar
+    //     $explodeData = explode(',', $giroDetail->nomor_bukti);
+    //     // dd(count($explodeData));
+    //     if (count($explodeData) > 1) {
+    //         foreach ($explodeData as $data) {
+    //             Pembayaran::where('nomor_bukti', $data)->whereNull('id_parent')->update(['is_bayar' => null]);
+                
+    //             // update po
+    //             Preorder::where('nomor_bukti', $data)->update(['is_pay' => null]);
+    //         }
+    //     } else {
+    //         Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNull('id_parent')->update(['is_bayar' => null]);
+
+    //         // update po
+    //         Preorder::where('nomor_bukti', $giroDetail->nomor_bukti)->update(['is_pay' => null]);
+    //     }
+
+    //     // delete sudah bayar
+    //     Pembayaran::where('nomor_bukti', $giroDetail->nomor_bukti)->whereNotNull('id_parent')->delete();
+
+    //     // buat rusak
+    //     $giroDetail->update(['flag' => 3]);
+
+    //     return Redirect::route('master.giro.show', $request->giro_header)
+    //         ->with('alert.status', '00')
+    //         ->with('alert.message', "Update Giro Success!");
+    // }
 
     public function getDataBayar(Request $request)
     {

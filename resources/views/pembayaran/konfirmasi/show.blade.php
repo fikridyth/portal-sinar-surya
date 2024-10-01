@@ -27,84 +27,91 @@
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <div class="row w-100">
-                        <div class="form-group col-8">
-                            <div class="d-flex justify-content-center mt-2">
-                                <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
-                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                        <thead>
-                                            <h6 class="d-flex justify-content-center mt-2">DATA PEMBAYARAN</h6>
-                                            <tr style="border: 1px solid black; font-size: 12px;">
-                                                <th class="text-center">NO</th>
-                                                <th class="text-center">NAMA SUPPLIER</th>
-                                                <th class="text-center">TANGGAL BAYAR</th>
-                                                <th class="text-center">JUMLAH RP</th>
-                                                <th class="text-center">NOMOR GIRO</th>
-                                                <th class="text-center">JATUH TEMPO</th>
-                                                <th class="text-center">V</th>
-                                                <th class="text-center">STATUS</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $counter = 1;
-                                                $previousIdParent = null;
-                                            @endphp
-                                            @foreach ($pembayarans as $index => $pmb)
-                                                <tr>
-                                                    <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
-                                                        @if ($pmb->nomor_bukti !== $previousIdParent)
-                                                            {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
-                                                            @php $counter++; @endphp
-                                                        @else
-                                                            {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
-                                                        @endif
-                                                    </td>
-                                                    @if ($pmb->tipe_giro == 'CABANG')
-                                                        <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
-                                                    @else
-                                                        <td>{{ $pmb->supplier->nama }}</td>
-                                                    @endif
-                                                    <td class="text-center">{{ $pmb->date }}</td>
-                                                    <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
-                                                    <td class="text-center">{{ $pmb->nomor_giro }}</td>
-                                                    <td class="text-center">{{ $pmb->tanggal_akhir ?? '-' }}</td>
-                                                    <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
-                                                    <td>KONFORM</td>
+                <div class="card-body">  
+                    <form action="{{ route('master.giro.update', '') }}" class="form" method="POST" enctype="multipart/form-data" id="giroForm">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="giro_id" id="giro_id" value="">
+                        <div class="row w-100">
+                            <div class="form-group col-8">
+                                <div class="d-flex justify-content-center mt-2">
+                                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
+                                                <h6 class="d-flex justify-content-center mt-2">DATA PEMBAYARAN</h6>
+                                                <tr style="border: 1px solid black; font-size: 12px;">
+                                                    <th class="text-center">NO</th>
+                                                    <th class="text-center">V</th>
+                                                    <th class="text-center">NAMA SUPPLIER</th>
+                                                    <th class="text-center">TANGGAL BAYAR</th>
+                                                    <th class="text-center">JUMLAH RP</th>
+                                                    <th class="text-center">NOMOR GIRO</th>
+                                                    <th class="text-center">JATUH TEMPO</th>
+                                                    <th class="text-center">V</th>
+                                                    <th class="text-center">STATUS</th>
                                                 </tr>
-                                                @if ($pmb->nomor_bukti)
-                                                    @php $previousIdParent = $pmb->nomor_bukti; @endphp
-                                                @endif
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $counter = 1;
+                                                    $previousIdParent = null;
+                                                @endphp
+                                                @foreach ($pembayarans as $index => $pmb)
+                                                    <tr>
+                                                        <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
+                                                            @if ($pmb->nomor_bukti !== $previousIdParent)
+                                                                {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
+                                                                @php $counter++; @endphp
+                                                            @else
+                                                                {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
+                                                        @if ($pmb->tipe_giro == 'CABANG')
+                                                            <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
+                                                        @else
+                                                            <td>{{ $pmb->supplier->nama }}</td>
+                                                        @endif
+                                                        <td class="text-center">{{ $pmb->date }}</td>
+                                                        <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
+                                                        <td class="text-center">{{ $pmb->nomor_giro }}</td>
+                                                        <td class="text-center">{{ $pmb->tanggal_akhir ?? '-' }}</td>
+                                                        <td class="text-center"><input type="checkbox" class="giro-checkbox" data-id="{{ $pmb->id }}"></td>
+                                                        <td>KONFORM</td>
+                                                    </tr>
+                                                    @if ($pmb->nomor_bukti)
+                                                        @php $previousIdParent = $pmb->nomor_bukti; @endphp
+                                                    @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center mt-4">
+                                    <a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-danger">SELESAI</a>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-center mt-4">
-                                <a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-danger">SELESAI</a>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group col-4">
-                            <div class="d-flex justify-content-center mt-2">
-                                <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
-                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                        <thead>
-                                            <h6 class="d-flex justify-content-center mt-2">DATA DOKUMEN</h6>
-                                            <tr style="border: 1px solid black; font-size: 12px;">
-                                                <th>DOKUMEN</th>
-                                                <th>TANGGAL BAYAR</th>
-                                                <th>JUMLAH</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="data-tbody-dok">
-                                        </tbody>
-                                    </table>
+                            
+                            <div class="form-group col-4">
+                                <div class="d-flex justify-content-center mt-2">
+                                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
+                                                <h6 class="d-flex justify-content-center mt-2">DATA DOKUMEN</h6>
+                                                <tr style="border: 1px solid black; font-size: 12px;">
+                                                    <th>DOKUMEN</th>
+                                                    <th>TANGGAL BAYAR</th>
+                                                    <th>JUMLAH</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="data-tbody-dok">
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -153,5 +160,22 @@
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
+
+        document.querySelectorAll('.giro-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    const giroId = this.getAttribute('data-id');
+                    const confirmation = confirm("Kembalikan pembayaran? giro akan rusak setelah ini!");
+                    
+                    if (confirmation) {
+                        document.getElementById('giro_id').value = giroId; // Set the ID in the hidden input
+                        document.getElementById('giroForm').action = `{{ url('master/giro/update') }}/${giroId}`; // Update the form action
+                        document.getElementById('giroForm').submit(); // Submit the form
+                    } else {
+                        this.checked = false; // Uncheck the checkbox if user selects "No"
+                    }
+                }
+            });
+        });
     </script>
 @endsection

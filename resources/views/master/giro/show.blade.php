@@ -46,7 +46,7 @@
                                         @if ($detail->flag == 3)
                                             RUSAK
                                         @else
-                                            <input type="checkbox" class="giro-checkbox" data-id="{{ $detail->id }}">
+                                            <input type="checkbox" disabled class="giro-checkbox" data-id="{{ $detail->id }}">
                                         @endif
                                     </td>
                                 </tr>
