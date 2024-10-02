@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\DataTables\KunjunganDataTable;
 use App\DataTables\MateraiDataTable;
 use App\DataTables\SupplierDataTable;
+use App\Models\HistoryPreorder;
+use App\Models\HistoryPreorderDetail;
 use App\Models\Pengembalian;
 use App\Models\Preorder;
 use App\Models\Promosi;
@@ -252,9 +254,27 @@ class SupplierController extends Controller
         $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->whereNotNull('nomor_receive')->orderBy('date_first')->get();
         $getRetur = Pengembalian::select('nomor_return as nomor', 'date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->orderBy('date')->get();
         $getData = $getPo->concat($getRetur)->sortBy('date')->values()->toArray();
-        // dd($getData);
+        $getHistory = HistoryPreorder::select('nomor_receive', 'date')->Filter(request(['periode']))->where('nomor', $supplier->nomor)->orderBy('date', 'desc')->get();
+        // dd($getHistory);
 
-        return view('master.supplier.index-history', compact('title', 'supplier', 'getData'));
+        return view('master.supplier.index-history', compact('title', 'supplier', 'getData', 'getHistory'));
+    }
+
+    public function getHistoryPo(Request $request)
+    {
+        // dd($request->all());
+        $nomor = $request->input('nomor');
+
+        // Fetch data from database
+        $detail = HistoryPreorderDetail::where('nomor_receive', $nomor)->get();
+        $detailData = $detail->map(function($item) {
+            $item->product_nama = $item->product->nama;
+            $item->product_unit_jual = $item->product->unit_jual;
+            return $item;
+        });
+        // dd($detail[0]->product->nama);
+
+        return response()->json(['dataDetail' => $detailData]);
     }
     
     public function indexKunjungan(KunjunganDataTable $dataTable)

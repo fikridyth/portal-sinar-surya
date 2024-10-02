@@ -52,7 +52,7 @@
                                             <th class="text-center">PILIH</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="preorderTableBody">
+                                    <tbody>
                                         @foreach ($getData as $data)
                                             @php
                                                 // dd(json_encode($data['detail']));
@@ -65,6 +65,20 @@
                                                 <td class="text-center">{{ $data['date'] }}</td>
                                                 <td>{{ $getName }}</td>
                                                 <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($data['detail']) }}"></td>
+                                            </tr>
+                                        @endforeach
+                                        @foreach ($getHistory as $data)
+                                            @php
+                                                // dd(json_encode($data['detail']));
+                                                $getTipe = explode('-', $data->nomor_receive);
+                                                if ($getTipe[0] == 'RP') $getName = 'PEMBELIAN';
+                                                else $getName = 'RETUR';
+                                            @endphp
+                                            <tr>
+                                                <td class="text-center">{{ $data->nomor_receive }}</td>
+                                                <td class="text-center">{{ $data->date }}</td>
+                                                <td>{{ $getName }}</td>
+                                                <td class="text-center"><input type="checkbox" class="history-checkbox" data-nomor="{{ $data->nomor_receive }}"></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -157,15 +171,18 @@
                     document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
                         if (otherCheckbox !== this) {
                             otherCheckbox.disabled = true;
+                            document.querySelectorAll('.history-checkbox').forEach(historyCheckbox => {
+                                historyCheckbox.disabled = true;
+                            });
                         }
                     });
 
                     tbody.innerHTML = ''; // Clear existing rows before adding new ones
                     JSON.parse(detail).forEach(item => {
-                        console.log(item);
+                        // console.log(item);
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
-                            <td>${item.nama}</td>
+                            <td>${item.nama}/${item.unit_jual}</td>
                             <td class="text-center">${item.order}</td>
                             <td class="text-end">${number_format(item.price)}</td>
                             <td class="text-end">${number_format(item.order * item.price)}</td>
@@ -175,14 +192,63 @@
                 } else {
                     document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
                         otherCheckbox.disabled = false;
+                        document.querySelectorAll('.history-checkbox').forEach(historyCheckbox => {
+                            historyCheckbox.disabled = false;
+                        });
                     });
 
                     tbody.innerHTML = ''; // Clear the table if checkbox is unchecked
                 }
             });
-            function number_format(number) {
-                return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }
         });
+
+        document.querySelectorAll('.history-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const nomor = this.getAttribute('data-nomor');
+                const tbody = document.getElementById('orderDetailTableBody');
+                
+                if (this.checked) {
+                    document.querySelectorAll('.history-checkbox').forEach(otherCheckbox => {
+                        if (otherCheckbox !== this) {
+                            otherCheckbox.disabled = true;
+                            document.querySelectorAll('.preorder-checkbox').forEach(preorderCheckbox => {
+                                preorderCheckbox.disabled = true;
+                            });
+                        }
+                    });
+
+                    fetch(`/master/get-history-po?nomor=${nomor}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            tbody.innerHTML = ''; // Clear existing data
+
+                            data.dataDetail.forEach(item => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${item.product_nama}/${item.product_unit_jual}</td>
+                                    <td class="text-center">${item.order}</td>
+                                    <td class="text-end">${number_format(item.price)}</td>
+                                    <td class="text-end">${number_format(item.order * item.price)}</td>
+                                `;
+                                tbody.appendChild(row);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching data:', error));
+                } else {
+                    document.querySelectorAll('.history-checkbox').forEach(otherCheckbox => {
+                        otherCheckbox.disabled = false;
+                            document.querySelectorAll('.preorder-checkbox').forEach(preorderCheckbox => {
+                                preorderCheckbox.disabled = false;
+                            });
+                    });
+
+                    tbody.innerHTML = ''; // Clear the table if checkbox is unchecked
+                }
+            });
+        });
+
+        function number_format(number) {
+            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
     </script>
 @endsection

@@ -125,13 +125,12 @@
             const id = $(this).data('id');
             const nomorBukti = $(this).data('nomor');
             const dataBukti = $(this).data('bukti');
-            console.log(dataBukti)
+            const tableBody = $('#data-tbody-dok');
             if ($(this).is(':checked')) {
                 // other table
                 selectedIdk.push(id);
 
                 // update table document
-                const tableBody = $('#data-tbody-dok');
                 tableBody.empty();
                 dataBukti.forEach(item => {
                     const newRow = `<tr>
@@ -147,8 +146,9 @@
                         $(this).prop('checked', true).change(); // Trigger change event
                     }
                 });
-                
             } else {
+                tableBody.empty();
+
                 $('.input-konfirmasi[data-nomor="' + nomorBukti + '"]').each(function () {
                     if ($(this).is(':checked')) {
                         $(this).prop('checked', false).change(); // Trigger change event

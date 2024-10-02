@@ -148,6 +148,7 @@ Route::middleware('auth')->group(function () {
 
         // History PO
         Route::get('/history-preorder/{id}', [SupplierController::class, 'indexHistoryPo'])->name('history-preorder.index');
+        Route::get('/get-history-po', [SupplierController::class, 'getHistoryPo']);
 
         // Bank
         Route::get('/bank', [GiroController::class, 'indexBank'])->name('bank.index');
