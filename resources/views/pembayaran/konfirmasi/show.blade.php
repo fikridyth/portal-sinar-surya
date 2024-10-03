@@ -33,7 +33,7 @@
                         @method('PUT')
                         <input type="hidden" name="giro_id" id="giro_id" value="">
                         <div class="row w-100">
-                            <div class="form-group col-8">
+                            <div class="form-group col-9">
                                 <div class="d-flex justify-content-center mt-2">
                                     <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
@@ -75,13 +75,36 @@
                                                         <td class="text-center">{{ $pmb->date }}</td>
                                                         <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
                                                         <td class="text-center">{{ $pmb->nomor_giro }}</td>
-                                                        <td class="text-center">{{ $pmb->tanggal_akhir ?? '-' }}</td>
+                                                        <td class="text-center">{{ $pmb->date_last ?? '-' }}</td>
                                                         <td class="text-center"><input type="checkbox" class="giro-checkbox" data-id="{{ $pmb->id }}"></td>
                                                         <td>KONFORM</td>
                                                     </tr>
                                                     @if ($pmb->nomor_bukti)
                                                         @php $previousIdParent = $pmb->nomor_bukti; @endphp
                                                     @endif
+                                                @endforeach
+                                                @foreach ($historypmb as $index => $pmb)
+                                                    <tr>
+                                                        <td class="text-center" style="color: red;">
+                                                            @if ($pmb->nomor_bukti !== $previousIdParent)
+                                                                {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
+                                                                @php $counter++; @endphp
+                                                            @else
+                                                                {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
+                                                            @endif
+                                                        </td>
+                                                        <td class="text-center"><input type="checkbox" class="input-history" id="input-history-{{ $index }}" data-id="{{ $pmb->id }}" data-date="{{ $pmb->date_first }}" data-nomor="{{ $pmb->nomor_bukti }}" data-jumlah="{{ $pmb->jumlah }}"></td>
+                                                        <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
+                                                        <td class="text-center">{{ $pmb->date }}</td>
+                                                        <td class="text-end">{{ number_format($pmb->jumlah) }}</td>
+                                                        <td class="text-center">{{ $pmb->nomor_giro }}</td>
+                                                        <td class="text-center">{{ $pmb->date_last ?? '-' }}</td>
+                                                        <td class="text-center"><input type="checkbox" class="giro-checkbox" disabled data-id="{{ $pmb->id }}"></td>
+                                                        <td>KONFORM</td>
+                                                    </tr>
+                                                    {{-- @if ($pmb->nomor_bukti)
+                                                        @php $previousIdParent = $pmb->nomor_bukti; @endphp
+                                                    @endif --}}
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -92,7 +115,7 @@
                                 </div>
                             </div>
                             
-                            <div class="form-group col-4">
+                            <div class="form-group col-3">
                                 <div class="d-flex justify-content-center mt-2">
                                     <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
@@ -100,7 +123,7 @@
                                                 <h6 class="d-flex justify-content-center mt-2">DATA DOKUMEN</h6>
                                                 <tr style="border: 1px solid black; font-size: 12px;">
                                                     <th>DOKUMEN</th>
-                                                    <th>TANGGAL BAYAR</th>
+                                                    <th>TANGGAL</th>
                                                     <th>JUMLAH</th>
                                                 </tr>
                                             </thead>
@@ -127,16 +150,15 @@
             const dataBukti = $(this).data('bukti');
             const tableBody = $('#data-tbody-dok');
             if ($(this).is(':checked')) {
-                // other table
                 selectedIdk.push(id);
 
                 // update table document
                 tableBody.empty();
                 dataBukti.forEach(item => {
                     const newRow = `<tr>
-                        <td>${item.nomor_bukti}</td>
-                        <td>${item.date}</td>
-                        <td>${number_format(item.total)}</td>
+                        <td style="font-size: 12px;">${item.nomor_bukti}</td>
+                        <td style="font-size: 12px;">${item.date}</td>
+                        <td style="font-size: 12px;">${number_format(item.total)}</td>
                     </tr>`;
                     tableBody.append(newRow);
                 });
@@ -154,6 +176,27 @@
                         $(this).prop('checked', false).change(); // Trigger change event
                     }
                 });
+            }
+        });
+
+        $('.input-history').change(function () {
+            const id = $(this).data('id');
+            const dateBukti = $(this).data('date');
+            const nomorBukti = $(this).data('nomor');
+            const jumlahBukti = $(this).data('jumlah');
+            const tableBody = $('#data-tbody-dok');
+            if ($(this).is(':checked')) {
+
+                // update table document
+                tableBody.empty();
+                const newRow = `<tr>
+                    <td style="font-size: 12px;">${dateBukti}</td>
+                    <td style="font-size: 12px;">${nomorBukti}</td>
+                    <td style="font-size: 12px;">${number_format(jumlahBukti)}</td>
+                </tr>`;
+                tableBody.append(newRow);
+            } else {
+                tableBody.empty();
             }
         });
 

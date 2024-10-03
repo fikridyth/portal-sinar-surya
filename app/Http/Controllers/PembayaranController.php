@@ -7,6 +7,7 @@ use App\DataTables\HutangDataTable;
 use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
 use App\Models\GiroDetail;
+use App\Models\HistoryPembayaran;
 use App\Models\Hutang;
 use App\Models\Pembayaran;
 use App\Models\Pengembalian;
@@ -751,9 +752,17 @@ class PembayaranController extends Controller
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
                 ->get();
+            
+            $historypmb = HistoryPembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('date')
+                ->orderBy('date', 'desc')
+                ->orderBy('nomor_bukti', 'desc')
+                ->get();
+            
+            // dd($historypmb, count($historypmb));
         }
         // dd($request->all(), $pembayarans);
         
-        return view('pembayaran.konfirmasi.show', compact('title', 'supplier', 'pembayarans'));
+        return view('pembayaran.konfirmasi.show', compact('title', 'supplier', 'pembayarans', 'historypmb'));
     }
 }
