@@ -102,7 +102,11 @@
                                     class="btn btn-warning">KEMBALI</button>
                             </div>
                             <div class="mx-2">
-                                <button type="submit" class="btn btn-danger">HAPUS</button>
+                                @if ($isBayar == null)
+                                    <button type="submit" class="btn btn-danger">HAPUS</button>
+                                @else
+                                    <button type="button" disabled class="btn btn-danger">HAPUS</button>
+                                @endif
                             </div>
                         </div>
                     </div>

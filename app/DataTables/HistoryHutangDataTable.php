@@ -2,7 +2,7 @@
 
 namespace App\DataTables;
 
-use App\Models\Pembayaran;
+use App\Models\HistoryHutang;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -13,7 +13,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class PembayaranDataTable extends DataTable
+class HistoryHutangDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -22,17 +22,14 @@ class PembayaranDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNull('id_parent')))
+        return (new EloquentDataTable($query))
         ->addIndexColumn()
-        ->addColumn('supplier_nomor', function ($row) {
-            return $row->supplier->nomor;
-        })
         ->addColumn('supplier_nama', function ($row) {
-            return $row->supplier->nama;
+            return $row->supplier->nama;    
         })
         ->editColumn('date', function ($row) {
             $date = Carbon::parse($row->date);
-            return $date->format('d/m/Y');
+            return $date->format('d/m/Y');   
         })
         ->editColumn('total', function ($row) {
             return number_format($row->total, 0);
@@ -40,10 +37,10 @@ class PembayaranDataTable extends DataTable
         ->addColumn('action', function ($row) {
             // $button = '<div class="d-flex justify-content-center"><button disabled class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></button></div>';
             // if ($row->is_bayar == null) {
-            $btnDetail = '<a href="' . route('pembayaran-hutang.detail-hapus', $row->id) . '" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a>';
-            $button = '<div class="d-flex justify-content-center">' . $btnDetail . '</div>';
-            // }
-            return $button;
+            // $btnDetail = '<a href="' . route('pembayaran-hutang.detail-hapus', $row->id) . '" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a>';
+            // $button = '<div class="d-flex justify-content-center">' . $btnDetail . '</div>';
+            // // }
+            // return $button;
         })
         ->rawColumns(['action']);
     }
@@ -51,7 +48,7 @@ class PembayaranDataTable extends DataTable
     /**
      * Get the query source of dataTable.
      */
-    public function query(Pembayaran $model): QueryBuilder
+    public function query(HistoryHutang $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -62,7 +59,7 @@ class PembayaranDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('pembayaran-table')
+            ->setTableId('history-hutang-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')
@@ -88,14 +85,14 @@ class PembayaranDataTable extends DataTable
             Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
             Column::make('nomor_bukti')->title('No Bukti'),
             Column::make('date')->title('Tanggal'),
-            Column::make('supplier_nomor')->title('Supplier'),
+            Column::make('nomor')->title('Supplier'),
             Column::make('supplier_nama')->title('Nama Supplier'),
             Column::make('total')->title('Jumlah')->addClass('text-end'),
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(60)
-                ->addClass('text-center'),
+            // Column::computed('action')
+            //     ->exportable(false)
+            //     ->printable(false)
+            //     ->width(60)
+            //     ->addClass('text-center'),
         ];
     }
 
@@ -104,6 +101,6 @@ class PembayaranDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Pembayaran_' . date('YmdHis');
+        return 'HistoryHutang_' . date('YmdHis');
     }
 }

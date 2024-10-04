@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\HistoryPembayaranDataTable;
+use App\DataTables\HistoryHutangDataTable;
 use App\DataTables\HutangDataTable;
 use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
@@ -255,6 +255,13 @@ class PembayaranController extends Controller
             ->with('alert.message', "Update Pembayaran Hutang Success!");
     }
 
+    public function indexHistoryHutangHapus(HistoryHutangDataTable $dataTable)
+    {
+        $title = 'History Pembayaran Hutang';
+        
+        return $dataTable->render('pembayaran.hutang.hapus.index-history', compact('title'));
+    }
+
     public function indexHutangHapus(PembayaranDataTable $dataTable)
     {
         $title = 'Hapus Pembayaran Hutang';
@@ -293,9 +300,9 @@ class PembayaranController extends Controller
             });
         $dataBukti = $hutang->concat($pengembalian)->concat($promosi);
         $totalHutang = array_sum(array_column($dataBukti->toArray(), 'total'));
-        // dd($dataBukti);
+        $isBayar = $pembayaran->is_bayar;
         
-        return view('pembayaran.hutang.hapus.show', compact('title', 'pembayaran', 'dataBukti', 'totalHutang'));
+        return view('pembayaran.hutang.hapus.show', compact('title', 'pembayaran', 'dataBukti', 'totalHutang', 'isBayar'));
     }
 
     public function destroyHutang($id)
