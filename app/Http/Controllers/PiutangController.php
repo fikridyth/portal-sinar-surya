@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\HistoryPiutangDataTable;
 use App\Models\Pembayaran;
 use App\Models\Piutang;
 use App\Models\User;
@@ -98,7 +99,6 @@ class PiutangController extends Controller
     {
         $title = "Cetak Tagihan Langganan";
         $piutang = Piutang::find($id);
-        dd($piutang);
         
         return view('pembayaran.piutang.cetak-tagihan',compact('title', 'piutang'));
     }
@@ -117,5 +117,12 @@ class PiutangController extends Controller
         return Redirect::route('daftar-tagihan.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Pembatalan Piutang Success!");
+    }
+    
+    public function indexHistoryPiutang(HistoryPiutangDataTable $dataTable)
+    {
+        $title = 'History Pembayaran Piutang';
+        
+        return $dataTable->render('pembayaran.piutang.index-history', compact('title'));
     }
 }

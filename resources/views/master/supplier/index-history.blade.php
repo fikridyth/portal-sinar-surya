@@ -25,8 +25,15 @@
                 <div class="card-body">
                     <div class="row w-100">
                         <div class="form-group col-6">
-                            {{ $supplier->nama }}
-                            <div class="d-flex align-items-center">
+                            <select name="supplier_id" required class="supplier-select" style="width: 300px;">
+                                <option value="{{ $supplier->id }}" selected>{{ $supplier->nama }}</option>
+                                @foreach ($suppliers as $sup)
+                                    @if ($sup->id !== $supplier->id)
+                                        <option value="{{ $sup->id }}">{{ $sup->nama }}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <div class="d-flex align-items-center mt-2 mb-2">
                                 <form action="{{ route('master.history-preorder.index', $supplier->id) }}" method="GET" class="d-flex align-items-center">
                                     <div class="mt-2 me-3">
                                         <label class="form-label fw-semibold" style="font-size: 18px">Periode :</label>
@@ -116,6 +123,19 @@
 
 @section('scripts')
     <script>
+        $(`.supplier-select`).select2({
+            placeholder: '---Select Supplier---',
+            allowClear: true
+        });
+
+        // document.getElementById('supplier-select').addEventListener('change', function() {
+        //     const selectedId = this.value;
+        //     if (selectedId) {
+        //         // Redirect to the history-preorder route with the selected ID
+        //         window.location.href = `/history-preorder/${selectedId}`;
+        //     }
+        // });
+
         $("#periode").daterangepicker({
             locale: {
                 cancelLabel: "Clear",

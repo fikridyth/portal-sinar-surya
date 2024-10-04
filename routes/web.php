@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/daftar-tagihan-langganan/{id}', [PiutangController::class, 'showTagihan'])->name('daftar-tagihan.show');
     Route::get('/daftar-tagihan-langganan/{id}/cetak', [PiutangController::class, 'cetakTagihan'])->name('daftar-tagihan.cetak');
     Route::delete('/daftar-tagihan-langganan/{id}/destroy', [PiutangController::class, 'destroyTagihan'])->name('daftar-tagihan.destroy');
+    Route::get('/daftar-tagihan-history', [PiutangController::class, 'indexHistoryPiutang'])->name('daftar-tagihan.index-history');
 
     // Laporan
     Route::get('/daftar-harga-jual-kecil', [PreOrderController::class, 'daftarHargaJualKecil'])->name('daftar-harga-jual-kecil');

@@ -13,6 +13,7 @@
             </div>
         </div>
 
+        {{-- <a href="{{ route('daftar-tagihan.index-history') }}" class="btn btn-primary mb-2">HISTORY PIUTANG</a> --}}
         <div class="card">
             <div class="card-body">
                 <table class="table table-bordered">

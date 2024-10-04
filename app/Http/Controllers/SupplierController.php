@@ -251,13 +251,14 @@ class SupplierController extends Controller
     {
         $title = 'Master History Preorder';
         $supplier = Supplier::find($id);
+        $suppliers = Supplier::all();
         $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->whereNotNull('nomor_receive')->orderBy('date_first')->get();
         $getRetur = Pengembalian::select('nomor_return as nomor', 'date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->orderBy('date')->get();
         $getData = $getPo->concat($getRetur)->sortBy('date')->values()->toArray();
         $getHistory = HistoryPreorder::select('nomor_receive', 'date')->Filter(request(['periode']))->where('nomor', $supplier->nomor)->orderBy('date', 'desc')->get();
         // dd($getHistory);
 
-        return view('master.supplier.index-history', compact('title', 'supplier', 'getData', 'getHistory'));
+        return view('master.supplier.index-history', compact('title', 'supplier', 'getData', 'getHistory', 'suppliers'));
     }
 
     public function getHistoryPo(Request $request)
