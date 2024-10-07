@@ -41,7 +41,9 @@
 
         tambahButton.addEventListener('click', function() {
             const simpanButton = document.getElementById('simpan-button');
+            const batalButton = document.getElementById('batal-button');
             simpanButton.disabled = false;
+            batalButton.disabled = true;
 
             index++;
             

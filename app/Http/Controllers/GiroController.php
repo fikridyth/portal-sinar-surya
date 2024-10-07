@@ -139,6 +139,7 @@ class GiroController extends Controller
 
     public function store(Request $request, $id)
     {
+        // dd($request->all());
         $total = $request->input('total'); // Total number of records to create
         $count = $request->input('count'); // Number of items per record
         $startNumber = $request->input('get_nomor'); // Starting number

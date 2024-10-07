@@ -405,7 +405,7 @@ class PembayaranController extends Controller
                 'id_parent' => $id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
-        } else {
+        } else if ($typePayment == 1) {
             $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
             // dd($giroDetail->bank->milik);
 
@@ -455,6 +455,44 @@ class PembayaranController extends Controller
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'tipe' => 'G',
                 'flag' => 2
+            ]);
+        } else {
+            Pembayaran::create([
+                'id_supplier' => $pembayaran->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $pembayaran->nomor_bukti,
+                'grand_total' => $giroPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($giroPayment ?? 0) - ($bebanMaterai ?? 0),
+                'nomor_giro' => 'TRANSFER',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $id,
+                'date_last' => $request->date_last ?? now()->format('Y-m-d'),
+                'data_bukti' => json_encode($dataBukti->original)
+            ]);
+
+            Pembayaran::create([
+                'id_supplier' => $pembayaran->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $pembayaran->nomor_bukti,
+                'grand_total' => $giroTunaiPayment ?? 0,
+                'total_with_materai' => $giroTunaiPayment ?? 0,
+                'nomor_giro' => 'TUNAI',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
+            ]);
+
+            Pembayaran::create([
+                'id_supplier' => $pembayaran->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $pembayaran->nomor_bukti,
+                'grand_total' => $giroOtherIncome ?? 0,
+                'total_with_materai' => $giroOtherIncome ?? 0,
+                'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $id,
+                'data_bukti' => json_encode($dataBukti->original)
             ]);
         }
 
@@ -517,7 +555,7 @@ class PembayaranController extends Controller
                 'id_parent' => $pembayaran[0]->id,
                 'data_bukti' => json_encode($dataBukti->original)
             ]);
-        } else {
+        } else if ($typePayment == 1) {
             $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
             // dd($giroDetail->bank->milik);
 
@@ -568,6 +606,44 @@ class PembayaranController extends Controller
                 'tipe' => 'G',
                 'flag' => 2
             ]);
+        } else {
+            Pembayaran::create([
+                'id_supplier' => $pembayaran[0]->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $nomorBukti,
+                'grand_total' => $giroPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($giroPayment ?? 0) - ($bebanMaterai ?? 0),
+                'nomor_giro' => 'TRANSFER',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $pembayaran[0]->id,
+                'date_last' => $request->date_last ?? now()->format('Y-m-d'),
+                'data_bukti' => json_encode($dataBukti->original)
+            ]);
+
+            Pembayaran::create([
+                'id_supplier' => $pembayaran[0]->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $nomorBukti,
+                'grand_total' => $giroTunaiPayment ?? 0,
+                'total_with_materai' => $giroTunaiPayment ?? 0,
+                'nomor_giro' => 'TUNAI',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
+            ]);
+
+            Pembayaran::create([
+                'id_supplier' => $pembayaran[0]->id_supplier,
+                'date' => now()->format('Y-m-d'),
+                'nomor_bukti' => $nomorBukti,
+                'grand_total' => $giroOtherIncome ?? 0,
+                'total_with_materai' => $giroOtherIncome ?? 0,
+                'nomor_giro' => 'OTHER INCOME',
+                'tipe_giro' => 'TRANSFER',
+                'id_parent' => $pembayaran[0]->id,
+                'data_bukti' => json_encode($dataBukti->original)
+            ]);
         }
 
         foreach ($pembayaran as $bayar) {
@@ -593,7 +669,7 @@ class PembayaranController extends Controller
                 $buktiArray = explode(',', $bayar->nomor_bukti);
                 $parent = Pembayaran::whereIn('nomor_bukti', $buktiArray)->get();
 
-                $getGiro = Pembayaran::where('id_parent', $parent[0]->id)->whereNotIn('nomor_giro', ['TUNAI', 'OTHER INCOME'])->first();
+                $getGiro = Pembayaran::where('id_parent', $parent[0]->id)->whereNotIn('nomor_giro', ['TRANSFER', 'TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro->nomor_giro)) {
                     GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first()->update([
                         'nama' => null,
@@ -619,7 +695,7 @@ class PembayaranController extends Controller
             {
                 $parent = Pembayaran::find($bayar->id_parent);
                 $getPreorder = Preorder::where('nomor_bukti', $parent->nomor_bukti)->first();
-                $getGiro = Pembayaran::where('id_parent', $parent->id)->whereNotIn('nomor_giro', ['TUNAI', 'OTHER INCOME'])->first();
+                $getGiro = Pembayaran::where('id_parent', $parent->id)->whereNotIn('nomor_giro', ['TRANSFER', 'TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro->nomor_giro)) {
                     GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first()->update([
                         'nama' => null,

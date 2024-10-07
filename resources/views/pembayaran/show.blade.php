@@ -125,7 +125,7 @@
                                                 <label for="" style="font-size: 15px">JUMLAH CEK/GIRO</label>
                                             </div>
                                             <div class="col-2">
-                                                <input type="number" class="btn-block" required min="0" max="1" autocomplete="off" id="jumlah-check" name="type_payment">
+                                                <input type="number" class="btn-block" required min="0" max="2" autocomplete="off" id="jumlah-check" name="type_payment">
                                             </div>
                                         </div>
                                     </div>
@@ -194,6 +194,7 @@
                                                 <tr>
                                                     <td class="text-center"><input type="text" id="value3" name="giro_payment" style="width: 100px;" 
                                                         value="{{ number_format($pembayaran->grand_total, 0, ',', '.') }}" oninput="updateValue4()" onkeyup="formatInputNumber(this)">
+                                                    </td>
                                                     <td>
                                                         <select name="nomor_giro" class="giro-select" style="width: 110px;">
                                                             <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
@@ -208,11 +209,33 @@
                                                     {{-- <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td> --}}
                                                     <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" 
                                                         value="0" oninput="updateValue5()" onkeyup="formatInputNumber(this)">
+                                                    </td>
                                                     <td>TUNAI</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
                                                     <td class="text-center"><input type="number" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
+                                                    <td>OTHER INCOME</td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody id="transfer-table" style="display: none;">
+                                                <tr>
+                                                    <td class="text-center"><input type="text" id="value6" name="giro_payment" style="width: 100px;" 
+                                                        value="{{ number_format($pembayaran->grand_total, 0, ',', '.') }}" oninput="updateValue7()" onkeyup="formatInputNumber(this)">
+                                                    </td>
+                                                    <td>TRANSFER</td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                </tr>
+                                                <tr>
+                                                    {{-- <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td> --}}
+                                                    <td class="text-center"><input type="text" id="value7" name="giro_tunai_payment" style="width: 100px;" 
+                                                        value="0" oninput="updateValue8()" onkeyup="formatInputNumber(this)">
+                                                    <td>TUNAI</td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-center"><input type="number" class="readonly-input" id="value8" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
@@ -281,7 +304,7 @@
 
         function updateTable(value) {
             let totalAmount = document.getElementById('amount-total').value;
-            let value1, value2, value3, value4;
+            let value1, value2, value3, value4, value6, value7;
 
             switch(value) {
                 case '0':
@@ -291,6 +314,8 @@
                     value2 = lastZeroDigits;
                     value3 = totalAmount - lastZeroDigits;
                     value4 = lastZeroDigits;
+                    value6 = totalAmount - lastZeroDigits;
+                    value7 = lastZeroDigits;
                     break;
                 case '1':
                     // Extract last one digits
@@ -299,6 +324,8 @@
                     value2 = lastOneDigits;
                     value3 = totalAmount - lastOneDigits;
                     value4 = lastOneDigits;
+                    value6 = totalAmount - lastOneDigits;
+                    value7 = lastOneDigits;
                     break;
                 case '2':
                     // Extract last two digits
@@ -307,6 +334,8 @@
                     value2 = lastTwoDigits;
                     value3 = totalAmount - lastTwoDigits;
                     value4 = lastTwoDigits;
+                    value6 = totalAmount - lastTwoDigits;
+                    value7 = lastTwoDigits;
                     break;
                 case '3':
                     // Extract last three digits
@@ -315,6 +344,8 @@
                     value2 = lastThreeDigits;
                     value3 = totalAmount - lastThreeDigits;
                     value4 = lastThreeDigits;
+                    value6 = totalAmount - lastThreeDigits;
+                    value7 = lastThreeDigits;
                     break;
                 case '4':
                     // Extract last four digits
@@ -323,6 +354,8 @@
                     value2 = lastFourDigits;
                     value3 = totalAmount - lastFourDigits;
                     value4 = lastFourDigits;
+                    value6 = totalAmount - lastFourDigits;
+                    value7 = lastFourDigits;
                     break;
                 case '5':
                     // Extract last five digits
@@ -331,6 +364,8 @@
                     value2 = lastFiveDigits;
                     value3 = totalAmount - lastFiveDigits;
                     value4 = lastFiveDigits;
+                    value6 = totalAmount - lastFiveDigits;
+                    value7 = lastFiveDigits;
                     break;
                 case '6':
                     // Extract last six digits
@@ -339,6 +374,8 @@
                     value2 = lastSixDigits;
                     value3 = totalAmount - lastSixDigits;
                     value4 = lastSixDigits;
+                    value6 = totalAmount - lastSixDigits;
+                    value7 = lastSixDigits;
                     break;
             }
 
@@ -346,9 +383,11 @@
             document.getElementById('value2').value = value2 >= 0 ? value2.toLocaleString('id-ID') : 0;
             document.getElementById('value3').value = value3 >= 0 ? value3.toLocaleString('id-ID') : 0;
             document.getElementById('value4').value = value4 >= 0 ? value4.toLocaleString('id-ID') : 0;
+            document.getElementById('value6').value = value6 >= 0 ? value6.toLocaleString('id-ID') : 0;
+            document.getElementById('value7').value = value7 >= 0 ? value7.toLocaleString('id-ID') : 0;
             document.getElementById('value5').value = 0;
+            document.getElementById('value8').value = 0;
         }
-
 
         document.addEventListener('DOMContentLoaded', function() {
             const bankSelect = document.querySelector('.bank-select');
@@ -407,6 +446,7 @@
             const jumlahCheck = document.getElementById('jumlah-check');
             const tunaiTable = document.getElementById('tunai-table');
             const giroTable = document.getElementById('giro-table');
+            const transferTable = document.getElementById('transfer-table');
             
             jumlahCheck.addEventListener('input', function() {
                 const amount = parseFloat(this.value);
@@ -414,12 +454,19 @@
                 if (amount === 0) {
                     tunaiTable.style.display = 'table-row-group';
                     giroTable.style.display = 'none';
+                    transferTable.style.display = 'none';
                 } else if (amount === 1) {
                     tunaiTable.style.display = 'none';
                     giroTable.style.display = 'table-row-group';
+                    transferTable.style.display = 'none';
+                } else if (amount === 2) {
+                    tunaiTable.style.display = 'none';
+                    giroTable.style.display = 'none';
+                    transferTable.style.display = 'table-row-group';
                 } else {
                     tunaiTable.style.display = 'none';
                     giroTable.style.display = 'none';
+                    transferTable.style.display = 'none';
                 }
             });
         });
@@ -453,6 +500,28 @@
             const value5 = grandTotal - parsedValue3 - parsedValue4; // Konversi ke integer
 
             document.getElementById('value5').value = value5 >= 0 ? value5.toLocaleString('id-ID') : 0; // Format nilai
+        }
+
+        function updateValue7() {
+            const value6 = document.getElementById('value6').value.replace(/\D/g, ''); // Hapus karakter non-digit
+            const grandTotal = {{ $pembayaran->grand_total }};
+            const parsedValue6 = parseInt(value6) || 0;
+            const value7 = grandTotal - parsedValue6; // Konversi ke integer
+
+            document.getElementById('value7').value = value7 >= 0 ? value7.toLocaleString('id-ID') : 0; // Format nilai
+            document.getElementById('value8').value = 0; // Reset value5
+            updateValue5(); // Panggil updateValue5
+        }
+
+        function updateValue8() {
+            const value6 = document.getElementById('value6').value.replace(/\D/g, ''); // Hapus karakter non-digit
+            const value7 = document.getElementById('value7').value.replace(/\D/g, ''); // Hapus karakter non-digit
+            const grandTotal = {{ $pembayaran->grand_total }};
+            const parsedValue6 = parseInt(value6) || 0;
+            const parsedValue7 = parseInt(value7) || 0;
+            const value8 = grandTotal - parsedValue6 - parsedValue7; // Konversi ke integer
+
+            document.getElementById('value8').value = value8 >= 0 ? value8.toLocaleString('id-ID') : 0; // Format nilai
         }
     </script>
 @endsection

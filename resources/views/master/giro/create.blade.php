@@ -52,7 +52,7 @@
                         <label class="form-label h6 mt-2" for="nama_sumber">MULAI DARI NOMOR</label>
                     </div>
                     <div class="col-6">
-                        <input type="text" id="nama" name="get_nomor" value="{{ $getNomor }}" readonly class="form-control readonly-input" autocomplete="off" />
+                        <input type="number" id="nama" name="get_nomor" required class="form-control" autocomplete="off" />
                     </div>
                 </div>
                 <div class="align-items-center mt-4">

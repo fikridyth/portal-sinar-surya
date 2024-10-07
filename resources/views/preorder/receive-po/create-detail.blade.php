@@ -290,7 +290,7 @@
                                         <form action="{{ route('create-receive.cancel-receive', $preorder->id) }}" method="POST" class="form" onsubmit="return confirmSubmissionBatal()">
                                             @csrf
                                             @method('PUT')
-                                            <button type="submit" class="btn btn-danger">BATAL</button>
+                                            <button type="submit" class="btn btn-danger" id="batal-button">BATAL</button>
                                         </form>
                                     </div>
                                     {{-- <div class="mx-2">
@@ -403,6 +403,7 @@
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
+            const batalButton = document.getElementById('batal-button');
             // const hapusButton = document.getElementById('hapus-button');
             
             // Get the current price and parse it as a float
@@ -430,6 +431,7 @@
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
+                batalButton.disabled = true;
                 // hapusButton.disabled = false;
             } else {
                 // Remove the discount if the checkbox is unchecked
@@ -441,6 +443,7 @@
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
+                batalButton.disabled = false;
                 // hapusButton.disabled = true;
             }
 
