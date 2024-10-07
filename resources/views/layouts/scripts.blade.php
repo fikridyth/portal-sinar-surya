@@ -104,6 +104,25 @@
         });
     }
 
+    function confirmAlert(event, text) {
+        event.preventDefault();
+        Swal.fire({
+            title: 'Notification',
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Submit the form directly
+                document.getElementById('myForm').submit();
+            }
+        });
+    }
+
     function formatInputNumber(input) {
         let value = input.value.replace(/\D/g, '');
         if (!value) { value = '0'; }

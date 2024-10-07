@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <form action="{{ route('pembayaran-hutang.destroy-hutang', $pembayaran->id) }}" method="POST" class="form">
+        <form action="{{ route('pembayaran-hutang.destroy-hutang', $pembayaran->id) }}" method="POST" class="form" id="myForm"">
             @csrf
             @method('DELETE')
             <div class="d-flex justify-content-center mb-4">
@@ -103,7 +103,7 @@
                             </div>
                             <div class="mx-2">
                                 @if ($isBayar == null)
-                                    <button type="submit" class="btn btn-danger">HAPUS</button>
+                                    <button type="submit" class="btn btn-danger" onclick="confirmAlert(event, 'Hapus data hutang?')">HAPUS</button>
                                 @else
                                     <button type="button" disabled class="btn btn-danger">HAPUS</button>
                                 @endif

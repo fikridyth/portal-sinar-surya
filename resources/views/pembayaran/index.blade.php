@@ -241,11 +241,7 @@
                     $(this).prop('checked', true);
                     
                     // Automatically submit the delete form if unchecked
-                    if (confirm('Apakah Anda yakin ingin mengembalikan pembayaran ini?')) {
-                        $('#delete-id').val(id); // Set the ID for deletion
-                        $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
-                        $('#delete-form').submit(); // Submit the form
-                    }
+                    confirmAlertId(event, 'Apakah Anda yakin ingin mengembalikan pembayaran ini?', id);
                 }
             });
 
@@ -303,11 +299,7 @@
                     $(this).prop('checked', true);
                     
                     // Automatically submit the delete form if unchecked
-                    if (confirm('Apakah Anda yakin ingin mengembalikan pembayaran ini?')) {
-                        $('#delete-id').val(id); // Set the ID for deletion
-                        $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
-                        $('#delete-form').submit(); // Submit the form
-                    }
+                    confirmAlertId(event, 'Apakah Anda yakin ingin mengembalikan pembayaran ini?', id);
                 }
             });
 
@@ -434,6 +426,30 @@
 
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // untuk pembayaran satuan dan gabung
+        function confirmAlertId(event, text, id) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Notification',
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#delete-id').val(id); // Set the ID for deletion
+                    $('#delete-form').attr('action', `{{ route('pembayaran.destroy-payment', '') }}/${id}`);
+                    $('#delete-form').submit(); // Submit the form
+                } else {
+                    // If the user cancels, re-check the checkbox
+                    $(`.input-check[data-id="${id}"]`).prop('checked', true);
+                }
+            });
         }
     </script>
 @endsection

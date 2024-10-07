@@ -208,15 +208,25 @@
             checkbox.addEventListener('change', function() {
                 if (this.checked) {
                     const giroId = this.getAttribute('data-id');
-                    const confirmation = confirm("Kembalikan pembayaran? giro akan rusak setelah ini!");
                     
-                    if (confirmation) {
-                        document.getElementById('giro_id').value = giroId; // Set the ID in the hidden input
-                        document.getElementById('giroForm').action = `{{ url('master/giro/update') }}/${giroId}`; // Update the form action
-                        document.getElementById('giroForm').submit(); // Submit the form
-                    } else {
-                        this.checked = false; // Uncheck the checkbox if user selects "No"
-                    }
+                    Swal.fire({
+                        title: 'Kembalikan pembayaran?',
+                        text: 'Giro akan rusak setelah ini!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('giro_id').value = giroId; // Set the ID in the hidden input
+                            document.getElementById('giroForm').action = `{{ url('master/giro/update') }}/${giroId}`; // Update the form action
+                            document.getElementById('giroForm').submit(); // Submit the form
+                        } else {
+                            this.checked = false; // Uncheck the checkbox if user selects "No"
+                        }
+                    });
                 }
             });
         });

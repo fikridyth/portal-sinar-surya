@@ -71,6 +71,7 @@ class PreOrderController extends Controller
         $products = Product::whereIn('id_supplier', $supplierIds)
             ->whereNull('kode_sumber')
             ->where('stok', '>', 0)
+            ->whereNotNull('harga_pokok')
             ->get()
             ->groupBy('id_supplier');
 
