@@ -766,6 +766,16 @@ class PreOrderController extends Controller
         return redirect()->back();
     }
 
+    public function cancelReceive($id)
+    {
+        $preorder = Preorder::find($id);
+        // dd($preorder);
+        Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_cancel' => 1]);
+        $preorder->update(['is_cancel' => 1]);
+
+        return Redirect::route('daftar-receive-po')->with('alert.status', '0')->with('alert.message', "DATA RECEIVE BERHASIL DI CANCEL!");
+    }
+
     public function setDiskon(Request $request, $id)
     {
         $preorder = Preorder::find($id);
@@ -970,7 +980,7 @@ class PreOrderController extends Controller
     public function persetujuanHargaJual()
     {
         $title = 'Daftar Persetujuan Harga Jual';
-        $preorders = Preorder::where('receive_type', 'B')->whereNotNull('detail')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('detail')->get();
 
         return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'preorders'));
     }
@@ -1071,11 +1081,7 @@ class PreOrderController extends Controller
         // dd($newData);
         
         foreach ($newData as $new) {
-            // update detail preorder
-            // $preorder = Preorder::find($id);
-            // $detail = json_decode($preorder->detail, true);
-            // dd($preorder, $detail);
-
+            // dd($new);
             // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
             $product->update([
@@ -1094,7 +1100,8 @@ class PreOrderController extends Controller
         $title = 'Daftar Harga Jual Kecil';
         $allMatchingProducts = new Collection();
         $trackedKodes = [];
-        $preorders = Preorder::where('receive_type', 'B')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('detail')->get();
+        // dd($preorders);
 
         foreach ($preorders as $preorder) {
             // Decode preorder details

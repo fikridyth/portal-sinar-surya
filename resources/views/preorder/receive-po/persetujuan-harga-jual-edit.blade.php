@@ -85,7 +85,9 @@
                                     <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</td>
                                     <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                     {{-- <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product->harga_jual }}" size="10"></td> --}}
-                                    <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format((($dtl['price'] * $product->profit) / 100) + $dtl['price'], 0) }}" size="10"></td>
+                                    <td class="text-center">
+                                        <input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ round((($dtl['price'] * $product->profit) / 100) + $dtl['price'], -3) }}" size="10">
+                                    </td>
                                     <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
                                     {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
                                     <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>

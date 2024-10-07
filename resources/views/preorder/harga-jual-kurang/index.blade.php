@@ -75,19 +75,25 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($allMatchingProducts as $product)
-                                                    <tr class="fs-need">
-                                                        <td class="text-center">{{ $product['preorder'] }}</td>
-                                                        <td class="text-center">{{ $product['kode'] }}</td>
-                                                        <td>{{ $product['nama'] }}</td>
-                                                        <td>{{ $product['unit'] }}</td>
-                                                        <td class="text-end">{{ number_format($product['harga_pokok']) }}</td>
-                                                        <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
-                                                        <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
-                                                        <td class="text-end">{{ $product['mark_up'] }}</td>
-                                                        <td class="text-center"><a href="{{ route('persetujuan-harga-jual-edit', $product['id']) }}" class="btn btn-sm btn-primary">DETAIL</a></td>
+                                                @if ($allMatchingProducts->isEmpty())
+                                                    <tr>
+                                                        <td colspan="9" class="text-center"><b>TIDAK ADA DATA RECEIVE</b></td>
                                                     </tr>
-                                                @endforeach
+                                                @else
+                                                    @foreach ($allMatchingProducts as $product)
+                                                        <tr class="fs-need">
+                                                            <td class="text-center">{{ $product['preorder'] }}</td>
+                                                            <td class="text-center">{{ $product['kode'] }}</td>
+                                                            <td>{{ $product['nama'] }}</td>
+                                                            <td>{{ $product['unit'] }}</td>
+                                                            <td class="text-end">{{ number_format($product['harga_pokok']) }}</td>
+                                                            <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
+                                                            <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
+                                                            <td class="text-end">{{ $product['mark_up'] }}</td>
+                                                            <td class="text-center"><a href="{{ route('persetujuan-harga-jual-edit', $product['id']) }}" class="btn btn-sm btn-primary">DETAIL</a></td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
                                             </tbody>
                                         </table>
                                     </div>

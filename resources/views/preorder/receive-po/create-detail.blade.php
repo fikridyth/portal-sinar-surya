@@ -286,6 +286,13 @@
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
+                                    <div class="mx-2">
+                                        <form action="{{ route('create-receive.cancel-receive', $preorder->id) }}" method="POST" class="form" onsubmit="return confirmSubmissionBatal()">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn btn-danger">BATAL</button>
+                                        </form>
+                                    </div>
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
                                     </div> --}}
@@ -380,6 +387,10 @@
     <script>
         function confirmSubmission() {
             return confirm("Are you sure you want to set this bonus?");
+        }
+
+        function confirmSubmissionBatal() {
+            return confirm("Are you sure you want to cancel this receive?");
         }
 
         function handleCheckboxChange(selectedCheckbox) {
