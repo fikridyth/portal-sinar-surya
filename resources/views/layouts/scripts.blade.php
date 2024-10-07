@@ -103,4 +103,11 @@
             }
         });
     }
+
+    function formatInputNumber(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (!value) { value = '0'; }
+        value = parseInt(value, 10).toLocaleString('id-ID');
+        input.value = value;
+    }
 </script>

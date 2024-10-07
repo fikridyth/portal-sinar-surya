@@ -14,6 +14,7 @@ class PiutangController extends Controller
     public function index()
     {
         $title = "Pembayaran Piutang";
+        $listTunai = Pembayaran::where('tipe_giro', 'TUNAI')->where('nomor_giro', 'TUNAI')->whereNull('is_piutang')->get();
         $listBayar = Pembayaran::where('tipe_giro', 'CABANG')->whereNotNull('date_last')->whereNull('is_piutang')->get();
         $listUser = User::all();
 
@@ -34,7 +35,7 @@ class PiutangController extends Controller
         // $getNomor = 'PHL-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         $getNomor = $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         
-        return view('pembayaran.piutang.index',compact('title', 'listBayar', 'listUser', 'getNomor'));
+        return view('pembayaran.piutang.index',compact('title', 'listTunai', 'listBayar', 'listUser', 'getNomor'));
     }
 
     public function store(Request $request)

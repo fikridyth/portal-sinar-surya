@@ -53,7 +53,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @if ($listBayar->isEmpty())
+                            @if ($listBayar->isEmpty() && $listTunai->isEmpty())
                                 <tr>
                                     <td colspan="6" class="text-center"><b>TIDAK ADA DATA PEMBAYARAN</b></td>
                                 </tr>
@@ -66,6 +66,16 @@
                                         <td class="text-end">{{ number_format($bayar->total_with_materai, 0) }}</td>
                                         <td class="text-end">{{ number_format($bayar->beban_materai, 0) ?? 0 }}</td>
                                         <td class="text-center"><input type="checkbox" name="check[{{ $index }}]" value="{{ $bayar->nomor_bukti }}"></td>
+                                    </tr>
+                                @endforeach
+                                @foreach ($listTunai as $index => $tunai)
+                                    <tr>
+                                        <td>{{ $tunai->supplier->nama }}</td>
+                                        <td>{{ $tunai->nomor_bukti }}</td>
+                                        <td class="text-center">{{ $tunai->date }}</td>
+                                        <td class="text-end">{{ number_format($tunai->total_with_materai, 0) }}</td>
+                                        <td class="text-end">{{ number_format($tunai->beban_materai, 0) ?? 0 }}</td>
+                                        <td class="text-center"><input type="checkbox" name="check[{{ $index }}]" value="{{ $tunai->nomor_bukti }}"></td>
                                     </tr>
                                 @endforeach
                             @endif

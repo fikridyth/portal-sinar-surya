@@ -362,6 +362,12 @@ class PembayaranController extends Controller
     public function update(Request $request, $id)
     {
         // dd($id, $request->all());
+        $tunaiPayment = str_replace('.', '', $request->tunai_payment);
+        $tunaiOtherIncome = str_replace('.', '', $request->tunai_other_income);
+        $giroPayment = str_replace('.', '', $request->giro_payment);
+        $giroTunaiPayment = str_replace('.', '', $request->giro_tunai_payment);
+        $giroOtherIncome = str_replace('.', '', $request->giro_other_income);
+        $bebanMaterai = str_replace('.', '', $request->beban_materai ?? 0);
         $typePayment = (int)$request->type_payment;
         $pembayaran = Pembayaran::find($id);
         $getPreorder = Preorder::where('nomor_bukti', $pembayaran->nomor_bukti)->first();
@@ -378,10 +384,11 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
-                'grand_total' => $request->tunai_payment ?? 0,
-                'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
+                'grand_total' => $tunaiPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($tunaiPayment ?? 0) - ($bebanMaterai ?? 0),
                 'nomor_giro' => 'TUNAI',
+                'date_last' => now()->format('Y-m-d'),
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
                 'data_bukti' => json_encode($dataBukti->original)
@@ -391,8 +398,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
-                'grand_total' => $request->tunai_other_income ?? 0,
-                'total_with_materai' => $request->tunai_other_income ?? 0,
+                'grand_total' => $tunaiOtherIncome ?? 0,
+                'total_with_materai' => $tunaiOtherIncome ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
@@ -406,9 +413,9 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
-                'grand_total' => $request->giro_payment ?? 0,
-                'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
+                'grand_total' => $giroPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($giroPayment ?? 0) - ($bebanMaterai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
@@ -420,8 +427,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
-                'grand_total' => $request->giro_tunai_payment ?? 0,
-                'total_with_materai' => $request->giro_tunai_payment ?? 0,
+                'grand_total' => $giroTunaiPayment ?? 0,
+                'total_with_materai' => $giroTunaiPayment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
@@ -432,8 +439,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $pembayaran->nomor_bukti,
-                'grand_total' => $request->giro_other_income ?? 0,
-                'total_with_materai' => $request->giro_other_income ?? 0,
+                'grand_total' => $giroOtherIncome ?? 0,
+                'total_with_materai' => $giroOtherIncome ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
@@ -444,7 +451,7 @@ class PembayaranController extends Controller
                 'tanggal_awal' => now()->format('Y-m-d'),
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'nama' => $request->supplier,
-                'jumlah' => $request->giro_payment,
+                'jumlah' => $giroPayment,
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'tipe' => 'G',
                 'flag' => 2
@@ -464,6 +471,12 @@ class PembayaranController extends Controller
     public function updateGabung(Request $request, $ids)
     {
         // dd($ids, $request->all());
+        $tunaiPayment = str_replace('.', '', $request->tunai_payment);
+        $tunaiOtherIncome = str_replace('.', '', $request->tunai_other_income);
+        $giroPayment = str_replace('.', '', $request->giro_payment);
+        $giroTunaiPayment = str_replace('.', '', $request->giro_tunai_payment);
+        $giroOtherIncome = str_replace('.', '', $request->giro_other_income);
+        $bebanMaterai = str_replace('.', '', $request->beban_materai ?? 0);
         $typePayment = (int)$request->type_payment;
         $idArray = explode(',', $ids);
         $pembayaran = Pembayaran::whereIn('id', $idArray)->get();
@@ -483,10 +496,11 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
-                'grand_total' => $request->tunai_payment ?? 0,
-                'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->tunai_payment ?? 0) - ($request->beban_materai ?? 0),
+                'grand_total' => $tunaiPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($tunaiPayment ?? 0) - ($bebanMaterai ?? 0),
                 'nomor_giro' => 'TUNAI',
+                'date_last' => now()->format('Y-m-d'),
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $pembayaran[0]->id,
                 'data_bukti' => json_encode($dataBukti->original)
@@ -496,8 +510,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
-                'grand_total' => $request->tunai_other_income ?? 0,
-                'total_with_materai' => $request->tunai_other_income ?? 0,
+                'grand_total' => $tunaiOtherIncome ?? 0,
+                'total_with_materai' => $tunaiOtherIncome ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $pembayaran[0]->id,
@@ -511,9 +525,9 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
-                'grand_total' => $request->giro_payment ?? 0,
-                'beban_materai' => $request->beban_materai,
-                'total_with_materai' => ($request->giro_payment ?? 0) - ($request->beban_materai ?? 0),
+                'grand_total' => $giroPayment ?? 0,
+                'beban_materai' => $bebanMaterai,
+                'total_with_materai' => ($giroPayment ?? 0) - ($bebanMaterai ?? 0),
                 'nomor_giro' => $request->nomor_giro,
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id,
@@ -525,8 +539,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
-                'grand_total' => $request->giro_tunai_payment ?? 0,
-                'total_with_materai' => $request->giro_tunai_payment ?? 0,
+                'grand_total' => $giroTunaiPayment ?? 0,
+                'total_with_materai' => $giroTunaiPayment ?? 0,
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id,
@@ -537,8 +551,8 @@ class PembayaranController extends Controller
                 'id_supplier' => $pembayaran[0]->id_supplier,
                 'date' => now()->format('Y-m-d'),
                 'nomor_bukti' => $nomorBukti,
-                'grand_total' => $request->giro_other_income ?? 0,
-                'total_with_materai' => $request->giro_other_income ?? 0,
+                'grand_total' => $giroOtherIncome ?? 0,
+                'total_with_materai' => $giroOtherIncome ?? 0,
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $pembayaran[0]->id,
@@ -549,7 +563,7 @@ class PembayaranController extends Controller
                 'tanggal_awal' => now()->format('Y-m-d'),
                 'tanggal_akhir' => $request->date_last ?? now()->format('Y-m-d'),
                 'nama' => $request->supplier,
-                'jumlah' => $request->giro_payment,
+                'jumlah' => $giroPayment,
                 'nomor_bukti' => $nomorBukti,
                 'tipe' => 'G',
                 'flag' => 2
@@ -720,42 +734,71 @@ class PembayaranController extends Controller
                 ->where('is_bayar', 1)
                 ->where('date', '>=', $explodeDate[0])
                 ->where('date', '<=', $explodeDate[1])
-                ->orderBy('date')
+                ->orderBy('date', 'desc')
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
+                ->get();
+            
+            $historypmb = HistoryPembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('date')
+                ->where('date', '>=', $explodeDate[0])
+                ->where('date', '<=', $explodeDate[1])
+                ->orderBy('date', 'desc')
+                ->orderBy('nomor_bukti', 'desc')
                 ->get();
         } else if ($request->range == 2) {
             $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
                 ->whereNotNull('nomor_giro')
                 ->where('is_bayar', 1)
                 ->where('date', '=', now()->format('Y-m-d'))
-                ->orderBy('date')
+                ->orderBy('date', 'desc')
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
+                ->get();
+            
+            $historypmb = HistoryPembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('date')
+                ->where('date', '=', now()->format('Y-m-d'))
+                ->orderBy('date', 'desc')
+                ->orderBy('nomor_bukti', 'desc')
                 ->get();
         } else if ($request->range == 3) {
             $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
                 ->whereNotNull('nomor_giro')
                 ->where('is_bayar', 1)
                 ->whereBetween('date', [now()->subDays(7)->format('Y-m-d'), now()->format('Y-m-d')])
-                ->orderBy('date')
+                ->orderBy('date', 'desc')
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
+                ->get();
+            
+            $historypmb = HistoryPembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('date')
+                ->whereBetween('date', [now()->subDays(7)->format('Y-m-d'), now()->format('Y-m-d')])
+                ->orderBy('date', 'desc')
+                ->orderBy('nomor_bukti', 'desc')
                 ->get();
         } else if ($request->range == 4) {
             $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
                 ->whereNotNull('nomor_giro')
                 ->where('is_bayar', 1)
                 ->whereBetween('date', [now()->subDays(30)->format('Y-m-d'), now()->format('Y-m-d')])
-                ->orderBy('date')
+                ->orderBy('date', 'desc')
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
+                ->get();
+            
+            $historypmb = HistoryPembayaran::where('id_supplier', $supplier->id)
+                ->whereNotNull('date')
+                ->whereBetween('date', [now()->subDays(30)->format('Y-m-d'), now()->format('Y-m-d')])
+                ->orderBy('date', 'desc')
+                ->orderBy('nomor_bukti', 'desc')
                 ->get();
         } else {
             $pembayarans = Pembayaran::where('id_supplier', $supplier->id)
                 ->whereNotNull('nomor_giro')
                 ->where('is_bayar', 1)
-                ->orderBy('date')
+                ->orderBy('date', 'desc')
                 ->orderBy('nomor_bukti', 'desc')
                 ->orderBy('id')
                 ->get();

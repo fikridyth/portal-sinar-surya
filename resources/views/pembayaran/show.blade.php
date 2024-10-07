@@ -178,38 +178,43 @@
                                                 <tr>
                                                     <input type="text" id="amount-total" value="{{ $pembayaran->grand_total }}" hidden>
                                                     <input type="text" name="nomor_bukti" value="{{ $pembayaran->nomor_bukti }}" hidden>
-                                                    <td class="text-end"><input type="number" id="value1" name="tunai_payment" max="{{ $pembayaran->grand_total }}" style="width: 100px;" value="{{ $pembayaran->grand_total }}" oninput="updateValue2()"></td>
+                                                    <td class="text-center"><input type="text" id="value1" name="tunai_payment" style="width: 100px;" 
+                                                        value="{{ number_format($pembayaran->grand_total, 0, ',', '.') }}" oninput="updateValue2()" onkeyup="formatInputNumber(this)">
+                                                    </td>
                                                     <td>TUNAI</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end"><input type="number" class="readonly-input" id="value2" name="tunai_other_income" readonly style="width: 100px;" value="0"></td>
+                                                    <td class="text-center"><input type="text" class="readonly-input" id="value2" name="tunai_other_income" readonly style="width: 100px;" value="0" onkeyup="formatInputNumber(this)"></td>
                                                     <td>OTHER INCOME</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                             <tbody id="giro-table" style="display: none;">
                                                 <tr>
-                                                    <td class="text-end"><input type="number" id="value3" name="giro_payment" max="{{ $pembayaran->grand_total }}" style="width: 100px;" value="{{ $pembayaran->grand_total }}" oninput="updateValue4()"></td>
+                                                    <td class="text-center"><input type="text" id="value3" name="giro_payment" style="width: 100px;" 
+                                                        value="{{ number_format($pembayaran->grand_total, 0, ',', '.') }}" oninput="updateValue4()" onkeyup="formatInputNumber(this)">
                                                     <td>
-                                                        <select name="nomor_giro" style="width: 100px;">
+                                                        <select name="nomor_giro" class="giro-select" style="width: 110px;">
                                                             <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
                                                             @foreach ($giros->slice(1) as $giro)
                                                                 <option value="{{ $giro->nomor }}" >{{ $giro->nomor }}</option>
                                                             @endforeach
                                                         </select>
                                                     </td>
-                                                    <td><input type="date" name="date_last" style="width: 100px;"></td>
+                                                    <td class="text-center"><input type="date" name="date_last" style="width: 100px;"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end"><input type="number" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td>
+                                                    {{-- <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td> --}}
+                                                    <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" 
+                                                        value="0" oninput="updateValue5()" onkeyup="formatInputNumber(this)">
                                                     <td>TUNAI</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-end"><input type="number" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
+                                                    <td class="text-center"><input type="number" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
-                                                    <td><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
+                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -218,7 +223,7 @@
                                         <label for="" style="font-size: 12px;">MATERAI</label>
                                         <input type="text" class="text-end btn-block readonly-input" readonly value="{{ number_format($pembayaran->supplier->materai, 0) ?? 0 }}" style="font-size: 12px;">
                                         <label for="" style="font-size: 12px;">BEBAN MATERAI</label>
-                                        <input type="text" class="text-end btn-block" style="font-size: 12px;" name="beban_materai" autocomplete="off">
+                                        <input type="text" class="text-end btn-block" style="font-size: 12px;" name="beban_materai" autocomplete="off" onkeyup="formatInputNumber(this)">
                                     </div>
                                 </div>
                                 <div class="row mt-2">
@@ -267,6 +272,10 @@
                 var selectedOption = e.params.data.element;
                 var noRekening = $(selectedOption).data('no-rekening');
                 $('#no-rekening').val(noRekening);
+            });
+
+            $(`.giro-select`).select2({
+                placeholder: '---Select Giro---'
             });
         });
 
@@ -333,12 +342,13 @@
                     break;
             }
 
-            document.getElementById('value1').value = value1;
-            document.getElementById('value2').value = value2;
-            document.getElementById('value3').value = value3;
-            document.getElementById('value4').value = value4;
+            document.getElementById('value1').value = value1 >= 0 ? value1.toLocaleString('id-ID') : 0;
+            document.getElementById('value2').value = value2 >= 0 ? value2.toLocaleString('id-ID') : 0;
+            document.getElementById('value3').value = value3 >= 0 ? value3.toLocaleString('id-ID') : 0;
+            document.getElementById('value4').value = value4 >= 0 ? value4.toLocaleString('id-ID') : 0;
             document.getElementById('value5').value = 0;
         }
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const bankSelect = document.querySelector('.bank-select');
@@ -375,7 +385,7 @@
                                 const row2 = document.createElement('tr');
                                 row2.innerHTML = `
                                     <td class="text-center">${item.nomor}</td>
-                                    <td class="text-center">${item.tanggal_akhir}</td>
+                                    <td class="text-center">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
                                     <td class="text-end">${number_format(item.jumlah) ?? 0}</td>
                                     <td class="text-center">${item.flag === 3 ? 'RUSAK' : ''}</td>
                                 `;
@@ -415,30 +425,34 @@
         });
 
         function updateValue2() {
-            const value1 = document.getElementById('value1').value;
+            const value1 = document.getElementById('value1').value.replace(/\D/g, ''); // Hapus karakter non-digit
             const grandTotal = {{ $pembayaran->grand_total }};
-            const value2 = grandTotal - value1;
+            const parsedValue1 = parseInt(value1) || 0;
+            const value2 = grandTotal - parsedValue1; // Konversi ke integer
 
-            document.getElementById('value2').value = value2 >= 0 ? value2 : 0;
+            document.getElementById('value2').value = value2 >= 0 ? value2.toLocaleString('id-ID') : 0; // Format nilai
         }
 
         function updateValue4() {
-            const value3 = document.getElementById('value3').value;
+            const value3 = document.getElementById('value3').value.replace(/\D/g, ''); // Hapus karakter non-digit
             const grandTotal = {{ $pembayaran->grand_total }};
-            const value4 = grandTotal - value3;
+            const parsedValue3 = parseInt(value3) || 0;
+            const value4 = grandTotal - parsedValue3; // Konversi ke integer
 
-            document.getElementById('value4').value = value4 >= 0 ? value4 : 0;
-            document.getElementById('value5').value = 0;
-            updateValue5();
+            document.getElementById('value4').value = value4 >= 0 ? value4.toLocaleString('id-ID') : 0; // Format nilai
+            document.getElementById('value5').value = 0; // Reset value5
+            updateValue5(); // Panggil updateValue5
         }
 
         function updateValue5() {
-            const value3 = document.getElementById('value3').value;
-            const value4 = document.getElementById('value4').value;
+            const value3 = document.getElementById('value3').value.replace(/\D/g, ''); // Hapus karakter non-digit
+            const value4 = document.getElementById('value4').value.replace(/\D/g, ''); // Hapus karakter non-digit
             const grandTotal = {{ $pembayaran->grand_total }};
-            const value5 = grandTotal - value3 - value4;
+            const parsedValue3 = parseInt(value3) || 0;
+            const parsedValue4 = parseInt(value4) || 0;
+            const value5 = grandTotal - parsedValue3 - parsedValue4; // Konversi ke integer
 
-            document.getElementById('value5').value = value5 >= 0 ? value5 : 0;
+            document.getElementById('value5').value = value5 >= 0 ? value5.toLocaleString('id-ID') : 0; // Format nilai
         }
     </script>
 @endsection
