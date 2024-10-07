@@ -21,7 +21,7 @@ class ReceiveDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->where('receive_type', 'B')))
+        return (new EloquentDataTable($query->where('receive_type', 'B')->orderBy('created_at', 'desc')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier->nama;
@@ -31,10 +31,10 @@ class ReceiveDataTable extends DataTable
             })
             ->addColumn('action', function ($row) {
                 $detailUrl = route('receive-po.create-detail', $row->id);
-                if ($row->is_pay !== 1) {
+                if ($row->nomor_bukti == null) {
                     return '<a href="' . $detailUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
                 } else {
-                    return '<button disabled class="btn btn-primary btn-sm mx-2">SUDAH BAYAR</button>';
+                    return '<button disabled class="btn btn-primary btn-sm mx-2">DETAIL</button>';
                 }
             })
             ->filterColumn('supplier_name', function ($query, $keyword) {

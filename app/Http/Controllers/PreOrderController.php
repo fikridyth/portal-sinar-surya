@@ -712,6 +712,14 @@ class PreOrderController extends Controller
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
         ]);
 
+        if ($preorder->receive_type == 'B') {
+            Hutang::where('nomor_receive', $preorder->nomor_receive)->update([
+                'total' => $jumlahHarga,
+                'ppn' => $preorder->ppn_global,
+                'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'newTotalHarga' => number_format($jumlahHarga)
@@ -778,6 +786,7 @@ class PreOrderController extends Controller
 
     public function setBonus(Request $request, $id)
     {
+        // dd($request->all());
         $preorder = Preorder::find($id);
         $getDetail = json_decode($preorder->detail, true);
         $getDetail[$request->no]['field_total'] = 0;
@@ -796,6 +805,14 @@ class PreOrderController extends Controller
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
         ]);
+
+        if ($request->receive_type == 'B') {
+            Hutang::where('nomor_receive', $request->nomor_receive)->update([
+                'total' => $jumlahHarga,
+                'ppn' => $preorder->ppn_global,
+                'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+            ]);
+        }
 
         return redirect()->back();
     }

@@ -22,7 +22,7 @@ class HistoryHutangDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query))
+        return (new EloquentDataTable($query->orderBy('nomor_bukti', 'desc')))
         ->addIndexColumn()
         ->addColumn('supplier_nama', function ($row) {
             return $row->supplier->nama;    

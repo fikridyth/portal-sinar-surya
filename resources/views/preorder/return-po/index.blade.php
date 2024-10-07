@@ -181,7 +181,7 @@
                         <select id="products-${index}" class="product-select" onchange="handleSelectChange(event)">
                             <option value="">---Select Product---</option>
                             @foreach ($products as $product)
-                                <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-jual="{{ $product->harga_pokok }}">{{ $product->kode }} - {{ $product->nama }}/{{ $product->unit_jual }}</option>
+                                <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-jual="{{ $product->harga_pokok }}">{{ $product->kode }} - {{ $product->nama }}/{{ $product->unit_jual }} - {{ number_format($product->harga_pokok) }} / {{ number_format($product->harga_jual) }}</option>
                             @endforeach
                         </select>
                     </td>
@@ -193,7 +193,7 @@
 
                 // Initialize Select2 on the newly added select element
                 $(`#products-${index}`).select2({
-                    placeholder: '---Select Product---',
+                    placeholder: '---Select Product--- Harga Beli / Jual',
                     allowClear: true
                 });
             });

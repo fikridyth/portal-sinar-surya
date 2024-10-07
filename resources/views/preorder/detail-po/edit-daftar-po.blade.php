@@ -260,9 +260,10 @@
                                                             <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
                                                             <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
                                                             <td>
-                                                                <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form">
+                                                                <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form" onsubmit="return confirmSubmission()">
                                                                     @csrf
                                                                     <div class="row align-items-center">
+                                                                        <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
                                                                         <input type="hidden" name="no" value="{{ $no - 1 }}">
                                                                         <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" class="btn btn-sm btn-primary">SET</button>
                                                                     </div>
@@ -374,6 +375,10 @@
     @include('preorder.detail-po.js.netto')
     @include('preorder.detail-po.js.new-row')
     <script>
+        function confirmSubmission() {
+            return confirm("Are you sure you want to set this bonus?");
+        }
+
         function handleCheckboxChange(selectedCheckbox) {
             const index = selectedCheckbox.id.split('-')[1];
 
@@ -450,31 +455,33 @@
                 array: index - 1,
             };
 
-            // Perform AJAX request
-            $.ajax({
-                url: '{{ route('daftar-po.destroy') }}', // Use the named route to generate URL
-                type: 'DELETE',
-                data: data,
-                headers: {
-                    // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    // Handle success response
-                    if (response.success) {
-                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
-                        window.location.href = redirectUrl;
-                    } else {
-                        // Handle error response if needed
-                        alert('Failed to save data.');
+            if (confirm('Are you sure you want to delete this item?')) {
+                // Perform AJAX request
+                $.ajax({
+                    url: '{{ route('daftar-po.destroy') }}', // Use the named route to generate URL
+                    type: 'DELETE',
+                    data: data,
+                    headers: {
+                        // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        if (response.success) {
+                            var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                            window.location.href = redirectUrl;
+                        } else {
+                            // Handle error response if needed
+                            alert('Failed to save data.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle AJAX error
+                        console.error('AJAX error:', status, error);
+                        alert('An error occurred while saving data.');
                     }
-                },
-                error: function(xhr, status, error) {
-                    // Handle AJAX error
-                    console.error('AJAX error:', status, error);
-                    alert('An error occurred while saving data.');
-                }
-            });
+                });
+            }
         }
 
         function handleSaveClick(button) {
@@ -514,63 +521,65 @@
                 total: fieldTotalElementValue
             };
 
-            // Perform AJAX request
-            $.ajax({
-                url: '{{ route('daftar-po.update') }}', // Use the named route to generate URL
-                type: 'POST',
-                data: data,
-                headers: {
-                    // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    // Handle success response
-                    if (response.success) {
-                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
-                        window.location.href = redirectUrl;
+            if (confirm('Are you sure you want to save this item?')) {
+                // Perform AJAX request
+                $.ajax({
+                    url: '{{ route('daftar-po.update') }}', // Use the named route to generate URL
+                    type: 'POST',
+                    data: data,
+                    headers: {
+                        // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        // Handle success response
+                        if (response.success) {
+                            var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                            window.location.href = redirectUrl;
 
-                        // document.getElementById(`totalPrice22`).value = response.newTotalHarga;
-                        // document.getElementById(`totalPrice33`).value = response.newGrandTotal;
-                        // tambahButton.disabled = false;
-                        // document.getElementById(`checkbox-${index}`).checked = false;
-                        // document.getElementById(`checkbox-${index}`).style.display = 'inline-block';
-                        // button.style.display = 'none';
-                        // deleteButton.style.display = 'none';
-                        // bonusButton.style.display = 'none';
+                            // document.getElementById(`totalPrice22`).value = response.newTotalHarga;
+                            // document.getElementById(`totalPrice33`).value = response.newGrandTotal;
+                            // tambahButton.disabled = false;
+                            // document.getElementById(`checkbox-${index}`).checked = false;
+                            // document.getElementById(`checkbox-${index}`).style.display = 'inline-block';
+                            // button.style.display = 'none';
+                            // deleteButton.style.display = 'none';
+                            // bonusButton.style.display = 'none';
 
-                        // document.querySelectorAll('.select-checkbox').forEach(checkbox => {
-                        //     checkbox.disabled = false;
-                        //     checkbox.style.display = 'inline-block';
-                        // });
+                            // document.querySelectorAll('.select-checkbox').forEach(checkbox => {
+                            //     checkbox.disabled = false;
+                            //     checkbox.style.display = 'inline-block';
+                            // });
 
-                        // document.querySelectorAll('.edit-save-button').forEach(btn => {
-                        //     btn.style.display = 'none';
-                        // });
+                            // document.querySelectorAll('.edit-save-button').forEach(btn => {
+                            //     btn.style.display = 'none';
+                            // });
 
-                        // document.querySelectorAll('.order-container').forEach(container => {
-                        //     container.querySelector('.order-text').hidden = false;
-                        //     container.querySelector('.order-input').hidden = true;
-                        // });
+                            // document.querySelectorAll('.order-container').forEach(container => {
+                            //     container.querySelector('.order-text').hidden = false;
+                            //     container.querySelector('.order-input').hidden = true;
+                            // });
 
-                        // document.querySelectorAll('.price-container').forEach(container => {
-                        //     container.querySelector('.price-text').hidden = false;
-                        //     container.querySelector('.price-input').hidden = true;
-                        // });
+                            // document.querySelectorAll('.price-container').forEach(container => {
+                            //     container.querySelector('.price-text').hidden = false;
+                            //     container.querySelector('.price-input').hidden = true;
+                            // });
 
-                        // // Update total price after successful response
-                        // updateTotalPrice();
-                        // updateTotalOrder();
-                    } else {
-                        // Handle error response if needed
-                        alert('Failed to save data.');
+                            // // Update total price after successful response
+                            // updateTotalPrice();
+                            // updateTotalOrder();
+                        } else {
+                            // Handle error response if needed
+                            alert('Failed to save data.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle AJAX error
+                        console.error('AJAX error:', status, error);
+                        alert('An error occurred while saving data.');
                     }
-                },
-                error: function(xhr, status, error) {
-                    // Handle AJAX error
-                    console.error('AJAX error:', status, error);
-                    alert('An error occurred while saving data.');
-                }
-            });
+                });
+            }
         }
 
         function updateTotalPrice() {
