@@ -13,7 +13,7 @@
             </div>
         </div>
         
-        <form action="{{ route('pembayaran-hutang.store', $supplier->id) }}" method="POST" class="form">
+        <form action="{{ route('pembayaran-hutang.store', $supplier->id) }}" method="POST" class="form" id="myForm">
             @csrf
             <div class="d-flex justify-content-center mb-4">
                 <div class="card" style="width: 50%;">
@@ -86,7 +86,7 @@
                                             <td class="text-center">{{ $hutang['nomor'] }}</td>
                                             <td class="text-center">{{ $hutang['date'] }}</td>
                                             <td class="text-end">{{ number_format($hutang['total'], 0) }}</td>
-                                    </tr>
+                                        </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -97,10 +97,20 @@
                         </div>
                         <div class="d-flex justify-content-center align-items-center mt-4">
                             <div class="mx-2">
+                                <button type="button" onclick="location.reload()" class="btn btn-primary">REFRESH</button>
+                            </div>
+                            <div class="mx-2">
                                 <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
                             </div>
                             <div class="mx-2">
-                                <button type="submit" class="btn btn-primary">PROSES</button>
+                                <button type="submit" name="tipe" value="cetak" class="btn btn-warning" onclick="setTarget('_blank')">CETAK</button>
+                            </div>
+                            <div class="mx-2">
+                                @if ($isCetak->is_cetak == 1)
+                                    <button type="submit" name="tipe" value="store" class="btn btn-primary" onclick="setTarget('_self')">PROSES</button>
+                                @else
+                                    <button type="button" disabled class="btn btn-primary">PROSES</button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -111,4 +121,9 @@
 @endsection
 
 @section('scripts')
+    <script>
+        function setTarget(target) {
+            document.getElementById('myForm').target = target;
+        }
+    </script>
 @endsection

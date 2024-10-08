@@ -952,6 +952,15 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
     }
 
+    public function previewDataReceivePo($id)
+    {
+        $title = 'Preview Receive PO';
+        $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+
+        return view('preorder.receive-po.preview-data', compact('title', 'preorder', 'detail'));
+    }
+
     public function daftarReceivePo(ReceiveDataTable $dataTable)
     {
         $title = 'Daftar Receive PreOrder';

@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-receive-data', [PreOrderController::class, 'storeReceiveData'])->name('receive-po.store');
     Route::delete('/destroy-receive-data', [PreOrderController::class, 'destroyReceiveData'])->name('receive-po.destroy');
     Route::get('/receive-po/create-detail/{id}', [PreOrderController::class, 'createDetailReceivePo'])->name('receive-po.create-detail');
+    Route::get('/receive-po/preview-data/{id}', [PreOrderController::class, 'previewDataReceivePo'])->name('receive-po.preview-data');
     Route::get('/daftar-receive-po', [PreOrderController::class, 'daftarReceivePo'])->name('daftar-receive-po');
 
     // Persetujuan Harga Jual

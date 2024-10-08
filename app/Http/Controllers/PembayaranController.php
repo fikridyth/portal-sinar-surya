@@ -9,6 +9,7 @@ use App\Models\Bank;
 use App\Models\GiroDetail;
 use App\Models\HistoryPembayaran;
 use App\Models\Hutang;
+use App\Models\HutangCetak;
 use App\Models\Pembayaran;
 use App\Models\Pengembalian;
 use App\Models\Preorder;
@@ -17,6 +18,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redirect;
+use NumberFormatter;
 
 class PembayaranController extends Controller
 {
@@ -201,15 +203,20 @@ class PembayaranController extends Controller
         } 
         $getNomorBukti = 'PH-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
-        return view('pembayaran.hutang.process-final', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti'));
+        $isCetak = HutangCetak::where('nomor', $getHutang[0]['nomor'])->first();
+        if (!$isCetak) {
+            $isCetak = HutangCetak::create(['nomor' => $getHutang[0]['nomor']]);
+        }
+
+        return view('pembayaran.hutang.process-final', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'isCetak'));
     }
 
     public function storeHutang(Request $request, $id)
     {
+        // dd($request->all(), $id);
         $dataArray = array_filter($request->all(), function($value) {
             return is_array($value);
         });
-        // dd($request->all(), $dataArray);
 
         $getHutang = [];
         for ($i = 0; $i < count($dataArray['nomor']); $i++) {
@@ -220,7 +227,22 @@ class PembayaranController extends Controller
             ];
         }
         $totalHutang = array_sum(array_column($getHutang, 'total'));
+        // dd($getHutang);
 
+        if ($request->tipe == 'cetak') {
+            $title = "Cetak Hutang";
+            $supplier = Supplier::find($id);
+            $getNomorBukti = $request->nomor_bukti;
+
+            $formatter = new NumberFormatter('id_ID', NumberFormatter::SPELLOUT);
+            $formatTotal = $formatter->format($totalHutang - $supplier->materai);
+
+            HutangCetak::where('nomor', $getHutang[0]['nomor'])->first()->update(['is_cetak' => 1]);
+
+            return view('pembayaran.hutang.cetak', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'formatTotal'));
+        }
+
+        dd('store');
         foreach($getHutang as $data) {
             $tipeData = explode('-', $data['nomor']);
             if ($tipeData[0] == 'RP') {

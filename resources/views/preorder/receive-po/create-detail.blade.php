@@ -293,20 +293,9 @@
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
                                         </form>
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
-                                    </div> --}}
-                                    {{-- <div class="mx-2">
-                                        @if ($preorder->is_pay !== 1)
-                                            <form action="{{ route('daftar-po.store-pembayaran') }}" method="POST" class="form">
-                                                @csrf
-                                                <input type="text" name="id_po" hidden value="{{ $preorder->id }}">
-                                                <button type="submit" class="btn btn-warning">BUAT PEMBAYARAN</button>
-                                            </form>
-                                        @else
-                                            <button type="button" disabled class="btn btn-warning">BUAT PEMBAYARAN</button>
-                                        @endif
-                                    </div> --}}
+                                    <div class="mx-2">
+                                        <a href="{{ route('receive-po.preview-data', $preorder->id) }}" class="btn btn-primary">PROSES</a>
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
