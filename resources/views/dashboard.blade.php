@@ -41,6 +41,8 @@
                                 <a href="{{ route('master.bank.index') }}" class="btn btn-primary mb-2">BANK</a>
                                 <a href="{{ route('master.giro.index') }}" class="btn btn-primary mb-2">PENDAFTARAN GIRO</a>
                                 <a href="{{ route('master.ppn.edit', $ppn->id) }}" class="btn btn-primary mb-2">PPN</a>
+                                {{-- <a href="{{ route('master.generate-qrcode') }}" class="btn btn-primary mb-2">QR Code</a> --}}
+                                <a href="{{ route('master.generate-barcode') }}" class="btn btn-primary mb-2">Barcode</a>
                             </div>
                         </div>
                         <div class="mx-5">  

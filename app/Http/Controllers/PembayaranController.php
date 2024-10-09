@@ -33,7 +33,7 @@ class PembayaranController extends Controller
     {
         $title = 'List Pembayaran Hutang';
 
-        $hutang = Hutang::select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->whereNull('is_cancel')->groupBy('id_supplier')->pluck('id_supplier');
+        $hutang = Hutang::select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->whereNull('is_cancel')->whereNotNull('is_proses')->groupBy('id_supplier')->pluck('id_supplier');
         $pengembalian = Pengembalian::select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')->pluck('id_supplier');
 
         $mergedData = $hutang->merge($pengembalian)->unique();
@@ -47,7 +47,7 @@ class PembayaranController extends Controller
         $title = 'Detail Pembayaran Hutang';
 
         $supplier = Supplier::find($id);
-        $getHutang = Hutang::where('id_supplier', $supplier->id)->whereNull('nomor_bukti')->whereNull('is_cancel')->where('total', '!=', 0)->get();
+        $getHutang = Hutang::where('id_supplier', $supplier->id)->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('is_proses')->where('total', '!=', 0)->get();
         $getReturn = Pengembalian::where('id_supplier', $supplier->id)->whereNull('nomor_bukti')->where('total', '!=', 0)->get();
         $hutangData = $getHutang->map(function($item) {
             return [

@@ -59,9 +59,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/receive-get-preorder-data', [PreOrderController::class, 'getPreorderData']);
     Route::post('/store-receive-data', [PreOrderController::class, 'storeReceiveData'])->name('receive-po.store');
     Route::delete('/destroy-receive-data', [PreOrderController::class, 'destroyReceiveData'])->name('receive-po.destroy');
-    Route::get('/receive-po/create-detail/{id}', [PreOrderController::class, 'createDetailReceivePo'])->name('receive-po.create-detail');
-    Route::get('/receive-po/preview-data/{id}', [PreOrderController::class, 'previewDataReceivePo'])->name('receive-po.preview-data');
     Route::get('/daftar-receive-po', [PreOrderController::class, 'daftarReceivePo'])->name('daftar-receive-po');
+    Route::get('/receive-po/create-detail/{id}', [PreOrderController::class, 'createDetailReceivePo'])->name('receive-po.create-detail');
+    Route::get('/receive-po/done-detail/{id}', [PreOrderController::class, 'doneDetailReceivePo'])->name('receive-po.done-detail');
+    Route::get('/receive-po/preview-data/{id}', [PreOrderController::class, 'previewDataReceivePo'])->name('receive-po.preview-data');
+    Route::put('/receive-po/update/{id}', [PreOrderController::class, 'updateReceivePo'])->name('receive-po.update');
+    Route::get('/receive-po/cetak/{id}', [PreOrderController::class, 'cetakReceivePo'])->name('receive-po.cetak');
 
     // Persetujuan Harga Jual
     Route::get('/persetujuan-harga-jual', [PreOrderController::class, 'persetujuanHargaJual'])->name('persetujuan-harga-jual');
@@ -202,5 +205,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
         Route::put('/user/{id}/update', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{id}/destroy', [UserController::class, 'destroy'])->name('user.destroy');
+        
+        // User
+        // Route::get('/generate-qrcode', [ProductController::class, 'generateQrCode'])->name('generate-qrcode');
+        Route::get('/generate-barcode', [ProductController::class, 'generateBarcode'])->name('generate-barcode');
     });
 });

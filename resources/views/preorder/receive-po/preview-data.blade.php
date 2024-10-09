@@ -14,29 +14,29 @@
         </div>
 
         {{-- <form action="{{ route('persetujuan-harga-jual-update', $preorder->id) }}" method="POST" class="form"> --}}
-        <form action="#" method="POST" class="form">
+        <form action="{{ route('receive-po.update', $preorder->id) }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             <div class="card">
                 <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th colspan="2" class="text-center">HARGA SEMENTARA</th>
+                                <th colspan="3" class="text-center"></th>
+                                <th colspan="2" class="text-center">HARGA BELI</th>
                                 <th class="text-center"></th>
-                                <th colspan="2" class="text-center">HARGA SATUAN</th>
-                                <th class="text-center"></th>
-                                <th colspan="2" class="text-center">HARGA SATUAN</th>
+                                <th colspan="2" class="text-center">HARGA JUAL</th>
                                 <th colspan="2" class="text-center"></th>
                             </tr>
                             <tr>
                                 <th class="text-center">NO</th>
                                 <th class="text-center">NAMA BARANG</th>
                                 <th class="text-center">QTY</th>
-                                <th class="text-center">BELI LAMA</th>
-                                <th class="text-center">BELI BARU</th>
+                                <th class="text-center">HARGA LAMA</th>
+                                <th class="text-center">HARGA BARU</th>
                                 <th class="text-center">NAIK(%)</th>
-                                <th class="text-center">JUAL LAMA</th>
-                                <th class="text-center">JUAL BARU</th>
+                                <th class="text-center">HARGA LAMA</th>
+                                <th class="text-center">HARGA BARU</th>
                                 <th class="text-center">MK UP</th>
                                 <th class="text-center">H/D</th>
                             </tr>
@@ -69,7 +69,10 @@
                             <a class="btn btn-danger" href="{{ route('receive-po.create-detail', $preorder->id) }}">KEMBALI</a>
                         </div>
                         <div class="mx-2">
-                            <button type="submit" class="btn btn-primary">CETAK</button>
+                            <a href="{{ route('receive-po.cetak', $preorder->id) }}" target="_blank" class="btn btn-warning">CETAK</a>
+                        </div>
+                        <div class="mx-2">
+                            <button type="submit" class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
                 </div>

@@ -31,8 +31,11 @@ class ReceiveDataTable extends DataTable
             })
             ->addColumn('action', function ($row) {
                 $detailUrl = route('receive-po.create-detail', $row->id);
-                if ($row->nomor_bukti == null) {
+                $doneUrl = route('receive-po.done-detail', $row->id);
+                if ($row->nomor_bukti == null && $row->is_proses == null) {
                     return '<a href="' . $detailUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
+                } else if ($row->nomor_bukti == null && $row->is_proses == 1) {
+                    return '<a href="' . $doneUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
                 } else {
                     return '<button disabled class="btn btn-primary btn-sm mx-2">DETAIL</button>';
                 }

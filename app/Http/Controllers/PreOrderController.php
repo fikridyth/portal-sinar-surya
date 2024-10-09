@@ -952,6 +952,18 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
     }
 
+    public function doneDetailReceivePo($id)
+    {
+        $title = 'Detail Receive PreOrder';
+        $preorder = Preorder::find($id);
+        $ppn = Ppn::pluck('ppn')->first();
+        // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
+        $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        // dd(count($products));
+
+        return view('preorder.receive-po.done-detail', compact('title', 'preorder', 'ppn', 'products'));
+    }
+
     public function previewDataReceivePo($id)
     {
         $title = 'Preview Receive PO';
@@ -959,6 +971,26 @@ class PreOrderController extends Controller
         $detail = json_decode($preorder->detail, true);
 
         return view('preorder.receive-po.preview-data', compact('title', 'preorder', 'detail'));
+    }
+
+    public function updateReceivePo($id)
+    {
+        $preorder = Preorder::find($id);
+        Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_proses' => 1]);
+        $preorder->update(['is_proses' => 1]);
+
+        return Redirect::route('daftar-receive-po')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Data Receive Berhasil Di Proses!");
+    }
+
+    public function cetakReceivePo($id)
+    {
+        $title = 'Cetak Receive PO';
+        $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+
+        return view('preorder.receive-po.cetak-data', compact('title', 'preorder', 'detail'));
     }
 
     public function daftarReceivePo(ReceiveDataTable $dataTable)

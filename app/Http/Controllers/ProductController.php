@@ -7,8 +7,18 @@ use App\Models\Departemen;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Unit;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Writer\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class ProductController extends Controller
 {
@@ -348,5 +358,63 @@ class ProductController extends Controller
         return Redirect::back()
         ->with('alert.status', '00')
         ->with('alert.message', "Update Stock Opname Success!");
+    }
+
+    // public function generateQrCode()
+    // {
+    //     // dd('test qr');
+    //     $writer = new PngWriter();
+
+    //     // Create QR code
+    //     $qrCode = QrCode::create('Life is too short to be generating QR codes')
+    //         ->setEncoding(new Encoding('UTF-8'))
+    //         ->setErrorCorrectionLevel(ErrorCorrectionLevel::Low)
+    //         ->setSize(300)
+    //         ->setMargin(10)
+    //         ->setRoundBlockSizeMode(RoundBlockSizeMode::Margin)
+    //         ->setForegroundColor(new Color(0, 0, 0))
+    //         ->setBackgroundColor(new Color(255, 255, 255));
+
+    //     // Create generic logo
+    //     // $logo = Logo::create(public_path('assets/symfony.png'))
+    //     //     ->setResizeToWidth(50)
+    //     //     ->setPunchoutBackground(true)
+    //     // ;
+
+    //     // Create generic label
+    //     $label = Label::create('Label')
+    //         ->setTextColor(new Color(255, 0, 0));
+
+    //     $result = $writer->write($qrCode, null, $label);
+
+    //     // Validate the result
+    //     $writer->validateResult($result, 'Life is too short to be generating QR codes');
+    
+    //     // Directly output the QR code
+    //     header('Content-Type: '.$result->getMimeType());
+    //     echo $result->getString();
+
+    //     // Save it to a file
+    //     $result->saveToFile(public_path('qrcode.png'));
+
+    //     // Generate a data URI to include image data inline (i.e. inside an <img> tag)
+    //     $result->getDataUri();
+
+    //     return Redirect::route('index')
+    //         ->with('alert.status', '00')
+    //         ->with('alert.message', "QR Code Berhasil Generate!");
+    // }
+
+    public function generateBarcode()
+    {
+        $generator = new BarcodeGeneratorPNG();
+        $barcode = $generator->getBarcode('00000004', $generator::TYPE_CODE_128);
+
+        // Simpan barcode ke dalam file
+        file_put_contents(public_path('barcode.png'), $barcode);
+
+        return Redirect::route('index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Barcode Berhasil Generate!");
     }
 }
