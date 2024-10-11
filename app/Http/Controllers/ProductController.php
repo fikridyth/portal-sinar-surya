@@ -408,10 +408,50 @@ class ProductController extends Controller
     public function generateBarcode()
     {
         $generator = new BarcodeGeneratorPNG();
-        $barcode = $generator->getBarcode('00000004', $generator::TYPE_CODE_128);
+        $barcode = $generator->getBarcode('8992770011114', $generator::TYPE_EAN_13, 3, 100);
 
-        // Simpan barcode ke dalam file
-        file_put_contents(public_path('barcode.png'), $barcode);
+        // Create a PNG image from the barcode string
+        $barcodeImage = imagecreatefromstring($barcode);
+        $barcodeWidth = imagesx($barcodeImage);
+        $barcodeHeight = imagesy($barcodeImage);
+
+        // Set font properties
+        $text = '6901279851338'; // Barcode value
+        $fontPath = public_path('arial.ttf'); // Path to your font file
+        $fontSize = 12; // Font size
+
+        // Calculate the bounding box of the text
+        $textBox = imagettfbbox($fontSize, 0, $fontPath, $text);
+        $textWidth = $textBox[2] - $textBox[0];
+        $textHeight = $textBox[1] - $textBox[7]; // Height of the text
+
+        // Calculate the final image dimensions
+        $width = max($barcodeWidth, $textWidth);
+        $height = $barcodeHeight + $textHeight + 30; // Add some padding
+
+        // Create the final image
+        $image = imagecreate($width, $height);
+        $white = imagecolorallocate($image, 255, 255, 255); // White background
+        imagefill($image, 0, 0, $white);
+
+        // Center the barcode
+        $x = ($width - $barcodeWidth) / 2;
+        $y = ($height - $barcodeHeight - $textHeight) / 2; // Center vertically
+
+        // Copy the barcode image onto the new image
+        imagecopy($image, $barcodeImage, $x, $y, 0, 0, $barcodeWidth, $barcodeHeight);
+
+        // Position the text below the barcode
+        $textY = $y + $barcodeHeight + 20; // Position below the barcode
+
+        // Allocate a color for the text (black)
+        $black = imagecolorallocate($image, 0, 0, 0);
+        imagettftext($image, $fontSize, 0, ($width - $textWidth) / 2, $textY, $black, $fontPath, $text);
+
+        // Save the final image
+        imagepng($image, public_path('barcode.png'));
+        imagedestroy($image);
+        imagedestroy($barcodeImage);
 
         return Redirect::route('index')
             ->with('alert.status', '00')

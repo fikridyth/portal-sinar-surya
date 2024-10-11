@@ -40,10 +40,10 @@
                                 @foreach ($users as $user)
                                     <tr data-id="{{ $user->id }}">
                                         <td class="user_name">{{ $user->name }}</td>
-                                        <td class="user_name">{{ $user->username }}</td>
+                                        <td class="user_username">{{ $user->username }}</td>
                                         {{-- <td class="user_email">{{ $user->email }}</td> --}}
                                         <td class="user_password text-center">*****</td>
-                                        <td class="user_role">{{ $user->role }}</td>
+                                        <td class="user_role">{{ $user->role->nama }}</td>
                                         <td class="text-center">
                                             <button type="button" class="btn btn-sm btn-warning mx-1 btn-correct" data-id="{{ $user->id }}">KOREKSI</button>
                                             <button type="button" class="btn btn-sm btn-danger mx-1" onclick="confirmDelete({{ $user->id }})">HAPUS</button>
@@ -76,14 +76,19 @@
                 button.disabled = true;
             });
 
-            var now = new Date().toISOString().split('T')[0]; // Gets current date in YYYY-MM-DD format
-
             var addrow = `
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td class="text-center"><input type="text" required name="name" style="width: 150px;"></td>
+                <td class="text-center"><input type="text" required name="username" style="width: 150px;"></td>
+                <td class="text-center"><input type="password" required name="password" style="width: 150px;"></td>
+                <td class="text-center">
+                    <select name="role_id" required class="role-select" style="width: 300px;">
+                        <option value="">---Select Role---</option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}">{{ $role->nama }}</option>
+                        @endforeach
+                    </select>
+                </td>
                 <td class="text-center">
                     <button type="submit" class="btn btn-sm btn-primary">SAVE</button>
                 </td>
@@ -91,6 +96,11 @@
             `;
 
             document.getElementById('promoTableBody').insertAdjacentHTML('beforeend', addrow);
+
+            $(`.role-select`).select2({
+                placeholder: '---Select Role---',
+                allowClear: true
+            });
         }
 
         function confirmDelete(id) {
@@ -111,14 +121,24 @@
                 if (event.target.classList.contains('btn-correct')) {
                     const row = event.target.closest('tr');
                     const id = row.getAttribute('data-id');
-                    // const supplier = row.querySelector('.supplier').innerText;
+                    const name = row.querySelector('.user_name').innerText;
+                    const username = row.querySelector('.user_username').innerText;
+                    const password = row.querySelector('.user_password').innerText;
+                    const role = row.querySelector('.user_role').innerText;
 
                     // Replace <td> with input fields
                     row.innerHTML = `
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td class="text-center"><input type="text" required value="${name}" name="name" style="width: 150px;"></td>
+                        <td class="text-center"><input type="text" required value="${username}" name="username" style="width: 150px;"></td>
+                        <td class="text-center"><input type="password" required name="password" style="width: 150px;"></td>
+                        <td class="text-center">
+                            <select name="role_id" required class="role-select" style="width: 300px;">
+                                <option value="">---Select Role---</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}" ${role === '{{ $role->nama }}' ? 'selected' : ''}>{{ $role->nama }}</option>
+                                @endforeach
+                            </select>
+                        </td>
                         <td class="text-center">
                             <input type="hidden" name="id" value="${id}">
                             <button type="button" class="btn btn-sm btn-success mx-1 btn-save">Simpan</button>
@@ -133,11 +153,10 @@
                     const row = event.target.closest('tr');
                     const id = row.querySelector('input[name="id"]').value;
                     const rowData = {
-                        id_supplier: row.querySelector('select[name="supplier_id"]').value,
-                        date_first: row.querySelector('input[name="date_first"]').value,
-                        date_last: row.querySelector('input[name="date_last"]').value,
-                        total: row.querySelector('input[name="total"]').value,
-                        tipe: row.querySelector('select[name="tipe"]').value,
+                        name: row.querySelector('input[name="name"]').value,
+                        username: row.querySelector('input[name="username"]').value,
+                        password: row.querySelector('input[name="password"]').value,
+                        role: row.querySelector('select[name="role_id"]').value,
                     };
 
                     fetch(`/master/user/${id}/update`, {

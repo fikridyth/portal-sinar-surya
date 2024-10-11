@@ -28,6 +28,13 @@
         opacity: 0.5; /* Makes the link look faded */
     }
 
+    /* for disabled and not blur */
+    .disabled-not-blur {
+        pointer-events: none; /* Prevents clicking */
+        cursor: not-allowed; /* Shows a not-allowed cursor */
+        text-decoration: none; /* Removes underline */
+    }
+
     .col-0-5 {
         flex: 0 0 5.33%; /* Lebar 1/12 dari lebar kontainer (5.33% x 12 = 100%) */
         max-width: 5.33%;

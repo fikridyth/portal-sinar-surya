@@ -206,7 +206,12 @@ Route::middleware('auth')->group(function () {
         Route::put('/user/{id}/update', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{id}/destroy', [UserController::class, 'destroy'])->name('user.destroy');
         
-        // User
+        // Role
+        Route::get('/role', [UserController::class, 'indexRole'])->name('role.index');
+        Route::get('/role/{id}/edit', [UserController::class, 'editRole'])->name('role.edit');
+        Route::put('/role/{id}/update', [UserController::class, 'updateRole'])->name('role.update');
+        
+        // Barcode
         // Route::get('/generate-qrcode', [ProductController::class, 'generateQrCode'])->name('generate-qrcode');
         Route::get('/generate-barcode', [ProductController::class, 'generateBarcode'])->name('generate-barcode');
     });
