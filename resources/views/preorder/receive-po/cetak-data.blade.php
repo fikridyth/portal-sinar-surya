@@ -98,7 +98,7 @@
                 <div class="col-1-5 text-center">{{ number_format($detail['price']) }}</div>
                 <div class="col-1">{{ number_format((($detail['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</div>
                 <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
-                <div class="col-1-5 text-center">{{ number_format(round((($detail['price'] * $product->profit) / 100) + $detail['price'], -3)) }}</div>
+                <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
                 <div class="col-1">{{ $product->profit }}</div>
             </div>
         @endforeach

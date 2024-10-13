@@ -57,7 +57,7 @@
                                     <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
                                     <td class="text-end">{{ number_format((($dtl['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</td>
                                     <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
-                                    <td class="text-end">{{ number_format(round((($dtl['price'] * $product->profit) / 100) + $dtl['price'], -3)) }}</td>
+                                    <td class="text-end">{{ number_format($product->harga_jual) }}</td>
                                     <td class="text-end">{{ $product->profit }}</td>
                                     <td class="text-center"></td>
                                 </tr>

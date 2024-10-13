@@ -770,6 +770,13 @@ class PreOrderController extends Controller
     public function cancelReceive($id)
     {
         $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+        foreach ($detail as $data) {
+            $product = Product::where('kode', $data['kode'])->first();
+            $product->update([
+                'stok' => (int)$product->stok - $data['order']
+            ]);
+        }
         // dd($preorder);
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_cancel' => 1]);
         $preorder->update(['is_cancel' => 1]);
@@ -969,6 +976,9 @@ class PreOrderController extends Controller
         $title = 'Preview Receive PO';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
+        usort($detail, function ($a, $b) {
+            return strcmp($a['nama'], $b['nama']);
+        });
 
         return view('preorder.receive-po.preview-data', compact('title', 'preorder', 'detail'));
     }
@@ -976,6 +986,13 @@ class PreOrderController extends Controller
     public function updateReceivePo($id)
     {
         $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+        foreach ($detail as $data) {
+            $product = Product::where('kode', $data['kode'])->first();
+            $product->update([
+                'stok' => $data['order'] + (int)$product->stok
+            ]);
+        }
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_proses' => 1]);
         $preorder->update(['is_proses' => 1]);
 
@@ -989,6 +1006,9 @@ class PreOrderController extends Controller
         $title = 'Cetak Receive PO';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
+        usort($detail, function ($a, $b) {
+            return strcmp($a['nama'], $b['nama']);
+        });
 
         return view('preorder.receive-po.cetak-data', compact('title', 'preorder', 'detail'));
     }
@@ -1032,6 +1052,9 @@ class PreOrderController extends Controller
         $title = 'Edit Persetujuan Harga Jual';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
+        usort($detail, function ($a, $b) {
+            return strcmp($a['nama'], $b['nama']);
+        });
 
         return view('preorder.receive-po.persetujuan-harga-jual-edit', compact('title', 'preorder', 'detail'));
     }
@@ -1111,15 +1134,15 @@ class PreOrderController extends Controller
         }
 
         $newData = array_map(function($name, $kode, $harga_pokok, $harga_jual, $mark_up) {
+            $hargaJual = str_replace(['.', ','], '', $harga_jual);
             return [
                 'name' => $name,
                 'kode' => $kode,
                 'harga_pokok' => $harga_pokok,
-                'harga_jual' => $harga_jual,
+                'harga_jual' => $hargaJual,
                 'mark_up' => $mark_up
             ];
         }, $sortName, $sortCode, $sortPrice, $request->harga_jual, $request->mark_up);
-        // masih error data harga_jual dan mark_up pada child
         // dd($newData);
         
         foreach ($newData as $new) {
@@ -1212,7 +1235,11 @@ class PreOrderController extends Controller
         $total = 0;
 
         foreach ($request->input('data') as $item) {
+            // dd($item['order']);
             $product = Product::where('kode', $item['kode'])->first();
+            $product->update([
+                'stok' => (int)$product->stok - $item['order']
+            ]);
 
             // Menghitung field_total
             $field_total = $item['order'] * $item['price'];
@@ -1275,6 +1302,13 @@ class PreOrderController extends Controller
     {
         $retur = Pengembalian::find($id);
         $preorder = Preorder::where('nomor_return', $retur->nomor_return);
+        $detail = json_decode($retur->detail, true);
+        foreach ($detail as $data) {
+            $product = Product::where('kode', $data['kode'])->first();
+            $product->update([
+                'stok' => (int)$product->stok + $data['order']
+            ]);
+        }
 
         $preorder->update([
             'is_return' => null, 

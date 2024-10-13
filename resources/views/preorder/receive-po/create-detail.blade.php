@@ -294,7 +294,7 @@
                                         </form>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.preview-data', $preorder->id) }}" class="btn btn-primary">PROSES</a>
+                                        <a href="{{ route('receive-po.preview-data', $preorder->id) }}" id="proses-button" class="btn btn-primary">PROSES</a>
                                     </div>
                                 </div>
                                 <div class="d-flex">
@@ -404,6 +404,7 @@
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
             const batalButton = document.getElementById('batal-button');
+            const prosesButton = document.getElementById('proses-button');
             // const hapusButton = document.getElementById('hapus-button');
             
             // Get the current price and parse it as a float
@@ -432,6 +433,7 @@
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
                 batalButton.disabled = true;
+                prosesButton.classList.add('disabled-link');
                 // hapusButton.disabled = false;
             } else {
                 // Remove the discount if the checkbox is unchecked
@@ -444,6 +446,7 @@
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
                 batalButton.disabled = false;
+                prosesButton.classList.remove('disabled-link');
                 // hapusButton.disabled = true;
             }
 

@@ -242,7 +242,7 @@ class PembayaranController extends Controller
             return view('pembayaran.hutang.cetak', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'formatTotal'));
         }
 
-        dd('store');
+        // dd('store');
         foreach($getHutang as $data) {
             $tipeData = explode('-', $data['nomor']);
             if ($tipeData[0] == 'RP') {

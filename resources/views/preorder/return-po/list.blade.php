@@ -39,7 +39,7 @@
                                     </thead>
                                     <tbody id="preorderTableBody">
                                         @foreach ($returs as $retur)
-                                            <tr data-id="{{ $retur->supplier->nama }}">
+                                            <tr data-id="{{ $retur->id }}">
                                                 <td class="text-center">{{ $retur->supplier->nama }}</td>
                                                 <td class="text-center">{{ $retur->created_by }}</td>
                                                 <td class="text-center">{{ $retur->date }}</td>
