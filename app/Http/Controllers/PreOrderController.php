@@ -778,6 +778,8 @@ class PreOrderController extends Controller
             ]);
         }
         // dd($preorder);
+        
+        ProductStock::where('tipe', $preorder->nomor_receive)->delete();
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_cancel' => 1]);
         $preorder->update(['is_cancel' => 1]);
 
@@ -991,6 +993,16 @@ class PreOrderController extends Controller
             $product = Product::where('kode', $data['kode'])->first();
             $product->update([
                 'stok' => $data['order'] + (int)$product->stok
+            ]);
+
+            // update product stock
+            ProductStock::create([
+                'tipe' => $preorder->nomor_receive,
+                'tanggal' => now()->format('Y-m-d'),
+                'total' => $data['order'],
+                'kode' => $product->kode,
+                'stok' => (int)$product->stok,
+                'unit_jual' => str_replace('P', '', $product->unit_jual)
             ]);
         }
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_proses' => 1]);
@@ -1241,6 +1253,16 @@ class PreOrderController extends Controller
                 'stok' => (int)$product->stok - $item['order']
             ]);
 
+            // update product stock
+            ProductStock::create([
+                'tipe' => $getNomorReturn,
+                'tanggal' => now()->format('Y-m-d'),
+                'total' => '-' . $item['order'],
+                'kode' => $product->kode,
+                'stok' => (int)$product->stok,
+                'unit_jual' => str_replace('P', '', $product->unit_jual)
+            ]);
+
             // Menghitung field_total
             $field_total = $item['order'] * $item['price'];
             
@@ -1309,12 +1331,13 @@ class PreOrderController extends Controller
                 'stok' => (int)$product->stok + $data['order']
             ]);
         }
-
+        
         $preorder->update([
             'is_return' => null, 
             'nomor_return' => null
         ]);
-
+        
+        ProductStock::where('tipe', $retur->nomor_return)->delete();
         $retur->delete();
 
         return response()->json(['success' => true]);

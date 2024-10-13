@@ -25,6 +25,12 @@
     .col-2 {
         flex: 1 1 20%; /* Adjust width for column with different size */
     }
+    .table thead th {
+        position: sticky; /* Enable sticky positioning */
+        top: 0; /* Stick to the top */
+        background-color: white; /* Background color for header */
+        z-index: 10; /* Ensure the header is above other content */
+    }
 </style>
 
 @section('content')
@@ -140,7 +146,7 @@
                                                 @foreach ($productFlow as $flow)
                                                     @php
                                                         $getTipe = explode('-', $flow['tipe']);
-                                                        if ($getTipe[0] == 'RP') $flow['tipe'] = 'RCV';
+                                                        if ($getTipe[0] == 'RP') $flow['tipe'] = 'RECEIVE';
                                                         else if ($getTipe[0] == 'RR') $flow['tipe'] = 'RETUR';
                                                     @endphp
                                                     <tr>
@@ -156,25 +162,24 @@
                                                                 <td class="text-end"></td>
                                                             @endif
                                                         @endforeach
-                                                        <td class="text-end">@if ($flow['total'] > 0) {{ $flow['total'] }} @endif</td>
-                                                        <td class="text-end">@if ($flow['total'] <= 0) {{ str_replace('-', '', $flow['total']) }} @endif</td>
+                                                        <td class="text-end">@if ($flow['total'] > 0) {{ $flow['total'] * ($flow['unit_jual'] ?? 1) }} @endif</td>
+                                                        <td class="text-end">@if ($flow['total'] <= 0) {{ str_replace('-', '', $flow['total']) * ($flow['unit_jual'] ?? 1) }} @endif</td>
                                                         <td class="text-end"></td>
                                                     </tr>
-                                                    <tr>
-                                                        {{-- <td>{{ now()->format('d/m/Y') . " ' " . $product->supplier->nama }}</td> --}}
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td style="color: red;">SALDO</td>
-                                                        <td class="text-center"><input type="checkbox" name="" id=""></td>
-                                                        @foreach ($allProducts as $prd)
-                                                            {{-- <td class="text-end" style="color: red;">{{ $prd['stok'] }}</td> --}}
+                                                    {{-- @if ($flow['stok'] !== null)
+                                                        <tr>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td style="color: red;">SALDO</td>
+                                                            <td class="text-center"><input type="checkbox" name="" id=""></td>
+                                                            @foreach ($allProducts as $prd)
+                                                                <td class="text-end" style="color: red;"></td>
+                                                            @endforeach
                                                             <td class="text-end" style="color: red;"></td>
-                                                        @endforeach
-                                                        <td class="text-end" style="color: red;"></td>
-                                                        <td class="text-end" style="color: red;"></td>
-                                                        {{-- <td class="text-end" style="color: red;">{{ $totalMasuk }}</td> --}}
-                                                        <td class="text-end" style="color: red;"></td>
-                                                    </tr>
+                                                            <td class="text-end" style="color: red;"></td>
+                                                            <td class="text-end" style="color: red;"></td>
+                                                        </tr>
+                                                    @endif --}}
                                                 @endforeach
                                                 <tr>
                                                     <td></td>
