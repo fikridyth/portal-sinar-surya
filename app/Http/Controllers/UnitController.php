@@ -41,7 +41,7 @@ class UnitController extends Controller
 
         $unit = Unit::create($data);
 
-        return Redirect::route('master.unit.show', $unit->id)
+        return Redirect::route('master.unit.show', enkrip($unit->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Add Unit Success!");
     }
@@ -52,6 +52,7 @@ class UnitController extends Controller
     public function show(string $id)
     {
         $title = 'Show Unit';
+        $id = dekrip($id);
         $unit = Unit::find($id);
 
         return view('master/unit/show', compact('title', 'unit'));
@@ -63,6 +64,7 @@ class UnitController extends Controller
     public function edit(string $id)
     {
         $title = 'Edit Unit';
+        $id = dekrip($id);
         $unit = Unit::find($id);
 
         return view('master/unit/edit', compact('title', 'unit'));
@@ -73,6 +75,7 @@ class UnitController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $id = dekrip($id);
         $unit = Unit::find($id);
 
         $data = [
@@ -81,7 +84,7 @@ class UnitController extends Controller
 
         $unit->update($data);
 
-        return Redirect::route('master.unit.show', $unit->id)
+        return Redirect::route('master.unit.show', enkrip($unit->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Update Unit Success!");
     }
@@ -91,6 +94,7 @@ class UnitController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = dekrip($id);
         Unit::find($id)->delete();
 
         return Redirect::route('master.unit.index')
