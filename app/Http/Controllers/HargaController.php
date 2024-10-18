@@ -19,6 +19,7 @@ class HargaController extends Controller
 
     public function show($id)
     {
+        $id = dekrip($id);
         $title = "Show Master Harga";
         $suppliers = Supplier::where('status', 1)->get();
         $products = Product::where('id_supplier', $id)->where('status', 1)->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
@@ -29,6 +30,7 @@ class HargaController extends Controller
 
     public function update(Request $request, $id)
     {
+        $id = dekrip($id);
         // dd($request->all(), $id);
         Product::find($id)->update([
             'harga_lama' => $request->harga_lama,
@@ -40,7 +42,7 @@ class HargaController extends Controller
             'tanggal_akhir' => $request->tanggal_akhir
         ]);
 
-        return Redirect::route('master.harga.show', $request->id_supplier)
+        return Redirect::route('master.harga.show', enkrip($request->id_supplier))
             ->with('alert.status', '00')
             ->with('alert.message', "Update Harga Success!");
     }
@@ -62,6 +64,7 @@ class HargaController extends Controller
 
     public function showHargaSementara($id)
     {
+        $id = dekrip($id);
         $title = "Show Master Harga";
         $suppliers = Supplier::where('status', 1)->get();
         $products = Product::where('id_supplier', $id)

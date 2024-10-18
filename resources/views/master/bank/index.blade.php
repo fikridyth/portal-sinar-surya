@@ -83,6 +83,7 @@
                     <select required name="bank_milik" class="tipe-select" style="width: 200px;">
                         <option value=""></option>
                         <option value="SENDIRI">SENDIRI</option>
+                        <option value="CABANG">CABANG</option>
                         <option value="LANGGANAN">LANGGANAN</option>
                     </select>    
                 </td>
@@ -129,6 +130,7 @@
                             <select required name="bank_milik" class="tipe-select" style="width: 200px;">
                                 <option value=""></option>
                                 <option value="SENDIRI" ${bankMilik === 'SENDIRI' ? 'selected' : ''}>SENDIRI</option>
+                                <option value="CABANG" ${bankMilik === 'CABANG' ? 'selected' : ''}>CABANG</option>
                                 <option value="LANGGANAN" ${bankMilik === 'LANGGANAN' ? 'selected' : ''}>LANGGANAN</option>
                             </select>    
                         </td>

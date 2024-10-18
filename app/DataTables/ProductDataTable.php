@@ -33,7 +33,7 @@ class ProductDataTable extends DataTable
             return number_format($row->harga_jual);
         })
         ->editColumn('nama', function ($row) {
-            return '<a href="' . route('master.product.show', $row->id) . '">' . $row->nama . '/' . $row->unit_jual . '</a>';
+            return '<a href="' . route('master.product.show', enkrip($row->id)) . '">' . $row->nama . '/' . $row->unit_jual . '</a>';
         })
         ->addColumn('tingkat', function ($row) {
             return $row->kode_sumber === null ? 'SUMBER' : 'ANAK';

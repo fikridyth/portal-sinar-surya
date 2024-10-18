@@ -44,7 +44,7 @@
                         <select class="supplier-select" id="supplierSelect">
                             <option value="">Select Supplier</option>
                             @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
+                                <option value="{{ enkrip($supplier->id) }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                             @endforeach
                         </select>
                     </div>

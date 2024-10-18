@@ -24,12 +24,12 @@
                                 @if (in_array("3", $role))<a href="{{ route('master.departemen.show', enkrip($departemen->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">DEPARTEMEN</a>@endif
                                 @if (in_array("4", $role))<a href="{{ route('master.supplier.show', enkrip($supplier->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">SUPPLIER</a>@endif
                                 @if (in_array("5", $role))<a href="{{ route('master.kunjungan.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KUNJUNGAN</a>@endif
-                                @if (in_array("6", $role))<a href="{{ route('master.product.show', $product->id) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERSEDIAAN</a>@endif
+                                @if (in_array("6", $role))<a href="{{ route('master.product.show', enkrip($product->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERSEDIAAN</a>@endif
                                 @if (in_array("7", $role))<a href="{{ route('master.harga.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HARGA</a>@endif
                                 @if (in_array("8", $role))<a href="{{ route('master.kartu-stok.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KARTU STOK</a>@endif
                                 @if (in_array("9", $role))<a href="{{ route('master.bank.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">BANK</a>@endif
                                 @if (in_array("10", $role))<a href="{{ route('master.giro.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENDAFTARAN GIRO</a>@endif
-                                @if (in_array("11", $role))<a href="{{ route('master.ppn.edit', $ppn->id) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PPN</a>@endif
+                                @if (in_array("11", $role))<a href="{{ route('master.ppn.edit', enkrip($ppn->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PPN</a>@endif
                                 {{-- <a href="{{ route('master.generate-qrcode') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">QR Code</a>
                                 <a href="{{ route('master.generate-barcode') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">Barcode</a> --}}
                             </div>
@@ -45,7 +45,7 @@
                             <div style="display: flex; flex-direction: column;">
                                 @if (in_array("15", $role))<a href="#" class="btn btn-danger disabled-not-blur mb-2">RECEIVE</a>@endif
                                 @if (isset($preorder->id))
-                                    @if (in_array("16", $role))<a href="{{ route('receive-po', $preorder->id) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
+                                    @if (in_array("16", $role))<a href="{{ route('receive-po', enkrip($preorder->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
                                 @else
                                     @if (in_array("16", $role))<a href="#" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
                                 @endif

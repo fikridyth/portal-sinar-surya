@@ -33,7 +33,7 @@
                                             <td class="text-center">{{ $loop->iteration }}</td>
                                             <td>{{ $supplierName }}</td>
                                             @foreach ($items->unique('id_supplier') as $item)
-                                                <td class="text-center"><a href="{{ route('master.harga-sementara.show', $item->id_supplier) }}" class="btn btn-sm btn-primary">PILIH</a></td>
+                                                <td class="text-center"><a href="{{ route('master.harga-sementara.show', enkrip($item->id_supplier)) }}" class="btn btn-sm btn-primary">PILIH</a></td>
                                             @endforeach
                                         </tr>
                                     @endforeach

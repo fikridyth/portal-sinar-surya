@@ -248,7 +248,7 @@
 
         // Calculate profit percentage
         const profitPercentage = calculateProfit(hargaJualValue, hargaPokokValue);
-        profitField.value = `${profitPercentage}`;
+        profitField.value = `${profitPercentage.toFixed(2)}`;
 
         // Format and update fields
         hargaJualProfit.value = formatAsRupiah(parseNumericValue(hargaJualProfit.value));

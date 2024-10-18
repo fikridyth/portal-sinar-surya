@@ -63,8 +63,8 @@
                     <button class="btn btn-primary mx-3" id="data-anak-btn" disabled>DATA ANAK</button>
                     <button class="btn btn-primary mx-3" id="data-sumber-btn">DATA SUMBER</button>
                     <button class="btn btn-success mx-3" id="simpan-btn" disabled>SIMPAN</button>
-                    <a href="{{ route('master.product.child', $product->id) }}" class="btn btn-danger mx-3 batal disabled-link">BATAL</a>
-                    <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-success mx-3 selesai">SELESAI</a>
+                    <a href="{{ route('master.product.child', enkrip($product->id)) }}" class="btn btn-danger mx-3 batal disabled-link">BATAL</a>
+                    <a href="{{ route('master.product.show', enkrip($product->id)) }}" class="btn btn-success mx-3 selesai">SELESAI</a>
                 </div>
             </div>
         </div>

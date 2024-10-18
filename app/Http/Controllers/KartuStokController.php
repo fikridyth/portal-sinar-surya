@@ -18,6 +18,7 @@ class KartuStokController extends Controller
 
     public function show(string $id)
     {
+        $id = dekrip($id);
         $title = 'Show Master Kartu Stok';
         $product = Product::find($id);
         

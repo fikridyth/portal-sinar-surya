@@ -16,7 +16,7 @@
             </div> --}}
         </div>
 
-        <form action="{{ route('master.giro.store', $bank->id) }}" method="POST" class="form"
+        <form action="{{ route('master.giro.store', enkrip($bank->id)) }}" method="POST" class="form"
             enctype="multipart/form-data">
             @csrf
             <div class="container mb-4" style="border: 1px solid #000000; padding: 15px; width: 30%;">

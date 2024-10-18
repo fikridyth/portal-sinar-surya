@@ -37,6 +37,7 @@ class ProductController extends Controller
      */
     public function create($id)
     {
+        $id = dekrip($id);
         $title = 'Create Product';
         $units = Unit::all();
         $product = Product::find($id);
@@ -91,7 +92,7 @@ class ProductController extends Controller
 
         $dataProduct = Product::create($data);
 
-        return Redirect::route('master.product.show', $dataProduct->id)
+        return Redirect::route('master.product.show', enkrip($dataProduct->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Add Product Success!");
     }
@@ -101,6 +102,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
+        $id = dekrip($id);
         $title = 'Show Product';
         $product = Product::find($id);
         $parentProduct = Product::where('kode', $product->kode_sumber)->first();
@@ -113,6 +115,7 @@ class ProductController extends Controller
 
     public function productChildView(string $id)
     {
+        $id = dekrip($id);
         $title = 'Kelompok Product';
         $product = Product::find($id);
         $lastKode = Product::max('kode');
@@ -124,6 +127,7 @@ class ProductController extends Controller
 
     public function productParent(string $id)
     {
+        $id = dekrip($id);
         $title = 'Parent Product';
         $product = Product::find($id);
         $lastKode = Product::max('kode');
@@ -135,6 +139,7 @@ class ProductController extends Controller
 
     public function productChild(string $id)
     {
+        $id = dekrip($id);
         $title = 'Child Product';
         $product = Product::find($id);
         $lastKode = Product::max('kode');
@@ -222,7 +227,7 @@ class ProductController extends Controller
                 $child->save();
             }
 
-            return response()->json(['success' => true, 'id' => $newProduct->id]);
+            return response()->json(['success' => true, 'id' => enkrip($newProduct->id)]);
         } catch (\Exception $e) {
             // Log error
             \Log::error($e->getMessage());
@@ -236,6 +241,7 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
+        $id = dekrip($id);
         $title = 'Edit Product';
         $product = Product::find($id);
         $parentProduct = Product::where('kode', $product->kode_sumber)->first();
@@ -251,6 +257,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $id = dekrip($id);
         // dd($request->all());
         $product = Product::find($id);
         $idSupplier = Supplier::where('nomor', $request->supplier)->first();
@@ -302,7 +309,7 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return Redirect::route('master.product.show', $product->id)
+        return Redirect::route('master.product.show', enkrip($product->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Update Product Success!");
     }
@@ -312,6 +319,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = dekrip($id);
         Product::find($id)->delete();
 
         return Redirect::route('master.product.index')

@@ -30,7 +30,7 @@ class KartuStokDataTable extends DataTable
             return number_format($row->stok, 0);
         })
         ->editColumn('nama', function ($row) {
-            return '<a href="' . route('master.kartu-stok.show', $row->id) . '">' . $row->nama . '/' . $row->unit_jual . '</a>';
+            return '<a href="' . route('master.kartu-stok.show', enkrip($row->id)) . '">' . $row->nama . '/' . $row->unit_jual . '</a>';
         })
         ->addColumn('tingkat', function ($row) {
             return $row->kode_sumber === null ? 'SUMBER' : 'ANAK';

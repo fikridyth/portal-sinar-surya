@@ -45,7 +45,7 @@
                             <option value="{{ $products[0]->id_supplier }}" selected>{{ $products[0]->supplier->nomor }} - {{ $products[0]->supplier->nama }}</option>
                             @foreach ($suppliers as $supplier)
                                 @if ($supplier->id !== $products[0]->id_supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
+                                    <option value="{{ enkrip($supplier->id) }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                 @endif
                             @endforeach
                         </select>
@@ -71,7 +71,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($products as $index => $product)
-                                        <form action="{{ route('master.harga.update', $product->id) }}" method="POST" class="form" enctype="multipart/form-data">
+                                        <form action="{{ route('master.harga.update', enkrip($product->id)) }}" method="POST" class="form" enctype="multipart/form-data">
                                             @csrf
                                             @method('PUT')
                                             <tr>
@@ -80,7 +80,11 @@
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
                                                 <td><input type="number" name="harga_lama" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
                                                 <td><input type="number" name="harga_pokok" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
-                                                <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                @if (isset($product->harga_lama))
+                                                    <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                @else
+                                                    <td>0.00</td>
+                                                @endif
                                                 <td><input type="number" name="harga_jual" required value="{{ $product->harga_jual }}" style="width: 100px;"></td>
                                                 <td><input type="text" class="readonly-input" name="profit" readonly value="{{ $product->profit }}" style="width: 55px;"></td>
                                                 <td><input type="number" name="harga_sementara" required value="{{ $product->harga_sementara ?? 0 }}" style="width: 100px;"></td>

@@ -20,7 +20,7 @@
             </div> --}}
         </div>
 
-        <form action="{{ route('master.product.update', $product->id) }}" method="POST" class="form"
+        <form action="{{ route('master.product.update', enkrip($product->id)) }}" method="POST" class="form"
             enctype="multipart/form-data">
             @csrf
             @method('put')
@@ -489,15 +489,27 @@
                         <input type="text" id="nama_unit" readonly class="form-control readonly-input"
                             value="{{ $product->unit->nama }}" autocomplete="off" />
                     </div>
-                    <div class="col-1">
-                        <a href="{{ route('master.product.child', $parentProduct->id ?? $product->id) }}" style="width: 100px" class="btn btn-primary">ANAK</a>
-                    </div>
-                    <div class="col-1">
-                        <a href="{{ route('master.product.parent', $parentProduct->id ?? $product->id) }}" style="width: 100px" class="btn btn-primary">SUMBER</a>
-                    </div>
-                    <div class="col-1">
-                        <a href="{{ route('master.product.child-view', $parentProduct->id ?? $product->id) }}" style="width: 110px" class="btn btn-primary">KELOMPOK</a>
-                    </div>
+                    @if (isset($parentProduct->id))
+                        <div class="col-1">
+                            <a href="{{ route('master.product.child', enkrip($parentProduct->id)) }}" style="width: 100px" class="btn btn-primary">ANAK</a>
+                        </div>
+                        <div class="col-1">
+                            <a href="{{ route('master.product.parent', enkrip($parentProduct->id)) }}" style="width: 100px" class="btn btn-primary">SUMBER</a>
+                        </div>
+                        <div class="col-1">
+                            <a href="{{ route('master.product.child-view', enkrip($parentProduct->id)) }}" style="width: 110px" class="btn btn-primary">KELOMPOK</a>
+                        </div>
+                    @else
+                        <div class="col-1">
+                            <a href="{{ route('master.product.child', enkrip($product->id)) }}" style="width: 100px" class="btn btn-primary">ANAK</a>
+                        </div>
+                        <div class="col-1">
+                            <a href="{{ route('master.product.parent', enkrip($product->id)) }}" style="width: 100px" class="btn btn-primary">SUMBER</a>
+                        </div>
+                        <div class="col-1">
+                            <a href="{{ route('master.product.child-view', enkrip($product->id)) }}" style="width: 110px" class="btn btn-primary">KELOMPOK</a>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="row">
@@ -588,10 +600,10 @@
 
             <div class="row d-flex justify-content-start mb-7">
                 <div class="col-0-5">
-                    <a href="{{ route('master.product.create', $product->id) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+                    <a href="{{ route('master.product.create', enkrip($product->id)) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
                 </div>
                 <div class="col-0-5">
-                    <a href="{{ route('master.product.edit', $product->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
+                    <a href="{{ route('master.product.edit', enkrip($product->id)) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
                 </div>
                 <div class="col-0-5">
                     <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>
@@ -618,15 +630,15 @@
         // Mengambil elemen input dengan ID 'kode'
         var namaSElement = document.getElementById('nama_sumber');
         var namaBElement = document.getElementById('nama_barang2');
-        
+
         // Mengambil nilai saat ini dari elemen input
         var namaSValue = namaSElement.value;
         var namaBValue = namaBElement.value;
-        
+
         // Menambahkan teks 'hari' ke nilai saat ini
         var namaSNewValue = namaSValue + "/{{ $product->unit_beli }}";
         var namaBNewValue = namaBValue + "/{{ $product->unit_jual }}";
-        
+
         // Mengupdate nilai elemen input
         namaSElement.value = namaSNewValue;
         namaBElement.value = namaBNewValue;

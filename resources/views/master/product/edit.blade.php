@@ -20,7 +20,7 @@
             </div> --}}
         </div>
 
-        <form action="{{ route('master.product.update', $product->id) }}" method="POST" class="form" enctype="multipart/form-data">
+        <form action="{{ route('master.product.update', enkrip($product->id)) }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf
             @method('put')
             <div class="container mb-4" style="border: 1px solid #000000; padding: 15px;">

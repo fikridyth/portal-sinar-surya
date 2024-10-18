@@ -23,7 +23,7 @@
                                 <select class="bank-select" name="id_bank" style="width: 200%;">
                                     <option value="">---Select Bank---</option>
                                     @foreach ($banks as $bank)
-                                        <option value="{{ $bank->id }}">{{ $bank->nama }}</option>
+                                        <option value="{{ $bank->id }}" data-id="{{ enkrip($bank->id) }}">{{ $bank->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -86,7 +86,9 @@
             const rekeningRadios = document.querySelectorAll('input[name="rekening"]');
 
             function updateTable() {
+                const selectedOption = bankSelect.options[bankSelect.selectedIndex];
                 const idBank = bankSelect.value;
+                const dataId = selectedOption.getAttribute('data-id');
                 const rekening = Array.from(rekeningRadios).find(radio => radio.checked)?.value;
 
                 if (idBank && rekening) {
@@ -98,7 +100,7 @@
                             
                             const row1 = document.createElement('tr');
                             row1.innerHTML = `
-                                <td colspan="8" class="text-center"><a href="giro/create/${idBank}" class="btn btn-sm btn-primary">BUAT GIRO BARU</a></td>
+                                <td colspan="8" class="text-center"><a href="giro/create/${dataId}" class="btn btn-sm btn-primary">BUAT GIRO BARU</a></td>
                             `;
                             tbody.appendChild(row1);
 
@@ -111,7 +113,7 @@
                                     <td class="text-center">/ /</td>
                                     <td class="text-center">GIRO</td>
                                     <td class="text-center">${item.status}</td>
-                                    <td class="text-center"><a href="giro/show/${item.id}" class="btn btn-info btn-sm">Detail</a></td>
+                                    <td class="text-center"><a href="giro/show/${item.id_enkrip}" class="btn btn-info btn-sm">Detail</a></td>
                                 `;
                                 tbody.appendChild(row2);
                             });

@@ -88,6 +88,8 @@ class GiroController extends Controller
         // Fetch data from database
         $dataHeader = GiroHeader::where('id_bank', $idBank)->where('kode', $rekening)->orderBy('dari', 'desc')->limit(10)->get();
         foreach ($dataHeader as $data) {
+            $data->id_enkrip = enkrip($data->id);
+            // dd($data);
             $data->status = 'HABIS';
             // Retrieve detail records for the current header
             // $dataDetail = GiroDetail::where('id_bank', $idBank)->where('kode', $rekening)->where('dari', $data->dari)->where('nomor', $data->sampai)->first();
@@ -129,6 +131,7 @@ class GiroController extends Controller
 
     public function create($id)
     {
+        $id = dekrip($id);
         $title = 'Create Giro';
         $bank = Bank::find($id);
         $maxNomor = GiroHeader::max('sampai');
@@ -139,6 +142,7 @@ class GiroController extends Controller
 
     public function store(Request $request, $id)
     {
+        $id = dekrip($id);
         // dd($request->all());
         $total = $request->input('total'); // Total number of records to create
         $count = $request->input('count'); // Number of items per record
@@ -194,6 +198,7 @@ class GiroController extends Controller
 
     public function show($id)
     {
+        $id = dekrip($id);
         $title = 'Detail Giro';
         $giroHeader = GiroHeader::find($id);
         $giroDetail = GiroDetail::where('dari', $giroHeader->dari)->get();

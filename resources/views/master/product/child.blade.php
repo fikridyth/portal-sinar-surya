@@ -63,8 +63,8 @@
                     <button class="btn btn-primary mx-3" id="data-anak-btn">DATA ANAK</button>
                     <button class="btn btn-primary mx-3" id="data-sumber-btn" disabled>DATA SUMBER</button>
                     <button class="btn btn-success mx-3" id="simpan-btn" disabled>SIMPAN</button>
-                    <a href="{{ route('master.product.child', $product->id) }}" class="btn btn-danger mx-3 batal disabled-link">BATAL</a>
-                    <a href="{{ route('master.product.show', $product->id) }}" class="btn btn-success mx-3 selesai">SELESAI</a>
+                    <a href="{{ route('master.product.child', enkrip($product->id)) }}" class="btn btn-danger mx-3 batal disabled-link">BATAL</a>
+                    <a href="{{ route('master.product.show', enkrip($product->id)) }}" class="btn btn-success mx-3 selesai">SELESAI</a>
                 </div>
             </div>
         </div>
@@ -93,9 +93,9 @@
                 <td class='kode_sumber_value'>${product.kode}</td>
                 <td class='tipe_data' id='tipe_data'>ANAK</td>
                 <td class='unit_beli_value' data-unit-beli='${formatCurrency(product.unit_beli)}'>P${formatCurrency(product.unit_beli)}</td>
-                <td><input type="text" class='unit_jual_value' size="5" name="unit_jual" value="1" /></td>
+                <td><input type="text" class='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="1" /></td>
                 <td class='konversi_value'>${formatCurrency(product.unit_beli)}.00</td>
-                <td class='harga_beli_value' name='harga_beli'>${new Intl.NumberFormat().format(product.harga_pokok / formatCurrency(product.unit_beli))}</td>
+                <td class='harga_beli_value' name='harga_beli'>${new Intl.NumberFormat().format(Math.floor(product.harga_pokok / formatCurrency(product.unit_beli)))}</td>
                 <td><input type="text" size="7" name="harga_jual" class="harga_jual_value" value="${new Intl.NumberFormat().format(product.harga_jual / formatCurrency(product.unit_beli))}" /></td>
                 <td></td>
             </tr>
@@ -168,9 +168,9 @@
 
         if (unitJual !== 0) {
             // Calculate conversion rate
-            const konversi = unitBeli / unitJual;
+            const konversi = Math.floor(unitBeli / unitJual);
             // Calculate updated harga beli
-            const hargaBeliUpdate = hargaBeliParentElement / konversi;
+            const hargaBeliUpdate = Math.floor(hargaBeliParentElement / konversi);
         // console.log(konversiElement, hargaBeliParentElement, konversi, hargaBeliUpdate)
 
             // Update HTML elements

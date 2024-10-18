@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="d-flex justify-content-center mt-4">
-                        <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                        <div style="overflow-x: auto; height: 600px; border: 1px solid #ccc;">
                             <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                 <thead>
                                     <tr style="border: 1px solid black; font-size: 12px;">
@@ -79,6 +79,9 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <a href="{{ route('master.harga-sementara.index') }}" class="btn btn-danger">KEMBALI</a>
                     </div>
                 </div>
             </div>
