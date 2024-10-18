@@ -16,7 +16,7 @@
             </div> --}}
         </div>
 
-        <form action="{{ route('master.departemen.update', $departemen->id) }}" method="POST" class="form"
+        <form action="{{ route('master.departemen.update', enkrip($departemen->id)) }}" method="POST" class="form"
             enctype="multipart/form-data">
             @csrf
             @method('put')

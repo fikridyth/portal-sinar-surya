@@ -27,7 +27,7 @@ class DepartemenDataTable extends DataTable
             return $row->unit->nama;
         })
         ->editColumn('nama', function ($row) {
-            return '<a href="' . route('master.departemen.show', $row->id) . '">' . $row->nama . '</a>';
+            return '<a href="' . route('master.departemen.show', enkrip($row->id)) . '">' . $row->nama . '</a>';
         })
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');

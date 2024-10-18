@@ -28,7 +28,7 @@
                                 <label class="form-label h6 mt-2" for="kode">NOMOR SUPPLIER</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="nomor" value="{{ old('nomor') }}"
+                                <input type="text" name="nomor" required value="{{ old('nomor') }}"
                                     class="form-control @error('nomor') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -40,7 +40,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">WILAYAH</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="wilayah" value="{{ old('wilayah') }}"
+                                <input type="text" name="wilayah" required value="{{ old('wilayah') }}"
                                     class="form-control @error('wilayah') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -55,7 +55,7 @@
                                 <label class="form-label h6 mt-2" for="kode">NAMA SUPPLIER</label>
                             </div>
                             <div class="col-7">
-                                <input type="text" name="nama" value="{{ old('nama') }}"
+                                <input type="text" name="nama" required value="{{ old('nama') }}"
                                     class="form-control @error('nama') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -67,7 +67,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">KONTAK - 1</label>
                             </div>
                             <div class="col-7">
-                                <input type="text" name="kontak" value="{{ old('kontak') }}"
+                                <input type="text" name="kontak" required value="{{ old('kontak') }}"
                                     class="form-control @error('kontak') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -82,7 +82,7 @@
                                 <label class="form-label h6 mt-2" for="kode">ALAMAT - 1</label>
                             </div>
                             <div class="col-7">
-                                <input type="text" name="alamat1" value="{{ old('alamat1') }}"
+                                <input type="text" name="alamat1" required value="{{ old('alamat1') }}"
                                     class="form-control @error('alamat1') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -271,7 +271,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">KUNJUNGAN SALESMAN</label>
                             </div>
                             <div class="col-2">
-                                <input type="text" name="waktu_kunjungan" value="{{ old('waktu_kunjungan') }}"
+                                <input type="text" name="waktu_kunjungan" required value="{{ old('waktu_kunjungan') }}"
                                     class="form-control @error('waktu_kunjungan') is-invalid @enderror text-end"
                                     autocomplete="off" />
                             </div>
@@ -283,7 +283,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">HARI</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="hari" value="{{ old('hari') }}"
+                                <input type="text" name="hari" required value="{{ old('hari') }}"
                                     class="form-control @error('hari') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -310,7 +310,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">STOK MINIMUM</label>
                             </div>
                             <div class="col-2">
-                                <input type="text" name="stok_minimum" value="{{ old('stok_minimum') }}"
+                                <input type="text" name="stok_minimum" required value="{{ old('stok_minimum') }}"
                                     class="form-control @error('stok_minimum') is-invalid @enderror text-end"
                                     autocomplete="off" />
                             </div>
@@ -340,7 +340,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">STOK MAKSIMUM</label>
                             </div>
                             <div class="col-2">
-                                <input type="text" name="stok_maksimum" value="{{ old('stok_maksimum') }}"
+                                <input type="text" name="stok_maksimum" required value="{{ old('stok_maksimum') }}"
                                     class="form-control @error('stok_maksimum') is-invalid @enderror text-end"
                                     autocomplete="off" />
                             </div>
@@ -370,7 +370,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">PENJUALAN RATA2</label>
                             </div>
                             <div class="col-2">
-                                <input type="text" name="penjualan_rata" value="{{ old('penjualan_rata') }}"
+                                <input type="text" name="penjualan_rata" required value="{{ old('penjualan_rata') }}"
                                     class="form-control @error('penjualan_rata') is-invalid @enderror text-end"
                                     autocomplete="off" />
                             </div>

@@ -27,7 +27,7 @@ class SupplierDataTable extends DataTable
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
         })
         ->editColumn('nama', function ($row) {
-            return '<a href="' . route('master.supplier.show', $row->id) . '">' . $row->nama . '</a>';
+            return '<a href="' . route('master.supplier.show', enkrip($row->id)) . '">' . $row->nama . '</a>';
         })
         ->addColumn('action', function ($row) {
             $btnEdit = '<a href="' . route('master.supplier.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';

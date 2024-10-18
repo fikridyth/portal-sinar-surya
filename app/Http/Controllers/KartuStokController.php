@@ -54,6 +54,7 @@ class KartuStokController extends Controller
         foreach ($allProducts as $prd) {
             $productFlows = ProductStock::select('tipe', 'tanggal', 'total', 'kode', 'stok', 'unit_jual')
                 ->where('kode', $prd['kode'])
+                ->whereNotNull('total')
                 ->get();
 
             // Menggabungkan hasil ke dalam array

@@ -73,10 +73,10 @@
 
             <div class="row d-flex justify-content-start mb-7">
                 <div class="col-0-5">
-                    <a href="{{ route('master.departemen.create', $departemen->id) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+                    <a href="{{ route('master.departemen.create', enkrip($departemen->id)) }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
                 </div>
                 <div class="col-0-5">
-                    <a href="{{ route('master.departemen.edit', $departemen->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
+                    <a href="{{ route('master.departemen.edit', enkrip($departemen->id)) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
                 </div>
                 <div class="col-0-5">
                     <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>

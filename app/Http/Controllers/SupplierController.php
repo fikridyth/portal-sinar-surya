@@ -53,19 +53,19 @@ class SupplierController extends Controller
             'kontak1' => $request->kontak1,
             'no_telp' => $request->no_telp,
             'fax' => $request->fax,
-            'tcrd' => $request->tcrd,
+            'tcrd' => $request->tcrd ?? 0,
             'npwp' => $request->npwp,
             'hp' => $request->hp,
-            'disc' => $request->disc,
+            'disc' => $request->disc ?? 0,
             'tanda' => $request->tanda,
             'waktu_kunjungan' => $request->waktu_kunjungan,
             'hari' => $request->hari,
             'stok_minimum' => $request->stok_minimum,
             'stok_maksimum' => $request->stok_maksimum,
             'penjualan_rata' => $request->penjualan_rata,
-            'materai' => $request->materai,
-            'koli' => $request->koli,
-            'bonus' => $request->bonus,
+            'materai' => $request->materai ?? 0,
+            'koli' => $request->koli ?? 0,
+            'bonus' => $request->bonus ?? 0,
             'rpus' => $request->rpus,
             'is_ppn' => ($request->ppn === 'on') ? 1 : 0,
             'status' => 1
@@ -73,7 +73,7 @@ class SupplierController extends Controller
 
         $supplier = Supplier::create($data);
 
-        return Redirect::route('master.supplier.show', $supplier->id)
+        return Redirect::route('master.supplier.show', enkrip($supplier->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Add Supplier Success!");
     }
@@ -83,6 +83,7 @@ class SupplierController extends Controller
      */
     public function show(string $id)
     {
+        $id = dekrip($id);
         $title = 'Show Supplier';
         $supplier = Supplier::find($id);
 
@@ -94,6 +95,7 @@ class SupplierController extends Controller
      */
     public function edit(string $id)
     {
+        $id = dekrip($id);
         $title = 'Edit Supplier';
         $supplier = Supplier::find($id);
 
@@ -106,6 +108,7 @@ class SupplierController extends Controller
     public function update(Request $request, string $id)
     {
         // dd($request->all());
+        $id = dekrip($id);
         $supplier = Supplier::find($id);
 
         $data = [
@@ -139,7 +142,7 @@ class SupplierController extends Controller
 
         $supplier->update($data);
 
-        return Redirect::route('master.supplier.show', $supplier->id)
+        return Redirect::route('master.supplier.show', enkrip($supplier->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Update Supplier Success!");
     }
@@ -149,6 +152,7 @@ class SupplierController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = dekrip($id);
         Supplier::find($id)->delete();
 
         return Redirect::route('master.supplier.index')
@@ -240,6 +244,7 @@ class SupplierController extends Controller
 
     public function updateMaterai($id)
     {
+        $id = dekrip($id);
         $supplier = Supplier::find($id);
         if ($supplier->materai == 10000) $supplier->update(['materai' => 0]);
         else $supplier->update(['materai' => 10000]);
@@ -249,6 +254,7 @@ class SupplierController extends Controller
 
     public function indexHistoryPo($id)
     {
+        $id = dekrip($id);
         $title = 'Master History Preorder';
         $supplier = Supplier::find($id);
         $suppliers = Supplier::all();

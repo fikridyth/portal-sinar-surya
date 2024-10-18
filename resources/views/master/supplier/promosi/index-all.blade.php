@@ -16,7 +16,7 @@
             <div class="card-body">
                 <div class="d-flex justify-content-center mb-4">
                     {{-- <button type="button" id="tambahButton" class="btn btn-primary btn-tambah" onclick="addPromosi()">TAMBAH</button> --}}
-                    <a href="{{ route('master.supplier.show', 1) }}" class="btn btn-danger mx-2">KEMBALI</a>
+                    <a href="{{ route('master.supplier.show', enkrip(1)) }}" class="btn btn-danger mx-2">KEMBALI</a>
                 </div>
                 
                 <form id="promoForm" action="{{ route('master.promosi.store') }}" method="POST" class="form">

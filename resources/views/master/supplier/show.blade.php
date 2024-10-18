@@ -241,7 +241,7 @@
                         </div>
                         <div class="col-1"></div>
                         <div class="col-4">
-                            <a href="{{ route('master.history-preorder.index', $supplier->id) }}" class="btn btn-sm btn-primary">SEJARAH PEMBELIAN</a>
+                            <a href="{{ route('master.history-preorder.index', enkrip($supplier->id)) }}" class="btn btn-sm btn-primary">SEJARAH PEMBELIAN</a>
                         </div>
                     </div>
                 </div>
@@ -523,7 +523,7 @@
                 <a href="{{ route('master.supplier.create') }}" class="btn btn-success" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
             </div>
             <div class="col-0-5">
-                <a href="{{ route('master.supplier.edit', $supplier->id) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
+                <a href="{{ route('master.supplier.edit', enkrip($supplier->id)) }}" class="btn btn-warning" title="EDIT DATA"><i class="fas fa-edit"></i></a>
             </div>
             <div class="col-0-5">
                 <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>

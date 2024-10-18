@@ -27,7 +27,7 @@ class MateraiDataTable extends DataTable
             return number_format($row->materai, 0);
         })
         ->addColumn('action', function ($row) {
-            $editUrl = route('master.materai.update', $row->id);
+            $editUrl = route('master.materai.update', enkrip($row->id));
             $csrfToken = csrf_token();
             $methodPut = method_field('PUT');
 

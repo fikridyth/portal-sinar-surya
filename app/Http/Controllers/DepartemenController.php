@@ -56,7 +56,7 @@ class DepartemenController extends Controller
 
         $departemen = Departemen::create($data);
 
-        return Redirect::route('master.departemen.show', $departemen->id)
+        return Redirect::route('master.departemen.show', enkrip($departemen->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Add Departemen Success!");
     }
@@ -66,6 +66,7 @@ class DepartemenController extends Controller
      */
     public function show(string $id)
     {
+        $id = dekrip($id);
         $title = 'Show Departemen';
         $departemen = Departemen::find($id);
 
@@ -78,6 +79,7 @@ class DepartemenController extends Controller
     public function edit(string $id)
     {
         $title = 'Edit Unit';
+        $id = dekrip($id);
         $departemen = Departemen::find($id);
         $units = Unit::all();
 
@@ -89,6 +91,7 @@ class DepartemenController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $id = dekrip($id);
         $departemen = Departemen::find($id);
 
         $data = [
@@ -98,7 +101,7 @@ class DepartemenController extends Controller
 
         $departemen->update($data);
 
-        return Redirect::route('master.departemen.show', $departemen->id)
+        return Redirect::route('master.departemen.show', enkrip($departemen->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Update Departemen Success!");
     }
@@ -108,6 +111,7 @@ class DepartemenController extends Controller
      */
     public function destroy(string $id)
     {
+        $id = dekrip($id);
         Departemen::find($id)->delete();
 
         return Redirect::route('master.departemen.index')
