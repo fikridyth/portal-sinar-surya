@@ -90,7 +90,7 @@
                                                             <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
                                                             <td class="text-end">{{ number_format($product['harga_jual']) }}</td>
                                                             <td class="text-end">{{ $product['mark_up'] }}</td>
-                                                            <td class="text-center"><a href="{{ route('persetujuan-harga-jual-edit', $product['id']) }}" class="btn btn-sm btn-primary">DETAIL</a></td>
+                                                            <td class="text-center"><a href="{{ route('persetujuan-harga-jual-edit', enkrip($product['id'])) }}" class="btn btn-sm btn-primary">DETAIL</a></td>
                                                         </tr>
                                                     @endforeach
                                                 @endif

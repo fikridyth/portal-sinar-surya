@@ -36,7 +36,7 @@
                                 <td class="text-start">{{ $po->supplier->nama }}</td>
                                 <td class="text-end">{{ number_format($po->grand_total) }}</td>
                                 <td class="text-center">
-                                    <a href="{{ route('persetujuan-harga-jual-edit', $po->id) }}"
+                                    <a href="{{ route('persetujuan-harga-jual-edit', enkrip($po->id)) }}"
                                         class="btn btn-primary btn-sm mx-2">Detail</a>
                                 </td>
                             </tr>

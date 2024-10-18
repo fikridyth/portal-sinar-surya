@@ -132,7 +132,7 @@
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
+                    var redirectUrl = @json(route('receive-po.create-detail', enkrip($preorder->id)));
                     window.location.href = redirectUrl;
                 } else {
                     alert(`Validation Errors:\n${result.errors.join('\n')}`);

@@ -78,6 +78,7 @@ class UserController extends Controller
 
     public function editRole($id)
     {
+        $id = dekrip($id);
         $title = "Edit Role";
         $role = Role::find($id);
         $listRole = explode(',', $role->otorisasi);
@@ -87,6 +88,7 @@ class UserController extends Controller
 
     public function updateRole(Request $request, $id)
     {
+        $id = dekrip($id);
         $role = Role::find($id);
         $otoritasValue = implode(',', $request->value);
         $role->update(['otorisasi' => $otoritasValue]);

@@ -14,7 +14,7 @@
         </div>
 
         {{-- <form action="{{ route('persetujuan-harga-jual-update', $preorder->id) }}" method="POST" class="form"> --}}
-        <form action="{{ route('receive-po.update', $preorder->id) }}" method="POST" class="form" enctype="multipart/form-data">
+        <form action="{{ route('receive-po.update', enkrip($preorder->id)) }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="card">
@@ -66,10 +66,10 @@
                     </table>
                     <div class="d-flex justify-content-center align-items-center mt-4">
                         <div class="mx-2">
-                            <a class="btn btn-danger" href="{{ route('receive-po.create-detail', $preorder->id) }}">KEMBALI</a>
+                            <a class="btn btn-danger" href="{{ route('receive-po.create-detail', enkrip($preorder->id)) }}">KEMBALI</a>
                         </div>
                         <div class="mx-2">
-                            <a href="{{ route('receive-po.cetak', $preorder->id) }}" target="_blank" class="btn btn-warning">CETAK</a>
+                            <a href="{{ route('receive-po.cetak', enkrip($preorder->id)) }}" target="_blank" class="btn btn-warning">CETAK</a>
                         </div>
                         <div class="mx-2">
                             <button type="submit" class="btn btn-primary">PROSES</button>

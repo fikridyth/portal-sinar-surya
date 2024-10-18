@@ -281,7 +281,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
                                     <div class="mx-2">
-                                        <form action="{{ route('create-receive.cancel-receive', $preorder->id) }}" method="POST" class="form" id="myForm">
+                                        <form action="{{ route('create-receive.cancel-receive', enkrip($preorder->id)) }}" method="POST" class="form" id="myForm">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>

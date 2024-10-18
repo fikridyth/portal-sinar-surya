@@ -32,7 +32,7 @@
                                         <tr>
                                             <td>{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</td>
                                             <td>{{ $role->nama }}</td>
-                                            <td class="text-center"><a href="{{ route('master.role.edit', $role->id) }}" class="btn btn-sm btn-primary">Ubah</a></td>
+                                            <td class="text-center"><a href="{{ route('master.role.edit', enkrip($role->id)) }}" class="btn btn-sm btn-primary">Ubah</a></td>
                                         </tr>
                                     @endforeach
                                 </tbody>

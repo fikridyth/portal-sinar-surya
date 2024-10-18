@@ -286,15 +286,15 @@
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
-                                    <div class="mx-2">
-                                        <form action="{{ route('create-receive.cancel-receive', $preorder->id) }}" method="POST" class="form" id="myForm">
+                                    {{-- <div class="mx-2">
+                                        <form action="{{ route('create-receive.cancel-receive', enkrip($preorder->id)) }}" method="POST" class="form" id="myForm">
                                             @csrf
                                             @method('PUT')
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
                                         </form>
-                                    </div>
+                                    </div> --}}
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.preview-data', $preorder->id) }}" id="proses-button" class="btn btn-primary">PROSES</a>
+                                        <a href="{{ route('receive-po.preview-data', enkrip($preorder->id)) }}" id="proses-button" class="btn btn-primary">PROSES</a>
                                     </div>
                                 </div>
                                 <div class="d-flex">
@@ -498,7 +498,7 @@
                         success: function(response) {
                             // Handle success response
                             if (response.success) {
-                                var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
+                                var redirectUrl = @json(route('receive-po.create-detail', enkrip($preorder->id)));
                                 window.location.href = redirectUrl;
                             } else {
                                 // Handle error response if needed
@@ -577,7 +577,7 @@
                         success: function(response) {
                             // Handle success response
                             if (response.success) {
-                                var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
+                                var redirectUrl = @json(route('receive-po.create-detail', enkrip($preorder->id)));
                                 window.location.href = redirectUrl;
                             } else {
                                 // Handle error response if needed

@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-    <form action="{{ route('master.role.update', $role->id) }}" class="form" enctype="multipart/form-data" method="POST">
+    <form action="{{ route('master.role.update', enkrip($role->id)) }}" class="form" enctype="multipart/form-data" method="POST">
         @csrf
         @method('PUT')
         <div class="d-flex justify-content-center">

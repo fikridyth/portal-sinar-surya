@@ -30,8 +30,8 @@ class ReceiveDataTable extends DataTable
                 return $row->receive_type . 0;
             })
             ->addColumn('action', function ($row) {
-                $detailUrl = route('receive-po.create-detail', $row->id);
-                $doneUrl = route('receive-po.done-detail', $row->id);
+                $detailUrl = route('receive-po.create-detail', enkrip($row->id));
+                $doneUrl = route('receive-po.done-detail', enkrip($row->id));
                 if ($row->nomor_bukti == null && $row->is_proses == null) {
                     return '<a href="' . $detailUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
                 } else if ($row->nomor_bukti == null && $row->is_proses == 1) {

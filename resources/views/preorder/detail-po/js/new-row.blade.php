@@ -125,7 +125,7 @@
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
-                    var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                    var redirectUrl = @json(route('daftar-po.edit', enkrip($preorder->id)));
                     window.location.href = redirectUrl;
                 } else {
                     alert(`Validation Errors:\n${result.errors.join('\n')}`);

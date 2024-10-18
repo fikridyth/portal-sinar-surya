@@ -493,7 +493,7 @@
                         success: function(response) {
                             // Handle success response
                             if (response.success) {
-                                var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                                var redirectUrl = @json(route('daftar-po.edit', enkrip($preorder->id)));
                                 window.location.href = redirectUrl;
                             } else {
                                 // Handle error response if needed
@@ -570,7 +570,7 @@
                         success: function(response) {
                             // Handle success response
                             if (response.success) {
-                                var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
+                                var redirectUrl = @json(route('daftar-po.edit', enkrip($preorder->id)));
                                 window.location.href = redirectUrl;
                             } else {
                                 // Handle error response if needed

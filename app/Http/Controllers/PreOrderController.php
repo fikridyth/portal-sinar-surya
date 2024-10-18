@@ -419,6 +419,7 @@ class PreOrderController extends Controller
 
     public function showDaftarPo($id)
     {
+        $id = dekrip($id);
         $title = 'Show PreOrder';
         $preorder = Preorder::find($id);
 
@@ -427,6 +428,7 @@ class PreOrderController extends Controller
 
     public function cetakDaftarPo($id)
     {
+        $id = dekrip($id);
         $title = 'Cetak PreOrder';
         $preorder = Preorder::find($id);
         $preorder->update(['is_cetak' => $preorder->is_cetak + 1]);
@@ -436,6 +438,7 @@ class PreOrderController extends Controller
 
     public function editDaftarPo($id)
     {
+        $id = dekrip($id);
         $title = 'Edit PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
@@ -550,7 +553,10 @@ class PreOrderController extends Controller
 
         foreach ($request->input('data') as $item) {
             $product = Product::where('kode', $item['kode'])->first();
-            $product->update(['harga_pokok' => $item['price']]);
+            $product->update([
+                'harga_lama' => $product->harga_pokok,
+                'harga_pokok' => $item['price']
+            ]);
             // $supplier = Supplier::where('id', $product->id_supplier)->first();
             $getChild = Product::where('kode_sumber', $product->kode)->get();
             $totalStok = 0;
@@ -676,7 +682,10 @@ class PreOrderController extends Controller
         ]);
         
         $product = Product::where('kode', $request->kode)->first();
-        $product->update(['harga_pokok' => $request->price]);
+        $product->update([
+            'harga_lama' => $product->harga_pokok,
+            'harga_pokok' => $request->price
+        ]);
 
         return response()->json([
             'success' => true,
@@ -769,6 +778,7 @@ class PreOrderController extends Controller
 
     public function cancelReceive($id)
     {
+        $id = dekrip($id);
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
         foreach ($detail as $data) {
@@ -839,6 +849,7 @@ class PreOrderController extends Controller
 
     public function receivePo($id)
     {
+        $id = dekrip($id);
         $title = 'Receive PO';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
@@ -932,7 +943,7 @@ class PreOrderController extends Controller
         
         Hutang::create($data);
 
-        return redirect()->route('receive-po.create-detail', $preorder->id);
+        return redirect()->route('receive-po.create-detail', enkrip($preorder->id));
         // return redirect()->route('receive-po.create-detail', $id);
     }
 
@@ -951,6 +962,7 @@ class PreOrderController extends Controller
 
     public function createDetailReceivePo($id)
     {
+        $id = dekrip($id);
         $title = 'Detail Receive PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
@@ -963,6 +975,7 @@ class PreOrderController extends Controller
 
     public function doneDetailReceivePo($id)
     {
+        $id = dekrip($id);
         $title = 'Detail Receive PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
@@ -975,6 +988,7 @@ class PreOrderController extends Controller
 
     public function previewDataReceivePo($id)
     {
+        $id = dekrip($id);
         $title = 'Preview Receive PO';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
@@ -987,6 +1001,7 @@ class PreOrderController extends Controller
 
     public function updateReceivePo($id)
     {
+        $id = dekrip($id);
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
         foreach ($detail as $data) {
@@ -1015,6 +1030,7 @@ class PreOrderController extends Controller
 
     public function cetakReceivePo($id)
     {
+        $id = dekrip($id);
         $title = 'Cetak Receive PO';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
@@ -1061,6 +1077,7 @@ class PreOrderController extends Controller
 
     public function editPersetujuanHargaJual($id)
     {
+        $id = dekrip($id);
         $title = 'Edit Persetujuan Harga Jual';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
@@ -1091,7 +1108,7 @@ class PreOrderController extends Controller
         return response()->json(['products' => $products]);
     }
 
-    public function updatePersetujuanHargaJual(Request $request, $id)
+    public function updatePersetujuanHargaJual(Request $request)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
@@ -1162,7 +1179,7 @@ class PreOrderController extends Controller
             // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
             $product->update([
-                'harga_pokok' => $new['harga_pokok'],
+                // 'harga_pokok' => $new['harga_pokok'],
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
                 'updated_at' => now()
@@ -1216,7 +1233,7 @@ class PreOrderController extends Controller
     {
         $title = 'Return PO';
         $suppliers = Supplier::where('status', 1)->get();
-        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->get();
+        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->whereNull('is_cancel')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
