@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <form action="{{ route('pembayaran-hutang.process-final', $supplier->id) }}" method="POST" class="form">
+        <form action="{{ route('pembayaran-hutang.process-final', enkrip($supplier->id)) }}" method="POST" class="form">
             @csrf
             <div class="card">
                 <div class="card-body">

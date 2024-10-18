@@ -48,7 +48,7 @@
                                     <td class="text-end">{{ number_format($piutang->bonus, 0) }}</td>
                                     <td class="text-end">{{ number_format($piutang->materai, 0) ?? 0 }}</td>
                                     <td class="text-end">{{ number_format($piutang->total + $piutang->materai) }}</td>
-                                    <td class="text-center"><input type="checkbox" class="proses-detail" data-id="{{ $piutang->id }}"></td>
+                                    <td class="text-center"><input type="checkbox" class="proses-detail" data-id="{{ enkrip($piutang->id) }}"></td>
                                     <td class="text-center"><input type="checkbox" class="proses-batal" data-id="{{ $piutang->id }}"></td>
                                 </tr>
                             @endforeach

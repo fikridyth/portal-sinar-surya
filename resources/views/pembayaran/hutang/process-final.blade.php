@@ -13,7 +13,7 @@
             </div>
         </div>
         
-        <form action="{{ route('pembayaran-hutang.store', $supplier->id) }}" method="POST" class="form" id="myForm">
+        <form action="{{ route('pembayaran-hutang.store', enkrip($supplier->id)) }}" method="POST" class="form" id="myForm">
             @csrf
             <div class="d-flex justify-content-center mb-4">
                 <div class="card" style="width: 50%;">

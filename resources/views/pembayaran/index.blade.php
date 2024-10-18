@@ -43,7 +43,7 @@
                                 <div class="col-8">
                                     <select id="bank-select" class="bank-select btn-block">
                                         @foreach ($banks as $bank)
-                                            <option value="{{ $bank->id }}" data-no-rekening="{{ $bank->no_rekening }}">{{ $bank->nama }}</option>
+                                            <option value="{{ $bank->id }}" data-id="{{ enkrip($bank->id) }}" data-no-rekening="{{ $bank->no_rekening }}">{{ $bank->nama }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -114,8 +114,9 @@
                                 <div class="d-flex flex-column" style="width: 20%;">
                                     <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
                                     {{-- <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a> --}}
-                                    <a href="#" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
+                                    <a href="#" id="button-cetak" target="_blank" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     {{-- <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a> --}}
+                                    <a href="#" class="btn btn-sm btn-danger mb-2" onclick="event.preventDefault(); window.location.reload();">REFRESH</a>
                                     <form id="delete-form" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
@@ -183,8 +184,8 @@
                                             <td class="keterangan_bayar" style="background-color: {{ $pmb->is_cetak !== null ? 'rgba(255, 0, 0, 0.2)' : 'transparent' }};">
                                                 {{ $pmb->nomor_giro }}
                                             </td>
-                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
                                             <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
                                         </tr>
                                         @if ($pmb->nomor_bukti)
@@ -229,10 +230,11 @@
             let selectedIds = [];
             $('.input-check').change(function () {
                 const id = $(this).data('id');
+                const enkripId = $(this).data('enkrip');
                 if ($(this).is(':checked')) {
                     const selectedBankId = $('#bank-select').val();
 
-                    var redirectUrl = `{{ route('pembayaran.show', '') }}/${id}?bank_id=${selectedBankId}`;
+                    var redirectUrl = `{{ route('pembayaran.show', '') }}/${enkripId}?bank_id=${selectedBankId}`;
                     window.location.href = redirectUrl;
 
                     selectedIds.push(id);
@@ -282,12 +284,14 @@
 
             $('.input-gabung').change(function () {
                 const id = $(this).data('id');
+                const enkripId = $(this).data('enkrip');
                 if ($(this).is(':checked')) {
                     if (!selectedIdg.includes(id)) {
                         initiallyLoadedIds.push(id);
                     }
 
-                    const selectedBankId = $('#bank-select').val();
+                    // const selectedBankId = $('#bank-select').val();
+                    const selectedBankId = $('#bank-select option:selected').data('id');
                     $('#button-gabung').removeClass('disabled-link');
                     $('#button-gabung').attr('href', `{{ route('pembayaran.show-gabung', '') }}/${initiallyLoadedIds.join(',')}?bank_id=${selectedBankId}`);
 

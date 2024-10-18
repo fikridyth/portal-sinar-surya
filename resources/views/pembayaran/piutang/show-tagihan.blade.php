@@ -51,7 +51,7 @@
                 </form>
                 <div class="d-flex justify-content-center align-items-center mt-4">
                     <div class="mx-2">
-                        <a href="{{ route('daftar-tagihan.cetak', $piutang->id) }}" class="btn btn-primary">CETAK</a>
+                        <a href="{{ route('daftar-tagihan.cetak', enkrip($piutang->id)) }}" class="btn btn-primary">CETAK</a>
                     </div>
                     <div class="mx-2">
                         <a href="{{ route('daftar-tagihan.index') }}" class="btn btn-danger">BATAL</a>

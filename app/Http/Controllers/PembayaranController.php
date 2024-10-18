@@ -44,6 +44,7 @@ class PembayaranController extends Controller
 
     public function showHutang($id)
     {
+        $id = dekrip($id);
         $title = 'Detail Pembayaran Hutang';
 
         $supplier = Supplier::find($id);
@@ -91,6 +92,7 @@ class PembayaranController extends Controller
 
     public function processHutang(Request $request, $id)
     {
+        $id = dekrip($id);
         $title = 'Proses Pembayaran Hutang';
 
         
@@ -110,7 +112,7 @@ class PembayaranController extends Controller
         $selectedIndicesString = implode($request->input('selectedIndices', '[]'));
         $selectedIndices = json_decode($selectedIndicesString, true);
         if (empty($selectedIndices)) {
-            return redirect()->route('pembayaran-hutang.show', $supplier->id)->with('alert.status', '99')->with('alert.message', 'KODE HARUS DIPILIH!');
+            return redirect()->route('pembayaran-hutang.show', enkrip($supplier->id))->with('alert.status', '99')->with('alert.message', 'KODE HARUS DIPILIH!');
         }
 
         // Sample $allData from request
@@ -167,6 +169,7 @@ class PembayaranController extends Controller
 
     public function processFinalHutang(Request $request, $id)
     {
+        $id = dekrip($id);
         $title = 'Proses Pembayaran Hutang';
         $supplier = Supplier::find($id);
         $dataArray = array_filter($request->all(), function($value) {
@@ -213,6 +216,7 @@ class PembayaranController extends Controller
 
     public function storeHutang(Request $request, $id)
     {
+        $id = dekrip($id);
         // dd($request->all(), $id);
         $dataArray = array_filter($request->all(), function($value) {
             return is_array($value);
@@ -293,6 +297,7 @@ class PembayaranController extends Controller
 
     public function detailHutangHapus($id)
     {
+        $id = dekrip($id);
         $title = 'Detail Hapus Pembayaran Hutang';
         $pembayaran = Pembayaran::find($id);
         $hutang = Hutang::select('nomor_receive as nomor', 'grand_total as total')
@@ -329,6 +334,7 @@ class PembayaranController extends Controller
 
     public function destroyHutang($id)
     {
+        $id = dekrip($id);
         $pembayaran = Pembayaran::find($id);
 
         Hutang::where('nomor_bukti', $pembayaran->nomor_bukti)->update(['nomor_bukti' => null]);
@@ -354,6 +360,7 @@ class PembayaranController extends Controller
 
     public function show(Request $request, $id)
     {
+        $id = dekrip($id);
         $title = 'Detail Pembayaran';
         $pembayaran = Pembayaran::find($id);
         $bank = Bank::find($request->bank_id);
@@ -364,6 +371,8 @@ class PembayaranController extends Controller
 
     public function showGabung(Request $request, $ids)
     {
+        // $ids = dekrip($ids);
+        $request->bank_id = dekrip($request->bank_id);
         $title = 'Detail Pembayaran';
         $bank = Bank::find($request->bank_id);
         $giros = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->get();
@@ -822,6 +831,7 @@ class PembayaranController extends Controller
 
     public function showKonfirmasi(Request $request)
     {
+        $request->id_supplier = dekrip($request->id_supplier);
         $title = 'Show Konfirmasi Pembayaran';
         $supplier = Supplier::find($request->id_supplier);
 

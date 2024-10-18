@@ -403,7 +403,7 @@
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
-            const batalButton = document.getElementById('batal-button');
+            // const batalButton = document.getElementById('batal-button');
             const prosesButton = document.getElementById('proses-button');
             // const hapusButton = document.getElementById('hapus-button');
             
@@ -432,7 +432,7 @@
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
-                batalButton.disabled = true;
+                // batalButton.disabled = true;
                 prosesButton.classList.add('disabled-link');
                 // hapusButton.disabled = false;
             } else {
@@ -445,7 +445,7 @@
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
-                batalButton.disabled = false;
+                // batalButton.disabled = false;
                 prosesButton.classList.remove('disabled-link');
                 // hapusButton.disabled = true;
             }

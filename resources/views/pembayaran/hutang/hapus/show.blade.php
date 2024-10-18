@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <form action="{{ route('pembayaran-hutang.destroy-hutang', $pembayaran->id) }}" method="POST" class="form" id="myForm"">
+        <form action="{{ route('pembayaran-hutang.destroy-hutang', enkrip($pembayaran->id)) }}" method="POST" class="form" id="myForm"">
             @csrf
             @method('DELETE')
             <div class="d-flex justify-content-center mb-4">

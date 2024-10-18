@@ -90,6 +90,7 @@ class PiutangController extends Controller
 
     public function showTagihan($id)
     {
+        $id = dekrip($id);
         $title = "Detail Tagihan Langganan";
         $piutang = Piutang::find($id);
         
@@ -98,6 +99,7 @@ class PiutangController extends Controller
 
     public function cetakTagihan($id)
     {
+        $id = dekrip($id);
         $title = "Cetak Tagihan Langganan";
         $piutang = Piutang::find($id);
         

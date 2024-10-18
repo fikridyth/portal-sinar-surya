@@ -41,10 +41,10 @@
 
         tambahButton.addEventListener('click', function() {
             const simpanButton = document.getElementById('simpan-button');
-            const batalButton = document.getElementById('batal-button');
+            // const batalButton = document.getElementById('batal-button');
             const prosesButton = document.getElementById('proses-button');
             simpanButton.disabled = false;
-            batalButton.disabled = true;
+            // batalButton.disabled = true;
             prosesButton.classList.add('disabled-link');
 
             index++;

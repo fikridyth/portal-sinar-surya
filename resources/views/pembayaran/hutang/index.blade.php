@@ -27,7 +27,7 @@
                     <tbody>
                         @foreach ($getSupplier as $supplier)
                             <tr>
-                                <td><a href="{{ route('pembayaran-hutang.show', $supplier->id) }}" class="mx-2">{{ $supplier->nama }}</a></td>
+                                <td><a href="{{ route('pembayaran-hutang.show', enkrip($supplier->id)) }}" class="mx-2">{{ $supplier->nama }}</a></td>
                                 <td>{{ $supplier->alamat1 }}</td>
                                 <td>{{ $supplier->alamat2 }}</td>
                         </tr>

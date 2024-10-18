@@ -287,9 +287,9 @@
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
                                         </form>
                                     </div>
-                                    <div class="mx-2">
+                                    {{-- <div class="mx-2">
                                         <button type="button" disabled class="btn btn-primary">PROSES</button>
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
