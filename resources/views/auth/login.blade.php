@@ -54,13 +54,13 @@
                                 @csrf
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <input type="text" name="username" id="loginUsername" class="form-control" autofocus
-                                        placeholder="ENTER A VALID USERNAME" autocomplete="off" required style="text-transform: uppercase;"/>
+                                        placeholder="ENTER USERNAME" autocomplete="off" required style="text-transform: uppercase;"/>
                                     <label class="form-label">USERNAME</label>
                                 </div>
 
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <input type="password" name="password" id="loginPassword" class="form-control"
-                                        placeholder="ENTER A VALID PASSWORD" autocomplete="off" required style="text-transform: uppercase;" />
+                                        placeholder="ENTER PASSWORD" autocomplete="off" required style="text-transform: uppercase;" />
                                     <label class="form-label">PASSWORD</label>
                                 </div>
 

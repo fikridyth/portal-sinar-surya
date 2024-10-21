@@ -1,3 +1,6 @@
+{{-- PWA --}}
+<link rel="manifest" href="/manifest.json">
+
 <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/zen-favicon.png') }}">
 <!-- Font Awesome -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />

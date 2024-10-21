@@ -15,6 +15,15 @@
 
 {{-- Validation --}}
 <script>
+    window.onload = () => {
+        'use strict';
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                    .register('./sw.js');
+        }
+    }
+
     $(document).ready(function() {
         $('#tab-register').change(function() {
             $('#registerEmail, #registerPassword').val('');
