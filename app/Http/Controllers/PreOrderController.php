@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ReceiveDataTable;
+use App\DataTables\ReceiveDoneDataTable;
+use App\DataTables\SearchProductDataTable;
 use App\Models\Hutang;
 use App\Models\Pembayaran;
 use App\Models\Pengembalian;
@@ -791,9 +793,12 @@ class PreOrderController extends Controller
         
         ProductStock::where('tipe', $preorder->nomor_receive)->delete();
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_cancel' => 1]);
-        $preorder->update(['is_cancel' => 1]);
+        $preorder->update([
+            'is_cancel' => 1,
+            'is_proses' => null
+        ]);
 
-        return Redirect::route('daftar-receive-po')->with('alert.status', '0')->with('alert.message', "DATA RECEIVE BERHASIL DI CANCEL!");
+        return Redirect::route('daftar-receive-done-po')->with('alert.status', '0')->with('alert.message', "DATA RECEIVE BERHASIL DI CANCEL!");
     }
 
     public function setDiskon(Request $request, $id)
@@ -882,6 +887,55 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
     }
 
+    public function addProductReceivePo(SearchProductDataTable $dataTable, $id)
+    {
+        $id = dekrip($id);
+        $title = 'Add Product';
+
+        return $dataTable->render('preorder.add-product.index', compact('title', 'id'));
+    }
+
+    public function updateProductReceivePo(Request $request, $id)
+    {
+        $id = dekrip($id);
+        $ppnValue = Ppn::pluck('ppn')->first();
+        $preorder = Preorder::find($id);
+        $supplier = Supplier::find($preorder->id_supplier);
+        $detail = json_decode($preorder->detail, true);
+
+        $selectedIds = $request->input('selected_ids', []);
+        foreach ($selectedIds as $sId) {
+            $product = Product::find($sId);
+            
+            $detail[] = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => $product->stok,
+                'order' => 1,
+                'price' => $product->harga_pokok,
+                'field_total' => 1 * $product->harga_pokok,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+            ];
+        }
+        $preorder->detail = json_encode($detail);
+        $preorder->save();
+
+        if ($preorder->receive_type == 'A') {
+            return redirect()->route('daftar-po.edit', enkrip($id));
+        } else {
+            return redirect()->route('receive-po.create-detail', enkrip($id));
+        }
+    }
+
     public function getPreorderData(Request $request)
     {
         $kode_supplier = $request->query('kode');
@@ -915,6 +969,7 @@ class PreOrderController extends Controller
                 'ppn_global' => $oldPo->ppn_global,
                 'grand_total' => $oldPo->grand_total,
                 'diskon_global' => $oldPo->diskon_global,
+                'is_cancel' => 1
             ]);
 
             $oldPo->update(['is_receive' => 1]);
@@ -928,6 +983,7 @@ class PreOrderController extends Controller
                 'date_first' => $request->tanggal_po,
                 'receive_type' => 'B',
                 'is_receive' => 1,
+                'is_cancel' => 1
             ]);
         }
 
@@ -1021,7 +1077,10 @@ class PreOrderController extends Controller
             ]);
         }
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_proses' => 1]);
-        $preorder->update(['is_proses' => 1]);
+        $preorder->update([
+            'is_proses' => 1,
+            'is_cancel' => null
+        ]);
 
         return Redirect::route('daftar-receive-po')
             ->with('alert.status', '00')
@@ -1048,6 +1107,15 @@ class PreOrderController extends Controller
 
         // return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
         return $dataTable->render('preorder.receive-po.daftar-receive-po', compact('title'));
+    }
+
+    public function daftarReceiveDonePo(ReceiveDoneDataTable $dataTable)
+    {
+        $title = 'Daftar Receive Done';
+        // $preorders = Preorder::where('receive_type', 'B')->get();
+
+        // return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
+        return $dataTable->render('preorder.receive-po.daftar-receive-done-po', compact('title'));
     }
 
     // public function storePembayaran(Request $request)

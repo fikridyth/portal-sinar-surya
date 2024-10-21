@@ -465,4 +465,18 @@ class ProductController extends Controller
             ->with('alert.status', '00')
             ->with('alert.message', "Barcode Berhasil Generate!");
     }
+
+    public function getDetailProducts($kode)
+    {
+        // $product = Product::where('kode_alternatif', $kode)->first();
+        $product = Product::where('kode_alternatif', $kode)->first();
+        if (isset($product)) {
+            $idProduct = enkrip($product->id);
+            return response()->json(['product' => $idProduct]);
+        } else {
+            return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
+        }
+
+        return response()->json(['product' => $product]);
+    }
 }

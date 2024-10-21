@@ -271,6 +271,10 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
+                                                    <tr>
+                                                        <td colspan="13"><a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" class="btn btn-success">TAMBAH</a></td>
+                                                        {{-- <td colspan="13"><button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button></td> --}}
+                                                    </tr>
                                                 @else
                                                     <tr class="fs-need"></tr>
                                                 @endif
@@ -285,12 +289,12 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
-                                    <div class="mx-2">
+                                    {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
                                     </div>
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
-                                    </div>
+                                    </div> --}}
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
                                     </div> --}}
@@ -373,12 +377,12 @@
 
 @section('scripts')
     @include('preorder.detail-po.js.netto')
-    @include('preorder.detail-po.js.new-row')
+    {{-- @include('preorder.detail-po.js.new-row') --}}
     <script>
         function confirmAlertBonus(event, text, formId) {
             event.preventDefault();
             Swal.fire({
-                title: 'Notification',
+                title: 'Notifikasi',
                 text: text,
                 icon: 'warning',
                 showCancelButton: true,
@@ -403,7 +407,7 @@
             // Get the netto element by its ID
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
-            const tambahButton = document.getElementById('tambah-button');
+            // const tambahButton = document.getElementById('tambah-button');
             // const hapusButton = document.getElementById('hapus-button');
 
             // Get the current price and parse it as a float
@@ -430,7 +434,7 @@
                 button.style.display = 'inline-block';
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
-                tambahButton.disabled = true;
+                // tambahButton.disabled = true;
                 // hapusButton.disabled = false;
             } else {
                 // Remove the discount if the checkbox is unchecked
@@ -441,7 +445,7 @@
                 button.style.display = 'none';
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
-                tambahButton.disabled = false;
+                // tambahButton.disabled = false;
                 // hapusButton.disabled = true;
             }
 
@@ -471,7 +475,7 @@
             };
 
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Notifikasi?',
                 text: 'Apakah kamu yakin ingin menghapus item ini?',
                 icon: 'warning',
                 showCancelButton: true,
@@ -513,7 +517,7 @@
         function handleSaveClick(button) {
             // Extract the index from the button's ID
             const index = button.id.split('-')[2];
-            const tambahButton = document.getElementById('tambah-button');
+            // const tambahButton = document.getElementById('tambah-button');
             const buttonId = `delete-save-${index}`;
             const deleteButton = document.getElementById(buttonId);
             const buttonBId = `bonus-save-${index}`;
@@ -548,7 +552,7 @@
             };
 
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Notifikasi?',
                 text: 'Apakah kamu yakin ingin menyimpan item ini?',
                 icon: 'warning',
                 showCancelButton: true,

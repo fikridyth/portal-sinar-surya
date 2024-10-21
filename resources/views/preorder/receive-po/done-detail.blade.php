@@ -307,7 +307,7 @@
                                         <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                     </div> --}}
                                     <div class="mx-2">
-                                        <a class="btn btn-danger" href="{{ route('daftar-receive-po') }}">KEMBALI</a>
+                                        <a class="btn btn-danger" href="{{ route('daftar-receive-done-po') }}">KEMBALI</a>
                                     </div>
                                 </div>
                             </div>
@@ -371,7 +371,7 @@
         function confirmAlertBonus(event, text, formId) {
             event.preventDefault();
             Swal.fire({
-                title: 'Notification',
+                title: 'Notifikasi',
                 text: text,
                 icon: 'warning',
                 showCancelButton: true,
@@ -467,7 +467,7 @@
             };
 
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Notifikasi?',
                 text: 'Apakah kamu yakin ingin menghapus item ini?',
                 icon: 'warning',
                 showCancelButton: true,
@@ -546,7 +546,7 @@
             };
 
             Swal.fire({
-                title: 'Are you sure?',
+                title: 'Notifikasi?',
                 text: 'Apakah kamu yakin ingin menyimpan item ini?',
                 icon: 'warning',
                 showCancelButton: true,

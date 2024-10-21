@@ -109,14 +109,14 @@
                             </div>
                         </div>
                         <div class="form-group col-7">
-                            <div class="d-flex mb-2 align-items-center">
+                            <div class="d-flex mb-2">
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
                                     <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
-                                    {{-- <a href="#" id="button-bayar" class="btn btn-sm btn-danger mb-2 disabled-link">BAYAR CABANG</a> --}}
                                     <a href="#" id="button-cetak" target="_blank" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     {{-- <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a> --}}
                                     <a href="#" class="btn btn-sm btn-danger mb-2" onclick="event.preventDefault(); window.location.reload();">REFRESH</a>
+                                    <a href="{{ route('pembayaran.cabang-index') }}" class="btn btn-sm btn-danger mb-2">BAYAR CABANG</a>
                                     <form id="delete-form" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
@@ -436,7 +436,7 @@
         function confirmAlertId(event, text, id) {
             event.preventDefault();
             Swal.fire({
-                title: 'Notification',
+                title: 'Notifikasi',
                 text: text,
                 icon: 'warning',
                 showCancelButton: true,

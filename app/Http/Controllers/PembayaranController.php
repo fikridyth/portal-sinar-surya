@@ -6,11 +6,13 @@ use App\DataTables\HistoryHutangDataTable;
 use App\DataTables\HutangDataTable;
 use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
+use App\Models\Cabang;
 use App\Models\GiroDetail;
 use App\Models\HistoryPembayaran;
 use App\Models\Hutang;
 use App\Models\HutangCetak;
 use App\Models\Pembayaran;
+use App\Models\PembayaranSecond;
 use App\Models\Pengembalian;
 use App\Models\Preorder;
 use App\Models\Promosi;
@@ -352,7 +354,7 @@ class PembayaranController extends Controller
     public function index()
     {
         $title = 'List Pembayaran';
-        $pembayarans = Pembayaran::whereNull('is_bayar')->orderByRaw('CASE WHEN id_parent IS NOT NULL THEN 0 ELSE 1 END')->get();
+        $pembayarans = Pembayaran::whereNull('is_bayar')->whereNull('is_hold')->orderByRaw('CASE WHEN id_parent IS NOT NULL THEN 0 ELSE 1 END')->get();
         $banks = Bank::where('status', 1)->whereHas('giro')->orderByRaw('CASE WHEN nama = "MAYORA S" THEN 0 ELSE 1 END')->get();
         
         return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
@@ -922,5 +924,62 @@ class PembayaranController extends Controller
         // dd($request->all(), $pembayarans);
         
         return view('pembayaran.konfirmasi.show', compact('title', 'supplier', 'pembayarans', 'historypmb'));
+    }
+
+    public function indexCabang()
+    {
+        $title = 'List Cabang';
+        $pembayarans = Pembayaran::whereNull('is_bayar')->whereNotNull('is_hold')->get();
+        return view('pembayaran.cabang.index', compact('title', 'pembayarans'));
+    }
+
+    public function browseCabang()
+    {
+        $title = 'Browse Cabang';
+        $cabangs = Cabang::all();
+        return view('pembayaran.cabang.browse', compact('title', 'cabangs'));
+    }
+
+    public function showCabang($id)
+    {
+        $id = dekrip($id);
+        $title = 'Show Cabang';
+        $cabang = Cabang::find($id);
+        $suppliers = Supplier::orderBy('nama', 'asc')->get();
+        $listBayar = PembayaranSecond::where('id_cabang', $id)->whereNull('id_parent')->where('tipe_giro', 'CABANG')->whereNull('is_send')->get();
+        return view('pembayaran.cabang.show', compact('title', 'cabang', 'listBayar', 'suppliers'));
+    }
+
+    public function storeCabang(Request $request)
+    {
+        $bayar = PembayaranSecond::find($request->nomor_bukti);
+        $supplier = Supplier::where('nomor', $request->data)->first();
+        Pembayaran::create([
+            'id_supplier' => $supplier->id,
+            'date' => $bayar->date,
+            'total' => $bayar->total,
+            'ppn' => $bayar->ppn,
+            'grand_total' => $bayar->grand_total,
+            'nomor_bukti' => $bayar->nomor_bukti,
+            'tipe_giro' => 'CABANG',
+            'is_hold' => 1
+        ]);
+        $bayar->update(['is_send' => 1]);
+
+        return Redirect::route('pembayaran.cabang-index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Add Pembayaran Cabang Success!");
+    }
+
+    public function updateCabang(Request $request)
+    {
+        foreach ($request->input('id') as $id) {
+            $bayar = Pembayaran::find($id);
+            $bayar->update(['is_hold' => null]);
+        }
+
+        return Redirect::route('pembayaran.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Update Pembayaran Cabang Success!");
     }
 }

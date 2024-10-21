@@ -53,7 +53,7 @@
                             <form action="{{ route('auth.login-submit') }}" method="POST" class="form">
                                 @csrf
                                 <div data-mdb-input-init class="form-outline mb-4">
-                                    <input type="text" name="username" id="loginUsername" class="form-control"
+                                    <input type="text" name="username" id="loginUsername" class="form-control" autofocus
                                         placeholder="ENTER A VALID USERNAME" autocomplete="off" required style="text-transform: uppercase;"/>
                                     <label class="form-label">USERNAME</label>
                                 </div>

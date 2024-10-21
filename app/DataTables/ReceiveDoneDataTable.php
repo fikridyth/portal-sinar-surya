@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class ReceiveDataTable extends DataTable
+class ReceiveDoneDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -21,7 +21,7 @@ class ReceiveDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->where('receive_type', 'B')->whereNotNull('is_cancel')->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->where('receive_type', 'B')->whereNull('is_cancel')->orderBy('created_at', 'desc')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier->nama;
@@ -31,11 +31,11 @@ class ReceiveDataTable extends DataTable
             })
             ->addColumn('action', function ($row) {
                 $detailUrl = route('receive-po.create-detail', enkrip($row->id));
-                // $doneUrl = route('receive-po.done-detail', enkrip($row->id));
+                $doneUrl = route('receive-po.done-detail', enkrip($row->id));
                 if ($row->nomor_bukti == null && $row->is_proses == null) {
                     return '<a href="' . $detailUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
-                // } else if ($row->nomor_bukti == null && $row->is_proses == 1) {
-                //     return '<a href="' . $doneUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
+                } else if ($row->nomor_bukti == null && $row->is_proses == 1) {
+                    return '<a href="' . $doneUrl . '" class="btn btn-primary btn-sm mx-2">DETAIL</a>';
                 } else {
                     return '<button disabled class="btn btn-primary btn-sm mx-2">DETAIL</button>';
                 }

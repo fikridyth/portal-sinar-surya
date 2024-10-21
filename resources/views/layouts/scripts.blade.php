@@ -88,8 +88,8 @@
         const formId = 'delete-form-' + row_id;
 
         Swal.fire({
-            title: 'Notification',
-            text: "Delete Data?",
+            title: 'Notifikasi',
+            text: "Hapus Data?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -107,7 +107,7 @@
     function confirmAlert(event, text) {
         event.preventDefault();
         Swal.fire({
-            title: 'Notification',
+            title: 'Notifikasi',
             text: text,
             icon: 'warning',
             showCancelButton: true,

@@ -56,10 +56,13 @@ Route::middleware('auth')->group(function () {
     // Receive
     Route::get('/receive-po/{id}/show', [PreOrderController::class, 'receivePo'])->name('receive-po');
     Route::get('/receive-po/create', [PreOrderController::class, 'createReceivePo'])->name('receive-po.create');
+    Route::get('/receive-po/add-product/{id}', [PreOrderController::class, 'addProductReceivePo'])->name('receive-po.add-product');
+    Route::put('/receive-po/add-product/update/{id}', [PreOrderController::class, 'updateProductReceivePo'])->name('receive-po.add-product.update');
     Route::get('/receive-get-preorder-data', [PreOrderController::class, 'getPreorderData']);
     Route::post('/store-receive-data', [PreOrderController::class, 'storeReceiveData'])->name('receive-po.store');
     Route::delete('/destroy-receive-data', [PreOrderController::class, 'destroyReceiveData'])->name('receive-po.destroy');
     Route::get('/daftar-receive-po', [PreOrderController::class, 'daftarReceivePo'])->name('daftar-receive-po');
+    Route::get('/daftar-receive-done-po', [PreOrderController::class, 'daftarReceiveDonePo'])->name('daftar-receive-done-po');
     Route::get('/receive-po/create-detail/{id}', [PreOrderController::class, 'createDetailReceivePo'])->name('receive-po.create-detail');
     Route::get('/receive-po/done-detail/{id}', [PreOrderController::class, 'doneDetailReceivePo'])->name('receive-po.done-detail');
     Route::get('/receive-po/preview-data/{id}', [PreOrderController::class, 'previewDataReceivePo'])->name('receive-po.preview-data');
@@ -113,6 +116,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran/param-cetak-payment/{ids}', [PembayaranController::class, 'paramCetakPayment'])->name('pembayaran.param-cetak-payment');
     Route::get('/pembayaran/cetak-payment/{ids}', [PembayaranController::class, 'cetakPayment'])->name('pembayaran.cetak-payment');
     Route::get('/pembayaran/konfirmasi-payment/{ids}', [PembayaranController::class, 'konfirmasiPayment'])->name('pembayaran.konfirmasi-payment');
+    Route::get('/pembayaran-cabang', [PembayaranController::class, 'indexCabang'])->name('pembayaran.cabang-index');
+    Route::get('/pembayaran/cabang/browse', [PembayaranController::class, 'browseCabang'])->name('pembayaran.cabang.browse');
+    Route::get('/pembayaran/cabang/show/{id}', [PembayaranController::class, 'showCabang'])->name('pembayaran.cabang.show');
+    Route::post('/pembayaran/cabang/store', [PembayaranController::class, 'storeCabang'])->name('pembayaran.cabang.store');
+    Route::post('/pembayaran/cabang/update', [PembayaranController::class, 'updateCabang'])->name('pembayaran.cabang.update');
 
     // Konfirmasi
     Route::get('/pembayaran-konfirmasi', [PembayaranController::class, 'indexKonfirmasi'])->name('pembayaran-konfirmasi.index');
@@ -185,6 +193,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
+        Route::get('/get-detail-products/{kode}', [ProductController::class, 'getDetailProducts']);
 
         // Stock Opname
         Route::get('/product-opname', [ProductController::class, 'stockOpname'])->name('opname');

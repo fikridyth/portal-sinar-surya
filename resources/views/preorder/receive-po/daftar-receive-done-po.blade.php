@@ -15,7 +15,7 @@
 
         <div class="card">
             <div class="card-body">
-                {{-- <h5 class="text-center">DAFTAR PENERIMAAN BARANG</h5> --}}
+                <h5 class="text-center">DAFTAR PENERIMAAN BARANG</h5>
                 {{ $dataTable->table() }}
                 <div class="text-center">
                     <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
