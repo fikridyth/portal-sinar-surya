@@ -26,7 +26,7 @@
                                 <label class="form-label h6 mt-2 text-center" for="nama_sumber">INPUT PARAMETER (ISI RANGE 0 - 10)</label>
                             </div>
                             <div class="col-4 mt-2">
-                                <input type="number" min="0" max="10" name="param" class="form-control" autocomplete="off" />
+                                <input type="number" min="0" max="10" name="param" class="form-control" required autocomplete="off" />
                                 <input type="text" hidden name="ids" value="{{ $ids }}">
                             </div>
                         </div>

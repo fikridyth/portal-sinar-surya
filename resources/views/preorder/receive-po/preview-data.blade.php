@@ -69,7 +69,7 @@
                             <a class="btn btn-danger" href="{{ route('receive-po.create-detail', enkrip($preorder->id)) }}">KEMBALI</a>
                         </div>
                         <div class="mx-2">
-                            <a href="{{ route('receive-po.cetak', enkrip($preorder->id)) }}" target="_blank" class="btn btn-warning">CETAK</a>
+                            <a href="{{ route('receive-po.cetak', enkrip($preorder->id)) }}" class="btn btn-warning">CETAK</a>
                         </div>
                         <div class="mx-2">
                             <button type="submit" class="btn btn-primary">PROSES</button>

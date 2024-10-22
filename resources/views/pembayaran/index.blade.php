@@ -113,7 +113,7 @@
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
                                     <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
-                                    <a href="#" id="button-cetak" target="_blank" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
+                                    <a href="{{ route('pembayaran.list-cetak-payment.index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
                                     {{-- <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a> --}}
                                     <a href="#" class="btn btn-sm btn-danger mb-2" onclick="event.preventDefault(); window.location.reload();">REFRESH</a>
                                     <a href="{{ route('pembayaran.cabang-index') }}" class="btn btn-sm btn-danger mb-2">BAYAR CABANG</a>
@@ -309,16 +309,20 @@
 
             setupOnRouteAccess(); // Call the setup function to initialize
             
-            if (selectedIds.length !== 0 && selectedIdg.length == 0) {
-                $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0);
-                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
-            } else if (selectedIds.length == 0 && selectedIdg.length !== 0) {
-                $('#button-cetak').toggleClass('disabled-link', selectedIdg.length === 0);
-                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIdg.join(',')}`);
-            } else if (selectedIds.length !== 0 && selectedIdg.length !== 0) {
-                $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0 || selectedIdg.length === 0);
-                $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')},${selectedIdg.join(',')}`);
+            if (selectedIds.length !== 0 || selectedIdg.length == 0) {
+                $('#button-cetak').removeClass('disabled-link');
             }
+
+            // if (selectedIds.length !== 0 && selectedIdg.length == 0) {
+            //     $('#button-cetak').removeClass('disabled-link', selectedIds.length === 0);
+            //     $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')}`);
+            // } else if (selectedIds.length == 0 && selectedIdg.length !== 0) {
+            //     $('#button-cetak').toggleClass('disabled-link', selectedIdg.length === 0);
+            //     $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIdg.join(',')}`);
+            // } else if (selectedIds.length !== 0 && selectedIdg.length !== 0) {
+            //     $('#button-cetak').toggleClass('disabled-link', selectedIds.length === 0 || selectedIdg.length === 0);
+            //     $('#button-cetak').attr('href', `{{ route('pembayaran.param-cetak-payment', '') }}/${selectedIds.join(',')},${selectedIdg.join(',')}`);
+            // }
 
             let selectedIdk = [];
             $('.input-konfirmasi').change(function () {

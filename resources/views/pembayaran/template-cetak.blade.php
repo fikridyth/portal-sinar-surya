@@ -14,24 +14,24 @@
         <div class="col-6">
             @foreach ($pembayaran1 as $bayar)
                 <hr class="dashed-line">
-                <div class="">TANGGAL : {{ \Carbon\Carbon::parse($bayar[0]->date)->format('d/m/Y') }}</div>
+                <div class="">TANGGAL : {{ \Carbon\Carbon::parse($bayar['data'][0]->date)->format('d/m/Y') }}</div>
                 <div class="row">
-                    <div class="col-8">{{ $bayar[0]->supplier->nama }}</div>
+                    <div class="col-8">{{ $bayar['data'][0]->supplier->nama }}</div>
                     <div class="col-4 d-flex justify-content-end">
                         {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}@php $counter+=2; @endphp</div>
                 </div>
                 <div class="row">
                     <div class="col-1">T</div>
-                    <div class="col-2">-{{ $bayar[0]->nomor_giro }}</div>
-                    <div class="col-5 d-flex justify-content-end">{{ $bayar[0]->date_last }}</div>
-                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->total_with_materai) }}
+                    <div class="col-2">{{ $bayar['data'][0]->nomor_giro }}</div>
+                    <div class="col-5 d-flex justify-content-end">{{ $bayar['data'][0]->date_last }}</div>
+                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar['data'][0]->total_with_materai) }}
                     </div>
                 </div>
-                @if (isset($bayar[1]))
+                @if (isset($bayar['data'][1]))
                     <div class="row">
                         <div class="col-3"></div>
-                        <div class="col-5 d-flex justify-content-end">{{ $bayar[1]->nomor_giro }}</div>
-                        <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[1]->total_with_materai) }}
+                        <div class="col-5 d-flex justify-content-end">{{ $bayar['data'][1]->nomor_giro }}</div>
+                        <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar['data'][1]->total_with_materai) }}
                         </div>
                     </div>
                 @else
@@ -93,25 +93,25 @@
         <div class="col-6">
             @foreach ($pembayaran2 as $index => $bayar)
                 <hr class="dashed-line">
-                <div class="">TANGGAL : {{ \Carbon\Carbon::parse($bayar[0]->date)->format('d/m/Y') }}</div>
+                <div class="">TANGGAL : {{ \Carbon\Carbon::parse($bayar['data'][0]->date)->format('d/m/Y') }}</div>
                 <div class="row">
-                    <div class="col-8">{{ $bayar[0]->supplier->nama }}</div>
+                    <div class="col-8">{{ $bayar['data'][0]->supplier->nama }}</div>
                     <div class="col-4 d-flex justify-content-end">
                         {{ str_pad($counterGenap, 3, 0, STR_PAD_LEFT) }}@php $counterGenap+=2; @endphp</div>
                 </div>
                 <div class="row">
                     <div class="col-1">T</div>
-                    <div class="col-2">-{{ $bayar[0]->nomor_giro }}</div>
-                    <div class="col-5 d-flex justify-content-end">{{ $bayar[0]->date_last }}</div>
-                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar[0]->total_with_materai) }}
+                    <div class="col-2">{{ $bayar['data'][0]->nomor_giro }}</div>
+                    <div class="col-5 d-flex justify-content-end">{{ $bayar['data'][0]->date_last }}</div>
+                    <div class="col-4 d-flex justify-content-end">RP. {{ number_format($bayar['data'][0]->total_with_materai) }}
                     </div>
                 </div>
-                @if (isset($bayar[1]))
+                @if (isset($bayar['data'][1]))
                     <div class="row">
                         <div class="col-3"></div>
-                        <div class="col-5 d-flex justify-content-end">{{ $bayar[1]->nomor_giro }}</div>
+                        <div class="col-5 d-flex justify-content-end">{{ $bayar['data'][1]->nomor_giro }}</div>
                         <div class="col-4 d-flex justify-content-end">RP.
-                            {{ number_format($bayar[1]->total_with_materai) }}</div>
+                            {{ number_format($bayar['data'][1]->total_with_materai) }}</div>
                     </div>
                 @else
                     <div class="row">

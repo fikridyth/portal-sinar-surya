@@ -214,28 +214,28 @@
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-center"><input type="number" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
+                                                    <td class="text-center"><input type="text" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                             </tbody>
                                             <tbody id="transfer-table" style="display: none;">
                                                 <tr>
-                                                    <td class="text-center"><input type="text" id="value6" name="giro_payment" style="width: 100px;" 
+                                                    <td class="text-center"><input type="text" id="value6" name="transfer_payment" style="width: 100px;" 
                                                         value="{{ number_format($pembayaran->grand_total, 0, ',', '.') }}" oninput="updateValue7()" onkeyup="formatInputNumber(this)">
                                                     </td>
                                                     <td>TRANSFER</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    {{-- <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td> --}}
-                                                    <td class="text-center"><input type="text" id="value7" name="giro_tunai_payment" style="width: 100px;" 
+                                                    {{-- <td class="text-center"><input type="text" id="value4" name="transfer_tunai_payment" style="width: 100px;" value="0" oninput="updateValue5()"></td> --}}
+                                                    <td class="text-center"><input type="text" id="value7" name="transfer_tunai_payment" style="width: 100px;" 
                                                         value="0" oninput="updateValue8()" onkeyup="formatInputNumber(this)">
                                                     <td>TUNAI</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="text-center"><input type="number" class="readonly-input" id="value8" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
+                                                    <td class="text-center"><input type="text" class="readonly-input" id="value8" name="transfer_other_income" readonly style="width: 100px;" value="0"></td>
                                                     <td>OTHER INCOME</td>
                                                     <td class="text-center"><input class="form-check-input" style="opacity: 1;" type="checkbox" disabled checked></td>
                                                 </tr>

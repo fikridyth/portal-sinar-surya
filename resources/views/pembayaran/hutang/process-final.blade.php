@@ -103,7 +103,7 @@
                                 <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
                             </div>
                             <div class="mx-2">
-                                <button type="submit" name="tipe" value="cetak" class="btn btn-warning" onclick="setTarget('_blank')">CETAK</button>
+                                <button type="submit" name="tipe" value="cetak" class="btn btn-warning" onclick="setTarget('_self')">CETAK</button>
                             </div>
                             <div class="mx-2">
                                 @if ($isCetak->is_cetak == 1)

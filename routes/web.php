@@ -113,6 +113,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/pembayaran/{id}/update', [PembayaranController::class, 'update'])->name('pembayaran.update');
     Route::put('/pembayaran-gabung/{id}/update', [PembayaranController::class, 'updateGabung'])->name('pembayaran.update-gabung');
     Route::delete('/pembayaran/destroy-payment/{ids}', [PembayaranController::class, 'destroyPayment'])->name('pembayaran.destroy-payment');
+    Route::get('/pembayaran/list-cetak-payment/data', [PembayaranController::class, 'listCetakPayment'])->name('pembayaran.list-cetak-payment.index');
     Route::get('/pembayaran/param-cetak-payment/{ids}', [PembayaranController::class, 'paramCetakPayment'])->name('pembayaran.param-cetak-payment');
     Route::get('/pembayaran/cetak-payment/{ids}', [PembayaranController::class, 'cetakPayment'])->name('pembayaran.cetak-payment');
     Route::get('/pembayaran/konfirmasi-payment/{ids}', [PembayaranController::class, 'konfirmasiPayment'])->name('pembayaran.konfirmasi-payment');
