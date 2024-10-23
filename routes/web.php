@@ -194,6 +194,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/child-view/{id}', [ProductController::class, 'productChildView'])->name('product.child-view');
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
+        Route::get('/store-to-pos', [ProductController::class, 'storeToPos'])->name('store-to-pos');
         Route::get('/get-detail-products/{kode}', [ProductController::class, 'getDetailProducts']);
 
         // Stock Opname

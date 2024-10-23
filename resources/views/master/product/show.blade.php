@@ -608,7 +608,9 @@
                 <div class="col-0-5">
                     <button type="submit" class="btn btn-primary" disabled title="SIMPAN DATA"><i class="fas fa-save"></i></button>
                 </div>
-                <div class="col-8"></div>
+                <div class="col-3"></div>
+                <div class="col-2"><a href="{{ route('master.store-to-pos') }}" class="btn btn-primary">TRANSFER KE POS</a></div>
+                <div class="col-3"></div>
                 <div class="col-0-5 ml-auto">
                     <a href="{{ route('master.product.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
                 </div>

@@ -23,6 +23,9 @@ class User extends Authenticatable
         'password',
         'id_role',
         'username',
+        'id_cabang',
+        'jabatan',
+        'show_password',
     ];
 
     /**
@@ -47,5 +50,9 @@ class User extends Authenticatable
 
     public function role() {
         return $this->belongsTo(Role::class, 'id_role');
+    }
+
+    public function cabang() {
+        return $this->belongsTo(Cabang::class, 'id_cabang');
     }
 }

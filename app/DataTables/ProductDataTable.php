@@ -87,7 +87,7 @@ class ProductDataTable extends DataTable
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]
                 ],
-                'pageLength' => 100
+                'pageLength' => 25
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

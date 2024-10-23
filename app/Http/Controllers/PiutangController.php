@@ -14,8 +14,8 @@ class PiutangController extends Controller
     public function index()
     {
         $title = "Pembayaran Piutang";
-        $listTunai = Pembayaran::where('tipe_giro', 'TUNAI')->where('nomor_giro', 'TUNAI')->whereNull('is_piutang')->get();
-        $listBayar = Pembayaran::where('tipe_giro', 'CABANG')->whereNotNull('date_last')->whereNull('is_piutang')->get();
+        $listTunai = Pembayaran::where('tipe_giro', 'TUNAI')->where('nomor_giro', 'TUNAI')->whereNotNull('is_bayar')->whereNull('is_piutang')->get();
+        $listBayar = Pembayaran::where('tipe_giro', 'CABANG')->whereNotNull('date_last')->whereNotNull('is_bayar')->whereNull('is_piutang')->get();
         $listUser = User::all();
 
         // get nomor piutang

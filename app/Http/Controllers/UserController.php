@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\Menu;
 use App\Models\Role;
 use App\Models\User;
@@ -18,8 +19,9 @@ class UserController extends Controller
         $title = "Master User";
         $users = User::all();
         $roles = Role::all();
+        $cabangs = Cabang::all();
 
-        return view('master.user.index', compact('title', 'users', 'roles'));
+        return view('master.user.index', compact('title', 'users', 'roles', 'cabangs'));
     }
 
     public function store(Request $request)
@@ -29,6 +31,9 @@ class UserController extends Controller
             'username' => $request->username,
             'password' => bcrypt($request->password),
             'id_role' => $request->role_id,
+            'id_cabang' => $request->cabang_id,
+            'jabatan' => $request->jabatan,
+            'show_password' => $request->password
         ]);
         
         return Redirect::route('master.user.index')
@@ -44,6 +49,8 @@ class UserController extends Controller
                 'name' => $request->name,
                 'username' => $request->username,
                 'id_role' => $request->role,
+                'id_cabang' => $request->cabang,
+                'jabatan' => $request->jabatan
             ];
         } else {
             $data = [
@@ -51,6 +58,9 @@ class UserController extends Controller
                 'username' => $request->username,
                 'password' => bcrypt($request->password),
                 'id_role' => $request->role,
+                'id_cabang' => $request->cabang,
+                'jabatan' => $request->jabatan,
+                'show_password' => $request->password
             ];
         }
 
