@@ -52,10 +52,15 @@ class KartuStokController extends Controller
         // dd($allProducts, $totalMasuk);
 
         $productFlow = []; // Inisialisasi array untuk menyimpan hasil
+
+        $periodeData = explode(' - ', request(['periode'])['periode']);
+        $periodeAwal = $periodeData[0] ?? '1970-01-01';
+        $periodeAkhir = $periodeData[1] ?? now()->format('Y-m-d');
         foreach ($allProducts as $prd) {
             $productFlows = ProductStock::select('tipe', 'tanggal', 'total', 'kode', 'stok', 'unit_jual')
                 ->where('kode', $prd['kode'])
                 ->whereNotNull('total')
+                ->whereBetween('tanggal', [$periodeAwal, $periodeAkhir])
                 ->get();
 
             // Menggabungkan hasil ke dalam array

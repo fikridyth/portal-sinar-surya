@@ -16,7 +16,7 @@
         {{-- <a href="{{ route('daftar-tagihan.index-history') }}" class="btn btn-primary mb-2">HISTORY PIUTANG</a> --}}
         <div class="card">
             <div class="card-body">
-                <h6 class="text-center mb-3">DAFTAR TAGIHAN LANGGANAN</h6>
+                <h6 class="text-center mb-3">HISTORY TAGIHAN LANGGANAN</h6>
                 <div style="overflow-x: auto; height: 550px; border: 1px solid #ccc;">
                     <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                         <thead>
@@ -30,7 +30,7 @@
                                 <th class="text-center">MATERAI</th>
                                 <th class="text-center">TOTAL</th>
                                 <th class="text-center">PILIH</th>
-                                <th class="text-center">BATAL</th>
+                                {{-- <th class="text-center">BATAL</th> --}}
                             </tr>
                         </thead>
                         <tbody>
@@ -50,7 +50,7 @@
                                         <td class="text-end">{{ number_format($piutang->materai, 0) ?? 0 }}</td>
                                         <td class="text-end">{{ number_format($piutang->total + $piutang->materai) }}</td>
                                         <td class="text-center"><input type="checkbox" class="proses-detail" data-id="{{ enkrip($piutang->id) }}"></td>
-                                        <td class="text-center"><input type="checkbox" class="proses-batal" data-id="{{ $piutang->id }}"></td>
+                                        {{-- <td class="text-center"><input type="checkbox" class="proses-batal" data-id="{{ $piutang->id }}"></td> --}}
                                     </tr>
                                 @endforeach
                             @endif
@@ -94,7 +94,7 @@
             $('.proses-detail').change(function () {
                 const id = $(this).data('id');
                 if ($(this).is(':checked')) {
-                    window.location.href = `/daftar-tagihan-langganan/${id}`;
+                    window.location.href = `/history-tagihan-langganan/${id}`;
                 }
             });
         });

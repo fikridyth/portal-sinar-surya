@@ -58,7 +58,7 @@
                                                 @endphp
                                                 @foreach ($pembayarans as $index => $pmb)
                                                     <tr>
-                                                        <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
+                                                        <td class="text-center" style="color: <?= ($pmb->tipe_giro == 'CABANG' || $pmb->is_cabang == 1) ? 'red' : 'black'; ?>">
                                                             @if ($pmb->nomor_bukti !== $previousIdParent)
                                                                 {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
                                                                 @php $counter++; @endphp
@@ -67,7 +67,7 @@
                                                             @endif
                                                         </td>
                                                         <td class="text-center"><input type="checkbox" class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
-                                                        @if ($pmb->tipe_giro == 'CABANG')
+                                                        @if ($pmb->tipe_giro == 'CABANG' || $pmb->is_cabang == 1)
                                                             <td style="color: red;">{{ $pmb->supplier->nama }}/LOGO</td>
                                                         @else
                                                             <td>{{ $pmb->supplier->nama }}</td>

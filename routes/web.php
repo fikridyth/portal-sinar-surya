@@ -129,11 +129,15 @@ Route::middleware('auth')->group(function () {
 
     // Piutang
     Route::get('/pembayaran-piutang', [PiutangController::class, 'index'])->name('pembayaran-piutang.index');
+    Route::get('/api/getPembayaranData', [PiutangController::class, 'getPembayaranData']);
     Route::post('/pembayaran-piutang/store', [PiutangController::class, 'store'])->name('pembayaran-piutang.store');
     Route::get('/daftar-tagihan-langganan', [PiutangController::class, 'indexTagihan'])->name('daftar-tagihan.index');
     Route::get('/daftar-tagihan-langganan/{id}', [PiutangController::class, 'showTagihan'])->name('daftar-tagihan.show');
     Route::get('/daftar-tagihan-langganan/{id}/cetak', [PiutangController::class, 'cetakTagihan'])->name('daftar-tagihan.cetak');
+    Route::get('/daftar-tagihan-langganan/{id}/proses', [PiutangController::class, 'prosesTagihan'])->name('daftar-tagihan.proses');
     Route::delete('/daftar-tagihan-langganan/{id}/destroy', [PiutangController::class, 'destroyTagihan'])->name('daftar-tagihan.destroy');
+    Route::get('/history-tagihan-langganan', [PiutangController::class, 'historyTagihan'])->name('history-tagihan.index');
+    Route::get('/history-tagihan-langganan/{id}', [PiutangController::class, 'showHistoryTagihan'])->name('history-tagihan.show');
     Route::get('/daftar-tagihan-history', [PiutangController::class, 'indexHistoryPiutang'])->name('daftar-tagihan.index-history');
 
     // Master

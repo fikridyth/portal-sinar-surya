@@ -39,5 +39,9 @@ class Product extends Model
         $query->when(isset($filters['supplier']) && $filters['supplier'] !== '', function ($query) use ($filters) {
             return $query->where('id_supplier', $filters['supplier']);
         });
+        $query->when($filters['periode'] ?? false, function ($query, $periode) {
+            $arrPeriode = explode(' - ', $periode);
+            $query->whereBetween('tanggal', $arrPeriode);
+        });
     }
 }

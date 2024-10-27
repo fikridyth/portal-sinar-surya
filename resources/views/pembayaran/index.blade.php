@@ -167,7 +167,7 @@
                                     @foreach ($pembayarans as $index => $pmb)
                                         <tr>
                                             {{-- <td class="text-center">{{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}</td> --}}
-                                            <td class="text-center" style="color: <?= $pmb->tipe_giro == 'CABANG' ? 'red' : 'black'; ?>">
+                                            <td class="text-center" style="color: <?= ($pmb->tipe_giro == 'CABANG' || $pmb->is_cabang == 1) ? 'red' : 'black'; ?>">
                                                 @if ($pmb->nomor_bukti !== $previousIdParent)
                                                     {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
                                                     @php $counter++; @endphp

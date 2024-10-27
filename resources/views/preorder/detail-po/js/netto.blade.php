@@ -114,7 +114,7 @@
             const orderInput = document.getElementById('order-input-' + index);
 
             nettoValue = nettoElement.textContent.replace(/[.,]/g, '');
-            let orderValue = parseFloat(orderInput.value) || 0;
+            let orderValue = parseFloat(orderInput.value) || 1;
             // Hitung field-total
             let fieldTotal = nettoValue * orderValue;
             // console.log(nettoValue,orderValue,fieldTotal)

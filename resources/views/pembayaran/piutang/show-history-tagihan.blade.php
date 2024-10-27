@@ -16,7 +16,7 @@
         <div class="card">
             <div class="card-body">
                 <table class="table table-bordered">
-                    <h6 class="text-center mb-3">DAFTAR TAGIHAN LANGGANAN</h6>
+                    <h6 class="text-center mb-3">HISTORY TAGIHAN LANGGANAN</h6>
                     <thead>
                         <tr>
                             <th class="text-center">NAMA SUPPLIER</th>
@@ -54,10 +54,7 @@
                         <a href="{{ route('daftar-tagihan.cetak', enkrip($piutang->id)) }}" class="btn btn-warning">CETAK</a>
                     </div>
                     <div class="mx-2">
-                        <a href="{{ route('daftar-tagihan.proses', enkrip($piutang->id)) }}" class="btn btn-primary">PROSES</a>
-                    </div>
-                    <div class="mx-2">
-                        <a href="{{ route('daftar-tagihan.index') }}" class="btn btn-danger">BATAL</a>
+                        <a href="{{ route('history-tagihan.index') }}" class="btn btn-danger">BATAL</a>
                     </div>
                 </div>
             </div>

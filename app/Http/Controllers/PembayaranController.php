@@ -441,7 +441,8 @@ class PembayaranController extends Controller
                 'date_last' => now()->format('Y-m-d'),
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             Pembayaran::create([
@@ -453,7 +454,8 @@ class PembayaranController extends Controller
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => 'TUNAI',
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
         } else if ($typePayment == 1) {
             $giroDetail = GiroDetail::where('nomor', $request->nomor_giro)->first();
@@ -470,7 +472,8 @@ class PembayaranController extends Controller
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
                 'date_last' => $request->date_last ?? now()->format('Y-m-d'),
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             Pembayaran::create([
@@ -482,7 +485,8 @@ class PembayaranController extends Controller
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             Pembayaran::create([
@@ -494,7 +498,8 @@ class PembayaranController extends Controller
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => $giroDetail->bank->milik,
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             $giroDetail->update([
@@ -518,7 +523,8 @@ class PembayaranController extends Controller
                 'tipe_giro' => 'TRANSFER',
                 'id_parent' => $id,
                 'date_last' => $request->date_last ?? now()->format('Y-m-d'),
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             Pembayaran::create([
@@ -530,7 +536,8 @@ class PembayaranController extends Controller
                 'nomor_giro' => 'TUNAI',
                 'tipe_giro' => 'TRANSFER',
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
 
             Pembayaran::create([
@@ -542,7 +549,8 @@ class PembayaranController extends Controller
                 'nomor_giro' => 'OTHER INCOME',
                 'tipe_giro' => 'TRANSFER',
                 'id_parent' => $id,
-                'data_bukti' => json_encode($dataBukti->original)
+                'data_bukti' => json_encode($dataBukti->original),
+                'is_cabang' => ($pembayaran->tipe_giro == 'CABANG') ? 1 : null
             ]);
         }
 

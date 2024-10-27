@@ -47,7 +47,7 @@
                                 @if (isset($preorder->id))
                                     @if (in_array("16", $role))<a href="{{ route('receive-po.create-detail', enkrip($preorder->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
                                 @else
-                                    @if (in_array("16", $role))<a href="#" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
+                                    @if (in_array("16", $role))<a href="{{ route('receive-po.create') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN - P.O</a>@endif
                                 @endif
                                 @if (in_array("17", $role))<a href="{{ route('daftar-receive-done-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN</a>@endif
                                 @if (in_array("18", $role))<a href="{{ route('return-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">RETUR BARANG</a>@endif

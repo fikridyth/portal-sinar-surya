@@ -1076,13 +1076,16 @@ class PreOrderController extends Controller
                 'unit_jual' => str_replace('P', '', $product->unit_jual)
             ]);
         }
-        Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_proses' => 1]);
+        Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update([
+            'is_proses' => 1,
+            'is_cancel' => null
+        ]);
         $preorder->update([
             'is_proses' => 1,
             'is_cancel' => null
         ]);
 
-        return Redirect::route('daftar-receive-po')
+        return Redirect::route('index')
             ->with('alert.status', '00')
             ->with('alert.message', "Data Receive Berhasil Di Proses!");
     }
@@ -1138,7 +1141,7 @@ class PreOrderController extends Controller
     public function persetujuanHargaJual()
     {
         $title = 'Daftar Persetujuan Harga Jual';
-        $preorders = Preorder::where('receive_type', 'B')->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('detail')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNotNull('is_cancel')->whereNotNull('detail')->get();
 
         return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'preorders'));
     }

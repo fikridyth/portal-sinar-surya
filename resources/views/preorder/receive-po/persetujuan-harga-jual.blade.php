@@ -29,18 +29,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($preorders as $po)
+                        @if ($preorders->isEmpty())
                             <tr>
-                                <td class="text-center">{{ $po->nomor_po }}</td>
-                                <td class="text-center">{{ $po->date_first }}</td>
-                                <td class="text-start">{{ $po->supplier->nama }}</td>
-                                <td class="text-end">{{ number_format($po->grand_total) }}</td>
-                                <td class="text-center">
-                                    <a href="{{ route('persetujuan-harga-jual-edit', enkrip($po->id)) }}"
-                                        class="btn btn-primary btn-sm mx-2">Detail</a>
-                                </td>
+                                <td class="text-center" colspan="5">TIDAK ADA DATA</td>
                             </tr>
-                        @endforeach
+                        @else
+                            @foreach ($preorders as $po)
+                                <tr>
+                                    <td class="text-center">{{ $po->nomor_po }}</td>
+                                    <td class="text-center">{{ $po->date_first }}</td>
+                                    <td class="text-start">{{ $po->supplier->nama }}</td>
+                                    <td class="text-end">{{ number_format($po->grand_total) }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ route('persetujuan-harga-jual-edit', enkrip($po->id)) }}"
+                                            class="btn btn-primary btn-sm mx-2">Detail</a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>

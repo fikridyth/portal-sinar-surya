@@ -30,10 +30,10 @@
                                                         <th class="text-center">NAMA SUPPLIER</th>
                                                         <th class="text-center">NOMOR BUKTI</th>
                                                         <th class="text-center">JUMLAH RP</th>
-                                                        <th class="text-center">LAIN2</th>
+                                                        {{-- <th class="text-center">LAIN2</th>
                                                         <th class="text-center">PROMOSI</th>
                                                         <th class="text-center">MATERAI</th>
-                                                        <th class="text-center">BIAYA</th>
+                                                        <th class="text-center">BIAYA</th> --}}
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -43,10 +43,10 @@
                                                             <td>{{ $bayar->supplier->nama }}</td>
                                                             <td class="text-center">{{ $bayar->nomor_bukti }}</td>
                                                             <td class="text-end">{{ number_format($bayar->grand_total) }}</td>
+                                                            {{-- <td class="text-center">-</td>
                                                             <td class="text-center">-</td>
                                                             <td class="text-center">-</td>
-                                                            <td class="text-center">-</td>
-                                                            <td class="text-center">-</td>
+                                                            <td class="text-center">-</td> --}}
                                                         </tr>
                                                     @endforeach
                                                 </tbody>

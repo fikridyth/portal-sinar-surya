@@ -215,7 +215,7 @@ class GiroController extends Controller
 
         // buat rusak
         $getAllData = Pembayaran::where('id_parent', $pembayaran->id_parent)->get();
-        if ($getAllData[0]->nomor_giro !== 'TUNAI') {
+        if ($getAllData[0]->nomor_giro !== 'TUNAI' && $getAllData[0]->nomor_giro !== 'TRANSFER') {
             $giroDetail = GiroDetail::where('nomor', $getAllData[0]->nomor_giro)->first();
             $giroDetail->update(['flag' => 3]);
         }

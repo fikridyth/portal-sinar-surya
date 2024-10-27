@@ -48,8 +48,7 @@
 
         <div class="card">
             <div class="card-body">
-                <form action="#" method="POST">
-                    {{-- @csrf --}}
+                <form action="{{ route('master.kartu-stok.show', enkrip($product->id)) }}" method="GET" class="d-flex align-items-center">
                     <div class="card-body">
                         <div class="d-flex justify-content-center mb-2">
                             <div class="row w-100">
@@ -61,7 +60,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-3">
+                                <div class="col-4">
                                     <div class="col">
                                         <input type="text" value="{{ $product->kode }}" disabled class="form-control" id="nomorSupplier2" value="">
                                     </div>
@@ -79,7 +78,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-5">
+                                <div class="col-4">
                                     <div class="col">
                                         <input type="text" value="{{ $product->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
                                     </div>
@@ -88,6 +87,30 @@
                         </div>
 
                         <div class="d-flex justify-content-center mb-2">
+                            <div class="row w-100">
+                                <div class="col-2"></div>
+                                <div class="col-2">
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <label class="col col-form-label d-flex justify-content-end">PERIODE</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="col">
+                                        <input class="form-control form-control-solid" placeholder="Pilih Periode" autocomplete="off" id="periode" name="periode" style="flex: 1; border: 1px solid black;" />
+                                    </div>
+                                </div>
+                                <div class="col-1 mx-n4">
+                                    <button type="button" class="btn btn-secondary mx-3"id="clear">Clear</button>
+                                </div>
+                                <div class="col-1 mx-5">
+                                    <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true" data-kt-user-table-filter="filter" id="apply">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- <div class="d-flex justify-content-center mb-2">
                             <div class="row w-100">
                                 <div class="col-2"></div>
                                 <div class="col-2">
@@ -121,7 +144,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="d-flex justify-content-between mt-4">
                             <div class="row w-100">
@@ -216,4 +239,51 @@
 @endsection
 
 @section('scripts')
+    <script>
+        $("#periode").daterangepicker({
+            locale: {
+                cancelLabel: "Clear",
+                format: "YYYY-MM-DD",
+                monthNames: [
+                    "Januari",
+                    "Februari",
+                    "Maret",
+                    "April",
+                    "Mei",
+                    "Juni",
+                    "Juli",
+                    "Agustus",
+                    "September",
+                    "Oktober",
+                    "November",
+                    "Desember",
+                ],
+            },
+            dateLimit: {
+                days: 375
+            },
+            autoApply: true
+        });
+
+        document.getElementById("periode").value = "{{ request('periode') }}";
+
+        $("#periode").on(
+            "apply.daterangepicker",
+            function(ev, picker) {
+                $(this).val(picker.startDate.format("YYYY-MM-DD") + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+            }
+        );
+
+        $("#periode").on(
+            "cancel.daterangepicker",
+            function() {
+                $(this).val('');
+            }
+        );
+        
+        var periode = document.getElementById("periode");
+        document.getElementById("clear").addEventListener("click", function() {
+            periode.value = '';
+        });
+    </script>
 @endsection
