@@ -22,7 +22,7 @@ class PembayaranDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNull('id_parent')->orderBy('nomor_bukti', 'desc')))
+        return (new EloquentDataTable($query->whereNull('id_parent')->whereNull('tipe_giro')->orderBy('nomor_bukti', 'desc')))
         ->addIndexColumn()
         ->addColumn('supplier_nomor', function ($row) {
             return $row->supplier->nomor;

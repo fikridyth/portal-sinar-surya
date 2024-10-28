@@ -225,7 +225,7 @@
                                                                 <div class="select-container">
                                                                     <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
                                                                     data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
-                                                                    data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
+                                                                    data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
                                                                     data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
                                                                     data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
                                                                     >
@@ -237,7 +237,7 @@
                                                             <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                            <td class="text-end">{{ number_format($detail['price']) }}</td>
+                                                            <td class="text-end" id="old-price-{{ $no }}">{{ number_format($detail['price']) }}</td>
                                                             <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                             <td class="text-end">
                                                                 <div class="order-container">
@@ -540,12 +540,19 @@
             
             // Get the price input and netto elements by their IDs
             const priceInput = document.getElementById(`price-input-${index}`);
+            const oldPriceInput = document.getElementById(`old-price-${index}`);
             const orderInput = document.getElementById(`order-input-${index}`);
             const orderViewText = document.getElementById(`order-view-text-${index}`);
             orderViewText.textContent = orderInput.value;
             const orderText = document.getElementById(`order-text-${index}`);
             orderText.textContent = orderInput.value;
+
+            // diskon
+            const diskon1Input = document.getElementById(`diskon4-input`);
+            const diskon2Input = document.getElementById(`diskon5-input`);
+            const diskon3Input = document.getElementById(`diskon6-input`);
             
+            // total
             const nettoElement = document.getElementById(`netto-${index}`);
             let nettoElementValue = nettoElement.textContent;
             nettoElementValue = nettoElementValue.replace(/\./g, '');
@@ -563,9 +570,13 @@
                 array: index - 1,
                 kode: kodeText.textContent,
                 price: priceInput.value,
+                oldPrice: oldPriceInput.innerHTML,
                 order: orderInput.value,
                 netto: nettoElementValue,
-                total: fieldTotalElementValue
+                total: fieldTotalElementValue,
+                diskon1: diskon1Input.value,
+                diskon2: diskon2Input.value,
+                diskon3: diskon3Input.value
             };
 
             Swal.fire({
@@ -661,9 +672,9 @@
                     document.getElementById('diskon1-input').value = priceDiskon1Value;
                     document.getElementById('diskon2-input').value = priceDiskon2Value;
                     document.getElementById('diskon3-input').value = priceDiskon3Value;
-                    document.getElementById('diskon4-input').value = priceDiskon4Value;
-                    document.getElementById('diskon5-input').value = priceDiskon5Value;
-                    document.getElementById('diskon6-input').value = priceDiskon6Value;
+                    document.getElementById('diskon4-input').value = 0;
+                    document.getElementById('diskon5-input').value = 0;
+                    document.getElementById('diskon6-input').value = 0;
 
                     document.querySelectorAll('.order-container').forEach(container => {
                         container.querySelector('.order-text').hidden = true;
@@ -688,8 +699,8 @@
                     document.getElementById('diskon2-input').value = priceDiskon2Value;
                     document.getElementById('diskon3-input').value = priceDiskon3Value;
                     document.getElementById('diskon4-input').value = priceDiskon4ValueSet;
-                    document.getElementById('diskon5-input').value = priceDiskon5Value;
-                    document.getElementById('diskon6-input').value = priceDiskon6Value;
+                    document.getElementById('diskon5-input').value = 0;
+                    document.getElementById('diskon6-input').value = 0;
 
                     document.querySelectorAll('.order-container').forEach(container => {
                         container.querySelector('.order-text').hidden = true;

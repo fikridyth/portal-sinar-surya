@@ -183,7 +183,15 @@ class PreOrderController extends Controller
     public function processBarang(Request $request)
     {
         $title = 'List Barang';
+
+        $explodeUrl = explode('/', $request->previous_url);
+        $prevUrl = end($explodeUrl);
+
         $sortProduct = $request->name;
+        if ($sortProduct == null) {
+            return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+        }
+
         function splitNamePo($item) {
             $parts = explode('/', $item);
             return [
@@ -272,9 +280,6 @@ class PreOrderController extends Controller
             'stok_maksimum' => $request->stok_maksimum,
         ]);
 
-        $explodeUrl = explode('/', $request->previous_url);
-        $prevUrl = end($explodeUrl);
-
         if (empty($results)) {
             if ($prevUrl == 'preorder') {
                 return redirect()->route('preorder.index')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
@@ -301,6 +306,7 @@ class PreOrderController extends Controller
         $kode = $request->input('kode');
         $order = $request->input('order');
         $price = $request->input('price');
+        $oldPrice = $request->input('old_price');
         $fieldTotal = $request->input('fieldtotal');
         $kodeSumber = $request->input('kode_sumber');
         $diskon1 = $request->input('diskon1');
@@ -325,6 +331,7 @@ class PreOrderController extends Controller
                 'stok' => $stok[$i],
                 'order' => $order[$i],
                 'price' => (int) $price[$i],
+                'old_price' => (int) $oldPrice[$i],
                 'field_total' => (int) $fieldTotal[$i],
                 'kode_sumber' => $kodeSumber[$i],
                 'diskon1' => (int) $diskon1[$i],
@@ -620,13 +627,18 @@ class PreOrderController extends Controller
 
         $getNetto = str_replace(',', '', $request->netto);
         $getTotal = str_replace(',', '', $request->total);
+        $getoldPrice = str_replace(',', '', $request->oldPrice);
 
         $preorder = Preorder::find($request->id);
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
         $getArray['order'] = $request->order;
+        $getArray['old_price'] = (int)$getoldPrice;
         $getArray['price'] = (int)$getNetto;
         $getArray['field_total'] = (int)$getTotal;
+        $getArray['diskon1'] = $request->diskon1;
+        $getArray['diskon2'] = $request->diskon2;
+        $getArray['diskon3'] = $request->diskon3;
         $getDetail[$request->array] = $getArray;
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
@@ -652,17 +664,23 @@ class PreOrderController extends Controller
     public function updateReceiveData(Request $request)
     {
         // dd($request->all());
-
         $getNetto = str_replace(',', '', $request->netto);
         $getTotal = str_replace(',', '', $request->total);
+        $getoldPrice = str_replace(',', '', $request->oldPrice);
         
         $preorder = Preorder::find($request->id);
         $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
+        
+        // update detail
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
         $getArray['order'] = $request->order;
+        $getArray['old_price'] = (int)$getoldPrice;
         $getArray['price'] = (int)$getNetto;
         $getArray['field_total'] = (int)$getTotal;
+        $getArray['diskon1'] = $request->diskon1;
+        $getArray['diskon2'] = $request->diskon2;
+        $getArray['diskon3'] = $request->diskon3;
         $getDetail[$request->array] = $getArray;
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
@@ -686,7 +704,11 @@ class PreOrderController extends Controller
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
-            'harga_pokok' => $request->price
+            'harga_pokok' => $request->price,
+            'diskon1' => $request->diskon1,
+            'diskon2' => $request->diskon2,
+            'diskon3' => $request->diskon3,
+            'is_transfer' => null
         ]);
 
         return response()->json([
@@ -786,7 +808,8 @@ class PreOrderController extends Controller
         foreach ($detail as $data) {
             $product = Product::where('kode', $data['kode'])->first();
             $product->update([
-                'stok' => (int)$product->stok - $data['order']
+                'stok' => (int)$product->stok - $data['order'],
+                'is_transfer' => null,
             ]);
         }
         // dd($preorder);
@@ -1063,7 +1086,8 @@ class PreOrderController extends Controller
         foreach ($detail as $data) {
             $product = Product::where('kode', $data['kode'])->first();
             $product->update([
-                'stok' => $data['order'] + (int)$product->stok
+                'stok' => $data['order'] + (int)$product->stok,
+                'is_transfer' => null,
             ]);
 
             // update product stock

@@ -85,6 +85,7 @@
                                                     <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
                                                     <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">
                                                     <input type="text" name="id_supplier[]" hidden value="{{ $result['product']->id_supplier }}">
+                                                    <input type="text" name="old_price[]" hidden value="{{ $result['product']->harga_lama }}">
                                                     <td>{{ $result['product']->nama . '/' . $result['product']->unit_jual }}</td>
                                                     <td class="text-end">{{ $result['details']['stok'] }}</td>
                                                     <td class="text-end">

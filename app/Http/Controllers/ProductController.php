@@ -367,6 +367,7 @@ class ProductController extends Controller
             'label' => $request->label, 
             'isi' => str_replace('P', '', $request->unit_jual),
             'status' => 1,
+            'is_transfer' => null,
         ];
         if ($product->kode_sumber == null) {
             $data['harga_pokok'] = preg_replace('/[^0-9]/', '', $request->harga_pokok);
@@ -422,8 +423,10 @@ class ProductController extends Controller
         if (isset($orderData)) {
             foreach ($orderData as $productId => $stok) {
                 $product = Product::find($productId);
-                if ($product) {
+                $productStok = explode('.', $product->stok);
+                if ($productStok[0] !== $stok) {
                     $product->stok = $stok;
+                    $product->is_transfer = null;
                     $product->save();
                 }
             }
