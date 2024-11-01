@@ -39,7 +39,8 @@ class HargaController extends Controller
             'profit' => number_format((($request->harga_jual - $request->harga_pokok) / $request->harga_pokok) * 100, 2),
             'harga_sementara' => $request->harga_sementara,
             'tanggal_awal' => $request->tanggal_awal,
-            'tanggal_akhir' => $request->tanggal_akhir
+            'tanggal_akhir' => $request->tanggal_akhir,
+            'is_transfer' => null
         ]);
 
         return Redirect::route('master.harga.show', enkrip($request->id_supplier))

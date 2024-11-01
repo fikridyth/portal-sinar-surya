@@ -269,6 +269,9 @@ class ProductController extends Controller
                     'diskon3' => $product->diskon3,
                     'isi' => $product->isi,
                     'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
                 ]);
             } else {
                 ProductPos::create([
@@ -292,6 +295,9 @@ class ProductController extends Controller
                     'diskon3' => $product->diskon3,
                     'isi' => $product->isi,
                     'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
                 ]);
             }
             $product->update(['is_transfer' => 1]);
