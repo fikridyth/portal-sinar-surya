@@ -94,6 +94,7 @@ class PembayaranController extends Controller
 
     public function processHutang(Request $request, $id)
     {
+        // dd($request->all());
         $id = dekrip($id);
         $title = 'Proses Pembayaran Hutang';
 
@@ -166,7 +167,7 @@ class PembayaranController extends Controller
         } 
         $getNomorBukti = 'PH-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         
-        return view('pembayaran.hutang.process', compact('title', 'supplier', 'getHutangPromosi', 'totalHutang', 'getNomorBukti'));
+        return view('pembayaran.hutang.process', compact('title', 'supplier', 'getHutangPromosi', 'promosi', 'totalHutang', 'getNomorBukti'));
     }
 
     public function processFinalHutang(Request $request, $id)
@@ -191,6 +192,19 @@ class PembayaranController extends Controller
         //     return redirect()->route('pembayaran-hutang.show', $supplier->id)->with('alert.status', '99')->with('alert.message', 'TOTAL BAYAR TIDAK BOLEH NEGATIVE');
         // }
         // dd($totalHutang);
+
+        if ($request->tipe == 'cetak') {
+            $title = "Cetak Hutang";
+            $supplier = Supplier::find($id);
+            $getNomorBukti = $request->nomor_bukti;
+
+            $formatter = new NumberFormatter('id_ID', NumberFormatter::SPELLOUT);
+            $formatTotal = $formatter->format($totalHutang - $supplier->materai);
+
+            HutangCetak::where('nomor', $getHutang[0]['nomor'])->first()->update(['is_cetak' => 1]);
+
+            return view('pembayaran.hutang.cetak', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'formatTotal'));
+        }
         
         // get nomor bukti
         $sequence = '0001';

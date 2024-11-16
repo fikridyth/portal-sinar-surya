@@ -79,7 +79,7 @@
                                 <th class="text-center">RATE</th>
                                 <th class="text-center">JUMLAH</th>
                                 <th class="text-center">KODE</th>
-                                {{-- <th class="text-center">DETAIL</th> --}}
+                                <th class="text-center">DETAIL</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -94,6 +94,7 @@
                                     <td class="text-end">1</td>
                                     <td class="text-end">{{ number_format($data['total'], 0) }}</td>
                                     <td class="text-center"><input type="checkbox" class="data-checkbox" data-index="{{ $loop->index }}"></td>
+                                    <td class="text-center"><input type="checkbox" class="goto-detail" data-nomor="{{ $data['nomor'] }}"></td>
                                </tr>
                             @endforeach
                         </tbody>
@@ -160,6 +161,32 @@
 
                 // Submit the form
                 form.submit();
+            });
+        });
+
+        document.querySelectorAll('.goto-detail').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // Mengecek apakah checkbox dicentang
+                if (this.checked) {
+                    // Mengambil nomor dari data-nomor
+                    const nomor = this.getAttribute('data-nomor');
+                    
+                    // Melakukan AJAX request untuk mendapatkan ID berdasarkan nomor
+                    fetch(`/api/receive-po/detail/${nomor}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.encryptedId) {
+                                // Jika data ditemukan, arahkan ke halaman detail berdasarkan ID
+                                window.location.href = `/receive-po/done-detail/${data.encryptedId}`;
+                            } else {
+                                alert('Data tidak ditemukan');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Terjadi kesalahan, coba lagi.');
+                        });
+                }
             });
         });
     </script>

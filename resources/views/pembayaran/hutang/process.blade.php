@@ -98,17 +98,37 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <div class="row">
-                        <div class="col-9"></div>
-                        <div class="col-2">Total: {{ number_format($totalHutang, 0) }}</div>
+                    <div class="row align-items-center mt-4">
+                        <div class="col-12 col-md-1"></div>
+                        <div class="col-12 col-md-4">
+                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-2">KEMBALI</button>
+                            <button type="submit" name="tipe" value="cetak" class="btn btn-warning mx-2" onclick="setTarget('_self')">CETAK</button>
+                            <button type="submit" name="tipe" value="store" class="btn btn-primary mx-2" onclick="setTarget('_self')">PROSES</button>
+                        </div>
+                        <div class="col-12 col-md-3 mx-3"></div>
+                        <div class="col-12 col-md-2 mx-5" style="font-size: 18px;">
+                            <b>TOTAL : {{ number_format($totalHutang, 0) }}</b>
+                        </div>
+                        <div class="col-12 col-md-2"></div>
                     </div>
-                    <div class="d-flex justify-content-center align-items-center mt-4">
-                        <div class="mx-2">
-                            <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
+                    <div class="d-flex justify-content-center mt-5">
+                        <h5 class="p-1" style="background-color: black; color: aqua;">BIAYA YANG MENJADI BEBAN SUPPLIER</h5>
+                    </div>
+                    <div class="row align-items-center mt-1">
+                        <div class="col-12 col-md-3"></div>
+                        <div class="col-12 col-md-2">
+                            <label for="materai" class="mx-1">MATERAI</label>
+                            <input type="text" size="8" name="" class="text-end" value="{{ $supplier->materai }}">
                         </div>
-                        <div class="mx-2">
-                            <button type="submit" class="btn btn-primary">PROSES</button>
+                        <div class="col-12 col-md-2">
+                            <label for="promosi" class="mx-1">PROMOSI</label>
+                            <input type="text" size="8" name="" class="text-end" value="{{ abs($promosi[0]['total']) }}">
                         </div>
+                        <div class="col-12 col-md-2">
+                            <label for="bonus" class="mx-1">BONUS</label>
+                            <input type="text" size="8" name="" class="text-end" value="0">
+                        </div>
+                        <div class="col-12 col-md-3"></div>
                     </div>
                 </div>
             </div>

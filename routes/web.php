@@ -15,6 +15,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Models\Preorder;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +106,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/pembayaran-hutang-hapus', [PembayaranController::class, 'indexHutangHapus'])->name('pembayaran-hutang.index-hapus');
     Route::get('/pembayaran-hutang-hapus/{id}/detail', [PembayaranController::class, 'detailHutangHapus'])->name('pembayaran-hutang.detail-hapus');
     Route::delete('/destroy-hutang/{id}', [PembayaranController::class, 'destroyHutang'])->name('pembayaran-hutang.destroy-hutang');
+    Route::get('/api/receive-po/detail/{nomor}', function ($nomor) {
+        $getId = Preorder::where('nomor_receive', $nomor)->first();
+        if ($getId) { 
+            $encryptedId = enkrip($getId->id);
+            return response()->json(['encryptedId' => $encryptedId]);
+        }
+        return response()->json(['error' => 'Data tidak ditemukan'], 404);
+    });
 
     // Pembayaran
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
