@@ -926,6 +926,7 @@ class PreOrderController extends Controller
         $supplier = Supplier::find($preorder->id_supplier);
         $detail = json_decode($preorder->detail, true);
 
+        $total = 0;
         $selectedIds = $request->input('selected_ids', []);
         foreach ($selectedIds as $sId) {
             $product = Product::find($sId);
@@ -948,8 +949,11 @@ class PreOrderController extends Controller
                 'stok_maksimum' => $supplier->stok_maksimum,
                 'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
             ];
+            $total += $product->harga_pokok;
         }
         $preorder->detail = json_encode($detail);
+        $preorder->total_harga = $preorder->total_harga + $total;
+        $preorder->grand_total = $preorder->grand_total + $total;
         $preorder->save();
 
         if ($preorder->receive_type == 'A') {

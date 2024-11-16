@@ -26,7 +26,7 @@
     @include('layouts.footer')
     <script>
         document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.key === 'Backspace') {
+            if (event.key === 'Escape') {
                 window.history.back();
             }
         });

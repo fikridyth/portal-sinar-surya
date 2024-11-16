@@ -75,7 +75,8 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" id="kode_alternatif" name="kode_alternatif" value="{{ old('kode_alternatif') }}"
-                                        class="form-control @error('kode_alternatif') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('kode_alternatif') is-invalid @enderror" autocomplete="off" autofocus
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('unit_beli').focus();" />
                                     @error('kode_alternatif')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -92,7 +93,8 @@
                                 </div>
                                 <div class="col mx-n2">
                                     <input type="text" id="nama_barang" name="nama_barang" value="{{ old('nama_barang') }}" required
-                                        class="form-control @error('nama_barang') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('nama_barang') is-invalid @enderror uppercase-input" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('merek').focus();" />
                                 </div>
                             </div>
                         </div>
@@ -134,7 +136,8 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" id="merek" name="merek" value="{{ old('merek') }}"
-                                        class="form-control @error('merek') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('merek') is-invalid @enderror uppercase-input" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('label').focus();" />
                                 </div>
                             </div>
                         </div>
@@ -151,7 +154,8 @@
                                 </div>
                                 <div class="col-3">
                                     <input type="text" id="unit_beli" name="unit_beli" value="{{ old('unit_beli') }}" required
-                                        class="form-control @error('unit_beli') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('unit_beli') is-invalid @enderror uppercase-input" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('nama_barang').focus();" />
                                     @error('unit_beli')
                                         <div class="invalid-feedback">
                                             {{ $message }}
@@ -168,7 +172,8 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" id="label" name="label" value="{{ old('label') }}"
-                                        class="form-control @error('label') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('label') is-invalid @enderror uppercase-input" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('harga_pokok').focus();" />
                                 </div>
                             </div>
                         </div>
@@ -214,7 +219,8 @@
                                 </div>
                                 <div class="col-6">
                                     <input type="text" id="profit" name="profit" value="{{ old('profit') }}"
-                                        class="form-control @error('profit') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('profit') is-invalid @enderror" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('input-supplier-id').focus();" />
                                 </div>
                                 <div class="col-1">
                                     <label class="form-label h6 mt-2">%</label>
@@ -248,7 +254,8 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" id="harga_pokok" name="harga_pokok" value="{{ old('harga_pokok') }}" required
-                                        class="form-control @error('harga_pokok') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('harga_pokok') is-invalid @enderror" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" />
                                 </div>
                             </div>
                         </div>
@@ -327,7 +334,8 @@
                                 </div>
                                 <div class="col">
                                     <input type="text" id="harga_jual" name="harga_jual" value="{{ old('harga_jual') }}" required
-                                        class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('profit').focus();" />
                                 </div>
                             </div>
                         </div>
@@ -422,7 +430,7 @@
                                         <option value="">---Select Unit---</option>
                                         <!-- Example options; replace with server-side data as needed -->
                                         @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}" data-nama="{{ $unit->nama }}">{{ $unit->id }} - {{ $unit->nama }}</option>
+                                            <option value="{{ $unit->id }}" data-kode="{{ $unit->id }}" data-nama="{{ $unit->nama }}">{{ $unit->id }} - {{ $unit->nama }}</option>
                                         @endforeach
                                     </select>
                                     @error('unit')
@@ -465,7 +473,7 @@
                                         <option value="">---Select Departemen---</option>
                                         <!-- Example options; replace with server-side data as needed -->
                                         @foreach ($departemens as $departemen)
-                                            <option value="{{ $departemen->id }}" data-nama="{{ $departemen->nama }}">{{ $departemen->id }} - {{ $departemen->nama }}</option>
+                                            <option value="{{ $departemen->id }}" data-kode="{{ $departemen->id }}" data-nama="{{ $departemen->nama }}">{{ $departemen->id }} - {{ $departemen->nama }}</option>
                                         @endforeach
                                     </select>
                                     @error('departemen')
@@ -492,7 +500,8 @@
                                 </div>
                                 <div class="col-5">
                                     <div class="custom-select-supplier">
-                                        <input type="text" class="search-input-supplier" name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                        <input type="text" class="search-input-supplier" id="input-supplier-id" name="supplier" value="{{ old('supplier') }}" autocomplete="off"
+                                        required placeholder="Search..." onkeyup="filterFunction()">
                                         <div class="select-items-supplier" id="select-items-supplier">
                                             <!-- Options will be added here dynamically -->
                                         </div>

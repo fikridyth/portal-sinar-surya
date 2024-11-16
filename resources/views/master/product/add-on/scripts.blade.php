@@ -51,6 +51,37 @@
             closeAllSelect();
         });
 
+        searchInputUnit.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                // Prevent form submission or other default behavior
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check if the dropdown is visible
+                const isVisible = selectItemsUnit.style.display === 'block';
+                if (isVisible) {
+                    // Find the first visible item
+                    const visibleItems = Array.from(selectItemsUnit.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    // If there are visible items, select the first one
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+                        // Populate input fields with data from the first item
+                        searchInputUnit.value = firstItem.dataset.value;
+                        namaUnit.value = firstItem.dataset.nama;
+                        closeAllSelect(); // Close the dropdown after selection
+                    }
+                } else {
+                    // If the dropdown is not open, you may want to trigger the filter function
+                    event.stopPropagation(); // Prevent the click from propagating to the document
+                    const isVisible = selectItemsUnit.style.display === 'block';
+                    closeAllSelect(); // Close any other open dropdowns
+                    selectItemsUnit.style.display = isVisible ? 'none' : 'block'; // Toggle visibility
+                }
+            }
+        });
+
         closeAllSelect();
     });
 </script>
@@ -106,6 +137,37 @@
         // Close dropdown when clicking outside
         document.addEventListener('click', function() {
             closeAllSelect();
+        });
+
+        searchInputDepartemen.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                // Prevent form submission or other default behavior
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check if the dropdown is visible
+                const isVisible = selectItemsDepartemen.style.display === 'block';
+                if (isVisible) {
+                    // Find the first visible item
+                    const visibleItems = Array.from(selectItemsDepartemen.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    // If there are visible items, select the first one
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+                        // Populate input fields with data from the first item
+                        searchInputDepartemen.value = firstItem.dataset.value;
+                        namaDepartemen.value = firstItem.dataset.nama;
+                        closeAllSelect(); // Close the dropdown after selection
+                    }
+                } else {
+                    // If the dropdown is not open, you may want to trigger the filter function
+                    event.stopPropagation(); // Prevent the click from propagating to the document
+                    const isVisible = selectItemsDepartemen.style.display === 'block';
+                    closeAllSelect(); // Close any other open dropdowns
+                    selectItemsDepartemen.style.display = isVisible ? 'none' : 'block'; // Toggle visibility
+                }
+            }
         });
 
         closeAllSelect();
@@ -166,6 +228,38 @@
             closeAllSelect();
         });
 
+        // Handle Enter key press
+        searchInputSupplier.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                // Prevent form submission or other default behavior
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Check if the dropdown is visible
+                const isVisible = selectItemsSupplier.style.display === 'block';
+                if (isVisible) {
+                    // Find the first visible item
+                    const visibleItems = Array.from(selectItemsSupplier.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    // If there are visible items, select the first one
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+                        // Populate input fields with data from the first item
+                        searchInputSupplier.value = firstItem.dataset.kode;
+                        namaSupplier.value = firstItem.dataset.nama;
+                        closeAllSelect(); // Close the dropdown after selection
+                    }
+                } else {
+                    // If the dropdown is not open, you may want to trigger the filter function
+                    event.stopPropagation(); // Prevent the click from propagating to the document
+                    const isVisible = selectItemsSupplier.style.display === 'block';
+                    closeAllSelect(); // Close any other open dropdowns
+                    selectItemsSupplier.style.display = isVisible ? 'none' : 'block'; // Toggle visibility
+                }
+            }
+        });
+
         closeAllSelect();
     });
 </script>
@@ -184,13 +278,14 @@
     function updateLabel() {
         const konversi = document.getElementById('konversi');
         const numericValue = inputField.value.replace(/\D/g, '');
+        const upperCaseValue = inputField.value.toUpperCase();
 
-        namaBarang.textContent = `/${inputField.value}`;
-        hargaPokok2.textContent = `HARGA POKOK/ ${inputField.value}`;
-        hargaPokok.textContent = `HARGA POKOK/ ${inputField.value}`;
-        stokAwal.textContent = `STOK AWAL/ ${inputField.value}`;
-        hargaJual.textContent = `HARGA JUAL/ ${inputField.value}`;
-        unitJual.value = `${inputField.value}`;
+        namaBarang.textContent = `/${upperCaseValue}`;
+        hargaPokok2.textContent = `HARGA POKOK/ ${upperCaseValue}`;
+        hargaPokok.textContent = `HARGA POKOK/ ${upperCaseValue}`;
+        stokAwal.textContent = `STOK AWAL/ ${upperCaseValue}`;
+        hargaJual.textContent = `HARGA JUAL/ ${upperCaseValue}`;
+        unitJual.value = `${upperCaseValue}`;
         if (konversi) {
             konversi.value = `${numericValue}.00/${numericValue}.00`;
         }
@@ -219,7 +314,7 @@
 
     // Function to parse numeric value from Rupiah formatted string
     function parseNumericValue(value) {
-        const numericValue = value.replace(/[^0-9]/g, '');
+        const numericValue = value.replace(/[^0-9]/g, '');  // Remove non-numeric characters
         return numericValue === '' ? 0 : Number(numericValue);
     }
 
@@ -231,14 +326,16 @@
         if (isNaN(jual) || jual <= 0 || isNaN(pokok) || pokok <= 0) return 0;
 
         const profit = ((jual - pokok) / pokok) * 100;
-        return profit;
+        return parseFloat(profit.toFixed(2)); // Ensuring two decimal points
     }
 
     // Function to calculate harga_jual based on profit percentage
     function calculateHargaJualFromProfit(profitPercentage, hargaPokok) {
         const pokok = parseNumericValue(hargaPokok);
         const profitDecimal = profitPercentage / 100;
-        return pokok * (1 + profitDecimal);
+        const hargaJual = pokok * (1 + profitDecimal);
+
+        return parseFloat(hargaJual.toFixed(2)); // Ensure two decimal points
     }
 
     // Function to update all values based on inputs
@@ -248,7 +345,7 @@
 
         // Calculate profit percentage
         const profitPercentage = calculateProfit(hargaJualValue, hargaPokokValue);
-        profitField.value = `${profitPercentage.toFixed(2)}`;
+        profitField.value = profitPercentage; // Directly use the calculated profit without toFixed()
 
         // Format and update fields
         hargaJualProfit.value = formatAsRupiah(parseNumericValue(hargaJualProfit.value));
@@ -269,20 +366,51 @@
     }
 
     // Function to handle profit input change
+    let isFirstInput = true;
     function handleProfitInput() {
-        const profitPercentage = parseFloat(profitField.value) || 0;
+        let profitPercentage = parseFloat(profitField.value.replace(/[^0-9.]/g, '')) || 0; // Hanya angka dan titik yang diterima
+        
+        // Menghapus desimal jika nilai tersebut adalah bilangan bulat
+        profitPercentage = profitPercentage % 1 === 0 ? Math.floor(profitPercentage) : profitPercentage;
+
         const hargaPokokValue = hargaPokokProfit.value;
         const hargaJual = calculateHargaJualFromProfit(profitPercentage, hargaPokokValue);
-        hargaJualProfit.value = formatAsRupiah(hargaJual);
-        updateValues(); // Ensure all fields are updated after setting harga_jual
+
+        // Format hasilnya dan tampilan harga jual
+        hargaJualProfit.value = formatAsRupiah(hargaJual); // Format nilai harga jual dengan Rupiah
+        updateValues(); // Memperbarui nilai lainnya sesuai kebutuhan
     }
+
+    // Event listener untuk menangani keydown pada input profit
+    profitField.addEventListener('keydown', function(event) {
+        // Mengecek apakah yang ditekan adalah angka atau tanda khusus seperti backspace
+        if (event.key >= '0' && event.key <= '9') {
+            if (isFirstInput) {
+                // Reset nilai saat pertama kali angka dimasukkan
+                profitField.value = '';  // Reset ke kosong, sesuai kebutuhan Anda
+                isFirstInput = false;     // Tandai bahwa reset sudah terjadi
+            }
+        }
+    });
+
+    // Event listener untuk mengupdate nilai setiap kali ada perubahan input
+    profitField.addEventListener('input', function() {
+        // Pastikan hanya angka yang dimasukkan dan menghapus titik desimal
+        const inputValue = profitField.value.replace(/[^0-9.]/g, ''); // Hapus semua karakter selain angka
+
+        // Set nilai ke input profit yang benar
+        profitField.value = inputValue;
+
+        // Panggil handleProfitInput untuk memperbarui harga jual
+        handleProfitInput();
+    });
 
     // Add event listeners
     hargaJualProfit.addEventListener('input', handleInput);
     hargaPokokProfit.addEventListener('input', handleInput);
     inputField2.addEventListener('input', handleInput);
-    profitField.addEventListener('input', handleProfitInput);
 
     // Initial setup
     updateValues();
 </script>
+

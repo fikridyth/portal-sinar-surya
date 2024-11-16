@@ -86,6 +86,7 @@
 
     function addChildRowToTable(product, nextKode) {
         // Define the new row's content
+        // <td><input type="text" size="7" name="harga_jual" class="harga_jual_value" value="${new Intl.NumberFormat().format(product.harga_jual / formatCurrency(product.unit_beli))}" /></td>
         var newRow = `
             <tr>
                 <td class='nama_value' data-nama-value='${product.nama}'>${product.nama + '/P1'}</td>
@@ -93,11 +94,11 @@
                 <td class='kode_sumber_value'>${product.kode}</td>
                 <td class='tipe_data' id='tipe_data'>ANAK</td>
                 <td class='unit_beli_value' data-unit-beli='${formatCurrency(product.unit_beli)}'>P${formatCurrency(product.unit_beli)}</td>
-                <td><input type="text" class='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="1" /></td>
+                <td><input type="text" class='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="1" autofocus /></td>
                 <td class='konversi_value'>${formatCurrency(product.unit_beli)}.00</td>
                 <td class='harga_beli_value' name='harga_beli'>${new Intl.NumberFormat().format(Math.floor(product.harga_pokok / formatCurrency(product.unit_beli)))}</td>
-                <td><input type="text" size="7" name="harga_jual" class="harga_jual_value" value="${new Intl.NumberFormat().format(product.harga_jual / formatCurrency(product.unit_beli))}" /></td>
-                <td></td>
+                <td><input type="text" size="7" name="harga_jual" class="harga_jual_value" value="" /></td>
+                <td><input type="text" size="7" name="kode_alternatif" class="kode_alternatif_value" value="" /></td>
             </tr>
         `;
 
@@ -243,6 +244,7 @@
         const unitBeliCell = lastRow.querySelector('.unit_beli_value');
         const hargaBeliInput = lastRow.querySelector('.harga_beli_value');
         const hargaJualInput = lastRow.querySelector('.harga_jual_value');
+        const kodeAlternatifInput = lastRow.querySelector('.kode_alternatif_value');
         const tipeDataInput = lastRow.querySelector('.tipe_data');
         const namaValueInput = lastRow.querySelector('.nama_value').getAttribute('data-nama-value');
         const parentKodeSumberInput = lastRow.querySelector('.kode_sumber_value').getAttribute('data-kode-sumber-parent');
@@ -315,6 +317,7 @@
         const unitJualInput = lastRow.querySelector('.unit_jual_value');
         const hargaBeliInput = lastRow.querySelector('.harga_beli_value');
         const hargaJualInput = lastRow.querySelector('.harga_jual_value');
+        const kodeAlternatifInput = lastRow.querySelector('.kode_alternatif_value');
         const tipeDataInput = lastRow.querySelector('.tipe_data');
         const namaValueInput = lastRow.querySelector('.nama_value').getAttribute('data-nama-value');
         const kodeValueInput = lastRow.querySelector('.kode_value');
@@ -335,6 +338,7 @@
             unit_jual: unitJualInput ? unitJualInput.value : '',
             harga_pokok: hargaBeliInput ? hargaBeliInput.textContent.replace(/[^0-9]/g, '') : '',
             harga_jual: hargaJualInput ? hargaJualInput.value.replace(/[^0-9]/g, '') : '',
+            kode_alternatif: kodeAlternatifInput.value ? kodeAlternatifInput.value : '',
             nama: namaValueInput ? namaValueInput : '',
             kode: kodeValueInput ? kodeValueInput.textContent : '',
             tipe: tipeDataInput ? tipeDataInput.textContent : '',

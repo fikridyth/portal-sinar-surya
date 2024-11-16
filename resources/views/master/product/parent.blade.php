@@ -119,11 +119,11 @@
                 <td class='kode_value'>${nextKode}</td>
                 <td class='kode_sumber_value' data-kode-sumber-parent='${product.kode}'>${nextKode}</td>
                 <td class='tipe_data' id='tipe_data'>SUMBER</td>
-                <td><input type="text" class='unit_beli_value' size="5" name="unit_beli" value="1" /></td>
+                <td><input type="text" class='unit_beli_value' size="5" name="unit_beli" value="1" autocomplete="off" autofocus /></td>
                 <td class='unit_jual_value' data-unit-jual-parent='${formatCurrency(product.unit_beli)}'></td>
                 <td class='konversi_value' data-profit-parent='${product.profit}'>0.00</td>
-                <td class='harga_beli_value' data-harga-beli-parent='${new Intl.NumberFormat().format(product.harga_pokok)}'>0</td>
-                <td class='harga_jual_value' data-harga-jual-parent='${new Intl.NumberFormat().format(product.harga_jual)}'>0</td>
+                <td class='harga_beli_value' data-harga-beli-parent='${new Intl.NumberFormat().format(product.harga_pokok)}'><input type="text" size="7" name="parent_harga_beli" class="parent_harga_beli" value="0" /></td>
+                <td class='harga_jual_value' data-harga-jual-parent='${new Intl.NumberFormat().format(product.harga_jual)}'><input type="text" size="7" name="parent_harga_jual" class="parent_harga_jual" value="0" /></td>
                 <td></td>
             </tr>
         `;
@@ -246,7 +246,9 @@
         const tipeDataInput = lastRow.querySelector('.tipe_data');
         const namaValueInput = lastRow.querySelector('.nama_value').getAttribute('data-nama-value');
         const parentKodeSumberInput = lastRow.querySelector('.kode_sumber_value').getAttribute('data-kode-sumber-parent');
+        const parentHargaBeliInputValue = lastRow.querySelector('.parent_harga_beli');
         const parentHargaBeliInput = lastRow.querySelector('.harga_beli_value').getAttribute('data-harga-beli-parent');
+        const parentHargaJualInputValue = lastRow.querySelector('.parent_harga_jual');
         const parentHargaJualInput = lastRow.querySelector('.harga_jual_value').getAttribute('data-harga-jual-parent');
         const parentUnitJualInput = lastRow.querySelector('.unit_jual_value').getAttribute('data-unit-jual-parent');
         const parentProfitInput = lastRow.querySelector('.konversi_value').getAttribute('data-profit-parent');
@@ -259,6 +261,8 @@
             tipe: tipeDataInput ? tipeDataInput.textContent : '',
             unit_beli: unitBeliCell ? unitBeliCell.value : '',
             unit_jual: parentUnitJualInput,
+            harga_beli_input: parentHargaBeliInputValue.value,
+            harga_jual_input: parentHargaJualInputValue.value,
             harga_beli: parentHargaBeliInput.replace(/[^0-9]/g, ''),
             harga_jual: parentHargaJualInput.replace(/[^0-9]/g, ''),
             profit: parentProfitInput,

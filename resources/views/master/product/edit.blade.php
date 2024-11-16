@@ -82,7 +82,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" id="kode_alternatif" name="kode_alternatif" value="{{ old('kode_alternatif', $product->kode_alternatif) }}"
-                                    class="form-control @error('kode_alternatif') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('kode_alternatif') is-invalid @enderror" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('nama_barang2').focus();" />
                                 @error('kode_alternatif')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -99,7 +100,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" id="nama_barang2" name="nama_barang" value="{{ old('nama_barang', $product->nama) }}" required
-                                    class="form-control @error('nama_barang') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('nama_barang') is-invalid @enderror uppercase-input" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('merek').focus();" />
                             </div>
                         </div>
                     </div>
@@ -141,7 +143,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" id="merek" name="merek" value="{{ old('merek', $product->merek) }}"
-                                    class="form-control @error('merek') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('merek') is-invalid @enderror uppercase-input" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('label').focus();" />
                             </div>
                         </div>
                     </div>
@@ -158,7 +161,7 @@
                             </div>
                             <div class="col-3">
                                 <input type="text" id="unit_beli" name="unit_beli" value="{{ old('unit_beli', $product->unit_beli) }}" required
-                                    class="form-control readonly-input @error('unit_beli') is-invalid @enderror" autocomplete="off" readonly />
+                                    class="form-control readonly-input @error('unit_beli') is-invalid @enderror uppercase-input" autocomplete="off" readonly />
                                 @error('unit_beli')
                                     <div class="invalid-feedback">
                                         {{ $message }}
@@ -175,7 +178,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" id="label" name="label" value="{{ old('label', $product->label) }}"
-                                    class="form-control @error('label') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('label') is-invalid @enderror uppercase-input" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('harga_pokok').focus();" />
                             </div>
                         </div>
                     </div>
@@ -231,7 +235,8 @@
                             </div>
                             <div class="col-6">
                                 <input type="text" id="profit" name="profit" value="{{ old('profit', $product->profit) }}"
-                                    class="form-control @error('profit') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('profit') is-invalid @enderror" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('input-supplier-id').focus();" />
                             </div>
                             <div class="col-1">
                                 <label class="form-label h6 mt-2">%</label>
@@ -266,12 +271,14 @@
                             @if($product->kode_sumber !== null)
                                 <div class="col">
                                     <input type="text" id="harga_pokok"  name="harga_pokok" value="{{ old('harga_pokok', number_format($parentProduct->harga_pokok ?? $product->harga_pokok)) }}"
-                                        class="form-control readonly-input @error('harga_pokok') is-invalid @enderror" autocomplete="off" readonly />
+                                        class="form-control readonly-input @error('harga_pokok') is-invalid @enderror" autocomplete="off" readonly
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" />
                                 </div>
                             @else
                                 <div class="col">
                                     <input type="text" id="harga_pokok" name="harga_pokok" value="{{ old('harga_pokok', number_format($parentProduct->harga_pokok ?? $product->harga_pokok)) }}"
-                                        class="form-control @error('harga_pokok') is-invalid @enderror" autocomplete="off" />
+                                        class="form-control @error('harga_pokok') is-invalid @enderror"
+                                        onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" autocomplete="off" />
                                 </div>
                             @endif
                         </div>
@@ -351,7 +358,8 @@
                             </div>
                             <div class="col">
                                 <input type="text" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', number_format($product->harga_jual)) }}"
-                                    class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off" />
+                                    class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off"
+                                    onkeydown="if(event.key === 'Enter') document.getElementById('profit').focus();" />
                             </div>
                         </div>
                     </div>
@@ -517,7 +525,7 @@
                             </div>
                             <div class="col-5">
                                 <div class="custom-select-supplier">
-                                    <input type="text" class="search-input-supplier" value="{{ $product->supplier->nomor }}" name="supplier" required placeholder="Search..." onkeyup="filterFunction()">
+                                    <input type="text" class="search-input-supplier" id="input-supplier-id" value="{{ $product->supplier->nomor }}" name="supplier" required placeholder="Search..." onkeyup="filterFunction()">
                                     <div class="select-items-supplier" id="select-items-supplier">
                                         <!-- Options will be added here dynamically -->
                                     </div>
