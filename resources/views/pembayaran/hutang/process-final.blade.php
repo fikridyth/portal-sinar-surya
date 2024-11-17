@@ -88,6 +88,7 @@
                                             <td class="text-end">{{ number_format($hutang['total'], 0) }}</td>
                                         </tr>
                                     @endforeach
+                                    <input type="text" hidden name="materai" value="{{ $materai }}">
                                 </tbody>
                             </table>
                         </div>

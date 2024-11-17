@@ -54,8 +54,12 @@
                                     <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                     <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                     <td class="text-end">{{ number_format($product->harga_lama) }}</td>
-                                    <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
-                                    <td class="text-end">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                    @if ($product->harga_pokok > $product->harga_lama)
+                                        <td class="text-end" style="background-color: red; color: white;">{{ number_format($product->harga_pokok) }}</td>
+                                    @else
+                                        <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
+                                    @endif
+                                    <td class="text-end">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                     <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                     <td class="text-end">{{ number_format($product->harga_jual) }}</td>
                                     <td class="text-end">{{ $product->profit }}</td>
@@ -68,11 +72,14 @@
                         <div class="mx-2">
                             <a class="btn btn-danger" href="{{ route('receive-po.create-detail', enkrip($preorder->id)) }}">KEMBALI</a>
                         </div>
-                        <div class="mx-2">
+                        {{-- <div class="mx-2">
                             <a href="{{ route('receive-po.cetak', enkrip($preorder->id)) }}" class="btn btn-warning">CETAK</a>
                         </div>
                         <div class="mx-2">
                             <button type="submit" class="btn btn-primary">PROSES</button>
+                        </div> --}}
+                        <div class="mx-2">
+                            <a href="{{ route('receive-po.cetak', enkrip($preorder->id)) }}" class="btn btn-primary">PROSES</a>
                         </div>
                     </div>
                 </div>

@@ -21,13 +21,16 @@ class ReceiveDoneDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->where('receive_type', 'B')->whereNull('is_cancel')->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->where('receive_type', 'B')->whereNull('is_cancel')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier->nama;
             })
             ->editColumn('receive_type', function ($row) {
                 return $row->receive_type . 0;
+            })
+            ->editColumn('grand_total', function ($row) {
+                return number_format($row->grand_total, 0);
             })
             ->addColumn('action', function ($row) {
                 $detailUrl = route('receive-po.create-detail', enkrip($row->id));
@@ -81,7 +84,7 @@ class ReceiveDoneDataTable extends DataTable
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]
                 ],
-                'pageLength' => 100
+                'pageLength' => 10
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');
@@ -94,8 +97,10 @@ class ReceiveDoneDataTable extends DataTable
     {
         return [
             // Column::make('DT_RowIndex')->title('NO.')->searchable(false)->orderable(false)->addClass('text-center'),
-            Column::make('supplier_name')->title('NAMA SUPPLIER')->addClass('text-center'),
+            Column::make('supplier_name')->title('NAMA SUPPLIER'),
             Column::make('nomor_receive')->title('NOMOR RECEIVE')->addClass('text-center'),
+            Column::make('date_first')->title('TANGGAL')->addClass('text-center'),
+            Column::make('grand_total')->title('TOTAL')->addClass('text-end'),
             // Column::make('receive_type')->title('REF')->addClass('text-center'),
             Column::computed('action')
                 ->exportable(false)

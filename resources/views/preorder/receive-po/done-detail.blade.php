@@ -287,9 +287,12 @@
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
                                         </form>
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <button type="button" disabled class="btn btn-primary">PROSES</button>
-                                    </div> --}}
+                                    <div class="mx-2">
+                                        <a href="{{ route('receive-po.cetak-done-data', enkrip($preorder->id)) }}" class="btn btn-warning">CETAK</a>
+                                    </div>
+                                    <div class="mx-2">
+                                        <a class="btn btn-primary" href="{{ route('daftar-receive-done-po') }}">DAFTAR PENERIMAAN</a>
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -307,7 +310,7 @@
                                         <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                     </div> --}}
                                     <div class="mx-2">
-                                        <a class="btn btn-danger" href="{{ route('daftar-receive-done-po') }}">KEMBALI</a>
+                                        <a class="btn btn-danger" href="{{ route('index') }}">KEMBALI</a>
                                     </div>
                                 </div>
                             </div>

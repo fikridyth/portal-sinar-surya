@@ -386,6 +386,7 @@ class PreOrderController extends Controller
             'total_harga' => $jumlahHarga,
             'grand_total' => $jumlahHarga,
             'receive_type' => 'A',
+            'is_cancel' => 1,
         ];
         // dd($supplier1->id, $dataDetail);
 
@@ -665,6 +666,16 @@ class PreOrderController extends Controller
             'total_harga' => $jumlahHarga,
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+        
+        $product = Product::where('kode', $request->kode)->first();
+        $product->update([
+            'harga_lama' => $product->harga_pokok,
+            'harga_pokok' => $request->price,
+            'diskon1' => $request->diskon1,
+            'diskon2' => $request->diskon2,
+            'diskon3' => $request->diskon3,
+            'is_transfer' => null
         ]);
 
         return response()->json([
@@ -1062,9 +1073,15 @@ class PreOrderController extends Controller
         $title = 'Detail Receive PreOrder';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
-        // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
-        // dd(count($products));
+        
+        if ($preorder->receive_type == 'A') {
+            $preorder->update([
+                'receive_type' => 'B',
+                'is_receive' => 1,
+                'nomor_receive' => str_replace('PO', 'RP', $preorder->nomor_po)
+            ]);
+        }
 
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
     }
@@ -1144,22 +1161,37 @@ class PreOrderController extends Controller
         return view('preorder.receive-po.cetak-data', compact('title', 'preorder', 'detail'));
     }
 
+    public function cetakReceivePoDoneData($id)
+    {
+        $id = dekrip($id);
+        $title = 'Cetak Receive PO';
+        $preorder = Preorder::find($id);
+        $detail = json_decode($preorder->detail, true);
+        usort($detail, function ($a, $b) {
+            return strcmp($a['nama'], $b['nama']);
+        });
+
+        return view('preorder.receive-po.cetak-done-data', compact('title', 'preorder', 'detail'));
+    }
+
     public function daftarReceivePo(ReceiveDataTable $dataTable)
     {
         $title = 'Daftar Receive PreOrder';
+        $titleHeader = 'PENERIMAAN BARANG - PURCHASE ORDER';
         // $preorders = Preorder::where('receive_type', 'B')->get();
 
         // return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
-        return $dataTable->render('preorder.receive-po.daftar-receive-po', compact('title'));
+        return $dataTable->render('preorder.receive-po.daftar-receive-po', compact('title', 'titleHeader'));
     }
 
     public function daftarReceiveDonePo(ReceiveDoneDataTable $dataTable)
     {
         $title = 'Daftar Receive Done';
+        $titleHeader = 'PENERIMAAN BARANG - RECEIVE';
         // $preorders = Preorder::where('receive_type', 'B')->get();
 
         // return view('preorder.receive-po.daftar-receive-po', compact('title', 'preorders'));
-        return $dataTable->render('preorder.receive-po.daftar-receive-done-po', compact('title'));
+        return $dataTable->render('preorder.receive-po.daftar-receive-done-po', compact('title', 'titleHeader'));
     }
 
     // public function storePembayaran(Request $request)

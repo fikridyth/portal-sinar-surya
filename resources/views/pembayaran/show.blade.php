@@ -237,7 +237,11 @@
                                     </div>
                                     <div class="col-2">
                                         <label for="" style="font-size: 12px;">MATERAI</label>
-                                        <input type="text" class="text-end btn-block readonly-input" readonly value="{{ number_format($pembayaran->supplier->materai, 0) ?? 0 }}" style="font-size: 12px;">
+                                        @if ($pembayaran->beban_materai !== null && $pembayaran->beban_materai !== 0)
+                                            <input type="text" class="text-end btn-block readonly-input" readonly value="{{ number_format($pembayaran->beban_materai, 0) }}" style="font-size: 12px;">
+                                        @else
+                                            <input type="text" class="text-end btn-block readonly-input" readonly value="{{ number_format($pembayaran->supplier->materai, 0) ?? 0 }}" style="font-size: 12px;">
+                                        @endif
                                         <label for="" style="font-size: 12px;">BEBAN MATERAI</label>
                                         <input type="text" class="text-end btn-block" style="font-size: 12px;" name="beban_materai" autocomplete="off" onkeyup="formatInputNumber(this)">
                                     </div>

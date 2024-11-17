@@ -118,15 +118,19 @@
                         <div class="col-12 col-md-3"></div>
                         <div class="col-12 col-md-2">
                             <label for="materai" class="mx-1">MATERAI</label>
-                            <input type="text" size="8" name="" class="text-end" value="{{ $supplier->materai }}">
+                            <input type="text" size="8" name="materai" class="text-end" value="{{ $supplier->materai }}">
                         </div>
                         <div class="col-12 col-md-2">
                             <label for="promosi" class="mx-1">PROMOSI</label>
-                            <input type="text" size="8" name="" class="text-end" value="{{ abs($promosi[0]['total']) }}">
+                            @if(isset($promosi[0]['total']))
+                                <input type="text" size="8" class="text-end" readonly value="{{ number_format(abs($promosi[0]['total'])) }}">
+                            @else
+                                <input type="text" size="8" class="text-end" readonly value="0">
+                            @endif
                         </div>
                         <div class="col-12 col-md-2">
                             <label for="bonus" class="mx-1">BONUS</label>
-                            <input type="text" size="8" name="" class="text-end" value="0">
+                            <input type="text" size="8" readonly class="text-end" value="0">
                         </div>
                         <div class="col-12 col-md-3"></div>
                     </div>

@@ -22,7 +22,7 @@ class PembayaranDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNull('id_parent')->whereNull('tipe_giro')->orderBy('nomor_bukti', 'desc')))
+        return (new EloquentDataTable($query->whereNull('id_parent')->whereNull('tipe_giro')))
         ->addIndexColumn()
         ->addColumn('supplier_nomor', function ($row) {
             return $row->supplier->nomor;
@@ -73,7 +73,7 @@ class PembayaranDataTable extends DataTable
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]
                 ],
-                'pageLength' => 100
+                'pageLength' => 10
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

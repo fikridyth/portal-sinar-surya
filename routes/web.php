@@ -70,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/receive-po/preview-data/{id}', [PreOrderController::class, 'previewDataReceivePo'])->name('receive-po.preview-data');
     Route::put('/receive-po/update/{id}', [PreOrderController::class, 'updateReceivePo'])->name('receive-po.update');
     Route::get('/receive-po/cetak/{id}', [PreOrderController::class, 'cetakReceivePo'])->name('receive-po.cetak');
+    Route::get('/receive-po/cetak-done-data/{id}', [PreOrderController::class, 'cetakReceivePoDoneData'])->name('receive-po.cetak-done-data');
 
     // Persetujuan Harga Jual
     Route::get('/persetujuan-harga-jual', [PreOrderController::class, 'persetujuanHargaJual'])->name('persetujuan-harga-jual');

@@ -172,6 +172,7 @@ class PembayaranController extends Controller
 
     public function processFinalHutang(Request $request, $id)
     {
+        // dd($request->all());
         $id = dekrip($id);
         $title = 'Proses Pembayaran Hutang';
         $supplier = Supplier::find($id);
@@ -227,7 +228,10 @@ class PembayaranController extends Controller
             $isCetak = HutangCetak::create(['nomor' => $getHutang[0]['nomor']]);
         }
 
-        return view('pembayaran.hutang.process-final', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'isCetak'));
+        $materai = $request->materai;
+        // dd($materai);
+
+        return view('pembayaran.hutang.process-final', compact('title', 'supplier', 'materai', 'getHutang', 'totalHutang', 'getNomorBukti', 'isCetak'));
     }
 
     public function storeHutang(Request $request, $id)
@@ -286,7 +290,8 @@ class PembayaranController extends Controller
             'date' => $request->date_payment,
             'total' => $totalHutang,
             'grand_total' => $totalHutang,
-            'nomor_bukti' => $request->nomor_bukti
+            'nomor_bukti' => $request->nomor_bukti,
+            'beban_materai' => $request->materai
         ];
         // dd($dataPembayaran, $request->all(), $getHutang, $totalHutang);
 
@@ -307,8 +312,9 @@ class PembayaranController extends Controller
     public function indexHutangHapus(PembayaranDataTable $dataTable)
     {
         $title = 'Hapus Pembayaran Hutang';
+        $titleHeader = 'HAPUS PEMBAYARAN HUTANG';
         
-        return $dataTable->render('pembayaran.hutang.hapus.index', compact('title'));
+        return $dataTable->render('pembayaran.hutang.hapus.index', compact('title', 'titleHeader'));
     }
 
     public function detailHutangHapus($id)

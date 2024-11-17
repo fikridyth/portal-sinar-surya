@@ -3,6 +3,7 @@
 @include('master.product.add-on.styles')
 
 @php
+    use App\Models\Product;
     $totalPrice = 0;
     $totalOrder = 0;
 @endphp
@@ -218,6 +219,8 @@
                                                         $totalOrder += $detail['order'];
                                                         if ($detail['is_ppn'] !== 0) { $priceWithPpn = ($detail['price'] * $detail['is_ppn'] / 100) + $detail['price']; }
                                                         else { $priceWithPpn = $detail['price']; }
+
+                                                        $dataProduct = Product::where('kode', $detail['kode'])->first();
                                                     @endphp
                                                         <tr class="fs-need">
                                                             <td>{{ $no }}</td>
@@ -237,7 +240,7 @@
                                                             <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
                                                             <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                            <td class="text-end" id="old-price-{{ $no }}">{{ number_format($detail['price']) }}</td>
+                                                            <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
                                                             <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                             <td class="text-end">
                                                                 <div class="order-container">
@@ -247,8 +250,8 @@
                                                             </td>
                                                             <td class="text-end">
                                                                 <div class="price-container">
-                                                                    <span class="price-text" id="price-text-{{ $no }}">{{ number_format($detail['price']) }}</span>
-                                                                    <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $detail['price'] }}" size="10">
+                                                                    <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
+                                                                    <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10">
                                                                 </div>
                                                             </td>
                                                             <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
@@ -308,7 +311,7 @@
                                         @endif
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('daftar-receive-po') }}" class="btn btn-info">DAFTAR PENERIMAAN</a>
+                                        <a href="{{ route('daftar-receive-po') }}" class="btn btn-info">DAFTAR PREORDER</a>
                                     </div>
                                 </div>
                                 <div class="d-flex">
@@ -327,7 +330,7 @@
                                         <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                     </div> --}}
                                     <div class="mx-2">
-                                        <a class="btn btn-danger" href="{{ route('daftar-receive-po') }}">KEMBALI</a>
+                                        <a class="btn btn-danger" href="{{ route('index') }}">KEMBALI</a>
                                     </div>
                                 </div>
                             </div>
