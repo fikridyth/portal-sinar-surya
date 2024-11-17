@@ -289,6 +289,7 @@ class GiroController extends Controller
             $dataDetails = GiroDetail::where('id_bank', $idBank)->where('kode', $rekening)->where('dari', $data->dari)->get();
 
             $data->remainingAmount = count($dataDetails);
+            $data->rusakGiro = 0;
 
             foreach ($dataDetails as $detail) {
                 // Check if 'jumlah' is not null or empty and add to remaining amount
@@ -296,13 +297,17 @@ class GiroController extends Controller
                     // Accumulate the amount
                     $data->remainingAmount -= 1;
                 }
+
+                if ($detail->flag == 3) {
+                    $data->rusakGiro += 1;
+                }
             }
         }
 
         $filledData = GiroDetail::where('id_bank', $idBank)->whereNotNull('jumlah')->orderBy('nomor', 'desc')->limit(5)->get()->reverse();
-        $emptyData = GiroDetail::where('id_bank', $idBank)->whereNull('jumlah')->limit(5)->get();
+        $emptyData = GiroDetail::where('id_bank', $idBank)->whereNull('jumlah')->limit(10)->get();
         $dataDetail = $filledData->merge($emptyData);
-        // dd($dataDetails);
+        // dd($dataDetails, $dataDetail);
 
         return response()->json([
             'dataHeader' => $dataHeader,

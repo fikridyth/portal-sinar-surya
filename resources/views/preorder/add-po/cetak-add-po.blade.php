@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-@php
-    $date_last = Carbon\Carbon::parse($preorder->date_last);
-@endphp
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,11 +25,12 @@
 </head>
 
 <body>
+    {{-- @dd($results) --}}
     <div class="container mt-4">
         <div class="row">
             <div class="col-3">SINAR SURYA</div>
             <div class="col-5"></div>
-            <div class="col-3">{{ $preorder->date_first = Carbon\Carbon::parse($preorder->date_first)->locale('id')->isoFormat('D MMMM YYYY'); }}</div>
+            <div class="col-3">{{ now()->format('d/m/Y') }}</div>
         </div>
         <div class="row">
             <div class="col-3">JL. PASAR BARU - BOGOR</div>
@@ -50,7 +48,7 @@
             <div class="col-3">Fax &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 7964355</div>
         </div>
         <div class="row">
-            <div class="col-3">P/0 &nbsp;: {{ $preorder->nomor_po }}</div>
+            <div class="col-3"></div>
             <div class="col-5"></div>
             <div class="col-3">CP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: EDI 087870000717</div>
         </div>
@@ -60,46 +58,43 @@
             <div class="col-4"></div>
             <div class="col-2">Halaman : 1</div>
         </div>
-        <hr class="dashed-line">
+        {{-- <hr class="dashed-line">
         <div class="row">
-            <div class="col-3">Due Date &emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;: {{ $date_last->format('d/m/Y') }}</div>
+            <div class="col-3"></div>
             <div class="col-5"></div>
-            <div class="col-4">Arrival Date &emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;&emsp14;: {{ $date_last->format('d/m/Y') }}</div>
+            <div class="col-4"></div>
         </div>
         <div class="row">
             <div class="col-3">Type Of Payment : Credit</div>
             <div class="col-5"></div>
-            <div class="col-3">Cancellation Date : {{ $date_last->format('d/m/Y') }}</div>
+            <div class="col-3">Cancellation Date : {{ now()->format('d/m/Y') }}</div>
         </div>
         <div class="row">
             <div class="col-3">Term Of Payment : 0</div>
-        </div>
+        </div> --}}
         <hr class="dashed-line">
         <hr class="dashed-line-2">
         <div class="row" style="margin-top: 10px;">
-            <div class="col-2">ITEM CODE</div>
-            <div class="col-4">DESCRIPTION</div>
-            <div class="col-1">QTY</div>
-            <div class="col-1">UNIT</div>
-            <div class="col-1">PRICE</div>
-            <div class="col-2">DISCOUNT</div>
-            <div class="col-1">TOTAL</div>
+            <div class="col-4">Nama Barang</div>
+            <div class="col-2">Stok</div>
+            <div class="col-2">Order</div>
+            <div class="col-2">Harga</div>
+            <div class="col-2">Jumlah Rp</div>
         </div>
         <hr class="dashed-line">
         <hr class="dashed-line-2">
-        @foreach (json_decode($preorder->detail, true) as $detail)
+        @foreach ($results as $result)
+            {{-- @dd($result['product']['nama']) --}}
             <div class="row" style="margin-top: 10px;">
-                <div class="col-2">{{ $detail['kode'] }}</div>
-                <div class="col-4">{{ $detail['nama'] }}</div>
-                <div class="col-1">{{ $detail['order'] }}</div>
-                <div class="col-1">{{ $detail['unit_jual'] }}</div>
-                <div class="col-1"></div>
-                <div class="col-1"></div>
-                <div class="col-2" style="text-align: right;">{{ number_format($detail['field_total']) }}</div>
+                <div class="col-4">{{ $result['product']['nama'] . '/' . $result['product']['unit_jual'] }}</div>
+                <div class="col-2">{{ $result['details']['stok'] }}</div>
+                <div class="col-2">{{ $result['details']['order'] }}</div>
+                <div class="col-2">{{ number_format($result['details']['harga'], 2) }}</div>
+                <div class="col-2">{{ number_format(($result['details']['order'] * $result['details']['harga']), 2) }}</div>
             </div>
         @endforeach
         <hr class="dashed-line">
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-6"></div>
             <div class="col-3">TOTAL ORDER &nbsp;====></div>
             <div class="col-3" style="text-align: right;">{{ number_format($preorder->grand_total) }}</div>
@@ -129,7 +124,7 @@
             <div class="col-1" style="text-align: right">(</div>
             <div class="col-2">LO HARYANTO &emsp14;&emsp14;&emsp14;&emsp14;&emsp14;)</div>
             <div class="col-1"></div>
-        </div>
+        </div> --}}
         <hr class="dashed-line">
     </div>
 
@@ -144,7 +139,7 @@
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' || event.key === 'Backspace') {
-                window.location.href = '/daftar-po';
+                window.history.back();
             }
         });
     </script>

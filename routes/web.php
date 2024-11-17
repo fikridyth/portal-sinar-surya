@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('preorder')->name('preorder.')->group(function () {
         Route::post('/get-list-barang', [PreOrderController::class, 'getListBarang'])->name('get-list-barang');
         Route::post('/process-barang', [PreOrderController::class, 'processBarang'])->name('process-barang');
+        Route::get('/add-po/cetak', [PreOrderController::class, 'cetakTambahPo'])->name('add-po.cetak');
         Route::post('/order-barang', [PreOrderController::class, 'orderBarang'])->name('order-barang');
     });
     Route::get('/daftar-po', [PreOrderController::class, 'daftarPo'])->name('daftar-po');

@@ -2,17 +2,6 @@
 
 @section('content')
     <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMBAYARAN CEK/GIRO/TUNAI
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
         <div class="card">
             <form action="{{ route('pembayaran.update-gabung', $ids) }}" method="POST" class="form">
                 @csrf
@@ -67,7 +56,7 @@
                                         <label for="cek" style="color: white;">CEK</label>
                                     </div>
                                     <div class="col-2" style="background-color: brown;">
-                                        <input type="radio" id="giro" name="rekening" value="GR">
+                                        <input type="radio" id="giro" checked name="rekening" value="GR">
                                         <label for="giro" style="color: white;">GIRO</label>
                                     </div>
                                     <div class="col-3" style="background-color: brown;">
@@ -75,7 +64,7 @@
                                         <label for="transfer" style="color: white;">TRANSFER</label>
                                     </div>
                                 </div>
-                                <hr>
+                                {{-- <hr>
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -91,24 +80,26 @@
                                             <td></td>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </table> --}}
+                                <hr>
+                                <div class="d-flex justify-content-center" style="margin-top: 27%">
+                                    <a href="{{ route('index') }}" class="btn btn-primary mx-4">SELESAI</a>
+                                </div>
                                 <hr>
                                 <h6 class="text-center">BUKU CEK/GIRO</h6>
-                                <table id="data-table" class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">DARI NOMOR</th>
-                                            <th class="text-center">SAMPAI NOMOR</th>
-                                            <th class="text-center">SISA</th>
-                                            <th class="text-center">RUSAK</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="data-tbody">
-                                    </tbody>
-                                </table>
-                                <hr>
-                                <div class="d-flex justify-content-center">
-                                    <a href="{{ route('index') }}" class="btn btn-primary mx-4">SELESAI</a>
+                                <div style="overflow-x: auto; height: 290px; border: 1px solid #ccc;">
+                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                        <thead>
+                                            <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                                <th class="text-center">DARI NOMOR</th>
+                                                <th class="text-center">SAMPAI NOMOR</th>
+                                                <th class="text-center">SISA</th>
+                                                <th class="text-center">RUSAK</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-tbody">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                             <div class="form-group col-7">
@@ -129,7 +120,7 @@
                                                 <label for="" style="font-size: 15px">JUMLAH CEK/GIRO</label>
                                             </div>
                                             <div class="col-2">
-                                                <input type="number" class="btn-block" required min="0"
+                                                <input type="number" autofocus class="btn-block" required min="0"
                                                     max="2" autocomplete="off" id="jumlah-check"
                                                     name="type_payment">
                                             </div>
@@ -179,84 +170,86 @@
                                 <div class="row mt-2">
                                     <div class="col-1"></div>
                                     <div class="col-8">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">JUMLAH</th>
-                                                    <th class="text-center">NOMOR GIRO</th>
-                                                    <th class="text-center">V</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tunai-table" style="display: none;">
-                                                <tr>
-                                                    <input type="text" id="amount-total" value="{{ $pembayaran->sum('grand_total') }}" hidden>
-                                                    <td class="text-center"><input type="text" id="value1" name="tunai_payment" style="width: 100px;" 
-                                                        value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue2()" onkeyup="formatInputNumber(this)">
-                                                    </td>
-                                                    <td>TUNAI</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"type="checkbox" disabled checked></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center"><input type="text" class="readonly-input" id="value2" name="tunai_other_income" readonly style="width: 100px;" value="0" onkeyup="formatInputNumber(this)"></td>
-                                                    <td>OTHER INCOME</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"type="checkbox" disabled checked></td>
-                                                </tr>
-                                            </tbody>
-                                            <tbody id="giro-table" style="display: none;">
-                                                <tr>
-                                                    <td class="text-center"><input type="text" id="value3" name="giro_payment" style="width: 100px;" 
-                                                        value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue4()" onkeyup="formatInputNumber(this)">
-                                                    </td>
-                                                    <td>
-                                                        <select name="nomor_giro" class="giro-select" style="width: 110px;">
-                                                            <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
-                                                            @foreach ($giros->slice(1) as $giro)
-                                                                <option value="{{ $giro->nomor }}" >{{ $giro->nomor }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </td>
-                                                    <td class="text-center"><input type="date" name="date_last" style="width: 100px;"></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" 
-                                                        value="0" oninput="updateValue5()" onkeyup="formatInputNumber(this)">
-                                                    </td>
-                                                    <td>TUNAI</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"
+                                        <div style="overflow-x: auto; height: 160px; border: 1px solid #ccc; margin-left: 20px;">
+                                            <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                                <thead>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                                        <th class="text-center">JUMLAH</th>
+                                                        <th class="text-center">NOMOR GIRO</th>
+                                                        <th class="text-center">V</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tunai-table" style="display: none;">
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <input type="text" id="amount-total" value="{{ $pembayaran->sum('grand_total') }}" hidden>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" id="value1" name="tunai_payment" style="width: 100px;" 
+                                                            value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue2()" onkeyup="formatInputNumber(this)">
+                                                        </td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">TUNAI</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" class="readonly-input" id="value2" name="tunai_other_income" readonly style="width: 100px;" value="0" onkeyup="formatInputNumber(this)"></td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">OTHER INCOME</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody id="giro-table" style="display: none;">
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" id="value3" name="giro_payment" style="width: 100px;" 
+                                                            value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue4()" onkeyup="formatInputNumber(this)">
+                                                        </td>
+                                                        <td class="text-center" style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                            <select name="nomor_giro" class="giro-select" style="width: 110px;">
+                                                                <option value="{{ $giros[0]->nomor }}" selected>{{ $giros[0]->nomor }}</option>
+                                                                @foreach ($giros->slice(1) as $giro)
+                                                                    <option value="{{ $giro->nomor }}" >{{ $giro->nomor }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="date" name="date_last" style="width: 100px;"></td>
+                                                    </tr>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" id="value4" name="giro_tunai_payment" style="width: 100px;" 
+                                                            value="0" oninput="updateValue5()" onkeyup="formatInputNumber(this)">
+                                                        </td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">TUNAI</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"
+                                                                type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">OTHER INCOME</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"
+                                                                type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody id="transfer-table" style="display: none;">
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" id="value6" name="transfer_payment" style="width: 100px;" 
+                                                            value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue7()" onkeyup="formatInputNumber(this)">
+                                                        </td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">TRANSFER</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"
                                                             type="checkbox" disabled checked></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center"><input type="text" class="readonly-input" id="value5" name="giro_other_income" readonly style="width: 100px;" value="0"></td>
-                                                    <td>OTHER INCOME</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"
-                                                            type="checkbox" disabled checked></td>
-                                                </tr>
-                                            </tbody>
-                                            <tbody id="transfer-table" style="display: none;">
-                                                <tr>
-                                                    <td class="text-center"><input type="text" id="value6" name="transfer_payment" style="width: 100px;" 
-                                                        value="{{ number_format($pembayaran->sum('grand_total'), 0, ',', '.') }}" oninput="updateValue7()" onkeyup="formatInputNumber(this)">
-                                                    </td>
-                                                    <td>TRANSFER</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"
-                                                        type="checkbox" disabled checked></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center"><input type="text" id="value7" name="transfer_tunai_payment" style="width: 100px;" 
-                                                        value="0" oninput="updateValue8()" onkeyup="formatInputNumber(this)">
-                                                    </td>
-                                                    <td>TUNAI</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"
-                                                            type="checkbox" disabled checked></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="text-center"><input type="text" class="readonly-input" id="value8" name="transfer_other_income" readonly style="width: 100px;" value="0"></td>
-                                                    <td>OTHER INCOME</td>
-                                                    <td class="text-center"><input class="form-check-input" style="opacity: 1;"
-                                                            type="checkbox" disabled checked></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                    </tr>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" id="value7" name="transfer_tunai_payment" style="width: 100px;" 
+                                                            value="0" oninput="updateValue8()" onkeyup="formatInputNumber(this)">
+                                                        </td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">TUNAI</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"
+                                                                type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                    <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input type="text" class="readonly-input" id="value8" name="transfer_other_income" readonly style="width: 100px;" value="0"></td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;">OTHER INCOME</td>
+                                                        <td style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 2;" class="text-center"><input class="form-check-input" style="opacity: 1;"
+                                                                type="checkbox" disabled checked></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <div class="col-2">
                                         <label for="" style="font-size: 12px;">MATERAI</label>
@@ -282,18 +275,20 @@
                                     </div>
                                 </div>
                                 <hr>
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th class="text-center">NOMOR GIRO</th>
-                                            <th class="text-center">JATUH TEMPO</th>
-                                            <th class="text-center">JUMLAH</th>
-                                            <th class="text-center">KETERANGAN</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="data-tbody-2">
-                                    </tbody>
-                                </table>
+                                <div style="overflow-x: auto; height: 290px; border: 1px solid #ccc;">
+                                    <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                        <thead>
+                                            <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                                <th class="text-center">NOMOR GIRO</th>
+                                                <th class="text-center">JATUH TEMPO</th>
+                                                <th class="text-center">JUMLAH</th>
+                                                <th class="text-center">KETERANGAN</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="data-tbody-2">
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -415,46 +410,58 @@
                 const rekening = Array.from(rekeningRadios).find(radio => radio.checked)?.value;
                 console.log(idBank, rekening)
 
-                if (idBank && rekening) {
-                    fetch(`/master/get-bayar-giro?id_bank=${idBank}&rekening=${rekening}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const tbody = document.getElementById('data-tbody');
-                            tbody.innerHTML = ''; // Clear existing data
+                // if (idBank && rekening) {
+                fetch(`/master/get-bayar-giro?id_bank=${idBank}&rekening=${rekening}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const tbody = document.getElementById('data-tbody');
+                        tbody.innerHTML = ''; // Clear existing data
 
-                            data.dataHeader.forEach(item => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td class="text-center">${item.kode} ${item.dari}</td>
-                                    <td class="text-center">${item.kode} ${item.sampai}</td>
-                                    <td class="text-center">${item.remainingAmount}</td>
-                                    <td class="text-center">0</td>
-                                `;
-                                tbody.appendChild(row);
-                            });
+                        data.dataHeader.forEach(item => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.kode} ${item.dari}</td>
+                                <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.kode} ${item.sampai}</td>
+                                <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.remainingAmount}</td>
+                                <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.rusakGiro}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
 
+                        
+                        const tbody2 = document.getElementById('data-tbody-2');
+                        tbody2.innerHTML = ''; // Clear existing data
 
-                            const tbody2 = document.getElementById('data-tbody-2');
-                            tbody2.innerHTML = ''; // Clear existing data
-
-                            data.dataDetail.forEach(item => {
-                                const row2 = document.createElement('tr');
+                        data.dataDetail.forEach(item => {
+                            const row2 = document.createElement('tr');
+                            if (item.increment !== undefined && item.increment !== null) {
                                 row2.innerHTML = `
-                                    <td class="text-center">${item.nomor}</td>
-                                    <td class="text-center">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
-                                    <td class="text-end">${number_format(item.jumlah) ?? 0}</td>
-                                    <td class="text-center">${item.flag === 3 ? 'RUSAK' : ''}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.nomor}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
+                                    <td class="text-end" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${number_format(item.jumlah)}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${String(item.increment).padStart(3, '0')}</td>
                                 `;
-                                tbody2.appendChild(row2);
-                            });
-
-                            function number_format(number) {
-                                return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                            } else {
+                                const flagText = item.flag === 3 ? 'RUSAK' : '';
+                                row2.innerHTML = `
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.nomor}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
+                                    <td class="text-end" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${number_format(item.jumlah)}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${flagText}</td>
+                                `;
                             }
-                        })
-                        .catch(error => console.error('Error fetching data:', error));
-                }
+                            tbody2.appendChild(row2);
+                        });
+
+                        function number_format(number) {
+                            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+                // }
             }
+
+            updateTable();
 
             bankSelect.addEventListener('change', updateTable);
             rekeningRadios.forEach(radio => radio.addEventListener('change', updateTable));
@@ -470,16 +477,19 @@
 
                 if (amount === 0) {
                     tunaiTable.style.display = 'table-row-group';
+                    tunaiTable.style.borderBottom = '1px solid black';
                     giroTable.style.display = 'none';
                     transferTable.style.display = 'none';
                 } else if (amount === 1) {
                     tunaiTable.style.display = 'none';
                     giroTable.style.display = 'table-row-group';
+                    giroTable.style.borderBottom = '1px solid black';
                     transferTable.style.display = 'none';
                 } else if (amount === 2) {
                     tunaiTable.style.display = 'none';
                     giroTable.style.display = 'none';
                     transferTable.style.display = 'table-row-group';
+                    transferTable.style.borderBottom = '1px solid black';
                 } else {
                     tunaiTable.style.display = 'none';
                     giroTable.style.display = 'none';

@@ -289,6 +289,9 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
+                                    <div class="mx-2">
+                                        <a href="{{ route('daftar-po.cetak', enkrip($preorder->id)) }}" class="btn btn-warning">CETAK</a>
+                                    </div>
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
                                     </div>

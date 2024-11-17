@@ -2,22 +2,11 @@
 
 @section('content')
     <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('preorder.process-barang') }}" method="POST">
                     @csrf
-                    <div class="card-body">
+                    <div class="card-body mt-n4">
                         <div class="d-flex justify-content-between">
                             <div class="row w-100">
                                 <div class="form-group col-9">
@@ -119,52 +108,54 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th class="text-center">NAMA BARANG</th>
-                                                <th class="text-center">ISI</th>
-                                                <th class="text-center">PENJUALAN</th>
-                                                <th class="text-center">MINIMUM</th>
-                                                <th class="text-center">STOK</th>
-                                                <th class="text-center">MAKSIMUM</th>
-                                                <th class="text-center">ORDER</th>
-                                                <th class="text-center">HARGA</th>
-                                                <th class="text-center">JUMLAH</th>
-                                                <th class="text-center">CHILD</th>
-                                                {{-- <th class="text-center">Harga Jual</th> --}}
-                                                {{-- <th class="text-center">Pilih</th> --}}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($allProducts as $index => $product)
+                                    <div style="overflow-x: auto; height: 480px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $product['nama'] . '/' . $product['unit_jual'] }}</td>
-                                                    <input type="text" hidden name="name[]" value="{{ $product['nama'] . '/' . $product['unit_jual'] . '/' . number_format($product['stok'], 2) . '/' . $product['harga_pokok']}}">
-                                                    <input type="text" hidden name="stock[]" value="{{ number_format($product['stok'], 2)}}">
-                                                    <input type="text" hidden name="harga[]" value="{{ $product['harga_pokok'] }}">
-                                                    <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
-                                                    <td class="text-end">{{ str_replace('P', '', $product['unit_jual']) }}</td>
-                                                    <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? '' }}</td>
-                                                    <td class="text-end minimum" id="minimum-{{ $index }}">{{ $product['minimum'] ?? '' }}</td>
-                                                    <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
-                                                    <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
-                                                    <td class="text-center">
-                                                        <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
-                                                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['stok'] - $product['maximum']),0) }}">
-                                                    </td>
-                                                    <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
-                                                    <td class="text-end" id="total-{{ $index }}">0</td>
-                                                    <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
-                                                    <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td>
-                                                    {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
-                                                    {{-- <td class="text-center"><input type="checkbox" id="products[]"
-                                                            name="products[]" value="{{ $product->id }}"></td> --}}
+                                                    <th class="text-center">NAMA BARANG</th>
+                                                    <th class="text-center">ISI</th>
+                                                    <th class="text-center">PENJUALAN</th>
+                                                    <th class="text-center">MINIMUM</th>
+                                                    <th class="text-center">STOK</th>
+                                                    <th class="text-center">MAKSIMUM</th>
+                                                    <th class="text-center">ORDER</th>
+                                                    <th class="text-center">HARGA</th>
+                                                    <th class="text-center">JUMLAH</th>
+                                                    <th class="text-center">CHILD</th>
+                                                    {{-- <th class="text-center">Harga Jual</th> --}}
+                                                    {{-- <th class="text-center">Pilih</th> --}}
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($allProducts as $index => $product)
+                                                    <tr>
+                                                        <td>{{ $product['nama'] . '/' . $product['unit_jual'] }}</td>
+                                                        <input type="text" hidden name="name[]" value="{{ $product['nama'] . '/' . $product['unit_jual'] . '/' . number_format($product['stok'], 2) . '/' . $product['harga_pokok']}}">
+                                                        <input type="text" hidden name="stock[]" value="{{ number_format($product['stok'], 2)}}">
+                                                        <input type="text" hidden name="harga[]" value="{{ $product['harga_pokok'] }}">
+                                                        <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
+                                                        <td class="text-end">{{ str_replace('P', '', $product['unit_jual']) }}</td>
+                                                        <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? '' }}</td>
+                                                        <td class="text-end minimum" id="minimum-{{ $index }}">{{ $product['minimum'] ?? '' }}</td>
+                                                        <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
+                                                        <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
+                                                        <td class="text-center">
+                                                            <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
+                                                            onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['stok'] - $product['maximum']),0) }}">
+                                                        </td>
+                                                        <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
+                                                        <td class="text-end" id="total-{{ $index }}">0</td>
+                                                        <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
+                                                        <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td>
+                                                        {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
+                                                        {{-- <td class="text-center"><input type="checkbox" id="products[]"
+                                                                name="products[]" value="{{ $product->id }}"></td> --}}
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -173,13 +164,13 @@
                             <div class="col-8">
                                 <!-- Content for the main part of the row goes here -->
                             </div>
-                            <div class="col-3 d-flex align-items-center mx-5">
+                            <div class="col-3 d-flex align-items-center mx-5 mt-2">
                                 <label for="total-price" class="col-5">TOTAL RP</label>
                                 <input id="total-price" type="text" value="0" disabled class="form-control">
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center mt-4">
+                        <div class="d-flex justify-content-center mt-2">
                             <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button>
                             <button type="submit" class="btn btn-primary">BUAT PO</button>
                         </div>

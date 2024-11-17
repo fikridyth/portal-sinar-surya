@@ -2,22 +2,11 @@
 
 @section('content')
     <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-body">
                 <form action="{{ route('preorder.order-barang') }}" method="POST">
                     @csrf
-                    <div class="card-body">
+                    <div class="card-body mt-n4">
                         <div class="d-flex justify-content-between">
                             <div class="row w-100">
                                 <div class="form-group col-7">
@@ -58,62 +47,65 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th colspan="5" class="text-center">DAFTAR BARANG YANG AKAN DIPESAN</th>
-                                            </tr>
-                                            <tr>
-                                                <th class="text-center">Nama Barang</th>
-                                                <th class="text-center">Stok</th>
-                                                <th class="text-center">Order</th>
-                                                <th class="text-center">Harga</th>
-                                                <th class="text-center">Jumlah Rp</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($results as $result)
+                                    <div style="overflow-x: auto; height: 620px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
                                                 <tr>
-                                                    <input type="text" name="nama[]" hidden value="{{ $result['product']->nama }}">
-                                                    <input type="text" name="stok[]" hidden value="{{ $result['details']['stok'] }}">
-                                                    <input type="text" name="order[]" hidden value="{{ $result['details']['order'] }}">
-                                                    <input type="text" name="unit_jual[]" hidden value="{{ $result['product']->unit_jual }}">
-                                                    <input type="text" name="kode[]" hidden value="{{ $result['product']->kode }}">
-                                                    <input type="text" name="kode_sumber[]" hidden value="{{ $result['product']->kode_sumber }}">
-                                                    <input type="text" name="is_ppn[]" hidden value="{{ $supplier1->is_ppn }}">
-                                                    <input type="text" name="diskon1[]" hidden value="{{ $result['product']->diskon1 }}">
-                                                    <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
-                                                    <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">
-                                                    <input type="text" name="id_supplier[]" hidden value="{{ $result['product']->id_supplier }}">
-                                                    <input type="text" name="old_price[]" hidden value="{{ $result['product']->harga_lama }}">
-                                                    <td>{{ $result['product']->nama . '/' . $result['product']->unit_jual }}</td>
-                                                    <td class="text-end">{{ $result['details']['stok'] }}</td>
-                                                    <td class="text-end">
-                                                        <input type="number" required class="form-control order" value="{{ $result['details']['order'] }}">
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) }}</h6>
-                                                        {{-- <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) . '/' . number_format($result['product']->harga_pokok, 2) }}</h6> --}}
-                                                        <input type="number" hidden class="form-control price" name="price[]"
-                                                            value="{{ $result['details']['harga'] }}" step="0.01">
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <input type="text" class="form-control total" name="total[]"
-                                                            value="0.00" readonly>
-                                                        <input type="text" hidden class="form-control fieldtotal" name="fieldtotal[]"
-                                                        value="0.00" readonly>
-                                                    </td>
+                                                    <th colspan="5" class="text-center">DAFTAR BARANG YANG AKAN DIPESAN</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                                <tr>
+                                                    <th class="text-center">Nama Barang</th>
+                                                    <th class="text-center">Stok</th>
+                                                    <th class="text-center">Order</th>
+                                                    <th class="text-center">Harga</th>
+                                                    <th class="text-center">Jumlah Rp</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($results as $result)
+                                                    <tr>
+                                                        <input type="text" name="nama[]" hidden value="{{ $result['product']->nama }}">
+                                                        <input type="text" name="stok[]" hidden value="{{ $result['details']['stok'] }}">
+                                                        <input type="text" name="order[]" hidden value="{{ $result['details']['order'] }}">
+                                                        <input type="text" name="unit_jual[]" hidden value="{{ $result['product']->unit_jual }}">
+                                                        <input type="text" name="kode[]" hidden value="{{ $result['product']->kode }}">
+                                                        <input type="text" name="kode_sumber[]" hidden value="{{ $result['product']->kode_sumber }}">
+                                                        <input type="text" name="is_ppn[]" hidden value="{{ $supplier1->is_ppn }}">
+                                                        <input type="text" name="diskon1[]" hidden value="{{ $result['product']->diskon1 }}">
+                                                        <input type="text" name="diskon2[]" hidden value="{{ $result['product']->diskon2 }}">
+                                                        <input type="text" name="diskon3[]" hidden value="{{ $result['product']->diskon3 }}">
+                                                        <input type="text" name="id_supplier[]" hidden value="{{ $result['product']->id_supplier }}">
+                                                        <input type="text" name="old_price[]" hidden value="{{ $result['product']->harga_lama }}">
+                                                        <td>{{ $result['product']->nama . '/' . $result['product']->unit_jual }}</td>
+                                                        <td class="text-end">{{ $result['details']['stok'] }}</td>
+                                                        <td class="text-end">
+                                                            <input type="number" required class="form-control order" value="{{ $result['details']['order'] }}">
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) }}</h6>
+                                                            {{-- <h6 style="text-align: center; align-items: center;">{{ number_format($result['details']['harga'], 2) . '/' . number_format($result['product']->harga_pokok, 2) }}</h6> --}}
+                                                            <input type="number" hidden class="form-control price" name="price[]"
+                                                                value="{{ $result['details']['harga'] }}" step="0.01">
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <input type="text" class="form-control total" name="total[]"
+                                                                value="0.00" readonly>
+                                                            <input type="text" hidden class="form-control fieldtotal" name="fieldtotal[]"
+                                                            value="0.00" readonly>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center">
+                        <div class="d-flex justify-content-center mt-3">
                             {{-- <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button> --}}
-                            <button type="submit" class="btn btn-primary">BUAT PO</button>
+                            <a href="{{ route('preorder.add-po.cetak', ['results' => urlencode(json_encode($results))]) }}" class="btn btn-warning">CETAK</a>
+                            <button type="submit" class="btn btn-primary mx-2">BUAT PO</button>
                         </div>
                     </div>
                 </form>

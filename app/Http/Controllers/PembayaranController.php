@@ -368,21 +368,23 @@ class PembayaranController extends Controller
     public function index()
     {
         $title = 'List Pembayaran';
+        $titleHeader = 'PEMBAYARAN CEK/GIRO/TUNAI';
         $pembayarans = Pembayaran::whereNull('is_bayar')->whereNull('is_hold')->orderByRaw('CASE WHEN id_parent IS NOT NULL THEN 0 ELSE 1 END')->get();
         $banks = Bank::where('status', 1)->whereHas('giro')->orderByRaw('CASE WHEN nama = "MAYORA S" THEN 0 ELSE 1 END')->get();
         
-        return view('pembayaran.index', compact('title', 'pembayarans', 'banks'));
+        return view('pembayaran.index', compact('title', 'titleHeader', 'pembayarans', 'banks'));
     }
 
     public function show(Request $request, $id)
     {
         $id = dekrip($id);
         $title = 'Detail Pembayaran';
+        $titleHeader = 'PEMBAYARAN CEK/GIRO/TUNAI';
         $pembayaran = Pembayaran::find($id);
         $bank = Bank::find($request->bank_id);
         $giros = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->get();
         
-        return view('pembayaran.show', compact('title', 'pembayaran', 'bank', 'giros'));
+        return view('pembayaran.show', compact('title', 'titleHeader', 'pembayaran', 'bank', 'giros'));
     }
 
     public function showGabung(Request $request, $ids)
@@ -390,6 +392,7 @@ class PembayaranController extends Controller
         // $ids = dekrip($ids);
         $request->bank_id = dekrip($request->bank_id);
         $title = 'Detail Pembayaran';
+        $titleHeader = 'PEMBAYARAN CEK/GIRO/TUNAI';
         $bank = Bank::find($request->bank_id);
         $giros = GiroDetail::where('id_bank', $bank->id)->whereNull('jumlah')->orderBy('nomor', 'asc')->get();
 
@@ -403,7 +406,7 @@ class PembayaranController extends Controller
             }
         }
         
-        return view('pembayaran.show-gabung', compact('title', 'ids', 'pembayaran', 'bank', 'giros'));
+        return view('pembayaran.show-gabung', compact('title', 'titleHeader', 'ids', 'pembayaran', 'bank', 'giros'));
     }
 
     public function update(Request $request, $id)
@@ -431,6 +434,15 @@ class PembayaranController extends Controller
             if ($transferPayment + $transferTunaiPayment + $transferOtherIncome > $pembayaran->grand_total) {
                 return redirect()->back()->with('alert.status', '99')->with('alert.message', 'NOMINAL HARUS DIBAWAH TOTAL!');
             }
+        }
+
+        $giroIncrement = GiroDetail::max('increment');
+        if ($giroIncrement) {
+            // Jika ada nilai increment sebelumnya, tambah 1
+            $giroIncrement++;
+        } else {
+            // Jika tidak ada nilai increment, mulai dari 1
+            $giroIncrement = 1;
         }
         // dd($id, $request->all(), $giroPayment + $giroTunaiPayment + $giroOtherIncome, $pembayaran->grand_total);
         
@@ -523,7 +535,8 @@ class PembayaranController extends Controller
                 'jumlah' => $giroPayment,
                 'nomor_bukti' => $pembayaran->nomor_bukti,
                 'tipe' => 'G',
-                'flag' => 2
+                'flag' => 2,
+                'increment' => $giroIncrement
             ]);
         } else {
             Pembayaran::create([
@@ -607,6 +620,15 @@ class PembayaranController extends Controller
             }
         }
         // dd($ids, $request->all(), $totalPembayaran);
+
+        $giroIncrement = GiroDetail::max('increment');
+        if ($giroIncrement) {
+            // Jika ada nilai increment sebelumnya, tambah 1
+            $giroIncrement++;
+        } else {
+            // Jika tidak ada nilai increment, mulai dari 1
+            $giroIncrement = 1;
+        }
 
         $nomorBukti = $pembayaran->pluck('nomor_bukti')->implode(',');
         foreach (explode(',', $nomorBukti) as $nomorBkt) {
@@ -694,7 +716,8 @@ class PembayaranController extends Controller
                 'jumlah' => $giroPayment,
                 'nomor_bukti' => $nomorBukti,
                 'tipe' => 'G',
-                'flag' => 2
+                'flag' => 2,
+                'increment' => $giroIncrement
             ]);
         } else {
             Pembayaran::create([
@@ -762,6 +785,13 @@ class PembayaranController extends Controller
                 $getGiro = Pembayaran::where('id_parent', $parent[0]->id)->whereNotIn('nomor_giro', ['TRANSFER', 'TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro)) {
                     $giroDetail = GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first();
+                    $giroDetailIncrement = GiroDetail::whereNotNull('increment')->where('increment', '>', $giroDetail->increment)->get();
+                    foreach ($giroDetailIncrement as $incrementItem) {
+                        // Lakukan pengurangan 1 pada increment yang lebih besar dari giroDetail->increment
+                        $incrementItem->increment = $incrementItem->increment - 1;
+                        $incrementItem->save(); // Simpan perubahan
+                    }
+
                     if ($giroDetail) {
                         $giroDetail->update([
                             'nama' => null,
@@ -770,7 +800,8 @@ class PembayaranController extends Controller
                             'tanggal_akhir' => null,
                             'jumlah' => null,
                             'tipe' => '',
-                            'flag' => 1
+                            'flag' => 1,
+                            'increment' => null
                         ]);
                     }
                 }
@@ -791,6 +822,13 @@ class PembayaranController extends Controller
                 $getGiro = Pembayaran::where('id_parent', $parent->id)->whereNotIn('nomor_giro', ['TRANSFER', 'TUNAI', 'OTHER INCOME'])->first();
                 if (isset($getGiro)) {
                     $giroDetail = GiroDetail::where('nomor', $getGiro->nomor_giro)->where('flag', 2)->first();
+                    $giroDetailIncrement = GiroDetail::whereNotNull('increment')->where('increment', '>', $giroDetail->increment)->get();
+                    foreach ($giroDetailIncrement as $incrementItem) {
+                        // Lakukan pengurangan 1 pada increment yang lebih besar dari giroDetail->increment
+                        $incrementItem->increment = $incrementItem->increment - 1;
+                        $incrementItem->save(); // Simpan perubahan
+                    }
+                    
                     if ($giroDetail) {
                         $giroDetail->update([
                             'nama' => null,
@@ -799,7 +837,8 @@ class PembayaranController extends Controller
                             'tanggal_akhir' => null,
                             'jumlah' => null,
                             'tipe' => '',
-                            'flag' => 1
+                            'flag' => 1,
+                            'increment' => null
                         ]);
                     }
                 }
@@ -880,6 +919,7 @@ class PembayaranController extends Controller
         $idArray = explode(',', $ids);
         // dd($idArray);
         Pembayaran::whereIn('id', $idArray)->update(['is_bayar' => 1]);
+        GiroDetail::query()->update(['increment' => null]);
 
         return Redirect::route('index')
         ->with('alert.status', '00')

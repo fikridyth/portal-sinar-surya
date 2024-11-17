@@ -1,18 +1,7 @@
 @extends('main')
 
 @section('content')
-    <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMBAYARAN CEK/GIRO/TUNAI
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
+    <div class="container mb-2">
         <div class="card">
             <div class="card-body">
                 <h6>SISTEM ADMINISTRATOR</h6>
@@ -89,34 +78,35 @@
                                 </tbody>
                             </table>
                             <hr> --}}
-                            <h6 class="text-center">BUKU CEK/GIRO</h6>
-                            <table id="data-table" class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">DARI NOMOR</th>
-                                        <th class="text-center">SAMPAI NOMOR</th>
-                                        <th class="text-center">SISA</th>
-                                        <th class="text-center">RUSAK</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="data-tbody">
-                                </tbody>
-                            </table>
-                            <hr>
-                            <div class="d-flex justify-content-center">
+                            <div class="d-flex justify-content-center" style="margin-top: 27%">
                                 <a href="{{ route('index') }}" class="btn btn-danger mx-4">KEMBALI</a>
                                 <a href="#" id="button-selesai" class="btn btn-primary disabled-link mx-4">SELESAI</a>
+                            </div>
+                            <hr>
+                            <h6 class="text-center">BUKU CEK/GIRO</h6>
+                            <div style="overflow-x: auto; height: 290px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                            <th class="text-center">DARI NOMOR</th>
+                                            <th class="text-center">SAMPAI NOMOR</th>
+                                            <th class="text-center">SISA</th>
+                                            <th class="text-center">RUSAK</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="data-tbody">
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                         <div class="form-group col-7">
                             <div class="d-flex mb-2">
                                 <!-- Bagian Link -->
                                 <div class="d-flex flex-column" style="width: 20%;">
-                                    <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-2 disabled-link">PROSES GABUNG</a>
-                                    <a href="{{ route('pembayaran.list-cetak-payment.index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-2 disabled-link">CETAK GIRO</a>
-                                    {{-- <a href="#" id="button-hapus" class="btn btn-sm btn-danger mb-2 disabled-link">HAPUS BAYAR</a> --}}
-                                    <a href="#" class="btn btn-sm btn-danger mb-2" onclick="event.preventDefault(); window.location.reload();">REFRESH</a>
-                                    <a href="{{ route('pembayaran.cabang-index') }}" class="btn btn-sm btn-danger mb-2">BAYAR CABANG</a>
+                                    <a href="#" id="button-gabung" class="btn btn-sm btn-danger mb-1 disabled-link" style="padding: 2px 5px; font-size: 12px;">PROSES GABUNG</a>
+                                    <a href="{{ route('pembayaran.list-cetak-payment.index') }}" id="button-cetak" class="btn btn-sm btn-danger mb-1 disabled-link" style="padding: 2px 5px; font-size: 12px;">CETAK GIRO</a>
+                                    <a href="#" class="btn btn-sm btn-danger mb-1" onclick="event.preventDefault(); window.location.reload();" style="padding: 2px 5px; font-size: 12px;">REFRESH</a>
+                                    <a href="{{ route('pembayaran.cabang-index') }}" class="btn btn-sm btn-danger" style="padding: 2px 5px; font-size: 12px;">BAYAR CABANG</a>
                                     <form id="delete-form" method="POST" style="display: none;">
                                         @csrf
                                         @method('DELETE')
@@ -126,87 +116,95 @@
                                 
                                 <!-- Bagian Tabel -->
                                 <div class="flex-grow-1">
-                                    <table class="table table-bordered mx-5" style="width: 90%">
-                                        <thead>
-                                            <tr>
-                                                <th>DOKUMEN</th>
-                                                <th>TANGGAL BAYAR</th>
-                                                <th>JUMLAH</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="data-tbody-dok">
-                                            {{-- <tr>
-                                                <td id="nomor-bukti">
-                                                <td id="tanggal-bukti"></td>
-                                                <td id="jumlah-bukti"></td>
-                                            </tr> --}}
-                                        </tbody>
-                                    </table>
+                                    <div style="overflow-x: auto; height: 95px; border: 1px solid #ccc; margin-left: 20px;">
+                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                            <thead>
+                                                <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                                    <th>DOKUMEN</th>
+                                                    <th>TANGGAL BAYAR</th>
+                                                    <th>JUMLAH</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="data-tbody-dok">
+                                                {{-- <tr>
+                                                    <td id="nomor-bukti">
+                                                    <td id="tanggal-bukti"></td>
+                                                    <td id="jumlah-bukti"></td>
+                                                </tr> --}}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                            <table class="table table-bordered">
-                                <thead>
-                                    {{-- <tr>
-                                        <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
-                                    </tr> --}}
-                                    <tr>
-                                        <th class="text-center">NO</th>
-                                        <th class="text-center">NAMA SUPPLIER</th>
-                                        <th class="text-center">JUMLAH RP</th>
-                                        <th class="text-center">NOMOR GIRO</th>
-                                        <th class="text-center">V</th>
-                                        <th class="text-center">GBG</th>
-                                        <th class="text-center">KFM</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $counter = 1;
-                                        $previousIdParent = null;
-                                    @endphp
-                                    @foreach ($pembayarans as $index => $pmb)
-                                        <tr>
-                                            {{-- <td class="text-center">{{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}</td> --}}
-                                            <td class="text-center" style="color: <?= ($pmb->tipe_giro == 'CABANG' || $pmb->is_cabang == 1) ? 'red' : 'black'; ?>">
-                                                @if ($pmb->nomor_bukti !== $previousIdParent)
-                                                    {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
-                                                    @php $counter++; @endphp
-                                                @else
-                                                    {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
-                                                @endif
-                                            </td>
-                                            <td>{{ $pmb->supplier->nama }}</td>
-                                            @if ($pmb->id_parent == null)
-                                                <td class="text-end check-negative">{{ number_format($pmb->grand_total) }}</td>
-                                            @else
-                                                <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
-                                            @endif
-                                            <td class="keterangan_bayar" style="background-color: {{ $pmb->is_cetak !== null ? 'rgba(255, 0, 0, 0.2)' : 'transparent' }};">
-                                                {{ $pmb->nomor_giro }}
-                                            </td>
-                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
-                                            <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
+                            <div style="overflow-x: auto; height: 250px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        {{-- <tr>
+                                            <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG SUDAH DIBUATKAN P.O</th>
+                                        </tr> --}}
+                                        <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                            <th class="text-center">NO</th>
+                                            <th class="text-center">NAMA SUPPLIER</th>
+                                            <th class="text-center">JUMLAH RP</th>
+                                            <th class="text-center">GIRO</th>
+                                            <th class="text-center">V</th>
+                                            <th class="text-center">GBG</th>
+                                            <th class="text-center">KFM</th>
                                         </tr>
-                                        @if ($pmb->nomor_bukti)
-                                            @php $previousIdParent = $pmb->nomor_bukti; @endphp
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $counter = 1;
+                                            $previousIdParent = null;
+                                        @endphp
+                                        @foreach ($pembayarans as $index => $pmb)
+                                            <tr style="font-size: 14px; margin: 0;">
+                                                {{-- <td class="text-center">{{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}</td> --}}
+                                                <td class="text-center" style="color: <?= ($pmb->tipe_giro == 'CABANG' || $pmb->is_cabang == 1) ? 'red' : 'black'; ?>">
+                                                    @if ($pmb->nomor_bukti !== $previousIdParent)
+                                                        <input type="hidden" id="selected-counter" value="{{ $counter }}">
+                                                        {{ str_pad($counter, 3, 0, STR_PAD_LEFT) }}
+                                                        @php $counter++; @endphp
+                                                    @else
+                                                        <input type="hidden" id="selected-counter" value="{{ $counter }}">
+                                                        {{ str_pad($counter - 1, 3, 0, STR_PAD_LEFT) }}
+                                                    @endif
+                                                </td>
+                                                <td>{{ $pmb->supplier->nama }}</td>
+                                                @if ($pmb->id_parent == null)
+                                                    <td class="text-end check-negative">{{ number_format($pmb->grand_total) }}</td>
+                                                @else
+                                                    <td class="text-end">{{ number_format($pmb->total_with_materai) }}</td>
+                                                @endif
+                                                <td class="keterangan_bayar" style="background-color: {{ $pmb->is_cetak !== null ? 'rgba(255, 0, 0, 0.2)' : 'transparent' }};">
+                                                    {{ $pmb->nomor_giro }}
+                                                </td>
+                                                <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') == false) checked @endif class="input-check" id="input-check-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                                <td class="text-center"><input type="checkbox" @if (isset($pmb->id_parent) && strpos($pmb->nomor_bukti, ',') !== false) checked @endif class="input-gabung" id="input-gabung-{{ $index }}" data-id="{{ $pmb->id }}" data-enkrip="{{ enkrip($pmb->id) }}" data-nomor="{{ $pmb->nomor_bukti }}" data-tanggal="{{ $pmb->date }}" data-jumlah="{{ number_format($pmb->grand_total) }}"></td>
+                                                <td class="text-center"><input type="checkbox" disabled class="input-konfirmasi" id="input-konfirmasi-{{ $index }}" data-id="{{ $pmb->id }}" data-bukti="{{ $pmb->data_bukti }}" data-nomor="{{ $pmb->nomor_bukti }}"></td>
+                                            </tr>
+                                            @if ($pmb->nomor_bukti)
+                                                @php $previousIdParent = $pmb->nomor_bukti; @endphp
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                             <hr>
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">NOMOR GIRO</th>
-                                        <th class="text-center">JATUH TEMPO</th>
-                                        <th class="text-center">JUMLAH</th>
-                                        <th class="text-center">KETERANGAN</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="data-tbody-2">
-                                </tbody>
-                            </table>
+                            <div style="overflow-x: auto; height: 290px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
+                                            <th class="text-center">NOMOR GIRO</th>
+                                            <th class="text-center">JATUH TEMPO</th>
+                                            <th class="text-center">JUMLAH</th>
+                                            <th class="text-center">KETERANGAN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="data-tbody-2">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -233,8 +231,9 @@
                 const enkripId = $(this).data('enkrip');
                 if ($(this).is(':checked')) {
                     const selectedBankId = $('#bank-select').val();
+                    const selectedCounter = $(this).closest('tr').find('input[type="hidden"]#selected-counter').val();
 
-                    var redirectUrl = `{{ route('pembayaran.show', '') }}/${enkripId}?bank_id=${selectedBankId}`;
+                    var redirectUrl = `{{ route('pembayaran.show', '') }}/${enkripId}?bank_id=${selectedBankId}?counter=${selectedCounter}`;
                     window.location.href = redirectUrl;
 
                     selectedIds.push(id);
@@ -338,7 +337,7 @@
                     const tableBody = $('#data-tbody-dok');
                     tableBody.empty();
                     dataBukti.forEach(item => {
-                        const newRow = `<tr>
+                        const newRow = `<tr style="font-size: 14px; padding: 2px 4px; margin: 0; line-height: 0.5;">
                             <td>${item.nomor_bukti}</td>
                             <td>${item.date}</td>
                             <td>${number_format(item.total)}</td>
@@ -403,10 +402,10 @@
                             data.dataHeader.forEach(item => {
                                 const row = document.createElement('tr');
                                 row.innerHTML = `
-                                    <td class="text-center">${item.kode} ${item.dari}</td>
-                                    <td class="text-center">${item.kode} ${item.sampai}</td>
-                                    <td class="text-center">${item.remainingAmount}</td>
-                                    <td class="text-center">0</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.kode} ${item.dari}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.kode} ${item.sampai}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.remainingAmount}</td>
+                                    <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.rusakGiro}</td>
                                 `;
                                 tbody.appendChild(row);
                             });
@@ -416,12 +415,22 @@
 
                             data.dataDetail.forEach(item => {
                                 const row2 = document.createElement('tr');
-                                row2.innerHTML = `
-                                    <td class="text-center">${item.nomor}</td>
-                                    <td class="text-center">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
-                                    <td class="text-end">${number_format(item.jumlah) ?? 0}</td>
-                                    <td class="text-center">${item.flag === 3 ? 'RUSAK' : ''}</td>
-                                `;
+                                if (item.increment !== undefined && item.increment !== null) {
+                                    row2.innerHTML = `
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.nomor}</td>
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
+                                        <td class="text-end" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${number_format(item.jumlah)}</td>
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${String(item.increment).padStart(3, '0')}</td>
+                                    `;
+                                } else {
+                                    const flagText = item.flag === 3 ? 'RUSAK' : '';
+                                    row2.innerHTML = `
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.nomor}</td>
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${item.tanggal_akhir ?? 'Belum Terpakai'}</td>
+                                        <td class="text-end" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${number_format(item.jumlah)}</td>
+                                        <td class="text-center" style="font-size: 14px; padding: 10px 20px; margin: 0; line-height: 0.5;">${flagText}</td>
+                                    `;
+                                }
                                 tbody2.appendChild(row2);
                             });
                         })

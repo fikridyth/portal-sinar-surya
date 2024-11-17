@@ -256,6 +256,7 @@ class SupplierController extends Controller
     {
         $id = dekrip($id);
         $title = 'Master History Preorder';
+        $titleHeader = 'MASTER HISTORY PREORDER';
         $supplier = Supplier::find($id);
         $suppliers = Supplier::all();
         $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->whereNotNull('nomor_receive')->orderBy('date_first')->get();
@@ -264,7 +265,7 @@ class SupplierController extends Controller
         $getHistory = HistoryPreorder::select('nomor_receive', 'date')->Filter(request(['periode']))->where('nomor', $supplier->nomor)->orderBy('date', 'desc')->get();
         // dd($getHistory);
 
-        return view('master.supplier.index-history', compact('title', 'supplier', 'getData', 'getHistory', 'suppliers'));
+        return view('master.supplier.index-history', compact('title', 'titleHeader', 'supplier', 'getData', 'getHistory', 'suppliers'));
     }
 
     public function getHistoryPo(Request $request)

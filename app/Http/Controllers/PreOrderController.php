@@ -54,6 +54,7 @@ class PreOrderController extends Controller
     public function getListBarang(Request $request)
     {
         $title = 'Get Barang';
+        $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
         $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
         $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
@@ -157,7 +158,7 @@ class PreOrderController extends Controller
         $previousUrl = url()->previous();
         // dd(count($allProducts));
 
-        return view('preorder.add-po.get-barang', compact('title', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
+        return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
     }
 
     public function getProductsByKodePo($kode)
@@ -183,6 +184,7 @@ class PreOrderController extends Controller
     public function processBarang(Request $request)
     {
         $title = 'List Barang';
+        $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
 
         $explodeUrl = explode('/', $request->previous_url);
         $prevUrl = end($explodeUrl);
@@ -288,7 +290,16 @@ class PreOrderController extends Controller
             }
         }
 
-        return view('preorder.add-po.list-barang', compact('title', 'getProducts', 'supplier1', 'results'));
+        return view('preorder.add-po.list-barang', compact('title', 'titleHeader', 'getProducts', 'supplier1', 'results'));
+    } 
+
+    public function cetakTambahPo(Request $request)
+    {
+        // $id = dekrip($id);
+        $title = 'Cetak PreOrder';
+        $results = json_decode(urldecode($request->input('results')), true);
+
+        return view('preorder.add-po.cetak-add-po', compact('title', 'results'));
     }
 
     public function orderBarang(Request $request)
@@ -388,10 +399,12 @@ class PreOrderController extends Controller
     public function daftarPo()
     {
         $title = 'Daftar PreOrder';
+        $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
         // $supplierIds = Supplier::whereHas('products', function ($query) {
         //     $query->where('stok', '>', 0);
         // })->pluck('id')->toArray();
         
+        $suppliers = Supplier::where('status', 1)->get();
         $supplierIds = Supplier::where('status', 1)->pluck('id')->toArray();
 
         // Fetch all preorders
@@ -423,7 +436,7 @@ class PreOrderController extends Controller
         // foreach ($listPreorders as $po) {
         // dd($po['preorder']['nomor_po']); }
 
-        return view('preorder.detail-po.daftar-po', compact('title', 'listPreorders'));
+        return view('preorder.detail-po.daftar-po', compact('title', 'titleHeader', 'suppliers', 'listPreorders'));
     }
 
     public function showDaftarPo($id)
