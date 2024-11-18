@@ -53,8 +53,8 @@
             const newRow = document.createElement('tr');
             newRow.classList.add('fs-need');
             
+            // <td>${index}</td>
             newRow.innerHTML = `
-                <td>${index}</td>
                 <td class="text-center">
                     <div class="select-container">
                         <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-${index}" onchange="handleCheckboxChange(this)">
@@ -62,7 +62,7 @@
                     </div>
                 </td>
                 <td class="text-center data-kode" id="data-kode"></td>
-                <td colspan="2">
+                <td>
                     <select id="products-${index}" class="product-select" autofocus style="width: 270px;" onchange="handleSelectChange(event)">
                         <option value="">---Select Product--- Harga Beli / Harga Jual</option>
                         @foreach ($products as $product)
@@ -82,7 +82,8 @@
                 <td class="text-center">-</td>
             `;
             
-            tableBody.appendChild(newRow);
+            // tableBody.appendChild(newRow);
+            tableBody.insertBefore(newRow, tableBody.firstChild);
 
             // Initialize Select2 on the newly added select element
             $(`#products-${index}`).select2({

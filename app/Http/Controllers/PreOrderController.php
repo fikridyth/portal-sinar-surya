@@ -463,13 +463,14 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $title = 'Edit PreOrder';
+        $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
         // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
-        return view('preorder.detail-po.edit-daftar-po', compact('title', 'preorder', 'ppn', 'products'));
+        return view('preorder.detail-po.edit-daftar-po', compact('title', 'titleHeader', 'preorder', 'ppn', 'products'));
     }
 
     public function storeNewData(Request $request)
@@ -1074,6 +1075,7 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $title = 'Detail Receive PreOrder';
+        $titleHeader = 'PENERIMAAN BARANG - PURCHASE ORDER';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
@@ -1097,20 +1099,21 @@ class PreOrderController extends Controller
             Hutang::create($data);
         }
 
-        return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));
+        return view('preorder.receive-po.create-detail', compact('title', 'titleHeader', 'preorder', 'ppn', 'products'));
     }
 
     public function doneDetailReceivePo($id)
     {
         $id = dekrip($id);
         $title = 'Detail Receive PreOrder';
+        $titleHeader = 'PENERIMAAN BARANG - RECEIVE';
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
         // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
-        return view('preorder.receive-po.done-detail', compact('title', 'preorder', 'ppn', 'products'));
+        return view('preorder.receive-po.done-detail', compact('title', 'titleHeader', 'preorder', 'ppn', 'products'));
     }
 
     public function previewDataReceivePo($id)

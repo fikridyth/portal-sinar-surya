@@ -35,40 +35,25 @@
 
 @section('content')
     <div class="d-flex justify-content-center">
-        <div class="mb-7" style="width: 82%">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">DAFTAR BARANG YANG HARUS DIPESAN
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
+        <div class="mb-2" style="width: 95%">
             <div class="card">
-                <div class="card-body">
+                <div class="card-body mt-n4">
                     {{-- <form action="{{ route('preorder.process-barang') }}" method="POST">
                         @csrf --}}
                         <div class="card-body">
                             <div class="d-flex justify-content-center">
                                 <div class="row w-100">
-                                    <div class="col-2"></div>
-                                    <div class="col-2">
+                                    {{-- <div class="col-0-5"></div> --}}
+                                    <div class="col-1-5">
                                         <div class="form-group">
                                             <div class="row">
-                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">Nomor PO</label>
-                                                {{-- <div class="col">
-                                                    <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                                </div> --}}
+                                                <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-2">
                                         <div class="form-group">
                                             <div class="row">
-                                                {{-- <label for="nomorSupplier2" class="col col-form-label">Nomor PO</label> --}}
                                                 <div class="col">
                                                     <input type="text" value="{{ $preorder->nomor_po }}" disabled class="form-control" id="nomorSupplier2" value="">
                                                 </div>
@@ -85,10 +70,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-2">
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">NAMA SUPPLIER</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="col">
+                                            <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-center mb-2">
+                            {{-- <div class="d-flex justify-content-center mb-2">
                                 <div class="row w-100">
                                     <div class="col-2"></div>
                                     <div class="col-2">
@@ -104,9 +101,9 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
-                            <div class="d-flex justify-content-center mt-3 mb-3">
+                            <div class="d-flex justify-content-center mt-3 mb-2">
                                 <div class="row w-100">
                                     <div class="col-3">
                                         <div class="form-group">
@@ -168,7 +165,7 @@
                                 </div>
                             </div>
 
-                            <div class="container-box">
+                            <div class="container-box mt-n3">
                                 <div class="column"><div class="form-group"><label class="col-form-label">H. TERAKHIR</label></div></div>
                                 <div class="column"><div class="form-group"><label class="col-form-label">DISKON 1</label></div></div>
                                 <div class="column"><div class="form-group"><label class="col-form-label">DISKON 2</label></div></div>
@@ -194,91 +191,94 @@
                             <div class="d-flex justify-content-between mt-2">
                                 <div class="row w-100">
                                     <div class="form-group col-12">
-                                        <table id="details-table" class="table table-bordered">
-                                            <thead>
-                                                <tr class="fs-need">
-                                                    <th class="text-center">NO</th>
-                                                    <th class="text-center">&#9989;</th>
-                                                    <th class="text-center">KODE</th>
-                                                    <th class="text-center">NAMA BARANG</th>
-                                                    <th class="text-center">ISI</th>
-                                                    <th class="text-center">SAT</th>
-                                                    <th class="text-center">SATUAN</th>
-                                                    <th class="text-center">ORDER</th>
-                                                    <th class="text-center">TERIMA</th>
-                                                    <th class="text-center">HARGA</th>
-                                                    <th class="text-center">NETTO</th>
-                                                    <th class="text-center">JUMLAH</th>
-                                                    <th class="text-center">BNS</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @if ($preorder->detail !== null)
-                                                    @php
-                                                        $totalItems = count(json_decode($preorder->detail, true));
-                                                    @endphp
-                                                    @foreach (json_decode($preorder->detail, true) as $index => $detail)
-                                                    @php
-                                                        $currentIndex = $totalItems - $index;
-                                                        $no = $index + 1;
-                                                        $totalPrice += $detail['field_total'];
-                                                        $totalOrder += $detail['order'];
-                                                        if ($detail['is_ppn'] !== 0) { $priceWithPpn = ($detail['price'] * $detail['is_ppn'] / 100) + $detail['price']; }
-                                                        else { $priceWithPpn = $detail['price']; }
-                                                    
-                                                        $dataProduct = Product::where('kode', $detail['kode'])->first();
-                                                    @endphp
-                                                        <tr class="fs-need">
-                                                            <td>{{ $no }}</td>
-                                                            <td class="text-center">
-                                                                <div class="select-container">
-                                                                    <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
-                                                                    data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
-                                                                    data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
-                                                                    data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
-                                                                    data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
-                                                                    >
-                                                                </div>
-                                                                <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
-                                                                <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
-                                                            </td>
-                                                            <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
-                                                            <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
-                                                            <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                            <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                            <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
-                                                            <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
-                                                            <td class="text-end">
-                                                                <div class="order-container">
-                                                                    <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
-                                                                    <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3">
-                                                                </div>
-                                                            </td>
-                                                            <td class="text-end">
-                                                                <div class="price-container">
-                                                                    <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
-                                                                    <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10">
-                                                                </div>
-                                                            </td>
-                                                            <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
-                                                            <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
-                                                            <td>
-                                                                <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form" id="bonusForm-{{ $no }}">
-                                                                    @csrf
-                                                                    <div class="row align-items-center">
-                                                                        <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
-                                                                        <input type="hidden" name="no" value="{{ $no - 1 }}">
-                                                                        <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
+                                        {{-- <table id="details-table" class="table table-bordered"> --}}
+                                        <div style="overflow-x: auto; height: 400px; border: 1px solid #ccc;">
+                                            <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                                <thead style="position: sticky; top: 0; z-index: 1; background-color: white;" >
+                                                    <tr class="fs-need">
+                                                        {{-- <th class="text-center">NO</th> --}}
+                                                        <th class="text-center" style="width: 100px;">&#9989;</th>
+                                                        <th class="text-center">KODE</th>
+                                                        <th class="text-center">NAMA BARANG</th>
+                                                        <th class="text-center">ISI</th>
+                                                        {{-- <th class="text-center">SAT</th> --}}
+                                                        <th class="text-center">SATUAN</th>
+                                                        <th class="text-center">ORDER</th>
+                                                        <th class="text-center">TERIMA</th>
+                                                        <th class="text-center">HARGA</th>
+                                                        <th class="text-center">NETTO</th>
+                                                        <th class="text-center">JUMLAH</th>
+                                                        <th class="text-center">BNS</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @if ($preorder->detail !== null)
+                                                        @php
+                                                            $totalItems = count(json_decode($preorder->detail, true));
+                                                        @endphp
+                                                        @foreach (json_decode($preorder->detail, true) as $index => $detail)
+                                                        @php
+                                                            $currentIndex = $totalItems - $index;
+                                                            $no = $index + 1;
+                                                            $totalPrice += $detail['field_total'];
+                                                            $totalOrder += $detail['order'];
+                                                            if ($detail['is_ppn'] !== 0) { $priceWithPpn = ($detail['price'] * $detail['is_ppn'] / 100) + $detail['price']; }
+                                                            else { $priceWithPpn = $detail['price']; }
+                                                        
+                                                            $dataProduct = Product::where('kode', $detail['kode'])->first();
+                                                        @endphp
+                                                            <tr class="fs-need">
+                                                                {{-- <td>{{ $no }}</td> --}}
+                                                                <td class="text-center" style="width: 100px;">
+                                                                    <div class="select-container">
+                                                                        <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
+                                                                        data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
+                                                                        data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
+                                                                        data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
+                                                                        data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
+                                                                        >
                                                                     </div>
-                                                                </form>
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @else
-                                                    <tr class="fs-need"></tr>
-                                                @endif
-                                            </tbody>
-                                        </table>
+                                                                    <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                                    <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
+                                                                </td>
+                                                                <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
+                                                                <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
+                                                                <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
+                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
+                                                                <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
+                                                                <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
+                                                                <td class="text-end">
+                                                                    <div class="order-container">
+                                                                        <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
+                                                                        <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3">
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end">
+                                                                    <div class="price-container">
+                                                                        <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
+                                                                        <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10">
+                                                                    </div>
+                                                                </td>
+                                                                <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
+                                                                <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
+                                                                <td>
+                                                                    <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form" id="bonusForm-{{ $no }}">
+                                                                        @csrf
+                                                                        <div class="row align-items-center">
+                                                                            <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
+                                                                            <input type="hidden" name="no" value="{{ $no - 1 }}">
+                                                                            <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                        @endforeach
+                                                    @else
+                                                        <tr class="fs-need"></tr>
+                                                    @endif
+                                                </tbody>
+                                            </table>
+                                        </div>
                                         @if ($preorder->detail !== null)
                                             <input type="hidden" id="current-index" value="{{ $totalItems }}">
                                         @endif

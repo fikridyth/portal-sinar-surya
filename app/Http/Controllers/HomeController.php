@@ -22,7 +22,7 @@ class HomeController extends Controller
         $departemen = Departemen::orderBy('id', 'asc')->first();
         $supplier = Supplier::orderBy('id', 'asc')->first();
         $ppn = Ppn::first();
-        $preorder = Preorder::where('receive_type', 'B')->orderBy('id', 'desc')->first();
+        $preorder = Preorder::where('receive_type', 'B')->where('is_cancel', 1)->orderBy('id', 'desc')->first();
 
         return view('dashboard', compact('title', 'user', 'product', 'unit', 'departemen', 'supplier', 'ppn', 'preorder'));
     }
