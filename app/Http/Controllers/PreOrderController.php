@@ -612,7 +612,7 @@ class PreOrderController extends Controller
 
         $preorder->detail = json_encode($detail);
         $preorder->save();
-
+        
         $totalHarga = 0;
         foreach ($detail as $dtl) {
             $totalHarga += $dtl['field_total'];
@@ -623,11 +623,13 @@ class PreOrderController extends Controller
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
         ]);
-        $getPayment->update([
-            'total' => $jumlahHarga ?? 0,
-            'ppn' => $preorder->ppn_global ?? 0,
-            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
-        ]);
+        if ($getPayment) {
+            $getPayment->update([
+                'total' => $jumlahHarga ?? 0,
+                'ppn' => $preorder->ppn_global ?? 0,
+                'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -913,6 +915,7 @@ class PreOrderController extends Controller
     public function createReceivePo()
     {
         $title = 'Create Receive PO';
+        $titleHeader = 'PENERIMAAN BARANG - PURCHASE ORDER';
         $preorder = new Preorder;
         $ppn = Ppn::pluck('ppn')->first();
         // $products = Product::where('kode_sumber', '=', null)->orderBy('nama', 'asc')->get();
@@ -931,7 +934,7 @@ class PreOrderController extends Controller
         }
         $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
-        return view('preorder.receive-po.create', compact('title', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
+        return view('preorder.receive-po.create', compact('title', 'titleHeader', 'preorder', 'ppn', 'products', 'getNomorPo', 'suppliers'));
     }
 
     public function addProductReceivePo(SearchProductDataTable $dataTable, $id)
@@ -1081,6 +1084,17 @@ class PreOrderController extends Controller
                 'is_receive' => 1,
                 'nomor_receive' => str_replace('PO', 'RP', $preorder->nomor_po)
             ]);
+
+            $data = [
+                'id_supplier' => $preorder->id_supplier,
+                'nomor_po' => $preorder->nomor_po,
+                'nomor_receive' => str_replace('PO', 'RP', $preorder->nomor_po),
+                'date' => now()->format('Y-m-d'),
+                'total' => $preorder->total_harga ?? 0,
+                'ppn' => $preorder->ppn_global ?? 0,
+                'grand_total' => $preorder->grand_total ?? 0,
+            ];
+            Hutang::create($data);
         }
 
         return view('preorder.receive-po.create-detail', compact('title', 'preorder', 'ppn', 'products'));

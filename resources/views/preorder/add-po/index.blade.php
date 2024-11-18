@@ -27,7 +27,7 @@
                                         <label for="nomorSupplier1" class="col-sm-2 col-form-label">Supplier Header</label>
                                         <div class="col-sm-3">
                                             <div class="custom-select-supplier">
-                                                <input type="text" class="search-input-supplier_1" name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                                <input type="text" class="search-input-supplier_1" autofocus name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
                                                 <div class="select-items-supplier" id="select-items-supplier_1">
                                                     <!-- Options will be added here dynamically -->
                                                 </div>

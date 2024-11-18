@@ -269,10 +269,6 @@
                                                             </td>
                                                         </tr>
                                                     @endforeach
-                                                    <tr>
-                                                        <td colspan="13"><a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" class="btn btn-success">TAMBAH</a></td>
-                                                        {{-- <td colspan="13"><button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button></td> --}}
-                                                    </tr>
                                                 @else
                                                     <tr class="fs-need"></tr>
                                                 @endif
@@ -287,12 +283,15 @@
 
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
-                                    {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-primary" id="tambah-button">TAMBAH</button>
                                     </div>
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
-                                    </div> --}}
+                                    </div>
+                                    <div class="mx-2">
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" class="btn btn-info">TAMBAH LIST</a>
+                                    </div>
                                     {{-- <div class="mx-2">
                                         <form action="{{ route('create-receive.cancel-receive', enkrip($preorder->id)) }}" method="POST" class="form" id="myForm">
                                             @csrf
@@ -300,19 +299,6 @@
                                             <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
                                         </form>
                                     </div> --}}
-                                    <div class="mx-2">
-                                        <a href="{{ route('receive-po.create') }}" class="btn btn-success">TAMBAH DATA</a>
-                                    </div>
-                                    <div class="mx-2">
-                                        @if ($preorder->is_cancel !== null && $preorder->detail !== '[]')
-                                            <a href="{{ route('receive-po.preview-data', enkrip($preorder->id)) }}" id="proses-button" class="btn btn-primary">PENERIMAAN</a>
-                                        @else
-                                            <button disabled class="btn btn-primary">PENERIMAAN</button>
-                                        @endif
-                                    </div>
-                                    <div class="mx-2">
-                                        <a href="{{ route('daftar-receive-po') }}" class="btn btn-info">DAFTAR PREORDER</a>
-                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -336,6 +322,19 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
+                                    <div class="mx-2">
+                                        <a href="{{ route('receive-po.create') }}" class="btn btn-success">TAMBAH PREORDER</a>
+                                    </div>
+                                    <div class="mx-2">
+                                        @if ($preorder->is_cancel !== null && $preorder->detail !== '[]')
+                                            <a href="{{ route('receive-po.preview-data', enkrip($preorder->id)) }}" id="proses-button" class="btn btn-warning">PENERIMAAN</a>
+                                        @else
+                                            <button disabled class="btn btn-warning">PENERIMAAN</button>
+                                        @endif
+                                    </div>
+                                    <div class="mx-2">
+                                        <a href="{{ route('daftar-receive-po') }}" class="btn btn-info">DAFTAR PREORDER</a>
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <form action="{{ route('create-receive.set-ppn-receive', $preorder->id) }}" id="ppnForm" method="POST" class="form">
@@ -389,7 +388,7 @@
 
 @section('scripts')
     @include('preorder.detail-po.js.netto')
-    {{-- @include('preorder.detail-po.js.new-row-receive') --}}
+    @include('preorder.detail-po.js.new-row-receive')
     <script>
         function confirmAlertBonus(event, text, formId) {
             event.preventDefault();
@@ -419,7 +418,7 @@
             // Get the netto element by its ID
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
-            // const tambahButton = document.getElementById('tambah-button');
+            const tambahButton = document.getElementById('tambah-button');
             // const batalButton = document.getElementById('batal-button');
             const prosesButton = document.getElementById('proses-button');
             // const hapusButton = document.getElementById('hapus-button');
@@ -448,7 +447,7 @@
                 button.style.display = 'inline-block';
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
-                // tambahButton.disabled = true;
+                tambahButton.disabled = true;
                 // batalButton.disabled = true;
                 prosesButton.classList.add('disabled-link');
                 // hapusButton.disabled = false;
@@ -461,7 +460,7 @@
                 button.style.display = 'none';
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
-                // tambahButton.disabled = false;
+                tambahButton.disabled = false;
                 // batalButton.disabled = false;
                 prosesButton.classList.remove('disabled-link');
                 // hapusButton.disabled = true;
@@ -535,7 +534,7 @@
         function handleSaveClick(button) {
             // Extract the index from the button's ID
             const index = button.id.split('-')[2];
-            // const tambahButton = document.getElementById('tambah-button');
+            const tambahButton = document.getElementById('tambah-button');
             const buttonId = `delete-save-${index}`;
             const deleteButton = document.getElementById(buttonId);
             const buttonBId = `bonus-save-${index}`;

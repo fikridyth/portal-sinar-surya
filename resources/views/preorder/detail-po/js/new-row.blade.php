@@ -42,6 +42,7 @@
         tambahButton.addEventListener('click', function() {
             const simpanButton = document.getElementById('simpan-button');
             simpanButton.disabled = false;
+            tambahButton.disabled = true;
 
             index++;
             
@@ -58,11 +59,11 @@
                 </td>
                 <td class="text-center data-kode" id="data-kode"></td>
                 <td colspan="2">
-                    <select id="products-${index}" class="product-select" style="width: 270px;" onchange="handleSelectChange(event)">
+                    <select id="products-${index}" class="product-select" autofocus style="width: 270px;" onchange="handleSelectChange(event)">
                         <option value="">---Select Product---</option>
                         @foreach ($products as $product)
                             <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-isi="{{ $product->unit_jual }}" data-isi2="{{ $product->unit_jual }}"
-                                data-jual="{{ $product->harga_pokok }}">{{ $product->nama }}/{{ $product->unit_jual }} - {{ number_format($product->harga_pokok) }}/{{ number_format($product->harga_jual) }}</option>
+                                data-jual="{{ $product->harga_pokok }}">{{ $product->nama }}/{{ $product->unit_jual }} - {{ $product->kode_alternatif }}</option>
                         @endforeach
                     </select>
                 </td>
@@ -81,8 +82,17 @@
 
             // Initialize Select2 on the newly added select element
             $(`#products-${index}`).select2({
-                placeholder: '---Select Product--- Harga Beli / Jual',
-                allowClear: true
+                placeholder: '---Select Product / Barcode---',
+                allowClear: true,
+                dropdownAutoWidth: true
+            });
+
+            $(`#products-${index}`).on('select2:open', function(e) {
+                // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
+                const searchBox = $(this).data('select2').dropdown.$search[0];
+                if (searchBox) {
+                    searchBox.focus();
+                }
             });
 
             disableAllCheckboxes();

@@ -80,6 +80,49 @@
             closeAllSelect();
         });
 
+        searchInputSupplier.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const isVisible = selectItemsSupplier.style.display === 'block';
+                if (isVisible) {
+                    const visibleItems = Array.from(selectItemsSupplier.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+
+                        // Simulate click on the first visible item
+                        searchInputSupplier.value = firstItem.dataset.kode;
+                        namaSupplier.value = firstItem.dataset.nama;
+                        closeAllSelect();
+
+                        $.ajax({
+                            url: '/preorder-get-supplier-data',
+                            method: 'GET',
+                            data: { nama: namaSupplier.value },
+                            success: function(response) {
+                                $('#supplierName11').text(response.nama);
+                                $('#supplierAddress11').text(response.alamat1);
+                                $('#supplierAddress12').text(response.alamat2);
+                                $('#targetRow1').removeAttr('hidden');
+                                $('#targetRow4').attr('hidden', 'hidden');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("An error occurred:", error);
+                                $('#targetRow1').attr('hidden', 'hidden');
+                                $('#targetRow4').removeAttr('hidden');
+                            }
+                        });
+                    }
+                } else {
+                    filterFunction();
+                    selectItemsSupplier.style.display = 'block';
+                }
+            }
+        });
+
         closeAllSelect();
     });
 </script>
@@ -162,6 +205,51 @@
             closeAllSelect();
         });
 
+        searchInputSupplier.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const isVisible = selectItemsSupplier.style.display === 'block';
+                if (isVisible) {
+                    const visibleItems = Array.from(selectItemsSupplier.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+
+                        // Simulate click on the first visible item
+                        searchInputSupplier.value = firstItem.dataset.kode;
+                        namaSupplier.value = firstItem.dataset.nama;
+                        closeAllSelect();
+
+                        $.ajax({
+                            url: '/preorder-get-supplier-data',
+                            method: 'GET',
+                            data: { nama: namaSupplier.value },
+                            success: function(response) {
+                                $('#supplierName21').text(response.nama);
+                                $('#supplierAddress21').text(response.alamat1);
+                                $('#supplierAddress22').text(response.alamat2);
+                                $('#targetRow2').removeAttr('hidden');
+                                $('#targetRow4').attr('hidden', 'hidden');
+                                $('#dataSupplier3').removeAttr('disabled');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("An error occurred:", error);
+                                $('#targetRow2').attr('hidden', 'hidden');
+                                $('#targetRow3').attr('hidden', 'hidden');
+                                $('#dataSupplier3').attr('disabled', 'disabled');
+                            }
+                        });
+                    }
+                } else {
+                    filterFunction();
+                    selectItemsSupplier.style.display = 'block';
+                }
+            }
+        });
+
         closeAllSelect();
     });
 </script>
@@ -238,6 +326,49 @@
         // Close dropdown when clicking outside
         document.addEventListener('click', function() {
             closeAllSelect();
+        });
+
+        searchInputSupplier.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.stopPropagation();
+
+                const isVisible = selectItemsSupplier.style.display === 'block';
+                if (isVisible) {
+                    const visibleItems = Array.from(selectItemsSupplier.getElementsByTagName('div'))
+                        .filter(item => item.style.display !== 'none');
+
+                    if (visibleItems.length > 0) {
+                        const firstItem = visibleItems[0];
+
+                        // Simulate click on the first visible item
+                        searchInputSupplier.value = firstItem.dataset.kode;
+                        namaSupplier.value = firstItem.dataset.nama;
+                        closeAllSelect();
+
+                        $.ajax({
+                            url: '/preorder-get-supplier-data',
+                            method: 'GET',
+                            data: { nama: namaSupplier.value },
+                            success: function(response) {
+                                $('#supplierName31').text(response.nama);
+                                $('#supplierAddress31').text(response.alamat1);
+                                $('#supplierAddress32').text(response.alamat2);
+                
+                                $('#targetRow3').removeAttr('hidden');
+                                $('#targetRow4').attr('hidden', 'hidden');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("An error occurred:", error);
+                                $('#targetRow3').attr('hidden', 'hidden');
+                            }
+                        });
+                    }
+                } else {
+                    filterFunction();
+                    selectItemsSupplier.style.display = 'block';
+                }
+            }
         });
 
         closeAllSelect();

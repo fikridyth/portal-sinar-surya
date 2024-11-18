@@ -5,18 +5,6 @@
 @section('content')
     <div class="d-flex justify-content-center">
         <div class="mb-7" style="width: 82%">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                PENERIMAAN BARANG - PURCHASE ORDER
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
             <form action="{{ route('receive-po.store') }}" method="POST" class="form">
                 @csrf
                 <div class="card">
