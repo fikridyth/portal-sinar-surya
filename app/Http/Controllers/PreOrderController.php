@@ -711,7 +711,7 @@ class PreOrderController extends Controller
         $getDetail[$request->array] = $getArray;
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
-
+        
         $totalHarga = 0;
         foreach ($getDetail as $detail) {
             $totalHarga += $detail['field_total'];
@@ -722,12 +722,13 @@ class PreOrderController extends Controller
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
         ]);
-        $getPayment->update([
-            'total' => $jumlahHarga ?? 0,
-            'ppn' => $preorder->ppn_global ?? 0,
-            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
-        ]);
-        
+        if ($getPayment) {
+            $getPayment->update([
+                'total' => $jumlahHarga ?? 0,
+                'ppn' => $preorder->ppn_global ?? 0,
+                'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100) ?? 0,
+            ]);
+        }
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
@@ -819,11 +820,13 @@ class PreOrderController extends Controller
             'ppn_global' => $valuePpn ?? 0,
             'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100),
         ]);
-        $getPayment->update([
-            'total' => $request->total_harga ?? 0,
-            'ppn' => $preorder->ppn_global ?? 0,
-            'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100) ?? 0,
-        ]);
+        if ($getPayment) {
+            $getPayment->update([
+                'total' => $request->total_harga ?? 0,
+                'ppn' => $preorder->ppn_global ?? 0,
+                'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100) ?? 0,
+            ]);
+        }
         return redirect()->back();
     }
 

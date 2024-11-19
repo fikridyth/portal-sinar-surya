@@ -182,13 +182,13 @@
                                                 <thead style="position: sticky; top: 0; z-index: 1; background-color: white;">
                                                     <tr class="fs-need">
                                                         {{-- <th class="text-center">NO</th> --}}
-                                                        <th class="text-center">&#9989;</th>
                                                         <th class="text-center">KODE</th>
                                                         <th class="text-center">NAMA BARANG</th>
                                                         <th class="text-center">ISI</th>
                                                         {{-- <th class="text-center">SAT</th> --}}
                                                         <th class="text-center">HARGA POKOK</th>
                                                         <th class="text-center">ORDER</th>
+                                                        <th class="text-center">&#9989;</th>
                                                         <th class="text-center">TERIMA</th>
                                                         <th class="text-center">SATUAN</th>
                                                         <th class="text-center">NETTO</th>
@@ -214,7 +214,14 @@
                                                         @endphp
                                                             <tr class="fs-need">
                                                                 {{-- <td>{{ $no }}</td> --}}
-                                                                <td class="text-center">
+                                                                <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
+                                                                <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
+                                                                <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
+                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
+                                                                <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
+                                                                <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
+                                                                
+                                                                <td class="text-center" style="width: 100px;">
                                                                     <div class="select-container">
                                                                         <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
                                                                         data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
@@ -226,12 +233,6 @@
                                                                     <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
                                                                     <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
                                                                 </td>
-                                                                <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
-                                                                <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
-                                                                <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
-                                                                <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
-                                                                <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                                 <td class="text-end">
                                                                     <div class="order-container">
                                                                         <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
@@ -442,6 +443,12 @@
                 // batalButton.disabled = true;
                 prosesButton.classList.add('disabled-link');
                 // hapusButton.disabled = false;
+                
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        button.click();
+                    }
+                });
             } else {
                 // Remove the discount if the checkbox is unchecked
                 currentNetto += diskonValue;
@@ -572,42 +579,29 @@
                 diskon3: diskon3Input.value
             };
 
-            Swal.fire({
-                title: 'Notifikasi?',
-                text: 'Apakah kamu yakin ingin menyimpan item ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Perform AJAX request
-                    $.ajax({
-                        url: '{{ route('create-receive.update') }}', // Use the named route to generate URL
-                        type: 'POST',
-                        data: data,
-                        headers: {
-                            // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            // Handle success response
-                            if (response.success) {
-                                var redirectUrl = @json(route('receive-po.create-detail', enkrip($preorder->id)));
-                                window.location.href = redirectUrl;
-                            } else {
-                                // Handle error response if needed
-                                alert('Failed to save data.');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            // Handle AJAX error
-                            console.error('AJAX error:', status, error);
-                            alert('An error occurred while saving data.');
-                        }
-                    });
+            // Perform AJAX request
+            $.ajax({
+                url: '{{ route('create-receive.update') }}', // Use the named route to generate URL
+                type: 'POST',
+                data: data,
+                headers: {
+                    // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    // Handle success response
+                    if (response.success) {
+                        var redirectUrl = @json(route('receive-po.create-detail', enkrip($preorder->id)));
+                        window.location.href = redirectUrl;
+                    } else {
+                        // Handle error response if needed
+                        alert('Failed to save data.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Handle AJAX error
+                    console.error('AJAX error:', status, error);
+                    alert('An error occurred while saving data.');
                 }
             });
         }
@@ -670,8 +664,11 @@
                     document.getElementById('diskon6-input').value = 0;
 
                     document.querySelectorAll('.order-container').forEach(container => {
-                        container.querySelector('.order-text').hidden = true;
-                        container.querySelector('.order-input').hidden = false;
+                        const orderText = container.querySelector('.order-text');
+                        const orderInput = container.querySelector('.order-input');
+                        orderText.hidden = true;
+                        orderInput.hidden = false;
+                        orderInput.focus();
                     });
 
                     document.querySelectorAll('.price-container').forEach(container => {
@@ -696,8 +693,11 @@
                     document.getElementById('diskon6-input').value = 0;
 
                     document.querySelectorAll('.order-container').forEach(container => {
-                        container.querySelector('.order-text').hidden = true;
-                        container.querySelector('.order-input').hidden = false;
+                        const orderText = container.querySelector('.order-text');
+                        const orderInput = container.querySelector('.order-input');
+                        orderText.hidden = true;
+                        orderInput.hidden = false;
+                        orderInput.focus();
                     });
 
                     document.querySelectorAll('.price-container').forEach(container => {

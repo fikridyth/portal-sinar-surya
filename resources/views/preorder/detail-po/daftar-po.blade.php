@@ -141,7 +141,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center mt-n4 mb-n5">
-                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-4">BATAL</button>
+                            <a href="{{ route('index') }}" class="btn btn-danger mx-4">BATAL</a>
                             <button type="submit" class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
