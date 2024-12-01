@@ -38,6 +38,12 @@ class ProductDataTable extends DataTable
         ->addColumn('tingkat', function ($row) {
             return $row->kode_sumber === null ? 'SUMBER' : 'ANAK';
         })
+        ->addColumn('stok', function ($row) {
+            return ($row->stok == floatval($row->stok)) ? intval($row->stok) : $row->stok;
+        })
+        ->addColumn('encrypted_id', function ($row) {
+            return enkrip($row->id);
+        })
         ->addColumn('action', function ($row) {
             $btnEdit = '<a href="' . route('master.product.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
             $btnDelete = '<a href="#" class="btn btn-danger btn-sm" onclick="deleteData(' . $row->id . ')" ><i class="fa fa-trash"></i></a>';
@@ -71,23 +77,13 @@ class ProductDataTable extends DataTable
             ->setTableId('product-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            //->dom('Bfrtip')
             ->orderBy(1, 'asc')
             ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
-            // ->parameters([
-            //     'paging' => false,
-            //     // 'searching' => false,
-            //     'dom' => '<"top"f>rt<"bottom"ilp><"clear">',
-            //     'ordering' => false,
-            //     'lengthMenu' => [[-1], ['All']],
-            //     'info' => false
-            // ])
             ->parameters([
-                "lengthMenu" => [
-                    [5, 10, 25, 50, 100],
-                    [5, 10, 25, 50, 100]
-                ],
-                'pageLength' => 5
+                'pageLength' => 500,
+                'createdRow' => "function(row, data, dataIndex) {
+                    $(row).attr('data-id', data.encrypted_id);
+                }"
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');
@@ -100,15 +96,16 @@ class ProductDataTable extends DataTable
     {
         return [
             Column::make('DT_RowIndex')->title('NO.')->searchable(false)->orderable(false)->addClass('text-center'),
-            Column::make('nama')->title('NAMA BARANG')->addClass('text-center'),
-            Column::make('kode')->title('NO BARANG')->addClass('text-center'),
-            Column::make('kode_sumber')->title('SUMBER')->addClass('text-center'),
-            Column::make('tingkat')->title('TINGKAT')->addClass('text-center'),
+            Column::make('nama')->title('NAMA BARANG'),
+            // Column::make('kode')->title('NO BARANG')->addClass('text-center'),
+            // Column::make('kode_sumber')->title('SUMBER')->addClass('text-center'),
+            // Column::make('tingkat')->title('TINGKAT')->addClass('text-center'),
             Column::make('unit_beli')->title('UNIT BELI')->addClass('text-center'),
             Column::make('unit_jual')->title('UNIT JUAL')->addClass('text-center'),
-            Column::make('konversi')->title('KONVERSI')->addClass('text-center'),
-            Column::make('harga_pokok')->title('HARGA BELI')->addClass('text-center'),
-            Column::make('harga_jual')->title('HARGA JUAL')->addClass('text-center'),
+            // Column::make('konversi')->title('KONVERSI')->addClass('text-center'),
+            // Column::make('harga_pokok')->title('HARGA BELI')->addClass('text-center'),
+            Column::make('stok')->title('STOK')->addClass('text-end'),
+            Column::make('harga_jual')->title('HARGA JUAL')->addClass('text-end'),
             // Column::computed('action')
             //     ->exportable(false)
             //     ->printable(false)

@@ -29,6 +29,9 @@ class SupplierDataTable extends DataTable
         ->editColumn('nama', function ($row) {
             return '<a href="' . route('master.supplier.show', enkrip($row->id)) . '">' . $row->nama . '</a>';
         })
+        ->addColumn('encrypted_id', function ($row) {
+            return enkrip($row->id);
+        })
         ->addColumn('action', function ($row) {
             $btnEdit = '<a href="' . route('master.supplier.edit', $row->id) . '" class="btn btn-warning btn-sm"><i class="fa fa-pen "></i></a>';
             $btnDelete = '<a href="#" class="btn btn-danger btn-sm" onclick="deleteData(' . $row->id . ')" ><i class="fa fa-trash"></i></a>';
@@ -62,15 +65,13 @@ class SupplierDataTable extends DataTable
             ->setTableId('supplier-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            //->dom('Bfrtip')
             ->orderBy(1, 'asc')
             ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
             ->parameters([
-                "lengthMenu" => [
-                    [5, 10, 25, 50, 100],
-                    [5, 10, 25, 50, 100]
-                ],
-                'pageLength' => 5
+                'pageLength' => 500,
+                'createdRow' => "function(row, data, dataIndex) {
+                    $(row).attr('data-id', data.encrypted_id);
+                }"
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

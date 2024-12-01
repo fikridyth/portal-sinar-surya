@@ -29,8 +29,9 @@ class ProductController extends Controller
     public function index(ProductDataTable $dataTable)
     {
         $title = 'Master Product';
+        $titleHeader = 'MASTER PERSEDIAAN';
 
-        return $dataTable->render('master.product.index', compact('title'));
+        return $dataTable->render('master.product.index', compact('title', 'titleHeader'));
     }
 
     /**
@@ -40,6 +41,7 @@ class ProductController extends Controller
     {
         $id = dekrip($id);
         $title = 'Create Product';
+        $titleHeader = 'MASTER PRODUCT';
         $units = Unit::all();
         $product = Product::find($id);
         $departemens = Departemen::all();
@@ -52,7 +54,7 @@ class ProductController extends Controller
             $newCode = str_pad((int)$maxCode + 1, 8, '0', STR_PAD_LEFT);
         }
 
-        return view('master/product/create', compact('title', 'units', 'departemens', 'suppliers', 'newCode', 'product'));
+        return view('master/product/create', compact('title', 'units', 'departemens', 'suppliers', 'newCode', 'product', 'titleHeader'));
     }
 
     /**
@@ -77,17 +79,17 @@ class ProductController extends Controller
             'id_unit' => $request->unit,
             'id_departemen' => $request->departemen,
             'kode' => $request->kode,
-            'nama' => $request->nama_barang,
-            'unit_beli' => $request->unit_beli,
-            'unit_jual' => $request->unit_jual,
+            'nama' => strtoupper($request->nama_barang),
+            'unit_beli' => strtoupper($request->unit_beli),
+            'unit_jual' => strtoupper($request->unit_jual),
             'konversi' => 1,
             'harga_pokok' => preg_replace('/[^0-9]/', '', $request->harga_pokok),
             'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
             'profit' => $request->profit,
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
-            'merek' => $request->merek,
-            'label' => $request->label,
+            'merek' => strtoupper($request->merek),
+            'label' => strtoupper($request->label),
             'isi' => str_replace('P', '', $request->unit_jual),
             'status' => 1,
         ];
@@ -107,13 +109,14 @@ class ProductController extends Controller
     {
         $id = dekrip($id);
         $title = 'Show Product';
+        $titleHeader = 'MASTER PRODUCT';
         $product = Product::find($id);
         $parentProduct = Product::where('kode', $product->kode_sumber)->first();
         $units = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::all();
 
-        return view('master/product/show', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers'));
+        return view('master/product/show', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers', 'titleHeader'));
     }
 
     public function productChildView(string $id)
@@ -316,13 +319,14 @@ class ProductController extends Controller
     {
         $id = dekrip($id);
         $title = 'Edit Product';
+        $titleHeader = 'MASTER PRODUCT';
         $product = Product::find($id);
         $parentProduct = Product::where('kode', $product->kode_sumber)->first();
         $units = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::all();
 
-        return view('master/product/edit', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers'));
+        return view('master/product/edit', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers', 'titleHeader'));
     }
 
     /**
@@ -362,16 +366,16 @@ class ProductController extends Controller
             'id_unit' => $request->unit,
             'id_departemen' => $request->departemen,
             'kode' => $request->kode,
-            'nama' => $namaBarang[0],
-            'unit_beli' => $request->unit_beli,
-            'unit_jual' => $request->unit_jual,
+            'nama' => strtoupper($namaBarang[0]),
+            'unit_beli' => strtoupper($request->unit_beli),
+            'unit_jual' => strtoupper($request->unit_jual),
             'konversi' => $konversi,
             'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
             'profit' => $request->profit,
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
-            'merek' => $request->merek,
-            'label' => $request->label, 
+            'merek' => strtoupper($request->merek),
+            'label' => strtoupper($request->label), 
             'isi' => str_replace('P', '', $request->unit_jual),
             'status' => 1,
             'is_transfer' => null,

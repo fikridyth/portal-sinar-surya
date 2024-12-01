@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
+        {{-- <div class="d-flex align-items-center justify-content-center">
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
@@ -10,7 +10,7 @@
                     </ol>
                 </nav>
             </div>
-        </div>
+        </div> --}}
 
         <div class="card">
             <div class="card-body">
@@ -22,14 +22,16 @@
                     </div>
                 </div> --}}
 
-                <div class="card-body">
+                <div class="card-body mt-n5">
                     <input type="text" id="barcodeInput" style="width: 100px; opacity: 0" autofocus>
-                    {{ $dataTable->table() }}
+                    <div style="overflow-x: auto; height: 650px; border: 1px solid #ccc;">
+                        {{ $dataTable->table() }}
+                    </div>
                 </div>
                 
                 <div class="text-center">
                     {{-- <a href="{{ route('master.product.create') }}" class="btn btn-danger">Kembali</a> --}}
-                    <button type="button" onclick="window.history.back()" class="btn btn-danger mt-4 mb-7">KEMBALI</button>
+                    <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
                 </div>
             </div>
         </div>
@@ -74,8 +76,36 @@
 
         document.addEventListener('keydown', function(event) {
             // focus barcode
-            if (event.key === 'Enter' || event.key === 'Escape') {
+            if (event.key === 'Escape' || event.key === 'Backspace') {
                 document.getElementById('barcodeInput').focus();
+            }
+
+            // focus input
+            if (event.key === 'Tab') {
+                event.preventDefault(); // Prevent default tab behavior
+
+                // Focus on the DataTable search input
+                const searchInput = document.querySelector('#product-table_filter input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+
+            // go to menu
+            if (event.key === 'Enter') {
+                // Find the first row in the product table
+                const firstRow = document.querySelector('#product-table tbody tr');
+
+                // If a first row exists, extract the product ID from the data-id attribute
+                if (firstRow) {
+                    const productId = firstRow.getAttribute('data-id'); // Retrieve the product ID from data-id
+
+                    // Navigate to the route with the product ID
+                    if (productId) {
+                        // Redirect to the product page using the product ID
+                        window.location.href = `/master/product/${productId}`;
+                    }
+                }
             }
         });
     </script>

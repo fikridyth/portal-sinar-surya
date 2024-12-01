@@ -4,20 +4,6 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">MASTER SUPPLIER</li>
-                    </ol>
-                </nav>
-            </div>
-
-            {{-- <div class="mt-2">
-                <a href="{{ route('master.product.index') }}" type="button" class="btn btn-secondary">Back</a>
-            </div> --}}
-        </div>
-
         <form action="{{ route('master.supplier.update', enkrip($supplier->id)) }}" method="POST" class="form"
             enctype="multipart/form-data">
             @csrf

@@ -6,20 +6,6 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">MASTER PERSEDIAAN</li>
-                    </ol>
-                </nav>
-            </div>
-
-            {{-- <div class="mt-2">
-                <a href="{{ route('master.product.index') }}" type="button" class="btn btn-secondary">Back</a>
-            </div> --}}
-        </div>
-
         <form action="{{ route('master.product.update', enkrip($product->id)) }}" method="POST" class="form"
             enctype="multipart/form-data">
             @csrf

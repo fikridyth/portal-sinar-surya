@@ -22,8 +22,9 @@ class SupplierController extends Controller
     public function index(SupplierDataTable $dataTable)
     {
         $title = 'Master Supplier';
+        $titleHeader = 'MASTER SUPPLIER';
 
-        return $dataTable->render('master.supplier.index', compact('title'));
+        return $dataTable->render('master.supplier.index', compact('title', 'titleHeader'));
     }
 
     /**
@@ -32,8 +33,9 @@ class SupplierController extends Controller
     public function create()
     {
         $title = 'Create Supplier';
+        $titleHeader = 'MASTER SUPPLIER';
 
-        return view('master/supplier/create', compact('title'));
+        return view('master/supplier/create', compact('title', 'titleHeader'));
     }
 
     /**
@@ -85,9 +87,10 @@ class SupplierController extends Controller
     {
         $id = dekrip($id);
         $title = 'Show Supplier';
+        $titleHeader = 'MASTER SUPPLIER';
         $supplier = Supplier::find($id);
 
-        return view('master/supplier/show', compact('title', 'supplier'));
+        return view('master/supplier/show', compact('title', 'supplier', 'titleHeader'));
     }
 
     /**
@@ -97,9 +100,10 @@ class SupplierController extends Controller
     {
         $id = dekrip($id);
         $title = 'Edit Supplier';
+        $titleHeader = 'MASTER SUPPLIER';
         $supplier = Supplier::find($id);
 
-        return view('master/supplier/edit', compact('title', 'supplier'));
+        return view('master/supplier/edit', compact('title', 'supplier', 'titleHeader'));
     }
 
     /**
