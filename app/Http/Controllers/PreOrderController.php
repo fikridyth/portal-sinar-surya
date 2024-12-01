@@ -945,8 +945,9 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $title = 'Add Product';
+        $titleHeader = 'PEMESANAN BARANG - PURCHASE ORDER';
 
-        return $dataTable->render('preorder.add-product.index', compact('title', 'id'));
+        return $dataTable->render('preorder.add-product.index', compact('title', 'id', 'titleHeader'));
     }
 
     public function updateProductReceivePo(Request $request, $id)
@@ -986,6 +987,12 @@ class PreOrderController extends Controller
         $preorder->total_harga = $preorder->total_harga + $total;
         $preorder->grand_total = $preorder->grand_total + $total;
         $preorder->save();
+
+        $hutang = Hutang::where('nomor_po', $preorder->nomor_po)->first();
+        $hutang->update([
+            'total' => $hutang->total + $total,
+            'grand_total' => $hutang->grand_total + $total
+        ]);
 
         if ($preorder->receive_type == 'A') {
             return redirect()->route('daftar-po.edit', enkrip($id));
@@ -1163,7 +1170,7 @@ class PreOrderController extends Controller
             'is_cancel' => null
         ]);
 
-        return Redirect::route('index')
+        return Redirect::route('receive-po', enkrip($preorder->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Data Receive Berhasil Di Proses!");
     }

@@ -199,15 +199,15 @@
                             </div>
                             @if($product->kode_sumber !== null)
                                 <div class="col">
-                                    <input type="text" id="harga_pokok" name="harga_pokok" value="{{ number_format($product->harga_pokok) }}"
+                                    <input type="text" id="harga_pokok" name="harga_pokok" value="{{ $product->harga_pokok }}"
                                         class="form-control readonly-input @error('harga_pokok') is-invalid @enderror" autocomplete="off" readonly />
                                         
-                                    <input type="text" hidden id="harga_pokok_2" name="harga_pokok_2" value="{{ number_format($product->harga_pokok) }}"
+                                    <input type="text" hidden id="harga_pokok_2" name="harga_pokok_2" value="{{ $product->harga_pokok }}"
                                         class="form-control readonly-input @error('harga_pokok_2') is-invalid @enderror" autocomplete="off" readonly />
                                 </div>
                             @else
                             <div class="col">
-                                <input type="text" id="harga_pokok_2" name="harga_pokok_2" value="{{ number_format($product->harga_pokok) }}"
+                                <input type="text" id="harga_pokok_2" name="harga_pokok_2" value="{{ $product->harga_pokok }}"
                                     class="form-control readonly-input @error('harga_pokok_2') is-invalid @enderror" autocomplete="off" readonly />
                             </div>
                             @endif
@@ -256,13 +256,13 @@
                             </div>
                             @if($product->kode_sumber !== null)
                                 <div class="col">
-                                    <input type="text" id="harga_pokok"  name="harga_pokok" value="{{ old('harga_pokok', number_format($parentProduct->harga_pokok ?? $product->harga_pokok)) }}"
+                                    <input type="text" id="harga_pokok"  name="harga_pokok" value="{{ old('harga_pokok', $parentProduct->harga_pokok ?? $product->harga_pokok) }}"
                                         class="form-control readonly-input @error('harga_pokok') is-invalid @enderror" autocomplete="off" readonly
                                         onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" />
                                 </div>
                             @else
                                 <div class="col">
-                                    <input type="text" id="harga_pokok" name="harga_pokok" value="{{ old('harga_pokok', number_format($parentProduct->harga_pokok ?? $product->harga_pokok)) }}"
+                                    <input type="text" id="harga_pokok" name="harga_pokok" value="{{ old('harga_pokok', $parentProduct->harga_pokok ?? $product->harga_pokok) }}"
                                         class="form-control @error('harga_pokok') is-invalid @enderror"
                                         onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" autocomplete="off" />
                                 </div>
@@ -309,7 +309,7 @@
                                 <label class="form-label h6 mt-2" for="harga_pokok_rata">HARGA POKOK RATA2</label>
                             </div>
                             <div class="col">
-                                <input type="text" id="harga_pokok_rata" name="harga_pokok_rata" value="{{ number_format($product->harga_pokok) }}" readonly
+                                <input type="text" id="harga_pokok_rata" name="harga_pokok_rata" value="{{ $product->harga_pokok }}" readonly
                                     class="form-control readonly-input @error('harga_pokok_rata') is-invalid @enderror" autocomplete="off" />
                             </div>
                         </div>
@@ -343,7 +343,7 @@
                                 <label class="form-label h6 mt-2" id="label_harga_jual" for="harga_jual">HARGA JUAL/{{ $product->unit_jual }}</label>
                             </div>
                             <div class="col">
-                                <input type="text" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', number_format($product->harga_jual)) }}"
+                                <input type="text" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $product->harga_jual) }}"
                                     class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off"
                                     onkeydown="if(event.key === 'Enter') document.getElementById('profit').focus();" />
                             </div>
@@ -568,7 +568,7 @@
 @endsection
 
 @section('scripts')
-    @include('master.product.add-on.scripts')
+    @include('master.product.add-on.edit-scripts')
 
     <script>
         // Mengambil elemen input dengan ID 'kode'

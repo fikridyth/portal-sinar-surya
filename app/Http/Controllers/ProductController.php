@@ -84,7 +84,7 @@ class ProductController extends Controller
             'unit_jual' => strtoupper($request->unit_jual),
             'konversi' => 1,
             'harga_pokok' => preg_replace('/[^0-9]/', '', $request->harga_pokok),
-            'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
+            'harga_jual' => round($request->harga_jual),
             'profit' => $request->profit,
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
@@ -370,7 +370,7 @@ class ProductController extends Controller
             'unit_beli' => strtoupper($request->unit_beli),
             'unit_jual' => strtoupper($request->unit_jual),
             'konversi' => $konversi,
-            'harga_jual' => preg_replace('/[^0-9]/', '', $request->harga_jual),
+            'harga_jual' => round($request->harga_jual),
             'profit' => $request->profit,
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
@@ -560,5 +560,18 @@ class ProductController extends Controller
         }
 
         return response()->json(['product' => $product]);
+    }
+
+    public function updateStatus($id)
+    {
+        $product = Product::find($id);
+
+        if ($product->status == 1) {
+            $product->update(['status' => 0]);
+        } else {
+            $product->update(['status' => 1]);
+        }
+
+        return response()->json(['message' => 'Product status updated successfully']);
     }
 }

@@ -385,12 +385,15 @@
                         </div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-3">
+                    </div>
+
+                    <div class="col-3">
                         <div class="row align-items-center">
-                            <div class="col-4">
+                            <div class="col-6">
                                 <label class="form-label h6 mt-2" for="stok_terkecil">STOK TERKECIL</label>
                             </div>
-                            <div class="col">
+                            <div class="col-6">
                                 <input type="text" id="stok_terkecil" name="stok_terkecil" value="" readonly
                                     class="form-control readonly-input @error('stok_terkecil') is-invalid @enderror"
                                     autocomplete="off" />
@@ -422,17 +425,59 @@
                         </div>
                     </div>
 
-                    <div class="col-6">
+                    <div class="col-3">
                         <div class="row align-items-center">
-                            <div class="col-4">
+                            <div class="col-5">
+                                <label class="form-label h6 mt-2" for="status">DISFUNCTION</label>
+                            </div>
+                            <div class="col-3">
+                                <div class="slider-container">
+                                    <input type="checkbox" id="status" name="status" {{ $product->status == 0 ? 'checked' : '' }} class="slider-checkbox">
+                                    <label for="status" class="slider-label"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <div class="row align-items-center">
+                            <div class="col-6">
                                 <label class="form-label h6 mt-2" for="rata_terkecil">RATA2 TERKECIL</label>
                             </div>
-                            <div class="col">
+                            <div class="col-6">
                                 <input type="text" id="rata_terkecil" name="rata_terkecil" value="" readonly
                                     class="form-control readonly-input @error('rata_terkecil') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
                         </div>
+                    </div>
+
+                    <div class="col-2">
+                    </div>
+                </div>
+
+                <div class="row mb-1">
+                    <div class="col-4 mb-2">
+                        <div class="row align-items-center">
+                            <div class="col-5">
+                                <label class="form-label h6 mt-2" for="proses_order">ORDER TERAKHIR</label>
+                            </div>
+                            <div class="col-7">
+                                <input type="text" id="proses_order" name="proses_order"
+                                    value="{{ old('proses_order') }}" readonly
+                                    class="form-control readonly-input @error('proses_order') is-invalid @enderror"
+                                    autocomplete="off" />
+                                @error('proses_order')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-5">
+                        <a href="{{ route('master.product.child', enkrip($product->id)) }}" style="width: 200px" class="btn btn-primary">SEJARAH ORDER</a>
                     </div>
 
                     <div class="col-2">
@@ -636,7 +681,7 @@
         $(document).ready(function() {
             $('#search-input-unit').on('change', function() {
                 var unitId = $(this).val();
-                console.log(unitId)
+                // console.log(unitId)
                 if (unitId) {
                     $.ajax({
                         url: "{{ route('master.get-departemen') }}",
@@ -662,6 +707,32 @@
                 } else {
                     $('#departemen').empty().append('<option value="">---Select Departemen---</option>');
                 }
+            });
+
+            var id = {{ $product->id }};
+            // Detect change on the slider checkbox
+            $('#status').on('change', function() {
+                // Get the new status value based on the checkbox state (checked or unchecked)
+                var status = $(this).is(':checked') ? 1 : 0;
+
+                // AJAX request to update the status in the database
+                $.ajax({
+                    url: '/master/product/update-status/' + id,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}', // CSRF token for security
+                        status: status // Send the new status
+                    },
+                    success: function(response) {
+                        // You can handle the response here, for example, show a success message
+                        alert('SUKSES UBAH STATUS');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle any error that occurs
+                        console.error('Update failed: ', error);
+                    }
+                });
             });
         });
     </script>

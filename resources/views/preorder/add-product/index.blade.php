@@ -8,9 +8,11 @@
                 <form action="{{ route('receive-po.add-product.update', enkrip($id)) }}" id="purchase-order-form" method="POST" class="form" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                    <div class="card-body">
-                        <h2 class="breadcrumb-item active h3" aria-current="page">PEMESANAN BARANG - PURCHASE ORDER</h2>
-                        {{ $dataTable->table() }}
+                    <div class="card-body mt-n4">
+                        {{-- <h2 class="breadcrumb-item active h3" aria-current="page">PEMESANAN BARANG - PURCHASE ORDER</h2> --}}
+                        <div style="overflow-x: auto; height: 650px; border: 1px solid #ccc;">
+                            {{ $dataTable->table() }}
+                        </div>
                     </div>
                     
                     <div class="text-center">
@@ -63,6 +65,36 @@
                 // Check if hidden inputs are correctly added
                 const hiddenInputs = $(this).find('input[name="selected_ids[]"]');
             });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            // focus input
+            if (event.key === 'Tab') {
+                event.preventDefault(); // Prevent default tab behavior
+
+                // Focus on the DataTable search input
+                const searchInput = document.querySelector('#search-product-table_filter input');
+                if (searchInput) {
+                    searchInput.focus();
+                }
+            }
+
+            // go to menu
+            // if (event.key === 'Enter') {
+            //     // Find the first row in the product table
+            //     const firstRow = document.querySelector('#search-product-table tbody tr');
+
+            //     // If a first row exists, extract the product ID from the data-id attribute
+            //     if (firstRow) {
+            //         const productId = firstRow.getAttribute('data-id'); // Retrieve the product ID from data-id
+
+            //         // Navigate to the route with the product ID
+            //         if (productId) {
+            //             // Redirect to the product page using the product ID
+            //             window.location.href = `/master/product/${productId}`;
+            //         }
+            //     }
+            // }
         });
     </script>
 @endsection 

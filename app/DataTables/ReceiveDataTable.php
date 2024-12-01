@@ -21,7 +21,7 @@ class ReceiveDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNotNull('is_cancel')->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->whereNotNull('is_cancel')->orderBy('created_at', 'asc')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier->nama;
@@ -68,23 +68,13 @@ class ReceiveDataTable extends DataTable
             ->setTableId('receive-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
-            //->dom('Bfrtip')
             ->orderBy(1, 'asc')
             ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
-            // ->parameters([
-            //     'paging' => false,
-            //     // 'searching' => false,
-            //     'dom' => '<"top"f>rt<"bottom"ilp><"clear">',
-            //     'ordering' => false,
-            //     'lengthMenu' => [[-1], ['All']],
-            //     'info' => false
-            // ])
             ->parameters([
-                "lengthMenu" => [
-                    [5, 10, 25, 50, 100],
-                    [5, 10, 25, 50, 100]
-                ],
-                'pageLength' => 10
+                'pageLength' => 500,
+                'createdRow' => "function(row, data, dataIndex) {
+                    $(row).attr('data-id', data.encrypted_id);
+                }"
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');
