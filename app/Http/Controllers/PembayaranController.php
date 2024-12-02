@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\HistoryHutangDataTable;
-use App\DataTables\HutangDataTable;
+use App\DataTables\SupplierHutangDataTable;
 use App\DataTables\PembayaranDataTable;
 use App\Models\Bank;
 use App\Models\Cabang;
@@ -31,17 +31,26 @@ class PembayaranController extends Controller
     //     return $dataTable->render('pembayaran.hutang.index', compact('title'));
     // }
 
-    public function indexHutang()
+    // public function indexHutang()
+    // {
+    //     $title = 'List Pembayaran Hutang';
+
+    //     $hutang = Hutang::select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->whereNull('is_cancel')->whereNotNull('is_proses')->groupBy('id_supplier')->pluck('id_supplier');
+    //     $pengembalian = Pengembalian::select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')->pluck('id_supplier');
+
+    //     $mergedData = $hutang->merge($pengembalian)->unique();
+    //     $getSupplier = Supplier::whereIn('id', $mergedData)->get();
+    //     $suppliers = Supplier::all();
+        
+    //     return view('pembayaran.hutang.index', compact('title', 'getSupplier'));
+    // }
+
+    public function indexHutang(SupplierHutangDataTable $dataTable)
     {
         $title = 'List Pembayaran Hutang';
+        $titleHeader = 'PEMBAYARAN HUTANG';
 
-        $hutang = Hutang::select('id_supplier')->whereNull('nomor_bukti')->where('total', '!=', 0)->whereNull('is_cancel')->whereNotNull('is_proses')->groupBy('id_supplier')->pluck('id_supplier');
-        $pengembalian = Pengembalian::select('id_supplier')->whereNull('nomor_bukti')->groupBy('id_supplier')->pluck('id_supplier');
-
-        $mergedData = $hutang->merge($pengembalian)->unique();
-        $getSupplier = Supplier::whereIn('id', $mergedData)->get();
-        
-        return view('pembayaran.hutang.index', compact('title', 'getSupplier'));
+        return $dataTable->render('pembayaran.hutang.index', compact('title', 'titleHeader'));
     }
 
     public function showHutang($id)
