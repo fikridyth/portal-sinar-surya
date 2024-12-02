@@ -301,7 +301,7 @@
                                         <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
                                     </div> --}}
                                     <div class="mx-2">
-                                        <a class="btn btn-danger" href="{{ route('index') }}">KEMBALI</a>
+                                        <button type="button" class="btn btn-danger" onclick="window.history.back()">KEMBALI</button>
                                     </div>
                                 </div>
                             </div>

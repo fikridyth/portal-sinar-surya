@@ -73,6 +73,12 @@
 
 @section('scripts')
 <script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+        document.getElementById('data-sumber-btn').click();
+        }
+    });
+    
     // Pass PHP data to JavaScript as a single object
     var product = @json($product); // Convert PHP object to JSON
     var nextKode = @json($nextKode); // Convert PHP object to JSON
@@ -119,11 +125,23 @@
                 <td class='kode_value'>${nextKode}</td>
                 <td class='kode_sumber_value' data-kode-sumber-parent='${product.kode}'>${nextKode}</td>
                 <td class='tipe_data' id='tipe_data'>SUMBER</td>
-                <td><input type="text" class='unit_beli_value' size="5" name="unit_beli" value="1" autocomplete="off" autofocus /></td>
+                <td>
+                    <input type="text" class='unit_beli_value' id='unit_beli_value' size="5" name="unit_beli" value="" autocomplete="off" autofocus
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('parent_harga_beli').focus();" />
+                </td>
                 <td class='unit_jual_value' data-unit-jual-parent='${formatCurrency(product.unit_beli)}'></td>
                 <td class='konversi_value' data-profit-parent='${product.profit}'>0.00</td>
-                <td class='harga_beli_value' data-harga-beli-parent='${new Intl.NumberFormat().format(product.harga_pokok)}'><input type="text" size="7" name="parent_harga_beli" class="parent_harga_beli" value="0" /></td>
-                <td class='harga_jual_value' data-harga-jual-parent='${new Intl.NumberFormat().format(product.harga_jual)}'><input type="text" size="7" name="parent_harga_jual" class="parent_harga_jual" value="0" /></td>
+                <td class='harga_beli_value' data-harga-beli-parent='${new Intl.NumberFormat().format(product.harga_pokok)}'>
+                    <input type="text" size="7" name="parent_harga_beli" id="parent_harga_beli" class="parent_harga_beli" value=""
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('parent_harga_jual').focus();" />
+                </td>
+                <td class='harga_jual_value' data-harga-jual-parent='${new Intl.NumberFormat().format(product.harga_jual)}'>
+                    <input type="text" size="7" name="parent_harga_jual" id="parent_harga_jual" class="parent_harga_jual" value=""
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('simpan-btn').click();" />
+                </td>
                 <td></td>
             </tr>
         `;
@@ -281,7 +299,8 @@
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                document.getElementById('unit_beli_value').focus();
+                throw new Error(`Isi data unit beli!`);
             }
             return response.json();
         })

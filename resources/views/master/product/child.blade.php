@@ -73,6 +73,12 @@
 
 @section('scripts')
 <script>
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+        document.getElementById('data-anak-btn').click();
+        }
+    });
+
     // Pass PHP data to JavaScript as a single object
     var product = @json($product); // Convert PHP object to JSON
     var nextKode = @json($nextKode); // Convert PHP object to JSON
@@ -94,11 +100,23 @@
                 <td class='kode_sumber_value'>${product.kode}</td>
                 <td class='tipe_data' id='tipe_data'>ANAK</td>
                 <td class='unit_beli_value' data-unit-beli='${formatCurrency(product.unit_beli)}'>P${formatCurrency(product.unit_beli)}</td>
-                <td><input type="text" class='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="1" autofocus /></td>
+                <td>
+                    <input type="text" class='unit_jual_value' id='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="" autofocus
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual_value').focus();" />
+                </td>
                 <td class='konversi_value'>${formatCurrency(product.unit_beli)}.00</td>
                 <td class='harga_beli_value' name='harga_beli'>${new Intl.NumberFormat().format(Math.floor(product.harga_pokok / formatCurrency(product.unit_beli)))}</td>
-                <td><input type="text" size="7" name="harga_jual" class="harga_jual_value" value="" /></td>
-                <td><input type="text" size="7" name="kode_alternatif" class="kode_alternatif_value" value="" /></td>
+                <td>
+                    <input type="text" size="7" name="harga_jual" class="harga_jual_value" id="harga_jual_value" value=""
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('kode_alternatif_value').focus();" />
+                </td>
+                <td>
+                    <input type="text" size="7" name="kode_alternatif" class="kode_alternatif_value" id="kode_alternatif_value" value=""
+                        onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
+                        onkeydown="if(event.key === 'Enter') document.getElementById('simpan-btn').click();" />
+                </td>
             </tr>
         `;
 
@@ -358,7 +376,8 @@
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                document.getElementById('unit_jual_value').focus();
+                throw new Error(`Isi data unit jual!`);
             }
             return response.json();
         })

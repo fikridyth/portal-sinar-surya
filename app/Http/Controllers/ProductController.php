@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\ProductDataTable;
 use App\Models\Departemen;
+use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\ProductPos;
 use App\Models\Supplier;
@@ -116,7 +117,19 @@ class ProductController extends Controller
         $departemens = Departemen::all();
         $suppliers = Supplier::all();
 
-        return view('master/product/show', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers', 'titleHeader'));
+        $lastOrder = null;
+        $preorders = Preorder::orderBy('updated_at', 'desc')->get();
+        foreach ($preorders as $preorder) {
+            foreach (json_decode($preorder->detail, true) as $detail) {
+                if ($detail['kode'] == $product->kode) {
+                    $lastOrder = $preorder->updated_at;
+                    break 2;
+                }
+            }
+        }
+        // dd($lastOrder, $product->kode);
+
+        return view('master/product/show', compact('title', 'product', 'parentProduct', 'units', 'departemens', 'suppliers', 'titleHeader', 'lastOrder'));
     }
 
     public function productChildView(string $id)
@@ -205,6 +218,11 @@ class ProductController extends Controller
     {
         try {
             $data = $request->json()->all();
+
+            if (!isset($data['unit_beli'])) {
+                throw new \Exception('Missing required data');
+            }
+
             $parentProduct = Product::where('kode', $data['kode_sumber'])->first();
             $childProduct = Product::where('kode_sumber', $data['kode_sumber'])->orderBy('harga_pokok', 'desc')->get();
 
@@ -574,4 +592,53 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product status updated successfully']);
     }
+
+    public function indexHistoryProduct($id)
+    {
+        $id = dekrip($id);
+        $title = 'Master History Product';
+        $titleHeader = 'MASTER PERSEDIAAN';
+
+        $product = Product::find($id);
+        $orderProduct = [];
+        $preorders = Preorder::where('receive_type', 'B')->orderBy('updated_at', 'asc')->get();
+
+        foreach ($preorders as $preorder) {
+            foreach (json_decode($preorder->detail, true) as $detail) {
+                if ($detail['kode'] == $product->kode) {
+                    $alreadyExists = false;
+                    foreach ($orderProduct as $existingOrder) {
+                        if ($existingOrder->nomor_receive == $preorder->nomor_receive) {
+                            $alreadyExists = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!$alreadyExists) {
+                        $orderProduct[] = $preorder;
+                    }
+                }
+            }
+        }
+        // dd($orderProduct);
+
+        return view('master.product.index-history', compact('title', 'titleHeader', 'orderProduct', 'product'));
+    }
+
+    // public function getHistoryProduct(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $nomor = $request->input('nomor');
+
+    //     // Fetch data from database
+    //     $detail = HistoryPreorderDetail::where('nomor_receive', $nomor)->get();
+    //     $detailData = $detail->map(function($item) {
+    //         $item->product_nama = $item->product->nama;
+    //         $item->product_unit_jual = $item->product->unit_jual;
+    //         return $item;
+    //     });
+    //     // dd($detail[0]->product->nama);
+
+    //     return response()->json(['dataDetail' => $detailData]);
+    // }
 }

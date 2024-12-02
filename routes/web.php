@@ -210,6 +210,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/store-product-child', [ProductController::class, 'storeProductChild']);
         Route::post('/store-product-parent', [ProductController::class, 'storeProductParent']);
         Route::post('/product/update-status/{id}', [ProductController::class, 'updateStatus']);
+        
+        // History Product
+        Route::get('/history-product/{id}', [ProductController::class, 'indexHistoryProduct'])->name('history-product.index');
+        // Route::get('/get-history-product', [ProductController::class, 'getHistoryProduct']);
 
         // store product update to pos
         Route::get('/store-to-pos', [ProductController::class, 'storeToPos'])->name('store-to-pos');

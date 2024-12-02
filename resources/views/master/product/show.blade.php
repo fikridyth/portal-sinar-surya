@@ -464,7 +464,7 @@
                             </div>
                             <div class="col-7">
                                 <input type="text" id="proses_order" name="proses_order"
-                                    value="{{ old('proses_order') }}" readonly
+                                    value="{{ $lastOrder !== null ? $lastOrder->format('d/m/Y') : '-' }}" readonly
                                     class="form-control readonly-input @error('proses_order') is-invalid @enderror"
                                     autocomplete="off" />
                                 @error('proses_order')
@@ -477,7 +477,7 @@
                     </div>
 
                     <div class="col-5">
-                        <a href="{{ route('master.product.child', enkrip($product->id)) }}" style="width: 200px" class="btn btn-primary">SEJARAH ORDER</a>
+                        <a href="{{ route('master.history-product.index', enkrip($product->id)) }}" style="width: 200px" class="btn btn-primary">SEJARAH ORDER</a>
                     </div>
 
                     <div class="col-2">
