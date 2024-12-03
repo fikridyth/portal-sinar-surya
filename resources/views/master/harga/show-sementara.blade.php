@@ -3,7 +3,7 @@
 @section('content')
     <div class="d-flex justify-content-center">
         <div class="mb-7" style="width: 95%">
-            <div class="d-flex align-items-center justify-content-center">
+            {{-- <div class="d-flex align-items-center justify-content-center">
                 <div class="mt-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
@@ -13,14 +13,14 @@
                         </ol>
                     </nav>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
                         <label class="mx-4">KODE SUPPLIER</label>
                         <input type="text" class="readonly-input mx-3" readonly value="{{ $products[0]->supplier->nomor }}" style="width: 75px;">
-                        <input type="text" class="readonly-input mx-3" readonly value="{{ $products[0]->supplier->nama }}">
+                        <input type="text" class="readonly-input mx-3" readonly value="{{ $products[0]->supplier->nama }}"  style="width: 350px;">
                     </div>
 
                     <div class="d-flex justify-content-center mt-4">
@@ -81,7 +81,7 @@
                         </div>
                     </div>
                     <div class="text-center mt-2">
-                        <a href="{{ route('master.harga-sementara.index') }}" class="btn btn-danger">KEMBALI</a>
+                        <a href="{{ route('master.harga.index') }}" class="btn btn-danger">KEMBALI</a>
                     </div>
                 </div>
             </div>

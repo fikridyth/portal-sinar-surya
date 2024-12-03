@@ -12,20 +12,29 @@ class HargaController extends Controller
     public function index()
     {
         $title = "Master Harga";
+        $titleHeader = 'MASTER HARGA';
         $suppliers = Supplier::where('status', 1)->get();
+        $products = Product::whereNotNull('harga_sementara')
+            ->where('tanggal_awal', '<=', now()->format('Y-m-d'))
+            ->where('tanggal_akhir', '>=', now()->format('Y-m-d'))
+            ->get()
+            ->groupBy(function($product) {
+                return $product->supplier->nama; // Menggunakan nama supplier sebagai key
+            });
 
-        return view('master.harga.index', compact('title', 'suppliers'));
+        return view('master.harga.index', compact('title', 'titleHeader', 'suppliers', 'products'));
     }
 
     public function show($id)
     {
         $id = dekrip($id);
         $title = "Show Master Harga";
+        $titleHeader = 'MASTER HARGA';
         $suppliers = Supplier::where('status', 1)->get();
         $products = Product::where('id_supplier', $id)->where('status', 1)->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
         // dd($id, count($products));
 
-        return view('master.harga.show', compact('title', 'suppliers', 'products'));
+        return view('master.harga.show', compact('title', 'titleHeader', 'suppliers', 'products'));
     }
 
     public function update(Request $request, $id)
@@ -67,6 +76,7 @@ class HargaController extends Controller
     {
         $id = dekrip($id);
         $title = "Show Master Harga";
+        $titleHeader = 'DATA HARGA SEMENTARA';
         $suppliers = Supplier::where('status', 1)->get();
         $products = Product::where('id_supplier', $id)
             ->whereNotNull('harga_sementara')
@@ -75,6 +85,6 @@ class HargaController extends Controller
             ->get();
         // dd($id, count($products));
 
-        return view('master.harga.show-sementara', compact('title', 'suppliers', 'products'));
+        return view('master.harga.show-sementara', compact('title', 'titleHeader', 'suppliers', 'products'));
     }
 }
