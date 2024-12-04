@@ -643,16 +643,16 @@ class PreOrderController extends Controller
         // dd($request->all());
 
         $getNetto = str_replace(',', '', $request->netto);
-        $getTotal = str_replace(',', '', $request->total);
+        // $getTotal = str_replace(',', '', $request->total);
         $getoldPrice = str_replace(',', '', $request->oldPrice);
 
         $preorder = Preorder::find($request->id);
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
-        $getArray['order'] = $request->order;
+        $getArray['order'] = $request->order ?? $getArray['order'];
         $getArray['old_price'] = (int)$getoldPrice;
         $getArray['price'] = (int)$getNetto;
-        $getArray['field_total'] = (int)$getTotal;
+        $getArray['field_total'] = (int)$getNetto * ($request->order ?? $getArray['order']);
         $getArray['diskon1'] = $request->diskon1;
         $getArray['diskon2'] = $request->diskon2;
         $getArray['diskon3'] = $request->diskon3;
@@ -674,7 +674,7 @@ class PreOrderController extends Controller
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
-            'harga_pokok' => $request->price,
+            'harga_pokok' => (int)$getNetto,
             'diskon1' => $request->diskon1,
             'diskon2' => $request->diskon2,
             'diskon3' => $request->diskon3,
@@ -692,7 +692,7 @@ class PreOrderController extends Controller
     {
         // dd($request->all());
         $getNetto = str_replace(',', '', $request->netto);
-        $getTotal = str_replace(',', '', $request->total);
+        // $getTotal = str_replace(',', '', $request->total);
         $getoldPrice = str_replace(',', '', $request->oldPrice);
         
         $preorder = Preorder::find($request->id);
@@ -701,10 +701,10 @@ class PreOrderController extends Controller
         // update detail
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
-        $getArray['order'] = $request->order;
+        $getArray['order'] = $request->order ?? $getArray['order'];
         $getArray['old_price'] = (int)$getoldPrice;
         $getArray['price'] = (int)$getNetto;
-        $getArray['field_total'] = (int)$getTotal;
+        $getArray['field_total'] = (int)$getNetto * ($request->order ?? $getArray['order']);
         $getArray['diskon1'] = $request->diskon1;
         $getArray['diskon2'] = $request->diskon2;
         $getArray['diskon3'] = $request->diskon3;
@@ -732,7 +732,7 @@ class PreOrderController extends Controller
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
-            'harga_pokok' => $request->price,
+            'harga_pokok' => (int)$getNetto,
             'diskon1' => $request->diskon1,
             'diskon2' => $request->diskon2,
             'diskon3' => $request->diskon3,
@@ -989,10 +989,12 @@ class PreOrderController extends Controller
         $preorder->save();
 
         $hutang = Hutang::where('nomor_po', $preorder->nomor_po)->first();
-        $hutang->update([
-            'total' => $hutang->total + $total,
-            'grand_total' => $hutang->grand_total + $total
-        ]);
+        if ($hutang) {
+            $hutang->update([
+                'total' => $hutang->total + $total,
+                'grand_total' => $hutang->grand_total + $total
+            ]);
+        }
 
         if ($preorder->receive_type == 'A') {
             return redirect()->route('daftar-po.edit', enkrip($id));

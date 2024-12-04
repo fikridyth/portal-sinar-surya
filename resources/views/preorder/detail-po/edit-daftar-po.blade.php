@@ -197,13 +197,13 @@
                                                 <thead style="position: sticky; top: 0; z-index: 1; background-color: white;" >
                                                     <tr class="fs-need">
                                                         {{-- <th class="text-center">NO</th> --}}
+                                                        <th class="text-center" style="width: 100px;">&#9989;</th>
                                                         <th class="text-center">KODE</th>
                                                         <th class="text-center">NAMA BARANG</th>
                                                         <th class="text-center">ISI</th>
                                                         {{-- <th class="text-center">SAT</th> --}}
                                                         <th class="text-center">SATUAN</th>
                                                         <th class="text-center">ORDER</th>
-                                                        <th class="text-center" style="width: 100px;">&#9989;</th>
                                                         <th class="text-center">TERIMA</th>
                                                         <th class="text-center">HARGA</th>
                                                         <th class="text-center">NETTO</th>
@@ -229,13 +229,6 @@
                                                         @endphp
                                                             <tr class="fs-need">
                                                                 {{-- <td>{{ $no }}</td> --}}
-                                                                <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
-                                                                <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
-                                                                <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
-                                                                <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
-                                                                <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
-                                                                
                                                                 <td class="text-center" style="width: 100px;">
                                                                     <div class="select-container">
                                                                         <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
@@ -245,19 +238,27 @@
                                                                         data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
                                                                         >
                                                                     </div>
-                                                                    <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                                    <div style="display: none"><button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button></div>
                                                                     <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
                                                                 </td>
+                                                                <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
+                                                                <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
+                                                                <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
+                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
+                                                                <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
+                                                                <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                                 <td class="text-end">
                                                                     <div class="order-container">
                                                                         <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
-                                                                        <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3">
+                                                                        <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3"
+                                                                            onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $detail['order'] }}')" onfocus="this.value = '';">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end">
                                                                     <div class="price-container">
                                                                         <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
-                                                                        <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10">
+                                                                        <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10"
+                                                                            onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $dataProduct->harga_pokok }}')" onfocus="this.value = '';">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
@@ -299,7 +300,7 @@
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" class="btn btn-info">TAMBAH LIST</a>
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-info">TAMBAH LIST</a>
                                     </div>
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
@@ -385,6 +386,46 @@
     @include('preorder.detail-po.js.netto')
     @include('preorder.detail-po.js.new-row')
     <script>
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('tambah-button').click();
+            }
+        });
+
+        function handleEnterOrder(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('order-input-' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                // Fokuskan input lain (seperti price-input)
+                document.getElementById('price-input-' + no).focus();
+            }
+            if (event.key === 'Delete') {
+                document.getElementById('delete-save-' + no).click();
+            }
+        }
+
+        function handleEnterPrice(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('price-input-' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                // Fokuskan input lain (seperti price-input)
+                document.getElementById('edit-save-' + no).click();
+            }
+            if (event.key === 'Delete') {
+                document.getElementById('delete-save-' + no).click();
+            }
+        }
+
         function confirmAlertBonus(event, text, formId) {
             event.preventDefault();
             Swal.fire({
@@ -443,11 +484,11 @@
                 tambahButton.disabled = true;
                 // hapusButton.disabled = false;
                 
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === 'Enter') {
-                        button.click();
-                    }
-                });
+                // document.addEventListener('keydown', function(event) {
+                //     if (event.key === 'Enter') {
+                //         button.click();
+                //     }
+                // });
             } else {
                 // Remove the discount if the checkbox is unchecked
                 currentNetto += diskonValue;

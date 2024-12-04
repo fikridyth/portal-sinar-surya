@@ -48,16 +48,16 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-1">
                                     <div class="col">
                                         <div class="custom-select-supplier">
-                                            <input type="text" class="search-input-supplier_1" name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
+                                            <input type="text" size="9" autofocus class="search-input-supplier_1" name="supplier" value="{{ old('supplier') }}" autocomplete="off" required placeholder="Search..." onkeyup="filterFunction()">
                                             <div class="select-items-supplier" id="select-items-supplier_1">
                                                 <!-- Options will be added here dynamically -->
                                             </div>
                                         </div>
                         
-                                        <select id="supplier_1" style="width: 200px;" hidden>
+                                        <select id="supplier_1" style="width: 150px;" hidden>
                                             <option value="">---Select Supplier---</option>
                                             <!-- Example options; replace with server-side data as needed -->
                                             @foreach ($suppliers as $supplier)
@@ -66,7 +66,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-2">
+                                <div class="col-3">
                                     <div class="col">
                                         <input type="text" id="nama_supplier_1" name='dataSupplier1' value="" readonly class="form-control readonly-input" autocomplete="off" />
                                     </div>
@@ -265,6 +265,128 @@
             // Close dropdown when clicking outside
             document.addEventListener('click', function() {
                 closeAllSelect();
+            });
+
+            searchInputSupplier.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    const isVisible = selectItemsSupplier.style.display === 'block';
+                    if (isVisible) {
+                        const visibleItems = Array.from(selectItemsSupplier.getElementsByTagName('div'))
+                            .filter(item => item.style.display !== 'none');
+
+                        if (visibleItems.length > 0) {
+                            const firstItem = visibleItems[0];
+
+                            // Simulate click on the first visible item
+                            searchInputSupplier.value = firstItem.dataset.kode;
+                            namaSupplier.value = firstItem.dataset.nama;
+                            closeAllSelect();
+
+                            $.ajax({
+                                url: '/receive-get-preorder-data',
+                                method: 'GET',
+                                data: {
+                                    kode: searchInputSupplier.value
+                                },
+                                success: function(response) {
+                                    console.log(response)
+                                    if (Array.isArray(response)) {
+                                        // Clear previous data
+                                        $('#po_details').empty();
+                                        const groupedPreorders = {};
+                                        
+                                        // Loop through each preorder
+                                        response.forEach(function(preorder) {
+                                            // console.log(preorder);
+
+                                            // Parse the details JSON
+                                            try {
+                                                const details = JSON.parse(preorder.detail);
+
+                                                // Group items by nomor_po
+                                                if (!groupedPreorders[preorder.nomor_po]) {
+                                                    groupedPreorders[preorder.nomor_po] = {
+                                                        items: [],
+                                                        date_first: preorder.date_first // Store date_first for this nomor_po
+                                                    };
+                                                }
+
+                                                details.forEach(function(item) {
+                                                    groupedPreorders[preorder.nomor_po].items.push(item);
+                                                });
+                                            } catch (e) {
+                                                console.error('Failed to parse detail JSON:', e);
+                                            }
+                                        });
+
+                                        Object.keys(groupedPreorders).forEach(nomor_po => {
+                                            const group = groupedPreorders[nomor_po];
+                                            group.items.forEach(function(item, index) {
+                                                $('#po_details').append(
+                                                    `<tr>
+                                                        <td hidden>${item.kode}</td>
+                                                        <td hidden>${item.nama}</td>
+                                                        <td hidden>${item.unit_jual}</td>
+                                                        <td hidden>${item.stok}</td>
+                                                        <td hidden>${item.order}</td>
+                                                        <td hidden>${item.price}</td>
+                                                        <td hidden>${item.field_total}</td>
+                                                        <td hidden>${item.kode_sumber}</td>
+                                                        <td hidden>${item.diskon1}</td>
+                                                        <td hidden>${item.diskon2}</td>
+                                                        <td hidden>${item.diskon3}</td>
+                                                        <td hidden>${item.penjualan_rata}</td>
+                                                        <td hidden>${item.waktu_kunjungan}</td>
+                                                        <td hidden>${item.stok_minimum}</td>
+                                                        <td hidden>${item.stok_maksimum}</td>
+                                                        <td hidden>${item.is_ppn}</td>
+                                                        <td hidden>${nomor_po}</td>
+                                                        <td>${item.nama}</td>
+                                                        <td class="text-end">${item.order}</td>
+                                                        <td class="text-end">${number_format(item.price)}</td>
+                                                        <td class="text-end">${number_format(item.field_total)}</td>
+                                                        <td class="text-center">${nomor_po}</td>
+                                                        <td class="text-center">${group.date_first}</td>
+                                                        <td class="text-center">
+                                                            <input type="checkbox" class="checkbox-group" data-nomor-po="${nomor_po}" id="checkbox-${nomor_po}-${index}">
+                                                        </td>
+                                                    </tr>`
+                                                );
+                                            });
+                                        });
+
+                                        // Attach event listener for checkboxes
+                                        $('.checkbox-group').on('change', function() {
+                                            const nomorPo = $(this).data('nomor-po');
+                                            const isChecked = this.checked;
+
+                                            // Check or uncheck all checkboxes with the same nomor_po
+                                            $(`.checkbox-group[data-nomor-po="${nomorPo}"]`).prop('checked', isChecked);
+                                        });
+
+                                        // Hide or show specific rows as needed
+                                        $('#targetRow4').attr('hidden', 'hidden');
+                                        $('#button-baru').removeAttr('hidden');
+                                        // $('#button-tetap').removeAttr('hidden');
+                                        $('#button-dihapus').removeAttr('hidden');
+                                    } else {
+                                        console.warn('Expected an array but received:', response);
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('AJAX Error:', status, error);
+                                }
+                            });
+                        }
+                        selectItemsSupplier.appendChild(div);
+                    } else {
+                        filterFunction();
+                        selectItemsSupplier.style.display = 'block';
+                    }
+                }
             });
 
             closeAllSelect();
