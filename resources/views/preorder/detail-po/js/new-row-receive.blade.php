@@ -28,7 +28,7 @@
         kodeCell.textContent = kode;
         isiCell.textContent = numericIsi;
         isi2Cell.textContent = numericIsi2;
-        jualCell.value = jual;
+        jualCell.textContent = jual;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -41,12 +41,8 @@
 
         tambahButton.addEventListener('click', function() {
             const simpanButton = document.getElementById('simpan-button');
-            // const batalButton = document.getElementById('batal-button');
-            const prosesButton = document.getElementById('proses-button');
             simpanButton.disabled = false;
-            // batalButton.disabled = true;
             tambahButton.disabled = true;
-            prosesButton.classList.add('disabled-link');
 
             index++;
             
@@ -63,7 +59,7 @@
                 </td>
                 <td 
                     class="text-center data-kode" id="data-kode"><input type="number" size="1" autofocus class="order-input" min="1" step="1" style="width: 200px;"
-                    onkeydown="if(event.key === 'Enter') document.getElementById('tambah-list-button').click();">
+                    onkeydown="handleEnterKode(event)">
                 </td>
                 <td></td>
                 <td class="text-end" hidden id="data-isi"></td>
@@ -98,6 +94,49 @@
             disableAllCheckboxes();
         });
     });
+
+    // Enter di input kode
+    function handleEnterKode(event) {
+        if (event.key === 'Enter') {
+            // Mengambil nilai dari input
+            const inputValue = document.querySelector('.order-input').value.trim();
+
+            // Jika nilai kosong, klik tombol tambah list
+            if (inputValue === '') {
+                document.getElementById('tambah-list-button').click();
+            } else {
+                // Jika nilai terisi, lakukan AJAX untuk memproses input
+                ajaxProses(inputValue);
+            }
+        }
+    }
+
+    var preorderId = <?php echo json_encode($preorder->id); ?>; 
+    var supplierId = <?php echo json_encode($preorder->supplier->id); ?>; 
+    function ajaxProses(inputValue) {
+        $.ajax({
+            url: '/get-data-from-barcode', // Ganti dengan URL yang sesuai
+            type: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                kode: inputValue,
+                preorderId: preorderId,
+                supplierId: supplierId
+            },
+            success: function(response) {
+                if (response.error) {
+                    alert(response.error);
+                } else {
+                    window.location.reload();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Terjadi kesalahan:', error);
+            }
+        });
+    }
 
     // Store Data
     document.addEventListener('DOMContentLoaded', function() {

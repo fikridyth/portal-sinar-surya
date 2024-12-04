@@ -1532,4 +1532,48 @@ class PreOrderController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function getDataFromBarcode(Request $request)
+    {
+        // 8992761111212
+        // dd($request->all());
+        $product = Product::where('kode_alternatif', $request['kode'])->first();
+        if (isset($product)) {
+            $preorder = Preorder::find($request['preorderId']);
+            $supplier = Supplier::find($request['supplierId']);
+            $ppnValue = Ppn::pluck('ppn')->first();
+
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => number_format($product->stok + 1, 2),
+                'order' => 1,
+                'price' => $product->harga_pokok,
+                'field_total' => $product->harga_pokok,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => $product->diskon1,
+                'diskon2' => $product->diskon2,
+                'diskon3' => $product->diskon3,
+                'penjualan_rata' => $supplier->penjualan_rata,
+                'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                'stok_minimum' => $supplier->stok_minimum,
+                'stok_maksimum' => $supplier->stok_maksimum,
+                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+            ];
+            $detail = json_decode($preorder->detail, true);
+            $detail[] = $newEntry;
+
+            $preorder->detail = json_encode($detail);
+            $preorder->total_harga += $product->harga_pokok;
+            $preorder->grand_total += $product->harga_pokok;
+            $preorder->save();
+
+            return response()->json(['success' => 'SUCCESS']);
+        } else {
+            return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
+        }
+
+        return response()->json(['data' => $product]);
+    }
 }

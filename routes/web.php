@@ -97,6 +97,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-diskon/{id}', [PreOrderController::class, 'setDiskon'])->name('daftar-po.set-diskon');
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
+    Route::post('/get-data-from-barcode', [PreOrderController::class, 'getDataFromBarcode'])->name('daftar-po.get-data-from-barcode');
 
     // Hutang
     Route::get('/pembayaran-hutang', [PembayaranController::class, 'indexHutang'])->name('pembayaran-hutang.index');
