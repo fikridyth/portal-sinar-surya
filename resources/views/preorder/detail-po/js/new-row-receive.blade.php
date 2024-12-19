@@ -58,19 +58,19 @@
                     </div>
                 </td>
                 <td 
-                    class="text-center data-kode" id="data-kode"><input type="number" size="1" autofocus class="order-input" min="1" step="1" style="width: 200px;"
+                    class="text-center data-kode" id="data-kode"><input type="number" size="1" autofocus class="kode-input" min="1" step="1" style="width: 200px;"
                     onkeydown="handleEnterKode(event)">
                 </td>
                 <td></td>
                 <td class="text-end" hidden id="data-isi"></td>
                 <td class="text-end" id="data-isi2"></td>
                 <td class="text-end" id="data-jual"></td>
-                <td class="text-center"><input type="number" size="1" class="order-input" min="1" step="1" style="width: 50px;"></td>
-                <td class="text-center">-</td>
-                <td class="text-center"><input type="number" size="1" class="price-input" min="1" step="1" style="width: 150px;"></td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
             `;
             
             // tableBody.appendChild(newRow);
@@ -99,7 +99,7 @@
     function handleEnterKode(event) {
         if (event.key === 'Enter') {
             // Mengambil nilai dari input
-            const inputValue = document.querySelector('.order-input').value.trim();
+            const inputValue = document.querySelector('.kode-input').value.trim();
 
             // Jika nilai kosong, klik tombol tambah list
             if (inputValue === '') {

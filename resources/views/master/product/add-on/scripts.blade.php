@@ -313,7 +313,7 @@
 
         if (isNaN(jual) || jual <= 0 || isNaN(pokok) || pokok <= 0) return 0;
 
-        const profit = ((jual - pokok) / pokok) * 100;
+        const profit = (((jual - pokok) / pokok) * 100).toFixed(0);
         return parseFloat(profit.toFixed(2)); // Ensuring two decimal points
     }
 
@@ -321,7 +321,7 @@
     function calculateHargaJualFromProfit(profitPercentage, hargaPokok) {
         const pokok = hargaPokok;
         const profitDecimal = profitPercentage / 100;
-        const hargaJual = pokok * (1 + profitDecimal);
+        const hargaJual = (pokok * (1 + profitDecimal)).toFixed(0);
 
         return hargaJual;
     }
@@ -354,7 +354,6 @@
     }
 
     // Function to handle profit input change
-    let isFirstInput = true;
     function handleProfitInput() {
         let profitPercentage = parseFloat(profitField.value.replace(/[^0-9.]/g, '')) || 0; // Hanya angka dan titik yang diterima
         
@@ -370,15 +369,61 @@
     }
 
     // Event listener untuk menangani keydown pada input profit
+    let firstInputProfit = true;
+    profitField.addEventListener('focus', function() {
+        // Reset nilai saat input mendapatkan fokus (klik atau tab)
+        if (firstInputProfit) {
+            profitField.value = '';  // Reset ke kosong
+            firstInputProfit = false;     // Tandai bahwa reset sudah terjadi
+        }
+    });
+
+    // Event listener untuk menangani keydown pada input profit
     profitField.addEventListener('keydown', function(event) {
         // Mengecek apakah yang ditekan adalah angka atau tanda khusus seperti backspace
         if (event.key >= '0' && event.key <= '9') {
-            if (isFirstInput) {
+            if (firstInputProfit) {
                 // Reset nilai saat pertama kali angka dimasukkan
-                profitField.value = '';  // Reset ke kosong, sesuai kebutuhan Anda
-                isFirstInput = false;     // Tandai bahwa reset sudah terjadi
+                profitField.value = '';  // Reset ke kosong
+                firstInputProfit = false;     // Tandai bahwa reset sudah terjadi
             }
         }
+    });
+
+    // Jika ingin mengatur ulang reset jika sudah selesai menginput (misalnya jika input diubah lagi):
+    profitField.addEventListener('blur', function() {
+        firstInputProfit = true;  // Reset flag saat input kehilangan fokus
+    });
+
+    // Event listener untuk menangani keydown pada input profit
+    let firstInputPokok = true;
+    hargaPokokProfit.addEventListener('focus', function() {
+        // Reset nilai saat input mendapatkan fokus (klik atau tab)
+        if (firstInputPokok) {
+            hargaPokokProfit.value = '';  // Reset ke kosong
+            profitField.value = '';
+            hargaJualProfit.value = '';
+            firstInputPokok = false;     // Tandai bahwa reset sudah terjadi
+        }
+    });
+
+    // Event listener untuk menangani keydown pada input profit
+    hargaPokokProfit.addEventListener('keydown', function(event) {
+        // Mengecek apakah yang ditekan adalah angka atau tanda khusus seperti backspace
+        if (event.key >= '0' && event.key <= '9') {
+            if (firstInputPokok) {
+                // Reset nilai saat pertama kali angka dimasukkan
+                hargaPokokProfit.value = '';  // Reset ke kosong
+                profitField.value = '';
+                hargaJualProfit.value = '';
+                firstInputPokok = false;     // Tandai bahwa reset sudah terjadi
+            }
+        }
+    });
+
+    // Jika ingin mengatur ulang reset jika sudah selesai menginput (misalnya jika input diubah lagi):
+    hargaPokokProfit.addEventListener('blur', function() {
+        firstInputPokok = true;  // Reset flag saat input kehilangan fokus
     });
 
     // Event listener untuk mengupdate nilai setiap kali ada perubahan input

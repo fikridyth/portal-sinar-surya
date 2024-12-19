@@ -568,7 +568,8 @@
 @endsection
 
 @section('scripts')
-    @include('master.product.add-on.edit-scripts')
+    {{-- @include('master.product.add-on.edit-scripts') --}}
+    @include('master.product.add-on.scripts')
 
     <script>
         // Mengambil elemen input dengan ID 'kode'

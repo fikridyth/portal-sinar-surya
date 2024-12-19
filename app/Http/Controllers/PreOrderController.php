@@ -674,7 +674,7 @@ class PreOrderController extends Controller
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
-            'harga_pokok' => (int)$getNetto,
+            'harga_pokok' => $request->price,
             'diskon1' => $request->diskon1,
             'diskon2' => $request->diskon2,
             'diskon3' => $request->diskon3,
@@ -732,7 +732,7 @@ class PreOrderController extends Controller
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
-            'harga_pokok' => (int)$getNetto,
+            'harga_pokok' => $request->price,
             'diskon1' => $request->diskon1,
             'diskon2' => $request->diskon2,
             'diskon3' => $request->diskon3,

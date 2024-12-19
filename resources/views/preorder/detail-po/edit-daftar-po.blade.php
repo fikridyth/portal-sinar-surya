@@ -238,8 +238,8 @@
                                                                         data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
                                                                         >
                                                                     </div>
-                                                                    <div style="display: none"><button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button></div>
-                                                                    <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
+                                                                    <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                                    <div style="display: none"><button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button></div>
                                                                 </td>
                                                                 <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
                                                                 <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>

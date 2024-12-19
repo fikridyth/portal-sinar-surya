@@ -2,7 +2,7 @@
     function disableAllCheckboxes() {
         // Select all checkboxes with the class 'select-checkbox'
         const checkboxes = document.querySelectorAll('.select-checkbox');
-        
+
         // Iterate over each checkbox and disable it
         checkboxes.forEach(checkbox => {
             checkbox.disabled = true;
@@ -18,7 +18,7 @@
         const isi2 = selectedOption.getAttribute('data-isi2');
         const numericIsi2 = isi2.replace(/\D/g, '');
         const jual = selectedOption.getAttribute('data-jual');
-        
+
         // Find the closest row and update the data-kode cell
         const row = selectElement.closest('tr');
         const kodeCell = row.querySelector('#data-kode');
@@ -45,10 +45,10 @@
             tambahButton.disabled = true;
 
             index++;
-            
+
             const newRow = document.createElement('tr');
             newRow.classList.add('fs-need');
-            
+
             // <td>${index}</td>
             newRow.innerHTML = `
                 <td class="text-center">
@@ -57,22 +57,22 @@
                         <button type="button" id="edit-save-${index}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
                     </div>
                 </td>
-                <td 
-                    class="text-center data-kode" id="data-kode"><input type="number" size="1" autofocus class="order-input" min="1" step="1" style="width: 200px;"
+                <td
+                    class="text-center data-kode" id="data-kode"><input type="number" size="1" autofocus class="kode-input" min="1" step="1" style="width: 200px;"
                     onkeydown="handleEnterKode(event)">
                 </td>
                 <td></td>
                 <td class="text-end" hidden id="data-isi"></td>
                 <td class="text-end" id="data-isi2"></td>
                 <td class="text-end" id="data-jual"></td>
-                <td class="text-center"><input type="number" size="1" class="order-input" min="1" step="1" style="width: 50px;"></td>
-                <td class="text-center">-</td>
-                <td class="text-center"><input type="number" size="1" class="price-input" min="1" step="1" style="width: 150px;"></td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
-                <td class="text-center">-</td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
+                <td class="text-center"></td>
             `;
-            
+
             // tableBody.appendChild(newRow);
             tableBody.insertBefore(newRow, tableBody.firstChild);
 
@@ -99,7 +99,7 @@
     function handleEnterKode(event) {
         if (event.key === 'Enter') {
             // Mengambil nilai dari input
-            const inputValue = document.querySelector('.order-input').value.trim();
+            const inputValue = document.querySelector('.kode-input').value.trim();
 
             // Jika nilai kosong, klik tombol tambah list
             if (inputValue === '') {
@@ -111,8 +111,9 @@
         }
     }
 
-    var preorderId = <?php echo json_encode($preorder->id); ?>; 
-    var supplierId = <?php echo json_encode($preorder->supplier->id); ?>; 
+    var preorderId = <?php echo json_encode($preorder->id); ?>;
+    var supplierId = <?php echo json_encode($preorder->supplier->id); ?>;
+
     function ajaxProses(inputValue) {
         $.ajax({
             url: '/get-data-from-barcode', // Ganti dengan URL yang sesuai
@@ -163,24 +164,28 @@
                 }
             });
 
-            fetch('{{ route("daftar-po.store") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ id: preorderId, data: data })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    var redirectUrl = @json(route('daftar-po.edit', enkrip($preorder->id)));
-                    window.location.href = redirectUrl;
-                } else {
-                    alert(`Validation Errors:\n${result.errors.join('\n')}`);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            fetch('{{ route('daftar-po.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        id: preorderId,
+                        data: data
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        var redirectUrl = @json(route('daftar-po.edit', enkrip($preorder->id)));
+                        window.location.href = redirectUrl;
+                    } else {
+                        alert(`Validation Errors:\n${result.errors.join('\n')}`);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
     });
 </script>
