@@ -1406,7 +1406,8 @@ class PreOrderController extends Controller
     {
         $title = 'Return PO';
         $suppliers = Supplier::where('status', 1)->get();
-        $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->whereNull('is_cancel')->get();
+        // $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->whereNull('is_cancel')->get();
+        $preorders = Preorder::where('receive_type', 'B')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
@@ -1431,13 +1432,12 @@ class PreOrderController extends Controller
         }
         $getNomorReturn = 'RR-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
-        $preorder = Preorder::where('nomor_receive', $request->receive)->first();
-        $supplier = Supplier::find($request->supplier);
+        $preorder = Preorder::where('nomor_receive', $request->nomor_receive)->first();
+        $supplier = Supplier::find($request->id_supplier);
         $detail = [];
         $total = 0;
 
-        foreach ($request->input('data') as $item) {
-            // dd($item['order']);
+        foreach ($request->input('items') as $item) {
             $product = Product::where('kode', $item['kode'])->first();
             $product->update([
                 'stok' => (int)$product->stok - $item['order']
@@ -1484,7 +1484,7 @@ class PreOrderController extends Controller
 
         date_default_timezone_set('Asia/Bangkok');
         Pengembalian::create([
-            'id_supplier' => $request->supplier,
+            'id_supplier' => $request->id_supplier,
             'nomor_return' => $getNomorReturn,
             'date' => now()->format('Y-m-d'),
             'jam' => now()->format('H:i:s'),
@@ -1498,7 +1498,7 @@ class PreOrderController extends Controller
             'nomor_return' => $getNomorReturn
         ]);
 
-        return response()->json(['success' => true]);
+        return Redirect::back()->with('alert.status', '00')->with('alert.message', "Sukses Menambah Data Return!");
     }
 
     public function daftarReturnPo()
@@ -1575,5 +1575,17 @@ class PreOrderController extends Controller
         }
 
         return response()->json(['data' => $product]);
+    }
+
+    public function getDataReturnBarcode(Request $request)
+    {
+        // 8992761111212
+        // dd($request->all());
+        $product = Product::where('kode_alternatif', $request['kode'])->first();
+        if (isset($product)) {
+            return response()->json(['data' => $product]);
+        } else {
+            return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
+        }
     }
 }

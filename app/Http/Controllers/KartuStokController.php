@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\KartuStokDataTable;
 use App\Models\Product;
 use App\Models\ProductStock;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class KartuStokController extends Controller
@@ -53,7 +54,12 @@ class KartuStokController extends Controller
 
         $productFlow = []; // Inisialisasi array untuk menyimpan hasil
 
-        $periodeData = explode(' - ', request(['periode'])['periode']);
+        $now = Carbon::now();
+        $startOfMonth = $now->firstOfMonth()->format('Y-m-d');
+        $endOfMonth = $now->lastOfMonth()->format('Y-m-d');
+
+        $periodeData = explode(' - ', request(['periode'])['periode'] ?? "$startOfMonth - $endOfMonth");
+        // $periodeData = explode(' - ', request(['periode'])['periode']);
         $periodeAwal = $periodeData[0] ?? '1970-01-01';
         $periodeAkhir = $periodeData[1] ?? now()->format('Y-m-d');
         foreach ($allProducts as $prd) {

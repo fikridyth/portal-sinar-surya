@@ -81,14 +81,14 @@
                                         <input type="checkbox" name="value[]" @if (in_array("6", $listRole)) checked @endif value="6" class="checkbox-master">
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-10" style="width: 95%;">
                                         <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">HARGA</a>
                                     </div>
                                     <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
                                         <input type="checkbox" name="value[]" @if (in_array("7", $listRole)) checked @endif value="7" class="checkbox-master">
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-10" style="width: 95%;">
                                         <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">KARTU STOK</a>
@@ -185,14 +185,14 @@
                                         <input type="checkbox" name="value[]" @if (in_array("18", $listRole)) checked @endif value="18" class="checkbox-receive">
                                     </div>
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-10" style="width: 95%;">
                                         <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">DAFTAR RETUR BARANG</a>
                                     </div>
                                     <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
                                         <input type="checkbox" name="value[]" @if (in_array("19", $listRole)) checked @endif value="19" class="checkbox-receive">
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-10" style="width: 95%;">
                                         <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">PERSETUJUAN HARGA JUAL</a>

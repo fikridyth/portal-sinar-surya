@@ -17,6 +17,7 @@ use App\Models\Pengembalian;
 use App\Models\Preorder;
 use App\Models\Promosi;
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Redirect;
@@ -106,8 +107,6 @@ class PembayaranController extends Controller
         // dd($request->all());
         $id = dekrip($id);
         $title = 'Proses Pembayaran Hutang';
-
-        
         $supplier = Supplier::find($id);
         $promosi = Promosi::select('nomor_promosi as nomor', 'date_last as date', 'total')
                                 ->where('id_supplier', $supplier->id)
@@ -120,6 +119,11 @@ class PembayaranController extends Controller
                 $item['total'] = '-' . $item['total'];
             }
         }
+
+        $paramIndices = $request->input('selectedIndices', '[]');
+        $paramNomor = $request->input('nomor', '[]');
+        $paramDate = $request->input('date', '[]');
+        $paramTotal = $request->input('total', '[]');
 
         $selectedIndicesString = implode($request->input('selectedIndices', '[]'));
         $selectedIndices = json_decode($selectedIndicesString, true);
@@ -142,6 +146,23 @@ class PembayaranController extends Controller
             $filteredData['nomor'][] = $allData['nomor'][$index];
             $filteredData['date'][] = $allData['date'][$index];
             $filteredData['total'][] = $allData['total'][$index];
+        }
+        
+        // cek bila hanya return bawa ke halaman password
+        // dd($request->donePass == null);
+        if ($request->donePass == null) {
+            foreach ($filteredData['nomor'] as $nomor) {
+                $parts = explode('-', $nomor);
+                if ($parts[0] === 'RP') {
+                    break;
+                } else {
+                    $getUser = User::where('name', 'LO HARYANTO')->first();
+                    $passUser = $getUser->show_password;
+                    $titleHeader = 'Proses Pembayaran Hutang';
+                    
+                    return view('pembayaran/hutang/password', compact('title', 'titleHeader', 'supplier', 'passUser', 'paramIndices', 'paramNomor', 'paramDate', 'paramTotal'));
+                }
+            }
         }
 
         $getHutang = [];

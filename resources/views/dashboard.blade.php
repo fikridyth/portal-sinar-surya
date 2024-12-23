@@ -25,7 +25,7 @@
                                 @if (in_array("4", $role))<a href="{{ route('master.supplier.show', enkrip($supplier->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">SUPPLIER</a>@endif
                                 @if (in_array("5", $role))<a href="{{ route('master.kunjungan.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KUNJUNGAN</a>@endif
                                 @if (in_array("6", $role))<a href="{{ route('master.product.show', enkrip($product->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERSEDIAAN</a>@endif
-                                @if (in_array("7", $role))<a href="{{ route('master.harga.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HARGA</a>@endif
+                                {{-- @if (in_array("7", $role))<a href="{{ route('master.harga.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HARGA</a>@endif --}}
                                 @if (in_array("8", $role))<a href="{{ route('master.kartu-stok.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KARTU STOK</a>@endif
                                 @if (in_array("9", $role))<a href="{{ route('master.bank.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">BANK</a>@endif
                                 @if (in_array("10", $role))<a href="{{ route('master.giro.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENDAFTARAN GIRO</a>@endif
@@ -51,7 +51,7 @@
                                 @endif
                                 @if (in_array("17", $role))<a href="{{ route('daftar-receive-done-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENERIMAAN</a>@endif
                                 @if (in_array("18", $role))<a href="{{ route('return-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">RETUR BARANG</a>@endif
-                                @if (in_array("19", $role))<a href="{{ route('daftar-return-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">DAFTAR RETUR BARANG</a>@endif
+                                {{-- @if (in_array("19", $role))<a href="{{ route('daftar-return-po') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">DAFTAR RETUR BARANG</a>@endif --}}
                                 @if (in_array("20", $role))<a href="{{ route('persetujuan-harga-jual') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERSETUJUAN HARGA JUAL</a>@endif
                             </div>
                         </div>

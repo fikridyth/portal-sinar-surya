@@ -54,7 +54,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                        
+
                                     <div class="row align-items-center mt-1">
                                         <label class="col-3 col-form-label">NAMA SUPPLIER</label>
                                         <div class="col-7">
@@ -102,11 +102,9 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    <button type="button" id="tambah-button" class="btn btn-success">TAMBAH</button>
+                                    <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
+                                    <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-info">TAMBAH LIST</a>
                                 </div>
-                                {{-- <div class="col-auto">
-                                    <button type="button" id="simpan-button" disabled class="btn btn-primary">SIMPAN</button>
-                                </div> --}}
                             </div>
                             <div class="row align-items-center">
                                 <div class="col-auto">
@@ -119,7 +117,8 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <a href="{{ route('index') }}" class="btn btn-danger mx-5">BATAL</a>
+                            <a href="{{ route('daftar-return-po') }}" class="btn btn-warning">DAFTAR RETUR BARANG</a>
+                            <a href="{{ route('index') }}" class="btn btn-danger mx-4">BATAL</a>
                             <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
@@ -136,144 +135,174 @@
                 placeholder: '---Select Supplier---',
                 allowClear: true
             });
-            
+
+            $(`.supplier-select`).on('select2:open', function(e) {
+                // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
+                const searchBox = $(this).data('select2').dropdown.$search[0];
+                if (searchBox) {
+                    searchBox.focus();
+                }
+            });
+
             $(`.preorder-select`).select2({
                 placeholder: '---Select Receive---',
                 allowClear: true
             });
+
+            $(`.preorder-select`).on('select2:open', function(e) {
+                // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
+                const searchBox = $(this).data('select2').dropdown.$search[0];
+                if (searchBox) {
+                    searchBox.focus();
+                }
+            });
         });
 
-        function handleSelectChange(event) {
-            const selectElement = event.target;
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
-            const kode = selectedOption.getAttribute('data-kode');
-            const jual = selectedOption.getAttribute('data-jual');
-            
-            // Find the closest row and update the data-kode cell
-            const row = selectElement.closest('tr');
-            const kodeCell = row.querySelector('#data-kode');
-            const jualCell = row.querySelector('#data-jual');
-            kodeCell.textContent = kode;
-            jualCell.value = jual;
-        }
+        const tambahButton = document.getElementById('tambah-button');
+        tambahButton.addEventListener('click', function() {
+            tambahButton.disabled = true;
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('tambah-button').click();
+                document.getElementById('tambah-button').disabled = true;
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            
+            // Tambahkan event listener untuk menangani keydown
+            form.addEventListener('keydown', function (event) {
+                // Jika tombol yang ditekan adalah Enter (kode 13)
+                if (event.key === 'Enter') {
+                    // Mencegah aksi default (submit form)
+                    event.preventDefault();
+                }
+            });
+
             const tambahButton = document.getElementById('tambah-button');
             const tableBody = document.querySelector('#details-table tbody');
-            // const element = document.getElementById('current-index');
-            // const currentIndex = element && element.value ? parseInt(element.value, 10) || 0 : 0;
 
             let index = 0; // Start index from the current index
 
             tambahButton.addEventListener('click', function() {
-                const simpanButton = document.getElementById('simpan-button');
-                simpanButton.disabled = false;
-
                 index++;
-                
+
                 const newRow = document.createElement('tr');
                 newRow.classList.add('fs-need');
-                
+
                 newRow.innerHTML = `
-                    <td>${index}</td>
-                    <td class="text-center data-kode" hidden id="data-kode"></td>
-                    <td colspan="3" class="text-center">
-                        <select id="products-${index}" class="product-select" onchange="handleSelectChange(event)">
-                            <option value="">---Select Product---</option>
-                            @foreach ($products as $product)
-                                <option value="{{ $product->id }}" data-kode="{{ $product->kode }}" data-jual="{{ $product->harga_pokok }}">{{ $product->kode }} - {{ $product->nama }}/{{ $product->unit_jual }} - {{ number_format($product->harga_pokok) }} / {{ number_format($product->harga_jual) }}</option>
-                            @endforeach
-                        </select>
+                    <td class="text-center">${index}</td>
+                    <td class="text-center data-kode" id="data-kode">
+                        <input type="number" size="1" autofocus class="kode-input" min="1" step="1" style="width: 300px;"
+                        onkeydown="handleEnterKode(event)">
                     </td>
-                    <td class="text-center"><input type="number" size="1" class="order-input" min="1" step="1"></td>
-                    <td class="text-center"><input type="number" id="data-jual" size="1" class="price-input" min="1" step="1"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
+                    <td class="text-center"></td>
                 `;
-                
+
                 tableBody.appendChild(newRow);
-
-                // Initialize Select2 on the newly added select element
-                $(`#products-${index}`).select2({
-                    placeholder: '---Select Product--- Harga Beli / Jual',
-                    allowClear: true
-                });
             });
         });
 
-        // Store Data
-        document.addEventListener('DOMContentLoaded', function() {
-            const simpanButton = document.getElementById('simpan-button');
+        function handleEnterKode(event) {
+            if (event.key === 'Enter') {
+                // Mengambil nilai dari input
+                const inputValue = document.querySelector('.kode-input').value.trim();
 
-            simpanButton.addEventListener('click', function() {
-                event.preventDefault();
-
-                // Get the selected values from the dropdowns
-                const preorderSelect = document.getElementById('preorder-select');
-                const supplierSelect = document.getElementById('supplier-select');
-
-                const selectedPreorder = preorderSelect.value; // This gets the selected preorder value
-                const selectedSupplier = supplierSelect.value; // This gets the selected supplier value
-
-                if (!selectedPreorder) {
-                    alert('SILAHKAN PILIH BUKTI PENERIMAAN.');
-                    return; // Exit the function if validation fails
+                // Jika nilai kosong, klik tombol tambah list
+                if (inputValue === '') {
+                    alert('DATA TIDAK BOLEH KOSONG!');
+                } else {
+                    // Jika nilai terisi, lakukan AJAX untuk memproses input
+                    ajaxProses(inputValue);
                 }
+            }
+        }
 
-                if (!selectedSupplier) {
-                    alert('SILAHKAN PILIH SUPPLIER.');
-                    return; // Exit the function if validation fails
-                }
-
-                const rows = document.querySelectorAll('#details-table tbody tr');
-                const data = [];
-
-                rows.forEach(row => {
-                    // Use class selectors for cells if ids are not unique
-                    const kodeElement = row.querySelector('.data-kode');
-                    const orderElement = row.querySelector('.order-input');
-                    const priceElement = row.querySelector('.price-input');
-
-                    const kode = kodeElement ? kodeElement.textContent.trim() : '';
-                    const order = orderElement ? orderElement.value.trim() : '';
-                    const price = priceElement ? priceElement.value.trim() : '';
-
-                    if (kode && order) {
-                        data.push({
-                            kode: kode,
-                            order: order,
-                            price: price,
-                        });
-                    }
-                });
-
-                if (data.length === 0) {
-                    alert('SILAHKAN ISI DATA PRODUCT.');
-                    return; // Exit the function if validation fails
-                }
-
-                fetch('{{ route("return-po.store") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({
-                        data: data,
-                        receive: selectedPreorder,
-                        supplier: selectedSupplier
-                    })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        var redirectUrl = @json(route('daftar-return-po'));
-                        window.location.href = redirectUrl;
+        let items = []; 
+        function ajaxProses(inputValue) {
+            $.ajax({
+                url: '/get-data-return-barcode', // Ganti dengan URL yang sesuai
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    kode: inputValue
+                },
+                success: function(response) {
+                    if (response.error) {
+                        document.querySelector('.kode-input').value = '';
+                        alert(response.error);
                     } else {
-                        alert('Proses Gagal');
-                        // alert(`Validation Errors:\n${result.errors.join('\n')}`);
+                        const kodeInput = document.querySelector('.kode-input');
+                        const rowToReplace = kodeInput.closest('tr'); // Find the row containing the input field
+
+                        rowToReplace.innerHTML = `
+                            <td class="text-center">${rowToReplace.querySelector('td:first-child').textContent}</td>
+                            <td class="text-center">${response.data.kode_alternatif}</td>
+                            <td class="text-center">${response.data.nama}</td>
+                            <td class="text-center">${response.data.unit_jual}</td>
+                            <td class="text-center">1</td>
+                            <td class="text-center">${response.data.harga_pokok}</td>
+                        `;
+
+                        items.push({
+                            kode: response.data.kode,
+                            order: 1,
+                            price: response.data.harga_pokok
+                        });
+
+                        document.getElementById('tambah-button').disabled = false;
+                        document.getElementById('simpan-button').disabled = false;
                     }
-                })
-                .catch(error => console.error('Error:', error));
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan:', error);
+                }
             });
+        }
+
+        document.querySelector('form').addEventListener('submit', function(event) {
+            if (items.length === 0) {
+                event.preventDefault();
+                alert('Please add items before submitting!');
+                return;
+            }
+
+            const form = this; // Store the form reference
+
+            // Dynamically add hidden input fields for each item
+            items.forEach(function(item, index) {
+                const inputKode = document.createElement('input');
+                inputKode.type = 'hidden';
+                inputKode.name = `items[${index}][kode]`; 
+                inputKode.value = item.kode;
+                form.appendChild(inputKode);
+            });
+            items.forEach(function(item, index) {
+                const inputOrder = document.createElement('input');
+                inputOrder.type = 'hidden';
+                inputOrder.name = `items[${index}][order]`; 
+                inputOrder.value = item.order;
+                form.appendChild(inputOrder);
+            });
+            items.forEach(function(item, index) {
+                const inputPrice = document.createElement('input');
+                inputPrice.type = 'hidden';
+                inputPrice.name = `items[${index}][price]`; 
+                inputPrice.value = item.price;
+                form.appendChild(inputPrice);
+            });
+
+            // After appending hidden inputs, submit the form manually
+            form.submit();
         });
+
     </script>
 @endsection

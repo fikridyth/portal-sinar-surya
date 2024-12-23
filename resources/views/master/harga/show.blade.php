@@ -80,7 +80,7 @@
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
                                                 <td><input type="number" name="harga_lama" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
                                                 <td><input type="number" name="harga_pokok" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
-                                                @if (isset($product->harga_lama))
+                                                @if (isset($product->harga_lama) && $product->harga_lama !== 0)
                                                     <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
                                                     <td>0.00</td>
