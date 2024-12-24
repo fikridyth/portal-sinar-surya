@@ -534,7 +534,7 @@
                     <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
                 </div>
                 <div class="col-0-5">
-                    <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
+                    <a href="{{ route('master.store-to-pos') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
                 </div>
             </div>
         </form>

@@ -229,6 +229,7 @@ Route::middleware('auth')->group(function () {
 
         // Harga
         Route::get('/harga', [HargaController::class, 'index'])->name('harga.index');
+        Route::post('/harga/store', [HargaController::class, 'store'])->name('harga.store');
         Route::get('/harga/{id}', [HargaController::class, 'show'])->name('harga.show');
         Route::put('/harga/{id}/update', [HargaController::class, 'update'])->name('harga.update');
         Route::get('/harga-sementara', [HargaController::class, 'indexHargaSementara'])->name('harga-sementara.index');

@@ -76,7 +76,7 @@
                             <table class="table table-bordered" style="width: 1000px; table-layout: auto;">
                                 <thead>
                                     <tr style="border: 1px solid black; font-size: 12px;">
-                                        <th class="text-center">NAMA BARANG</th>
+                                        <th class="text-center">NO</th>
                                         <th class="text-center">NAMA SUPPLIER</th>
                                         <th class="text-center">DARI TANGGAL</th>
                                         <th class="text-center">SAMPAI TANGGAL</th>
@@ -85,17 +85,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $supplierName => $items)
+                                    @foreach ($products as $product)
                                         <tr>
-                                            {{-- <td class="text-center">{{ $loop->iteration }}</td> --}}
-                                            <td></td>
-                                            <td>{{ $supplierName }}</td>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($items[0]->tanggal_awal)->format('d/m/Y') }}</td>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($items[0]->tanggal_akhir)->format('d/m/Y') }}</td>
-                                            <td class="text-center">100</td>
-                                            @foreach ($items->unique('id_supplier') as $item)
-                                                <td class="text-center"><a href="{{ route('master.harga-sementara.show', enkrip($item->id_supplier)) }}" class="btn btn-sm btn-primary">PILIH</a></td>
-                                            @endforeach
+                                            <td class="text-center">{{ $loop->iteration }}</td>
+                                            <td>{{ $product->supplier->nama }}</td>
+                                            <td class="text-center">{{ $product->date_first }}</td>
+                                            <td class="text-center">{{ $product->date_last }}</td>
+                                            <td class="text-center">{{ $product->naik }}</td>
+                                            <td class="text-center"><a href="{{ route('master.harga-sementara.show', enkrip($product->id)) }}" class="btn btn-sm btn-primary">PILIH</a></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
