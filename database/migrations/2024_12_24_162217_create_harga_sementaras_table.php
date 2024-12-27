@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('harga_sementaras', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_supplier')->references('id')->on('suppliers');
-            $table->string('nomor');
+            $table->foreignId('id_product')->references('id')->on('products');
+            $table->string('nomor')->nullable();
             $table->string('nama');
             $table->bigInteger('harga_lama');
             $table->bigInteger('harga_pokok');
-            $table->bigInteger('profit_pokok');
+            $table->decimal('profit_pokok', 10, 2)->default(0);
             $table->bigInteger('harga_jual');
-            $table->bigInteger('profit_jual');
+            $table->decimal('profit_jual', 10, 2)->default(0);
             $table->bigInteger('harga_sementara');
+            $table->decimal('naik', 10, 2)->default(0);
             $table->date('date_first')->nullable();
             $table->date('date_last')->nullable();
             $table->timestamps();

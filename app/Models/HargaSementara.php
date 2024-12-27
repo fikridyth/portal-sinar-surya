@@ -15,4 +15,8 @@ class HargaSementara extends Model
     public function supplier() {
         return $this->belongsTo(Supplier::class, 'id_supplier');
     }
+
+    public function product() {
+        return $this->belongsTo(Product::class, 'id_product');
+    }
 }

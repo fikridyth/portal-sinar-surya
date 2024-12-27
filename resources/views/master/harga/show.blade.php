@@ -101,8 +101,8 @@
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                                <td><input type="number" name="harga_lama" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
-                                                <td><input type="number" name="harga_pokok" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
+                                                <td><input type="number" id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
+                                                <td><input type="number" id="harga_pokok_{{ $index }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
                                                     <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
@@ -193,10 +193,14 @@
                     const hiddenInput = document.querySelector(`input[name="harga_jual[${checkbox.value}]"]`);
                     const hiddenInput2 = document.querySelector(`input[name="profit[${checkbox.value}]"]`);
                     const hiddenInput3 = document.querySelector(`input[name="harga_sementara[${checkbox.value}]"]`);
+                    const hiddenInput4 = document.querySelector(`input[name="harga_pokok[${checkbox.value}]"]`);
+                    const hiddenInput5 = document.querySelector(`input[name="harga_lama[${checkbox.value}]"]`);
                     if (hiddenInput) {
                         hiddenInput.remove();
                         hiddenInput2.remove();
                         hiddenInput3.remove();
+                        hiddenInput4.remove();
+                        hiddenInput5.remove();
                     }
                 }
             });

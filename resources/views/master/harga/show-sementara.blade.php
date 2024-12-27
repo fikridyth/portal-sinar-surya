@@ -1,14 +1,36 @@
 @extends('main')
 
+@section('styles')
+    <style>
+        .sticky-column {
+        position: sticky;
+        left: 0;
+        background-color: white; /* Sesuaikan warna latar belakang */
+        z-index: 1; /* Agar tetap di atas saat scroll */
+        border-right: 2px solid #ccc; /* Border kanan untuk sticky column */
+    }
+
+    th, td {
+        border: 1px solid #ccc; /* Border untuk semua cell */
+        padding: 10px; /* Menambah padding untuk keterbacaan */
+    }
+
+    thead th {
+        background-color: #f9f9f9; /* Latar belakang header tabel */
+        box-shadow: 0 2px 2px -2px gray; /* Bayangan untuk header */
+    }
+    </style>
+@endsection
+
 @section('content')
     <div class="d-flex justify-content-center">
-        <div class="mb-7" style="width: 95%">
+        <div class="mb-7" style="width: 80%">
             {{-- <div class="d-flex align-items-center justify-content-center">
                 <div class="mt-4">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                DATA HARGA SEMENTARA
+                                MASTER HARGA
                             </li>
                         </ol>
                     </nav>
@@ -17,74 +39,135 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-center">
-                        <label class="mx-4">KODE SUPPLIER</label>
-                        <input type="text" class="readonly-input mx-3" readonly value="{{ $products[0]->supplier->nomor }}" style="width: 75px;">
-                        <input type="text" class="readonly-input mx-3" readonly value="{{ $products[0]->supplier->nama }}"  style="width: 350px;">
-                    </div>
+                    <form action="{{ route('master.harga.update', $hargaSementara->id) }}" method="POST" id="filter-form">
+                        @csrf
+                        @method('PUT')
+                        <div class="d-flex justify-between">
+                            <div>
+                                <label class="mx-4">KODE SUPPLIER</label>
+                                <input type="text" value="{{ $hargaSementara->supplier->nomor }} - {{ $hargaSementara->supplier->nama }}" size="42" disabled>
+                            </div>
+                            <div style="margin-left: 20%;">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label class="mx-3" style="font-size: 13px;">DARI TANGGAL</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <input style="margin-left: 3%;" type="date" name="from_date" value="{{ now()->format("Y-m-d") }}">
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="date" value="{{ \Carbon\Carbon::parse($hargaSementara->date_first)->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
+                                    </div>
+                                </div>
+                                <div class="row mt-1">
+                                    <div class="col-4">
+                                        <label class="mx-3" style="font-size: 13px;">SAMPAI TANGGAL</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <input style="margin-left: 3%;" type="date" name="to_date" value="{{ now()->format("Y-m-d") }}">
+                                    </div>
+                                    <div class="col-4">
+                                        <input type="date" value="{{ \Carbon\Carbon::parse($hargaSementara->date_last)->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="d-flex justify-content-center mt-4">
-                        <div style="overflow-x: auto; height: 600px; border: 1px solid #ccc;">
-                            <table class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                <thead>
-                                    <tr style="border: 1px solid black; font-size: 12px;">
-                                        <th class="text-center">NO</th>
-                                        <th class="text-center">NAMA BARANG</th>
-                                        {{-- <th class="text-center">HARGA BELI LAMA</th>
-                                        <th class="text-center">HARGA BELI BARU</th>
-                                        <th class="text-center">%</th>
-                                        <th class="text-center">MARK UP</th> --}}
-                                        <th class="text-center">HARGA JUAL</th>
-                                        <th class="text-center">HARGA SEMENTARA</th>
-                                        <th class="text-center">TANGGAL AWAL</th>
-                                        <th class="text-center">TANGGAL AKHIR</th>
-                                        {{-- <th class="text-center">V</th> --}}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{-- @foreach ($products as $index => $product)
-                                        <form action="{{ route('master.harga.update', $product->id) }}" method="POST" class="form" enctype="multipart/form-data">
-                                            @csrf
-                                            @method('PUT')
+                        <div class="d-flex justify-content-center mt-4">
+                            <div style="overflow-x: auto; height: 580px; border: 1px solid #ccc;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <thead>
+                                        <tr style="border: 1px solid black; font-size: 12px;">
+                                            <th class="text-center">NO</th>
+                                            <th class="text-center">NAMA BARANG</th>
+                                            <th class="text-center">HARGA BELI LAMA</th>
+                                            <th class="text-center">HARGA BELI BARU</th>
+                                            <th class="text-center">%</th>
+                                            <th class="text-center">HARGA JUAL</th>
+                                            <th class="text-center">MARK UP</th>
+                                            <th class="text-center">HARGA JUAL BARU</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($listProduct as $index => $product)
+                                        {{-- @dd($product) --}}
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
+                                                <input type="hidden" name="loop[{{ $product->id }}]" value="{{ $product->id }}">
+                                                <input type="hidden" name="data_id[{{ $product->id }}]" value="{{ $product->id_product }}">
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                                <td><input type="number" name="harga_lama" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
-                                                <td><input type="number" name="harga_pokok" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
-                                                <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
-                                                <td><input type="number" name="harga_jual" required value="{{ $product->harga_jual }}" style="width: 100px;"></td>
-                                                <td><input type="text" class="readonly-input" name="profit" readonly value="{{ $product->profit }}" style="width: 55px;"></td>
-                                                <td><input type="number" name="harga_sementara" required value="{{ $product->harga_sementara ?? 0 }}" style="width: 100px;"></td>
-                                                <td><input type="date" name="tanggal_awal" required value="{{ $product->tanggal_awal }}" style="width: 100px;"></td>
-                                                <td><input type="date" name="tanggal_akhir" required value="{{ $product->tanggal_akhir }}" style="width: 100px;"></td>
-                                                <td><button type="submit" class="btn btn-primary">UBAH</button></td>
+                                                <td>{{ $product->nama }}</td>
+                                                <td><input type="number" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
+                                                <td><input type="number" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
+                                                @if (isset($product->harga_lama) && $product->harga_lama !== 0)
+                                                    <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                @else
+                                                    <td>0.00</td>
+                                                @endif
+                                                <td><input type="number" id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})"></td>
+                                                <td><input type="text" id="profit_{{ $index }}" name="profit[{{ $product->id }}]" value="{{ $product->profit_jual }}" style="width: 70px;" oninput="updateHargaSementara({{ $index }})"></td>
+                                                <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ $product->harga_sementara }}" style="width: 100px;"></td>
+                                                <input type="text" id="read_sementara_{{ $index }}" hidden value="{{ $product->harga_sementara }}">
                                             </tr>
-                                        </form>
-                                    @endforeach --}}
-                                    @foreach ($products as $index => $product)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                            {{-- <td class="text-end">{{ number_format($product->harga_lama, 0) }}</td>
-                                            <td class="text-end">{{ number_format($product->harga_pokok, 0) }}</td>
-                                            <td class="text-end">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
-                                            <td class="text-end">{{ $product->profit }}</td> --}}
-                                            <td class="text-end">{{ number_format($product->harga_jual, 0) }}</td>
-                                            <td class="text-end">{{ number_format($product->harga_sementara, 0) ?? 0 }}</td>
-                                            <td class="text-center">{{ $product->tanggal_awal }}</td>
-                                            <td class="text-center">{{ $product->tanggal_akhir }}</td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="text-center mt-2">
-                        <a href="{{ route('master.harga.index') }}" class="btn btn-danger">KEMBALI</a>
-                    </div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <div></div>
+                            <div style="margin-left: 10%;">
+                                <button type="submit" id="button-selesai" class="btn btn-primary mx-4">PROSES</button>
+                                <a href="{{ route('master.harga.index') }}" class="btn btn-danger">KEMBALI</a>
+                            </div>
+                            <div>
+                                <label class="mx-3" style="font-size: 13px;">KENAIKAN</label>
+                                <input type="text" id="kenaikan" name="kenaikan" value="{{ $hargaSementara->naik }}" size="5" oninput="updateHargaKenaikan()">
+                                <label>%</label>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+
+@section('scripts')
+    <script>
+        function updateHargaSementara(index) {
+            var hargaJual = parseFloat(document.getElementById('harga_jual_' + index).value) || 0;
+            var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
+
+            // Menghitung harga_sementara
+            var hargaSementara = (hargaJual * profit) / 100 + hargaJual;
+
+            // Memperbarui nilai harga_sementara berdasarkan indeks
+            document.getElementById('harga_sementara_' + index).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
+        }
+        
+        function updateHargaKenaikan() {
+            // Ambil nilai kenaikan dari input
+            var kenaikan = document.getElementById('kenaikan').value || 0;
+
+            // Loop untuk setiap produk dan update harga sementaranya
+            @foreach ($listProduct as $index => $product)
+                var readSementara = document.getElementById('read_sementara_{{ $index }}').value || 0;
+
+                // Menghitung harga sementara setelah kenaikan
+                var hargaSetelahKenaikan = (kenaikan / 100) * readSementara;
+
+                // Update nilai harga sementara pada input
+                document.getElementById('harga_sementara_{{ $index }}').value = hargaSetelahKenaikan.toFixed(0);
+            @endforeach
+        }
+
+        // Memanggil fungsi pada saat halaman pertama kali dimuat untuk memastikan nilai sudah benar
+        window.onload = function() {
+            @foreach ($listProduct as $index => $product)
+                updateHargaSementara({{ $index }});
+            @endforeach
+            updateHargaKenaikan();
+        };
+    </script>
 @endsection
