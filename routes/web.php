@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdjustmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DepartemenController;
@@ -257,5 +258,10 @@ Route::middleware('auth')->group(function () {
         // Barcode
         // Route::get('/generate-qrcode', [ProductController::class, 'generateQrCode'])->name('generate-qrcode');
         Route::get('/generate-barcode', [ProductController::class, 'generateBarcode'])->name('generate-barcode');
+
+        // Adjustment
+        Route::get('/adjustment', [AdjustmentController::class, 'index'])->name('adjustment.index');
+        Route::post('/adjustment/show', [AdjustmentController::class, 'show'])->name('adjustment.show');
+        Route::post('/adjustment/update', [AdjustmentController::class, 'update'])->name('adjustment.update');
     });
 });

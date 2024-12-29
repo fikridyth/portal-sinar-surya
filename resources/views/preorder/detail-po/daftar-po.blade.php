@@ -156,8 +156,9 @@
                 <div class="d-flex justify-content-between">
                     <div class="row w-100">
                         <div class="form-group col-5">
-                            <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
-                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                            <input type="text" autocomplete="off" id="searchInputSupplier" class="mb-2" size="45" placeholder="Cari Supplier" onkeyup="searchTableSupplier()">
+                            <div style="overflow-x: auto; height: 470px; border: 1px solid #ccc;">
+                                <table id="table-supplier" class="table table-bordered" style="width: 100%; table-layout: auto;">
                                     <thead>
                                         <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
                                             <th colspan="5" class="text-center">DAFTAR SUPPLIER YANG HARUS DIBUATKAN P.O</th>
@@ -188,8 +189,8 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="form-group col-7">
-                            <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                        <div class="form-group col-7" style="margin-top: 38px;">
+                            <div style="overflow-x: auto; height: 470px; border: 1px solid #ccc;">
                                 <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                     <thead>
                                         <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
@@ -274,5 +275,26 @@
                 calculateTotal($(this));
             });
         });
+
+        function searchTableSupplier() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInputSupplier");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("table-supplier");
+            tr = table.getElementsByTagName("tr");
+
+            // Looping through semua baris tabel (setelah header) dan menyembunyikan baris yang tidak sesuai
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0]; // Mencari pada kolom pertama (nama supplier)
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
     </script>
 @endsection
