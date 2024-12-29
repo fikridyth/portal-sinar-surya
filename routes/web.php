@@ -165,6 +165,11 @@ Route::middleware('auth')->group(function () {
         // Supplier
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
 
+        // Change Supplier
+        Route::get('/change-supplier', [SupplierController::class, 'indexChangeSupplier'])->name('change-supplier.index');
+        Route::get('/change-supplier/{id}', [SupplierController::class, 'showChangeSupplier'])->name('change-supplier.show');
+        Route::put('/change-supplier/{id}/update', [SupplierController::class, 'updateChangeSupplier'])->name('change-supplier.update');
+
         // Kunjungan
         Route::get('/kunjungan', [SupplierController::class, 'indexKunjungan'])->name('kunjungan.index');
 

@@ -71,6 +71,7 @@
                                 @if (in_array("28", $role))<a href="{{ route('daftar-harga-jual-kecil') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HARGA JUAL < HARGA BELI</a>@endif
                                 @if (in_array("29", $role))<a href="{{ route('master.harga.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HARGA SEMENTARA</a>@endif
                                 @if (in_array("30", $role))<a href="{{ route('master.opname') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">STOCK OPNAME</a>@endif
+                                @if (in_array("33", $role))<a href="{{ route('master.change-supplier.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERUBAHAN SUPPLIER</a>@endif
                             </div>
                         </div>
                     </div>

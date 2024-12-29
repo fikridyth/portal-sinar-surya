@@ -9,6 +9,7 @@ use App\Models\HistoryPreorder;
 use App\Models\HistoryPreorderDetail;
 use App\Models\Pengembalian;
 use App\Models\Preorder;
+use App\Models\Product;
 use App\Models\Promosi;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -294,5 +295,47 @@ class SupplierController extends Controller
         $title = 'Master Kunjungan';
 
         return $dataTable->render('master.supplier.index-kunjungan', compact('title'));
+    }
+    
+    public function indexChangeSupplier()
+    {
+        $title = "Perubahan Supplier";
+        $titleHeader = 'PERUBAHAN SUPPLIER';
+        $suppliers = Supplier::where('status', 1)->get();
+
+        return view('master.supplier.perubahan.index', compact('title', 'titleHeader', 'suppliers'));
+    }
+    
+    public function showChangeSupplier($id)
+    {
+        $id = dekrip($id);
+        $title = "Perubahan Supplier";
+        $titleHeader = 'PERUBAHAN SUPPLIER';
+        $supplier = Supplier::find($id);
+        $suppliers = Supplier::where('status', 1)->get();
+        $products = Product::where('id_supplier', $id)->whereNotNull('stok')->where('stok', '>', 0)->get();
+        // dd(count($products));
+
+        return view('master.supplier.perubahan.show', compact('title', 'titleHeader', 'supplier', 'suppliers', 'products'));
+    }
+
+    public function updateChangeSupplier(Request $request, $id)
+    {
+        $id = dekrip($id);
+        // dd($id, $request->all());
+
+        $idProduct = $request->input('id_product');
+        foreach ($idProduct as $idP) {
+            $product = Product::find($idP);
+            if ($product) {
+                $product->update([
+                    'id_supplier' => $request->supplier_target
+                ]);
+            }
+        }
+
+        return Redirect::route('master.change-supplier.index')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Change Supplier Success!");
     }
 }
