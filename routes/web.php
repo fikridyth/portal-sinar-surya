@@ -261,7 +261,12 @@ Route::middleware('auth')->group(function () {
 
         // Adjustment
         Route::get('/adjustment', [AdjustmentController::class, 'index'])->name('adjustment.index');
+        Route::get('/adjustment-edit', [AdjustmentController::class, 'indexEdit'])->name('adjustment.index-edit');
         Route::post('/adjustment/show', [AdjustmentController::class, 'show'])->name('adjustment.show');
+        Route::post('/adjustment/password', [AdjustmentController::class, 'password'])->name('adjustment.password');
+        Route::post('/adjustment/edit', [AdjustmentController::class, 'edit'])->name('adjustment.edit');
         Route::post('/adjustment/update', [AdjustmentController::class, 'update'])->name('adjustment.update');
+        Route::post('/adjustment/update-edit', [AdjustmentController::class, 'updateEdit'])->name('adjustment.update-edit');
+        Route::get('/adjustment/cetak', [AdjustmentController::class, 'cetak'])->name('adjustment.cetak');
     });
 });

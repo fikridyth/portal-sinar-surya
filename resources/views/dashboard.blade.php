@@ -73,7 +73,7 @@
                                 {{-- @if (in_array("30", $role))<a href="{{ route('master.opname') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">STOCK OPNAME</a>@endif --}}
                                 @if (in_array("33", $role))<a href="{{ route('master.change-supplier.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PERUBAHAN SUPPLIER</a>@endif
                                 @if (in_array("34", $role))<a href="{{ route('master.adjustment.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENYESUAIAN PERSEDIAAN</a>@endif
-                                @if (in_array("35", $role))<a href="{{ route('master.adjustment.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">EDIT PENYESUAIAN PERSEDIAAN</a>@endif
+                                @if (in_array("35", $role))<a href="{{ route('master.adjustment.index-edit') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">EDIT PENYESUAIAN PERSEDIAAN</a>@endif
                             </div>
                         </div>
                     </div>

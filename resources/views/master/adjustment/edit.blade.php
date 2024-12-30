@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mb-7 mx-5">
-        <form action="{{ route('master.adjustment.update') }}" method="POST">
+        <form action="{{ route('master.adjustment.update-edit') }}" method="POST">
             @csrf
             <div class="card mt-n3">
                 <div class="card-body mt-n3">
@@ -38,7 +38,10 @@
                                             <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td>
                                             <td id="product-harga" class="text-end">{{ number_format($product->harga_jual) }}</td>
                                             <td id="product-stok" class="text-end">{{ $product->stok }}</td>
-                                            <td id="product-fisik" class="text-end">{{ $product->stok }}</td>
+                                            <td id="product-fisik" class="text-center">
+                                                <input type="number" class="text-end" name="fisik[{{ $product->id }}]" value="{{ $product->stok }}" 
+                                                       oninput="calculateSelisih({{ $product->id }}, {{ $product->harga_jual }}, {{ $product->stok }})">
+                                            </td>
                                             <td class="text-end">{{ number_format($product->harga_jual * $product->stok) }}</td>
                                             <td id="product-selisih-qty-{{ $product->id }}" class="text-end">{{ number_format(0, 2) }}</td>
                                             <td id="product-selisih-rupiah-{{ $product->id }}" class="text-end">0</td>
@@ -51,8 +54,8 @@
                     <div class="d-flex justify-content-center mt-3">
                         <div style="margin-right: 2%;">
                             <a href="{{ route('master.adjustment.cetak') }}" class="btn btn-warning">CETAK</a>
-                            <button type="submit" disabled class="btn btn-primary mx-3">PROSES</button>
-                            <a href="{{ route('master.adjustment.index') }}" class="btn btn-danger">KEMBALI</a>
+                            <button type="submit" class="btn btn-primary mx-3">PROSES</button>
+                            <a href="{{ route('master.adjustment.index-edit') }}" class="btn btn-danger">KEMBALI</a>
                         </div>
                     </div>
                 </div>

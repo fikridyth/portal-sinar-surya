@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mb-7 mx-5">
-        <form action="{{ route('master.adjustment.show') }}" method="POST" id="adjustment-form">
+        <form action="{{ route('master.adjustment.password') }}" method="POST" id="adjustment-form">
             @csrf
             <div class="card mt-n3">
                 <div class="card-body mt-n3">

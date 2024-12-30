@@ -12,19 +12,6 @@
                         <form id="passwordForm" method="POST" onsubmit="return validatePassword()">
                             @csrf
                             <input type="password" autofocus id="passwordInput" name="password" class="form-control" required>
-                            @foreach ($paramIndices as $index)
-                                <input type="text" hidden name="selectedIndices[]" value="{{ $index }}" class="form-control">
-                            @endforeach
-                            @foreach ($paramNomor as $index)
-                                <input type="text" hidden name="nomor[]" value="{{ $index }}" class="form-control">
-                            @endforeach
-                            @foreach ($paramDate as $index)
-                                <input type="text" hidden name="date[]" value="{{ $index }}" class="form-control">
-                            @endforeach
-                            @foreach ($paramTotal as $index)
-                                <input type="text" hidden name="total[]" value="{{ $index }}" class="form-control">
-                            @endforeach
-                            <input type="text" hidden name="donePass" value="ok">
                         </form>
                     </div>
                     <div class="mt-3">
@@ -47,10 +34,8 @@
             }
 
             // Password benar, arahkan form ke route tertentu
-            // Ambil ID supplier dari blade dan masukkan ke dalam URL
-            var supplierId = @json($supplier->id); // Ambil ID supplier dari controller
             var form = document.getElementById('passwordForm');
-            form.action = "{{ route('pembayaran-hutang.process', ':supplierId') }}".replace(':supplierId', enkrip(supplierId));
+            form.action = "{{ route('master.adjustment.edit') }}";
 
             // Setelah aksi diubah, submit form
             form.submit();
