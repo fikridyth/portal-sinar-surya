@@ -1405,17 +1405,19 @@ class PreOrderController extends Controller
     public function returnPo()
     {
         $title = 'Return PO';
+        $titleHeader = 'RETUR PEMBELIAN BARANG';
         $suppliers = Supplier::where('status', 1)->get();
         // $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->whereNull('is_cancel')->get();
         $preorders = Preorder::where('receive_type', 'B')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
-        return view('preorder.return-po.index', compact('title', 'suppliers', 'preorders', 'products'));
+        return view('preorder.return-po.index', compact('title', 'titleHeader', 'suppliers', 'preorders', 'products'));
     }
 
     public function storeReturnData(Request $request)
     {
+        // dd($request->all());
         // get nomor return
         $sequence = '0001';
         $dateNow = now()->format('ym');
@@ -1504,10 +1506,11 @@ class PreOrderController extends Controller
     public function daftarReturnPo()
     {
         $title = 'Daftar Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
         $returs = Pengembalian::whereNull('nomor_bukti')->get();
         // dd($returs);
 
-        return view('preorder.return-po.list', compact('title', 'returs'));
+        return view('preorder.return-po.list', compact('title', 'titleHeader', 'returs'));
     }
 
     public function destroyReturnData($id)

@@ -101,7 +101,8 @@
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                                <td><input type="number" id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
+                                                <input type="number" hidden id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;">
+                                                <td class="text-end">{{ number_format($product->harga_lama) }}</td>
                                                 <td><input type="number" id="harga_pokok_{{ $index }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
                                                     <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>

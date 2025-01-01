@@ -92,6 +92,7 @@ class ProductController extends Controller
             'merek' => strtoupper($request->merek),
             'label' => strtoupper($request->label),
             'isi' => str_replace('P', '', $request->unit_jual),
+            'harga_lama' => preg_replace('/[^0-9]/', '', $request->harga_pokok),
             'status' => 1,
         ];
         // dd($data);
@@ -202,6 +203,7 @@ class ProductController extends Controller
                 'konversi' => $data['konversi'] ?? null,
                 'kode_sumber' => $data['kode_sumber'] ?? null,
                 'isi' => str_replace('P', '', $validatedData['unit_jual']) ?? null,
+                'harga_lama' => $data['harga_pokok'] ?? 0,
                 'status' => 1,
             ]);
 
@@ -240,6 +242,7 @@ class ProductController extends Controller
                 'konversi' => $data['konversi'] ?? null,
                 'kode_sumber' => null,
                 'isi' => str_replace('P', '', $data['unit_jual']) ?? null,
+                'harga_lama' => (int)$data['harga_beli_input'] !== 0 ? $data['harga_beli_input'] : ($data['harga_beli'] / $data['unit_jual']) * $data['unit_beli'] ?? 0,
                 'status' => 1,
             ]);
 
@@ -247,12 +250,14 @@ class ProductController extends Controller
                 'kode_sumber' => $newProduct->kode,
                 'unit_beli' => $newProduct->unit_beli,
                 'konversi' => str_replace('P', '', $newProduct->unit_beli) / str_replace('P', '', $parentProduct->unit_jual),
+                'is_transfer' => null
             ]);
 
             foreach($childProduct as $child) {
                 $child->kode_sumber = $newProduct->kode;
                 $child->unit_beli = $newProduct->unit_beli;
                 $child->konversi = str_replace('P', '', $newProduct->unit_beli) / str_replace('P', '', $child->unit_jual);
+                $child->is_transfer = null;
                 $child->save();
             }
 
@@ -294,6 +299,7 @@ class ProductController extends Controller
                     'harga_sementara' => $product->harga_sementara,
                     'tanggal_awal' => $product->tanggal_awal,
                     'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
                 ]);
             } else {
                 ProductPos::create([
@@ -320,6 +326,7 @@ class ProductController extends Controller
                     'harga_sementara' => $product->harga_sementara,
                     'tanggal_awal' => $product->tanggal_awal,
                     'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
                 ]);
             }
             $product->update(['is_transfer' => 1]);

@@ -2,19 +2,8 @@
 
 @section('content')
     <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">RETUR PEMBELIAN BARANG
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
+        <div class="card mt-n3">
+            <div class="card-body mt-n4">
                 <form action="{{ route('return-po.store') }}" method="POST" class="form">
                     @csrf
                     <div class="card-body">
@@ -248,7 +237,7 @@
                             <td class="text-center">${response.data.kode_alternatif}</td>
                             <td class="text-center">${response.data.nama}</td>
                             <td class="text-center">${response.data.unit_jual}</td>
-                            <td class="text-center">1</td>
+                            <td class="text-center"><input type="number" class="item-quantity" value="1" min="1"></td>
                             <td class="text-center">${response.data.harga_pokok}</td>
                         `;
 
@@ -260,6 +249,16 @@
 
                         document.getElementById('tambah-button').disabled = false;
                         document.getElementById('simpan-button').disabled = false;
+
+                        rowToReplace.querySelector('.item-quantity').addEventListener('input', function(event) {
+                            const quantity = parseInt(event.target.value, 10) || 1;
+                            const itemIndex = items.findIndex(item => item.kode === response.data.kode);
+
+                            if (itemIndex !== -1) {
+                                items[itemIndex].order = quantity; // Update the quantity
+                                items[itemIndex].price = response.data.harga_pokok * quantity; // Recalculate price based on quantity
+                            }
+                        });
                     }
                 },
                 error: function(xhr, status, error) {

@@ -31,6 +31,7 @@ class HargaController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
         $hargaLama = $request->input('harga_lama');
         $hargaPokok = $request->input('harga_pokok');
         $hargaJual = $request->input('harga_jual');
@@ -83,6 +84,18 @@ class HargaController extends Controller
                 ];
                 HargaSementara::create($dataHarga);
                 HargaSementaraPos::create($dataHarga);
+
+                // update data dalam kelompok product tersebut
+                $getKelompok = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->whereNot('id', $product->id)->get();
+                $getMarkPokok = round((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2);
+                $getMarkJual = round((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2);
+                // dd($getKelompok, $data['harga_lama'], $data['harga_pokok'], $data['harga_jual'], $getMarkPokok, $getMarkJual);
+                foreach ($getKelompok as $kelompok) {
+                    $kelompok->update([
+                        'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0),
+                        'harga_jual' => (int)round((($kelompok->harga_jual * $getMarkJual) / 100) + $kelompok->harga_jual,0)
+                    ]);
+                }
             }
         }
 
@@ -97,7 +110,7 @@ class HargaController extends Controller
         $title = "Show Master Harga";
         $titleHeader = 'MASTER HARGA';
         $suppliers = Supplier::where('status', 1)->get();
-        $products = Product::where('id_supplier', $id)->where('status', 1)->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = Product::where('id_supplier', $id)->where('status', 1)->orderBy('nama', 'asc')->get();
         // dd($id, count($products));
 
         return view('master.harga.show', compact('title', 'titleHeader', 'suppliers', 'products'));

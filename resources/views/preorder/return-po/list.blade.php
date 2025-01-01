@@ -2,30 +2,12 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">DAFTAR KEMBALI BARANG</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
-                {{-- <div class="card-header" style="display: flex; justify-content: space-between;">
-                    Master Product
-                    <div>
-                        <a href="{{ route('master.product.create') }}" type="button" class="btn btn-md btn-primary">Add
-                            Product</a>
-                    </div>
-                </div> --}}
-
+        <div class="card mt-n3">
+            <div class="card-body mt-n4">
                 <div class="card-body">
                     <div class="row w-100">
                         <div class="form-group col-7">
-                            <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                            <div style="overflow-x: auto; height: 670px; border: 1px solid #ccc;">
                                 <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                     <thead>
                                         <tr>
@@ -44,7 +26,7 @@
                                                 <td class="text-center">{{ $retur->created_by }}</td>
                                                 <td class="text-center">{{ $retur->date }}</td>
                                                 <td class="text-center">{{ $retur->time }}</td>
-                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($retur->detail) }}"></td>
+                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($retur->detail) }}" data-total="{{ $retur->total }}"></td>
                                                 <td class="text-center"><input type="checkbox" class="delete-checkbox"></td>
                                             </tr>
                                         @endforeach
@@ -54,16 +36,27 @@
                         </div>
 
                         <div class="form-group col-5">
-                            <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                            <div style="overflow-x: auto; height: 610px; border: 1px solid #ccc;">
                                 <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                     <thead>
                                         <tr>
                                             <th class="text-center">NAMA BARANG</th>
                                             <th class="text-center">QTY</th>
                                             <th class="text-center">HARGA</th>
+                                            <th class="text-center">TOTAL</th>
                                         </tr>
                                     </thead>
                                     <tbody id="orderDetailTableBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="height: 60px; border: 1px solid #ccc; margin-top: 0;">
+                                <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                    <tbody>
+                                        <tr>
+                                            <th colspan="3" class="text-end" style="width: 75%;">TOTAL</th>
+                                            <th class="text-end value-total" style="width: 25%;">0</th>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -73,7 +66,7 @@
                 
                 <div class="text-center">
                     {{-- <a href="{{ route('master.product.create') }}" class="btn btn-danger">Kembali</a> --}}
-                    <button type="button" onclick="window.history.back()" class="btn btn-danger mt-4 mb-7">KEMBALI</button>
+                    <button type="button" onclick="window.history.back()" class="btn btn-danger mb-2">KEMBALI</button>
                 </div>
             </div>
         </div>
@@ -85,7 +78,9 @@
         document.querySelectorAll('.preorder-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', function() {
                 const detail = JSON.parse(this.getAttribute('data-detail'));
+                const total = this.getAttribute('data-total');
                 const tbody = document.getElementById('orderDetailTableBody');
+                const totalCell = document.querySelector('.table tbody tr th.value-total');
                 
                 if (this.checked) {
                     document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
@@ -96,21 +91,23 @@
 
                     tbody.innerHTML = ''; // Clear existing rows before adding new ones
                     JSON.parse(detail).forEach(item => {
-                        console.log(item);
                         const newRow = document.createElement('tr');
                         newRow.innerHTML = `
                             <td>${item.nama}</td>
                             <td class="text-center">${item.order}</td>
                             <td class="text-end">${number_format(item.price)}</td>
+                            <td class="text-end">${number_format(item.field_total)}</td>
                         `;
                         tbody.appendChild(newRow);
                     });
+                    totalCell.textContent = number_format(total);
                 } else {
                     document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
                         otherCheckbox.disabled = false;
                     });
 
                     tbody.innerHTML = ''; // Clear the table if checkbox is unchecked
+                    totalCell.textContent = '0';
                 }
             });
             function number_format(number) {
