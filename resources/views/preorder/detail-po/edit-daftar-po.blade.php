@@ -183,9 +183,9 @@
                                 <div class="column"><div class="form-group"><input type="text" id="diskon3-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="ppn-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="price-ppn-input" disabled size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon4-input" size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon5-input" size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon6-input" size="9"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon4-input" size="9" onkeydown="handleDiskon4Price(event)" onfocus="this.value = '';"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon5-input" size="9" onkeydown="handleDiskon5Price(event)" onfocus="this.value = '';"></div></div>
+                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon6-input" size="9" onkeydown="handleDiskon6Price(event)" onfocus="this.value = '';"></div></div>
                             </div>
 
                             <div class="d-flex justify-content-between mt-2">
@@ -236,6 +236,7 @@
                                                                         data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
                                                                         data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
                                                                         data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
+                                                                        data-noindex="{{ $no }}"
                                                                         >
                                                                     </div>
                                                                     <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
@@ -419,7 +420,7 @@
                 }
 
                 // Fokuskan input lain (seperti price-input)
-                document.getElementById('edit-save-' + no).click();
+                document.getElementById('diskon4-input').focus();
             }
             if (event.key === 'Delete') {
                 document.getElementById('delete-save-' + no).click();
@@ -445,7 +446,17 @@
             });
         }
 
+        let nomorIndex = 1;
+        let diskon1Index = '0';
+        let diskon2Index = '0';
+        let diskon3Index = '0';
         function handleCheckboxChange(selectedCheckbox) {
+            // input diskon when enter
+            nomorIndex = selectedCheckbox.getAttribute('data-noindex')
+            diskon1Index = selectedCheckbox.getAttribute('data-diskon1-value');
+            diskon2Index = selectedCheckbox.getAttribute('data-diskon2-value');
+            diskon3Index = selectedCheckbox.getAttribute('data-diskon3-value');
+
             const index = selectedCheckbox.id.split('-')[1];
 
             // Get the discount value from the checkbox's data attribute
@@ -515,6 +526,51 @@
 
             // Call function to handle other inputs if necessary
             toggleInputs(selectedCheckbox);
+        }
+        
+        function handleDiskon4Price(event) {
+            if (event.key === 'Enter') {
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                var inputField = document.getElementById('diskon4-input');
+                if (inputField.value === '') {
+                    inputField.value = diskon1Index;
+                }
+
+                document.getElementById('diskon5-input').focus();
+            }
+            if (event.key === 'Delete') {
+                document.getElementById('delete-save-' + nomorIndex).click();
+            }
+        }
+        
+        function handleDiskon5Price(event) {
+            if (event.key === 'Enter') {
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                var inputField = document.getElementById('diskon5-input');
+                if (inputField.value === '') {
+                    inputField.value = diskon2Index;
+                }
+
+                document.getElementById('diskon6-input').focus();
+            }
+            if (event.key === 'Delete') {
+                document.getElementById('delete-save-' + nomorIndex).click();
+            }
+        }
+        
+        function handleDiskon6Price(event) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('diskon6-input');
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = diskon3Index;
+                }
+
+                document.getElementById('edit-save-' + nomorIndex).click();
+            }
+            if (event.key === 'Delete') {
+                document.getElementById('delete-save-' + nomorIndex).click();
+            }
         }
 
         function handleDestroyClick(button) {
@@ -697,9 +753,9 @@
                     document.getElementById('diskon1-input').value = priceDiskon1Value;
                     document.getElementById('diskon2-input').value = priceDiskon2Value;
                     document.getElementById('diskon3-input').value = priceDiskon3Value;
-                    document.getElementById('diskon4-input').value = 0;
-                    document.getElementById('diskon5-input').value = 0;
-                    document.getElementById('diskon6-input').value = 0;
+                    document.getElementById('diskon4-input').value = priceDiskon1Value || 0;
+                    document.getElementById('diskon5-input').value = priceDiskon2Value || 0;
+                    document.getElementById('diskon6-input').value = priceDiskon3Value || 0;
 
                     document.querySelectorAll('.order-container').forEach(container => {
                         const orderText = container.querySelector('.order-text');
