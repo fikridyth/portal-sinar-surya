@@ -1365,6 +1365,7 @@ class PreOrderController extends Controller
     public function daftarHargaJualKecil()
     {
         $title = 'Daftar Harga Jual Kecil';
+        $titleHeader = 'HARGA JUAL DIBAWAH HARGA POKOK';
         $allMatchingProducts = new Collection();
         $trackedKodes = [];
         $preorders = Preorder::where('receive_type', 'B')->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('detail')->get();
@@ -1399,7 +1400,7 @@ class PreOrderController extends Controller
             }
         }
 
-        return view('preorder.harga-jual-kurang.index', compact('title', 'allMatchingProducts'));
+        return view('preorder.harga-jual-kurang.index', compact('title', 'titleHeader', 'allMatchingProducts'));
     }
 
     public function returnPo()

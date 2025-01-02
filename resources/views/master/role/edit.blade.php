@@ -313,6 +313,14 @@
                                         <input type="checkbox" name="value[]" @if (in_array("35", $listRole)) checked @endif value="35" class="checkbox-laporan">
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-10" style="width: 95%;">
+                                        <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">HISTORY PENYESUAIAN PERSEDIAAN</a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
+                                        <input type="checkbox" name="value[]" @if (in_array("36", $listRole)) checked @endif value="36" class="checkbox-laporan">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

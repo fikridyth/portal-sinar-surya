@@ -45,6 +45,11 @@
                                             <td class="text-end">{{ number_format($product->harga_jual * $product->stok) }}</td>
                                             <td id="product-selisih-qty-{{ $product->id }}" class="text-end">{{ number_format(0, 2) }}</td>
                                             <td id="product-selisih-rupiah-{{ $product->id }}" class="text-end">0</td>
+                                            <input type="text" hidden name="selected[{{ $product->id }}]" value="{{ $product->id }}">
+                                            <input type="text" hidden name="name[{{ $product->id }}]" value="{{ $product->nama . '/' . $product->unit_jual }}">
+                                            <input type="text" hidden name="stok[{{ $product->id }}]" value="{{ $product->stok }}">
+                                            <input type="text" hidden name="qty[{{ $product->id }}]" id="input-selisih-qty-{{ $product->id }}" value="0.00">
+                                            <input type="text" hidden name="rupiah[{{ $product->id }}]" id="input-selisih-rupiah-{{ $product->id }}" value="0">
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -116,6 +121,8 @@
             // Update tampilan selisih-qty dan selisih-rupiah
             document.querySelector(`#product-${productId} #product-selisih-qty-${productId}`).textContent = selisihQty.toFixed(2);
             document.querySelector(`#product-${productId} #product-selisih-rupiah-${productId}`).textContent = number_format(selisihRupiah);
+            document.getElementById(`input-selisih-qty-${productId}`).value = selisihQty.toFixed(2);
+            document.getElementById(`input-selisih-rupiah-${productId}`).value = selisihRupiah;
 
             // Simpan nilai terbaru untuk perbandingan berikutnya
             lastValues[productId] = productFisik;

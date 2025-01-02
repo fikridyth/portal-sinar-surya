@@ -70,7 +70,7 @@ class HargaController extends Controller
                 $dataHarga = [
                     'id_supplier' => $request->id_supplier,
                     'id_product' => $data['id'],
-                    'nomor' => $getNext,
+                    'nomor' => $getNext ?? 1,
                     'nama' => $product->nama . '/' . $product->unit_jual,
                     'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
