@@ -62,7 +62,8 @@ class AdjustmentController extends Controller
         $grups = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::where('status', 1)->get();
-        $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        // $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = Product::where('stok', '>', 0)->limit(2000)->get();
         // dd(count($products));
 
         return view('master.adjustment.index-edit', compact('title', 'titleHeader', 'grups', 'departemens', 'suppliers', 'products'));
@@ -91,7 +92,9 @@ class AdjustmentController extends Controller
             $query->whereIn('id_departemen', $request->selected_departemens);
         }
 
-        $products = $query->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        // $products = $query->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = $query->where('stok', '>', 0)->limit(180)->get();
+        // dd(count($products));
         session(['products' => $products]);
 
         $getUser = User::where('name', 'LO HARYANTO')->first();
@@ -149,7 +152,7 @@ class AdjustmentController extends Controller
                 ];
             }
         }
-        dd($combined);
+        // dd($combined);
 
         $maxNo = Adjustment::max('nomor');
         $getNext = $maxNo + 1;

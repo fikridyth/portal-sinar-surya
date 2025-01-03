@@ -14,7 +14,7 @@
                                 <table id="table-product" class="table table-bordered" style="width: 100%; table-layout: auto;">
                                     <thead>
                                         <tr style="font-size: 12px; padding: 2px 4px; margin: 0; line-height: 0.5;">
-                                            <th class="text-center">NO</th>
+                                            {{-- <th class="text-center">NO</th> --}}
                                             <th class="text-center">NAMA BARANG</th>
                                             <th class="text-center">KONV</th>
                                             <th class="text-center">ISI</th>
@@ -27,9 +27,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($products as $product)
-                                        <tr id="product-{{ $product->id }}">
-                                            <td>{{ $loop->iteration }}</td>
+                                        @foreach ($products as $index => $product)
+                                        @php
+                                            $no = $index + 1;
+                                        @endphp
+                                        <tr id="product-{{ $no }}">
+                                            {{-- <td>{{ $loop->iteration }}</td> --}}
                                             <td class="product-cell">
                                                 {{ $product->nama }}/{{ $product->unit_jual }}
                                                 <input type="checkbox" hidden class="checkbox-product" data-id="{{ $product->id }}">
@@ -40,16 +43,16 @@
                                             <td id="product-stok" class="text-end">{{ $product->stok }}</td>
                                             <td id="product-fisik" class="text-center">
                                                 <input type="number" class="text-end" name="fisik[{{ $product->id }}]" value="{{ $product->stok }}" 
-                                                       oninput="calculateSelisih({{ $product->id }}, {{ $product->harga_jual }}, {{ $product->stok }})">
+                                                       oninput="calculateSelisih({{ $no }}, {{ $product->harga_jual }}, {{ $product->stok }}, {{ $product->id }})">
                                             </td>
                                             <td class="text-end">{{ number_format($product->harga_jual * $product->stok) }}</td>
-                                            <td id="product-selisih-qty-{{ $product->id }}" class="text-end">{{ number_format(0, 2) }}</td>
-                                            <td id="product-selisih-rupiah-{{ $product->id }}" class="text-end">0</td>
+                                            <td id="product-selisih-qty-{{ $no }}" class="text-end">{{ number_format(0, 2) }}</td>
+                                            <td id="product-selisih-rupiah-{{ $no }}" class="text-end">0</td>
                                             <input type="text" hidden name="selected[{{ $product->id }}]" value="{{ $product->id }}">
                                             <input type="text" hidden name="name[{{ $product->id }}]" value="{{ $product->nama . '/' . $product->unit_jual }}">
                                             <input type="text" hidden name="stok[{{ $product->id }}]" value="{{ $product->stok }}">
-                                            <input type="text" hidden name="qty[{{ $product->id }}]" id="input-selisih-qty-{{ $product->id }}" value="0.00">
-                                            <input type="text" hidden name="rupiah[{{ $product->id }}]" id="input-selisih-rupiah-{{ $product->id }}" value="0">
+                                            <input type="text" hidden name="qty[{{ $product->id }}]" id="input-selisih-qty-{{ $no }}" value="0.00">
+                                            <input type="text" hidden name="rupiah[{{ $product->id }}]" id="input-selisih-rupiah-{{ $no }}" value="0">
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -105,12 +108,12 @@
 
         let lastValues = {};  // Menyimpan nilai terakhir untuk memeriksa perubahan
 
-        function calculateSelisih(productId, productHarga, productStok) {
-            const inputElement = document.querySelector(`#product-${productId} input[name="fisik[${productId}]"]`);
+        function calculateSelisih(no, productHarga, productStok, productId) {
+            const inputElement = document.querySelector(`#product-${no} input[name="fisik[${productId}]"]`);
             const productFisik = parseFloat(inputElement.value);
 
             // Periksa apakah nilai fisik berubah
-            if (lastValues[productId] !== undefined && lastValues[productId] === productFisik) {
+            if (lastValues[no] !== undefined && lastValues[no] === productFisik) {
                 return;  // Jika tidak ada perubahan, tidak melakukan apa-apa
             }
 
@@ -119,17 +122,49 @@
             const selisihRupiah = selisihQty * productHarga;
 
             // Update tampilan selisih-qty dan selisih-rupiah
-            document.querySelector(`#product-${productId} #product-selisih-qty-${productId}`).textContent = selisihQty.toFixed(2);
-            document.querySelector(`#product-${productId} #product-selisih-rupiah-${productId}`).textContent = number_format(selisihRupiah);
-            document.getElementById(`input-selisih-qty-${productId}`).value = selisihQty.toFixed(2);
-            document.getElementById(`input-selisih-rupiah-${productId}`).value = selisihRupiah;
+            document.querySelector(`#product-${no} #product-selisih-qty-${no}`).textContent = selisihQty.toFixed(2);
+            document.querySelector(`#product-${no} #product-selisih-rupiah-${no}`).textContent = number_format(selisihRupiah);
+            document.getElementById(`input-selisih-qty-${no}`).value = selisihQty.toFixed(2);
+            document.getElementById(`input-selisih-rupiah-${no}`).value = selisihRupiah;
+
+            if (selisihQty === 0) {
+                document.getElementById(`input-selisih-qty-${index}`).value = "";
+            }
+            if (selisihRupiah === 0) {
+                document.getElementById(`input-selisih-rupiah-${index}`).value = "";
+            }
 
             // Simpan nilai terbaru untuk perbandingan berikutnya
-            lastValues[productId] = productFisik;
+            lastValues[no] = productFisik;
         }
 
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
+
+        // function filterZeroValues() {
+        //     // Loop through all hidden inputs and remove those with zero values
+        //     const qtyInputs = document.querySelectorAll('input[name^="qty"]');
+        //     const rupiahInputs = document.querySelectorAll('input[name^="rupiah"]');
+
+        //     // Loop through qty inputs and clear the ones with zero value
+        //     qtyInputs.forEach(input => {
+        //         if (parseFloat(input.value) === 0) {
+        //             input.value = "";  // Remove zero values
+        //         }
+        //     });
+
+        //     // Loop through rupiah inputs and clear the ones with zero value
+        //     rupiahInputs.forEach(input => {
+        //         if (parseFloat(input.value) === 0) {
+        //             input.value = "";  // Remove zero values
+        //         }
+        //     });
+        // }
+
+        // // Attach filterZeroValues function to form submission (for example, using the submit event)
+        // document.querySelector('form').addEventListener('submit', function(event) {
+        //     filterZeroValues();  // Call the function before submitting
+        // });
     </script>
 @endsection
