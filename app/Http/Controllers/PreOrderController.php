@@ -1255,13 +1255,14 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $title = 'Edit Persetujuan Harga Jual';
+        $titleHeader = 'PERSETUJUAN HARGA JUAL - PILIH BARANG';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
         usort($detail, function ($a, $b) {
             return strcmp($a['nama'], $b['nama']);
         });
 
-        return view('preorder.receive-po.persetujuan-harga-jual-edit', compact('title', 'preorder', 'detail'));
+        return view('preorder.receive-po.persetujuan-harga-jual-edit', compact('title', 'titleHeader', 'preorder', 'detail'));
     }
 
     public function getProductsByKode($kode)
@@ -1362,7 +1363,14 @@ class PreOrderController extends Controller
             ]);
         }
 
-        return Redirect::back()->with('alert.status', '00')->with('alert.message', "Sukses Ubah Harga Product!");
+        $preorder = Preorder::find($request->preorder);
+        $preorder->update([
+            'is_jual' => 1
+        ]);
+
+        return Redirect::route('persetujuan-harga-jual')
+            ->with('alert.status', '00')
+            ->with('alert.message', "Sukses Ubah Harga Product!");
     }
 
     public function daftarHargaJualKecil()

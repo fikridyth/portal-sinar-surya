@@ -2,19 +2,8 @@
 
 @section('content')
     <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PERSETUJUAN HARGA JUAL - PILIH BARANG
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-body">
+        <div class="card mt-n3">
+            <div class="card-body mt-n3">
                 <div class="row">
                     <div class="col-4">
                         <div class="form-group">
@@ -43,69 +32,72 @@
             @method('PUT')
             <div class="card">
                 <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th colspan="2" class="text-center">HARGA SEMENTARA</th>
-                                <th class="text-center"></th>
-                                <th colspan="2" class="text-center">HARGA SATUAN</th>
-                                <th class="text-center"></th>
-                                <th colspan="2" class="text-center">HARGA SATUAN</th>
-                                <th colspan="2" class="text-center"></th>
-                            </tr>
-                            <tr>
-                                <th class="text-center">&#9989;</th>
-                                <th class="text-center">NAMA BARANG</th>
-                                <th class="text-center">QTY</th>
-                                <th class="text-center">BELI LAMA</th>
-                                <th class="text-center">BELI BARU</th>
-                                <th class="text-center">NAIK(%)</th>
-                                <th class="text-center">JUAL LAMA</th>
-                                <th class="text-center">JUAL BARU</th>
-                                <th class="text-center">MK UP</th>
-                                <th class="text-center">GANTI</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($detail as $index => $dtl)
-                                @php
-                                    $product = App\Models\Product::where('kode', $dtl['kode'])->first();
-                                    $changeTextColor = (($product->harga_jual - $dtl['price']) / $dtl['price']) * 100;
-                                @endphp
+                    <div style="overflow-x: auto; height: 600px; border: 1px solid #ccc;">
+                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
+                            <thead>
                                 <tr>
-                                    <td class="text-center"></td>
-                                    <td class="text-center">{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}</td>
-                                    <td class="text-center">{{ $dtl['order'] }}</td>
-                                    {{-- <input type="text" hidden name="kode[{{ $index }}]" value="{{ $dtl['kode'] }}">
-                                    <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}"> --}}
-                                    <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
-                                    <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
-                                    <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                    <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
-                                    <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
-                                    <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
-                                    
-                                    @php
-                                    $roundedPrice = (($dtl['price'] * $product->profit) / 100) + $dtl['price'];
-                                        if (strlen($dtl['price']) >= 6) {
-                                            $roundedValue = round($roundedPrice, -3);
-                                        } elseif (strlen($dtl['price']) >= 4) {
-                                            $roundedValue = round($roundedPrice, -2);
-                                        } elseif (strlen($dtl['price']) >= 2) {
-                                            $roundedValue = round($roundedPrice, -1);
-                                        } else {
-                                            $roundedValue = $roundedPrice;
-                                        }
-                                    @endphp
-                                    <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $roundedValue }}" size="10"></td>
-
-                                    <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
-                                    {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
-                                    <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>
+                                    <th colspan="2" class="text-center">HARGA SEMENTARA</th>
+                                    <th class="text-center"></th>
+                                    <th colspan="2" class="text-center">HARGA SATUAN</th>
+                                    <th class="text-center"></th>
+                                    <th colspan="2" class="text-center">HARGA SATUAN</th>
+                                    <th colspan="2" class="text-center"></th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <th class="text-center">&#9989;</th>
+                                    <th class="text-center">NAMA BARANG</th>
+                                    <th class="text-center">QTY</th>
+                                    <th class="text-center">BELI LAMA</th>
+                                    <th class="text-center">BELI BARU</th>
+                                    <th class="text-center">NAIK(%)</th>
+                                    <th class="text-center">JUAL LAMA</th>
+                                    <th class="text-center">JUAL BARU</th>
+                                    <th class="text-center">MK UP</th>
+                                    <th class="text-center">GANTI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($detail as $index => $dtl)
+                                    @php
+                                        $product = App\Models\Product::where('kode', $dtl['kode'])->first();
+                                        $changeTextColor = (($product->harga_jual - $dtl['price']) / $dtl['price']) * 100;
+                                    @endphp
+                                    <tr>
+                                        <input type="text" name="preorder" value="{{ $preorder->id }}" hidden>
+                                        <td class="text-center"></td>
+                                        <td class="text-center">{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}</td>
+                                        <td class="text-center">{{ $dtl['order'] }}</td>
+                                        {{-- <input type="text" hidden name="kode[{{ $index }}]" value="{{ $dtl['kode'] }}">
+                                        <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}"> --}}
+                                        <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
+                                        <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
+                                        <td class="text-center">{{ number_format($product->harga_lama) }}</td>
+                                        <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
+                                        <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                        <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
+                                        
+                                        @php
+                                        $roundedPrice = (($dtl['price'] * $product->profit) / 100) + $dtl['price'];
+                                            if (strlen($dtl['price']) >= 6) {
+                                                $roundedValue = round($roundedPrice, -3);
+                                            } elseif (strlen($dtl['price']) >= 4) {
+                                                $roundedValue = round($roundedPrice, -2);
+                                            } elseif (strlen($dtl['price']) >= 2) {
+                                                $roundedValue = round($roundedPrice, -1);
+                                            } else {
+                                                $roundedValue = $roundedPrice;
+                                            }
+                                        @endphp
+                                        <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $roundedValue }}" size="10"></td>
+
+                                        <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
+                                        {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
+                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     {{-- <div class="row mt-4" style="margin-left: 25px;">
                         <div class="col-7"></div>
                         <div class="col-5">
