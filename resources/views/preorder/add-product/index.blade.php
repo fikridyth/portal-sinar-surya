@@ -69,7 +69,7 @@
 
         document.addEventListener('keydown', function(event) {
             // focus input
-            if (event.key === 'Tab') {
+            if (event.key === 'Tab' || event.key === 'Enter') {
                 event.preventDefault(); // Prevent default tab behavior
 
                 // Focus on the DataTable search input
@@ -78,23 +78,6 @@
                     searchInput.focus();
                 }
             }
-
-            // go to menu
-            // if (event.key === 'Enter') {
-            //     // Find the first row in the product table
-            //     const firstRow = document.querySelector('#search-product-table tbody tr');
-
-            //     // If a first row exists, extract the product ID from the data-id attribute
-            //     if (firstRow) {
-            //         const productId = firstRow.getAttribute('data-id'); // Retrieve the product ID from data-id
-
-            //         // Navigate to the route with the product ID
-            //         if (productId) {
-            //             // Redirect to the product page using the product ID
-            //             window.location.href = `/master/product/${productId}`;
-            //         }
-            //     }
-            // }
         });
     </script>
 @endsection 

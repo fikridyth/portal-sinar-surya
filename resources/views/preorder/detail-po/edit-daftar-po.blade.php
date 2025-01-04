@@ -31,6 +31,43 @@
     .fs-need {
         font-size: 14px;
     }
+    
+    /* Modal Style */
+    .modal {
+        display: none; /* Sembunyikan modal secara default */
+        position: fixed;
+        z-index: 1; /* Letakkan modal di atas konten lainnya */
+        left: 0;
+        top: 0;
+        width: 100%; /* Lebar penuh */
+        height: 100%; /* Tinggi penuh */
+        background-color: rgba(0, 0, 0, 0.4); /* Latar belakang gelap */
+        overflow: auto; /* Konten bisa di-scroll jika terlalu besar */
+        padding-top: 60px; /* Jarak atas untuk konten */
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%; /* Lebar modal */
+        max-width: 1000px;
+    }
+
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 @section('content')
@@ -301,7 +338,7 @@
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-info">TAMBAH LIST</a>
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a>
                                     </div>
                                     {{-- <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
@@ -379,6 +416,30 @@
                     {{-- </form> --}}
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h5>List Products</h5>
+            <table id="productTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>NAMA BARANG</th>
+                        <th>STOK</th>
+                        <th>HARGA BELI</th>
+                        <th>HARGA JUAL</th>
+                        <th>PILIH</th>
+                    </tr>
+                </thead>
+                <tbody id="productDetails">
+                    <!-- Product data will be inserted here -->
+                </tbody>
+            </table>
+            <!-- Button Save to trigger the store process -->
+            <button class="btn btn-primary mt-2" id="saveBtn">SIMPAN</button>
         </div>
     </div>
 @endsection

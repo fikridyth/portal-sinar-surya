@@ -31,6 +31,43 @@
     .fs-need {
         font-size: 14px;
     }
+
+    /* Modal Style */
+    .modal {
+        display: none; /* Sembunyikan modal secara default */
+        position: fixed;
+        z-index: 1; /* Letakkan modal di atas konten lainnya */
+        left: 0;
+        top: 0;
+        width: 100%; /* Lebar penuh */
+        height: 100%; /* Tinggi penuh */
+        background-color: rgba(0, 0, 0, 0.4); /* Latar belakang gelap */
+        overflow: auto; /* Konten bisa di-scroll jika terlalu besar */
+        padding-top: 60px; /* Jarak atas untuk konten */
+    }
+
+    .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        width: 80%; /* Lebar modal */
+        max-width: 1000px;
+    }
+
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-btn:hover,
+    .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 
 @section('content')
@@ -69,7 +106,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-2">
+                                {{-- <div class="col-2">
                                     <div class="form-group">
                                         <div class="row">
                                             <label for="nomorSupplier2"
@@ -86,6 +123,15 @@
                                     <div class="col">
                                         <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
                                     </div>
+                                </div> --}}
+                                <div class="col-6">
+                                    <label class="mx-4">KODE SUPPLIER</label>
+                                    <select class="supplier-select" id="supplierSelect">
+                                        <option value="">{{ $preorder->supplier->nomor }} - {{ $preorder->supplier->nama }}</option>
+                                        @foreach ($suppliers as $supplier)
+                                            <option value="{{ enkrip($supplier->id) }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
 
@@ -285,7 +331,7 @@
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-info">TAMBAH LIST</a>
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a>
                                     </div>
                                     {{-- <div class="mx-2">
                                         <form action="{{ route('create-receive.cancel-receive', enkrip($preorder->id)) }}" method="POST" class="form" id="myForm">
@@ -379,12 +425,76 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Structure -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h5>List Products</h5>
+            <table id="productTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>NAMA BARANG</th>
+                        <th>STOK</th>
+                        <th>HARGA BELI</th>
+                        <th>HARGA JUAL</th>
+                        <th>PILIH</th>
+                    </tr>
+                </thead>
+                <tbody id="productDetails">
+                    <!-- Product data will be inserted here -->
+                </tbody>
+            </table>
+            <!-- Button Save to trigger the store process -->
+            <button class="btn btn-primary mt-2" id="saveBtn">SIMPAN</button>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     @include('preorder.detail-po.js.netto')
     @include('preorder.detail-po.js.new-row-receive')
     <script>
+        var preorderData = <?php echo json_encode($preorder->id); ?>; 
+        $(document).ready(function() {
+            $('#supplierSelect').change(function() {
+                var supplierId = $(this).val();
+                if (supplierId) {
+                    // URL for the POST route
+                    var url = "{{ route('update-supplier-receive-data') }}";
+                    
+                    // Send a POST request with both supplierId and preorderData
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            _token: "{{ csrf_token() }}", // CSRF protection
+                            supplier_id: supplierId, // Send the supplierId
+                            preorder_data: preorderData // Send preorderData
+                        },
+                        success: function(response) {
+                            window.location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Request failed: ' + error);
+                        }
+                    });
+                }
+            });
+        });
+
+        $(`.supplier-select`).select2({
+            allowClear: true
+        });
+
+        $(`.supplier-select`).on('select2:open', function(e) {
+            // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
+            const searchBox = $(this).data('select2').dropdown.$search[0];
+            if (searchBox) {
+                searchBox.focus();
+            }
+        });
+
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 document.getElementById('tambah-button').click();

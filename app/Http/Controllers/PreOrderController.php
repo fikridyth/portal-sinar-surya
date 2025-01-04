@@ -1091,6 +1091,7 @@ class PreOrderController extends Controller
         $preorder = Preorder::find($id);
         $ppn = Ppn::pluck('ppn')->first();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        $suppliers = Supplier::where('status', 1)->whereNot('id', $preorder->supplier->id)->get();
         
         if ($preorder->receive_type == 'A') {
             $preorder->update([
@@ -1111,7 +1112,7 @@ class PreOrderController extends Controller
             Hutang::create($data);
         }
 
-        return view('preorder.receive-po.create-detail', compact('title', 'titleHeader', 'preorder', 'ppn', 'products'));
+        return view('preorder.receive-po.create-detail', compact('title', 'titleHeader', 'preorder', 'ppn', 'products', 'suppliers'));
     }
 
     public function doneDetailReceivePo($id)
@@ -1243,9 +1244,11 @@ class PreOrderController extends Controller
     public function persetujuanHargaJual()
     {
         $title = 'Daftar Persetujuan Harga Jual';
-        $preorders = Preorder::where('receive_type', 'B')->whereNotNull('is_cancel')->whereNotNull('detail')->get();
+        $titleHeader = 'PERSETUJUAN HARGA JUAL - PILIH BARANG';
+        // $preorders = Preorder::where('receive_type', 'B')->whereNotNull('is_cancel')->whereNotNull('detail')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNull('is_jual')->get();
 
-        return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'preorders'));
+        return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'titleHeader', 'preorders'));
     }
 
     public function editPersetujuanHargaJual($id)
@@ -1540,12 +1543,29 @@ class PreOrderController extends Controller
     public function getDataFromBarcode(Request $request)
     {
         // 8992761111212
-        // dd($request->all());
         $product = Product::where('kode_alternatif', $request['kode'])->first();
         if (isset($product)) {
+            $products = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->get();
+            // dd($products);
+
+            return response()->json(['data' => $products]);
+        } else {
+            return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
+        }
+    }
+
+    public function storeDataFromBarcode(Request $request)
+    {
+        // dd($request->all());
+        $products = $request->input('products');
+        foreach ($products as $data) {
+            // dd($data['kode']);
+            $product = Product::where('kode', $data['kode'])->first();
+            if (isset($product)) {
             $preorder = Preorder::find($request['preorderId']);
             $supplier = Supplier::find($request['supplierId']);
             $ppnValue = Ppn::pluck('ppn')->first();
+            // dd($preorder, $supplier, $ppnValue);
 
             $newEntry = [
                 'kode' => $product->kode,
@@ -1572,13 +1592,10 @@ class PreOrderController extends Controller
             $preorder->total_harga += $product->harga_pokok;
             $preorder->grand_total += $product->harga_pokok;
             $preorder->save();
-
-            return response()->json(['success' => 'SUCCESS']);
-        } else {
-            return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
+            }
         }
 
-        return response()->json(['data' => $product]);
+        return response()->json(['success' => true]);
     }
 
     public function getDataReturnBarcode(Request $request)
@@ -1591,5 +1608,17 @@ class PreOrderController extends Controller
         } else {
             return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
         }
+    }
+
+    public function updateSupplierReceiveData(Request $request)
+    {
+        // dd($request->all());
+        $supplierId = dekrip($request->supplier_id);
+        $preorder = Preorder::find($request->preorder_data);
+        $preorder->update([
+            'id_supplier' => $supplierId
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

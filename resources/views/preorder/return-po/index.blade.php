@@ -92,7 +92,7 @@
                             <div class="row">
                                 <div class="col-auto">
                                     <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
-                                    <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-info">TAMBAH LIST</a>
+                                    <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a>
                                 </div>
                             </div>
                             <div class="row align-items-center">

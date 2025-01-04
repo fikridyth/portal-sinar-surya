@@ -99,7 +99,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/set-bonus/{id}', [PreOrderController::class, 'setBonus'])->name('daftar-po.set-bonus');
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
     Route::post('/get-data-from-barcode', [PreOrderController::class, 'getDataFromBarcode'])->name('daftar-po.get-data-from-barcode');
+    Route::post('/store-data-from-barcode', [PreOrderController::class, 'storeDataFromBarcode'])->name('daftar-po.store-data-from-barcode');
     Route::post('/get-data-return-barcode', [PreOrderController::class, 'getDataReturnBarcode'])->name('daftar-po.get-data-return-barcode');
+    Route::post('/update-supplier-receive-data', [PreOrderController::class, 'updateSupplierReceiveData'])->name('update-supplier-receive-data');
 
     // Hutang
     Route::get('/pembayaran-hutang', [PembayaranController::class, 'indexHutang'])->name('pembayaran-hutang.index');

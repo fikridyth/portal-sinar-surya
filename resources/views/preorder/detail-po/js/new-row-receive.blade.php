@@ -129,7 +129,27 @@
                 if (response.error) {
                     alert(response.error);
                 } else {
-                    window.location.reload();
+                    var products = response.data;
+                    var productRows = '';
+
+                    // Loop melalui produk dan buat HTML untuk setiap baris tabel
+                    products.forEach(function(product) {
+                        productRows += `
+                            <tr>
+                                <td>${product.nama} / ${product.unit_jual}</td>
+                                <td>${product.stok}</td>
+                                <td>${number_format(product.harga_pokok)}</td>
+                                <td>${number_format(product.harga_jual)}</td>
+                                <td><input type="checkbox" class="product-checkbox" data-product-id="${product.id}" data-nama="${product.nama}" data-kode="${product.kode}"></td>
+                            </tr>
+                        `;
+                    });
+
+                    // Masukkan baris produk ke dalam tabel
+                    $('#productDetails').html(productRows);
+
+                    // Tampilkan modal
+                    $('#productModal').fadeIn();
                 }
             },
             error: function(xhr, status, error) {
@@ -137,6 +157,67 @@
             }
         });
     }
+
+    // Fungsi untuk menutup modal
+    $('.close-btn').click(function() {
+        $('#productModal').fadeOut();
+    });
+
+    // Menutup modal jika pengguna mengklik area luar modal
+    $(window).click(function(event) {
+        if ($(event.target).is('#productModal')) {
+            $('#productModal').fadeOut();
+        }
+    });
+
+    function number_format(number) {
+        return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Fungsi untuk menangani klik tombol Simpan
+    $('#saveBtn').click(function() {
+        // Mengambil data produk yang dipilih
+        var selectedProducts = [];
+        $('.product-checkbox:checked').each(function() {
+            var product = {
+                id: $(this).data('product-id'),
+                nama: $(this).data('nama'),
+                kode: $(this).data('kode')
+            };
+            selectedProducts.push(product);
+        });
+
+        // Cek apakah ada produk yang dipilih
+        if (selectedProducts.length > 0) {
+            // Kirim data yang dipilih ke server menggunakan AJAX
+            $.ajax({
+                url: '/store-data-from-barcode', // Ganti dengan URL yang sesuai
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    products: selectedProducts,
+                    preorderId: preorderId,
+                    supplierId: supplierId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // alert('Produk berhasil disimpan!');
+                        $('#productModal').fadeOut();
+                        window.location.reload();
+                    } else {
+                        alert('Gagal menyimpan produk.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan:', error);
+                }
+            });
+        } else {
+            alert('Silakan pilih produk untuk disimpan.');
+        }
+    });
 
     // Store Data
     document.addEventListener('DOMContentLoaded', function() {
