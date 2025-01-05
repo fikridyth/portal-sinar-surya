@@ -62,8 +62,7 @@ class AdjustmentController extends Controller
         $grups = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::where('status', 1)->get();
-        // $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
-        $products = Product::where('stok', '>', 0)->limit(2000)->get();
+        $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
         // dd(count($products));
 
         return view('master.adjustment.index-edit', compact('title', 'titleHeader', 'grups', 'departemens', 'suppliers', 'products'));

@@ -25,18 +25,6 @@
 @section('content')
     <div class="d-flex justify-content-center">
         <div class="mb-7" style="width: 80%">
-            {{-- <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                MASTER HARGA
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div> --}}
-
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('master.harga.store') }}" method="POST" id="filter-form">
@@ -59,7 +47,7 @@
                                         <label class="mx-3" style="font-size: 13px;">DARI TANGGAL</label>
                                     </div>
                                     <div class="col-4">
-                                        <input style="margin-left: 3%;" type="date" name="from_date" value="{{ now()->format("Y-m-d") }}">
+                                        <input type="date" id="from_date" style="margin-left: 3%;" name="from_date" value="{{ now()->format("Y-m-d") }}">
                                     </div>
                                     <div class="col-4">
                                         <input type="date" value="{{ now()->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
@@ -70,7 +58,7 @@
                                         <label class="mx-3" style="font-size: 13px;">SAMPAI TANGGAL</label>
                                     </div>
                                     <div class="col-4">
-                                        <input style="margin-left: 3%;" type="date" name="to_date" value="{{ now()->format("Y-m-d") }}">
+                                        <input type="date" id="to_date" style="margin-left: 3%;" readonly name="to_date" value="{{ now()->format("Y-m-d") }}">
                                     </div>
                                     <div class="col-4">
                                         <input type="date" value="{{ now()->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
@@ -92,27 +80,30 @@
                                             <th class="text-center">HARGA JUAL</th>
                                             <th class="text-center">MARK UP</th>
                                             <th class="text-center">HARGA JUAL BARU</th>
-                                            <th class="text-center">V</th>
+                                            {{-- <th class="text-center">V</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($products as $index => $product)
+                                            @php
+                                                $no = $index + 1;
+                                            @endphp
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
+                                                <input type="number" hidden id="harga_lama_{{ $no }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                                <input type="number" hidden id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;">
                                                 <td class="text-end">{{ number_format($product->harga_lama) }}</td>
-                                                <td><input type="number" id="harga_pokok_{{ $index }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
+                                                <td><input type="number" id="harga_pokok_{{ $no }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" oninput="updateProfitPokok({{ $no }})" onkeydown="handleEnterPokok(event, {{ $no }}, '{{ $product->harga_pokok }}')" onfocus="this.value = '';"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
-                                                    <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                    <td id="profit_pokok_{{ $no }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
-                                                    <td>0.00</td>
+                                                    <td id="profit_pokok_{{ $no }}">0.00</td>
                                                 @endif
-                                                <td><input type="number" id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})"></td>
-                                                <td><input type="text" id="profit_{{ $index }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" oninput="updateHargaSementara({{ $index }})"></td>
-                                                <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;"></td>
-                                                <td><input type="checkbox" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox"></td>
+                                                <td><input type="number" id="harga_jual_{{ $no }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';"></td>
+                                                <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
+                                                <td id="td_harga_sementara_{{ $no }}"><input type="text" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" onfocus="this.value = '';"></td>
+                                                <input type="checkbox" hidden id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox">
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -122,7 +113,7 @@
                         <div class="d-flex justify-content-between mt-3">
                             <div></div>
                             <div style="margin-left: 10%;">
-                                <button type="submit" id="button-selesai" disabled class="btn btn-primary mx-4">PROSES</button>
+                                <button type="submit" id="button-selesai" class="btn btn-primary mx-4">PROSES</button>
                                 <a href="{{ route('master.harga.index') }}" class="btn btn-danger">KEMBALI</a>
                             </div>
                             <div>
@@ -155,21 +146,106 @@
             allowClear: true
         });
 
-        function updateHargaSementara(index) {
-            var hargaJual = parseFloat(document.getElementById('harga_jual_' + index).value) || 0;
-            var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
+        function handleEnterPokok(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('harga_pokok_' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('harga_jual_' + no).focus();
+            }
+        }
+
+        function handleEnterJual(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('harga_jual_' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('profit_' + no).focus();
+            }
+        }
+
+        function handleEnterProfit(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('profit_' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('harga_sementara_' + no).focus();
+            }
+        }
+
+        function handleEnterSementara(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('harga_sementara_' + no);
+                var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('checkbox_select_' + no).checked = true;
+                document.getElementById('td_harga_sementara_' + no).style.backgroundColor = 'red';
+                
+                if (inputField.value < hargaJual) {
+                    alert('HARGA SEMENTARA TIDAK BOLEH LEBIH KECIL');
+                    inputField.value = originalValue;
+                    document.getElementById('checkbox_select_' + no).checked = false;
+                    document.getElementById('td_harga_sementara_' + no).style.backgroundColor = 'white';
+                }
+            }
+        }
+
+        function updateHargaSementara(no) {
+            var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+            var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
 
             // Menghitung harga_sementara
             var hargaSementara = (hargaJual * profit) / 100 + hargaJual;
 
             // Memperbarui nilai harga_sementara berdasarkan indeks
-            document.getElementById('harga_sementara_' + index).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
+            document.getElementById('harga_sementara_' + no).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
+        }
+
+        function updateHargaSementara2(no) {
+            var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+            var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + no).value) || 0;
+
+            // Menghitung harga_sementara
+            var hitung = hargaSementara - hargaJual;
+            var hargaSementara = (hitung / hargaJual) * 100;
+
+            // Memperbarui nilai harga_sementara berdasarkan indeks
+            document.getElementById('profit_' + no).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
+        }
+
+        function updateProfitPokok(no) {
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+            var hargaLama = parseFloat(document.getElementById('harga_lama_' + no).value) || 0;
+
+            // Menghitung harga_sementara
+            var hitung = hargaPokok - hargaLama;
+            var hargaSementara = (hitung / hargaLama) * 100;
+
+            // Memperbarui nilai harga_sementara berdasarkan indeks
+            document.getElementById('profit_pokok_' + no).innerHTML = hargaSementara.toFixed(2); // Menggunakan 2 desimal
         }
 
         // Memanggil fungsi pada saat halaman pertama kali dimuat untuk memastikan nilai sudah benar
         window.onload = function() {
             @foreach ($products as $index => $product)
-                updateHargaSementara({{ $index }});
+                updateHargaSementara({{ $index + 1 }});
             @endforeach
         };
 
@@ -204,6 +280,28 @@
                         hiddenInput5.remove();
                     }
                 }
+            });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            // focus barcode
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const fromDate = document.getElementById("from_date");
+            const toDate = document.getElementById("to_date");
+
+            // Set initial min value for "SAMPAI TANGGAL"
+            toDate.min = fromDate.value;
+
+            // Update min value of "SAMPAI TANGGAL" when "DARI TANGGAL" changes
+            fromDate.addEventListener("change", function () {
+                toDate.min = this.value;
+                toDate.value = this.value;
             });
         });
     </script>

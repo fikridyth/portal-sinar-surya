@@ -25,18 +25,6 @@
 @section('content')
     <div class="d-flex justify-content-center">
         <div class="mb-7" style="width: 80%">
-            {{-- <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                MASTER HARGA
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div> --}}
-
             <div class="card">
                 <div class="card-body">
                     <form action="{{ route('master.harga.update', $hargaSementara->id) }}" method="POST" id="filter-form">
@@ -53,7 +41,7 @@
                                         <label class="mx-3" style="font-size: 13px;">DARI TANGGAL</label>
                                     </div>
                                     <div class="col-4">
-                                        <input style="margin-left: 3%;" type="date" name="from_date" value="{{ now()->format("Y-m-d") }}">
+                                        <input type="date" id="from_date" style="margin-left: 3%;" name="from_date" value="{{ \Carbon\Carbon::parse($hargaSementara->date_first)->format("Y-m-d") }}">
                                     </div>
                                     <div class="col-4">
                                         <input type="date" value="{{ \Carbon\Carbon::parse($hargaSementara->date_first)->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
@@ -64,7 +52,7 @@
                                         <label class="mx-3" style="font-size: 13px;">SAMPAI TANGGAL</label>
                                     </div>
                                     <div class="col-4">
-                                        <input style="margin-left: 3%;" type="date" name="to_date" value="{{ now()->format("Y-m-d") }}">
+                                        <input type="date" id="to_date" style="margin-left: 3%;" name="to_date" readonly value="{{ \Carbon\Carbon::parse($hargaSementara->date_last)->format("Y-m-d") }}">
                                     </div>
                                     <div class="col-4">
                                         <input type="date" value="{{ \Carbon\Carbon::parse($hargaSementara->date_last)->format("Y-m-d") }}" disabled style="background-color: #90ee90; color: red;">
@@ -90,23 +78,23 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($listProduct as $index => $product)
-                                        {{-- @dd($product) --}}
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
                                                 <input type="hidden" name="loop[{{ $product->id }}]" value="{{ $product->id }}">
                                                 <input type="hidden" name="data_id[{{ $product->id }}]" value="{{ $product->id_product }}">
+                                                <input type="hidden" id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" value="{{ $product->harga_lama }}">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}</td>
-                                                <td><input type="number" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;"></td>
-                                                <td><input type="number" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;"></td>
+                                                <td>{{ number_format($product->harga_lama) }}</td>
+                                                <td><input type="number" id="harga_pokok_{{ $index }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" oninput="updateProfitPokok({{ $index }})"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
-                                                    <td>{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                    <td id="profit_pokok_{{ $index }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
-                                                    <td>0.00</td>
+                                                    <td id="profit_pokok_{{ $index }}">0.00</td>
                                                 @endif
                                                 <td><input type="number" id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})"></td>
                                                 <td><input type="text" id="profit_{{ $index }}" name="profit[{{ $product->id }}]" value="{{ $product->profit_jual }}" style="width: 70px;" oninput="updateHargaSementara({{ $index }})"></td>
-                                                <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ $product->harga_sementara }}" style="width: 100px;"></td>
+                                                <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ $product->harga_sementara }}" style="width: 100px;" oninput="updateHargaSementara2({{ $index }})"></td>
                                                 <input type="text" id="read_sementara_{{ $index }}" hidden value="{{ $product->harga_sementara }}">
                                             </tr>
                                         @endforeach
@@ -122,7 +110,7 @@
                             </div>
                             <div>
                                 <label class="mx-3" style="font-size: 13px;">KENAIKAN</label>
-                                <input type="text" id="kenaikan" name="kenaikan" value="{{ $hargaSementara->naik }}" size="5" oninput="updateHargaKenaikan()">
+                                <input type="number" id="kenaikan" name="kenaikan" autocomplete="off" max="100" value="{{ $hargaSementara->naik }}" style="width: 70px;" onkeydown="handleEnterKenaikan(event, '{{ $hargaSementara->naik }}')" onfocus="this.value = '';">
                                 <label>%</label>
                             </div>
                         </div>
@@ -145,29 +133,93 @@
             // Memperbarui nilai harga_sementara berdasarkan indeks
             document.getElementById('harga_sementara_' + index).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
         }
+
+        function updateHargaSementara2(index) {
+            var hargaJual = parseFloat(document.getElementById('harga_jual_' + index).value) || 0;
+            var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + index).value) || 0;
+
+            // Menghitung harga_sementara
+            var hitung = hargaSementara - hargaJual;
+            var hargaSementara = (hitung / hargaJual) * 100;
+
+            // Memperbarui nilai harga_sementara berdasarkan indeks
+            document.getElementById('profit_' + index).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
+        }
+
+        function updateProfitPokok(index) {
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
+            var hargaLama = parseFloat(document.getElementById('harga_lama_' + index).value) || 0;
+
+            // Menghitung harga_sementara
+            var hitung = hargaPokok - hargaLama;
+            var hargaSementara = (hitung / hargaLama) * 100;
+
+            // Memperbarui nilai harga_sementara berdasarkan indeks
+            document.getElementById('profit_pokok_' + index).innerHTML = hargaSementara.toFixed(2); // Menggunakan 2 desimal
+        }
+
+        function handleEnterKenaikan(event, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('kenaikan').value || 1;
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                updateHargaKenaikan()
+            }
+        }
         
         function updateHargaKenaikan() {
             // Ambil nilai kenaikan dari input
-            var kenaikan = document.getElementById('kenaikan').value || 0;
-
+            var kenaikan = parseFloat(document.getElementById('kenaikan').value) || 1;
+            
             // Loop untuk setiap produk dan update harga sementaranya
             @foreach ($listProduct as $index => $product)
+                var hargaJual = parseFloat(document.getElementById('harga_jual_{{ $index }}').value) || 0;
+                var hargaSementara = parseFloat(document.getElementById('harga_sementara_{{ $index }}').value) || 0;
                 var readSementara = document.getElementById('read_sementara_{{ $index }}').value || 0;
 
                 // Menghitung harga sementara setelah kenaikan
-                var hargaSetelahKenaikan = (kenaikan / 100) * readSementara;
+                var hitung = readSementara - hargaJual;
+                var hitung2 = (kenaikan / 100) * hitung;
+                var hargaSetelahKenaikan = hargaJual + hitung2;
+                var profit = ((hargaSetelahKenaikan - hargaJual) / hargaJual) * 100
 
                 // Update nilai harga sementara pada input
                 document.getElementById('harga_sementara_{{ $index }}').value = hargaSetelahKenaikan.toFixed(0);
+                document.getElementById('profit_{{ $index }}').value = profit.toFixed(2);
             @endforeach
         }
 
         // Memanggil fungsi pada saat halaman pertama kali dimuat untuk memastikan nilai sudah benar
-        window.onload = function() {
-            @foreach ($listProduct as $index => $product)
-                updateHargaSementara({{ $index }});
-            @endforeach
-            updateHargaKenaikan();
-        };
+        // window.onload = function() {
+        //     @foreach ($listProduct as $index => $product)
+        //         updateHargaSementara({{ $index }});
+        //     @endforeach
+        // };
+
+        document.addEventListener('keydown', function(event) {
+            // focus barcode
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const fromDate = document.getElementById("from_date");
+            const toDate = document.getElementById("to_date");
+
+            // Set initial min value for "SAMPAI TANGGAL"
+            toDate.min = fromDate.value;
+
+            // Update min value of "SAMPAI TANGGAL" when "DARI TANGGAL" changes
+            fromDate.addEventListener("change", function () {
+                toDate.min = this.value;
+                toDate.value = this.value;
+            });
+        });
     </script>
 @endsection

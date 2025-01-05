@@ -40,15 +40,21 @@ class HargaController extends Controller
         $selectedIds = $request->input('selected_ids');
 
         $combined = [];
-        foreach ($selectedIds as $id) {
-            $combined[] = [
-                'id' => $id,
-                'harga_lama' => $hargaLama[$id] ?? null,
-                'harga_pokok' => $hargaPokok[$id] ?? null,
-                'harga_jual' => $hargaJual[$id] ?? null,
-                'profit' => $profit[$id] ?? null,
-                'harga_sementara' => $hargaSementara[$id] ?? null,
-            ];
+        if (isset($selectedIds)) {
+            foreach ($selectedIds as $id) {
+                $combined[] = [
+                    'id' => $id,
+                    'harga_lama' => $hargaLama[$id] ?? null,
+                    'harga_pokok' => $hargaPokok[$id] ?? null,
+                    'harga_jual' => $hargaJual[$id] ?? null,
+                    'profit' => $profit[$id] ?? null,
+                    'harga_sementara' => $hargaSementara[$id] ?? null,
+                ];
+            }
+        } else {
+            return Redirect::route('master.harga.show', enkrip($request->id_supplier))
+                ->with('alert.status', '99')
+                ->with('alert.message', "DATA PERLU DI ISI!");
         }
         // dd($combined);
         
@@ -59,10 +65,10 @@ class HargaController extends Controller
             $product = Product::find($data['id']);
             if ($product) {
                 $dataProduct = [
-                    'harga_lama' => $data['harga_lama'],
+                    // 'harga_lama' => $data['harga_lama'],
+                    // 'harga_jual' => $data['harga_jual'],
                     'harga_pokok' => $data['harga_pokok'],
-                    'harga_jual' => $data['harga_jual'],
-                    'profit' => number_format((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    'profit' => number_format((($product->harga_jual - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                 ];
                 $product->update($dataProduct);
                 ProductPos::find($data['id'])->update($dataProduct);
@@ -93,7 +99,7 @@ class HargaController extends Controller
                 foreach ($getKelompok as $kelompok) {
                     $kelompok->update([
                         'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0),
-                        'harga_jual' => (int)round((($kelompok->harga_jual * $getMarkJual) / 100) + $kelompok->harga_jual,0)
+                        // 'harga_jual' => (int)round((($kelompok->harga_jual * $getMarkJual) / 100) + $kelompok->harga_jual,0)
                     ]);
                 }
             }
@@ -145,26 +151,26 @@ class HargaController extends Controller
         // dd($combined);
 
         foreach ($combined as $data) {
-            $dataHargaSementara = HargaSementara::find($data['id']);
+            // $dataHargaSementara = HargaSementara::find($data['id']);
+            // if ($dataHargaSementara) {
+            //     $dataHargaSementara->update([
+            //         'harga_lama' => $data['harga_lama'],
+            //         'harga_pokok' => $data['harga_pokok'],
+            //         'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
+            //         'harga_jual' => $data['harga_jual'],
+            //         'profit_jual' => $data['profit'],
+            //         'harga_sementara' => $data['harga_sementara'],
+            //         // 'naik' => $request->kenaikan,
+            //     ]);
+            // }
             $product = Product::find($data['id_product']);
-            // dd($data, $dataHargaSementara);
-            if ($dataHargaSementara) {
-                $dataHargaSementara->update([
-                    'harga_lama' => $data['harga_lama'],
-                    'harga_pokok' => $data['harga_pokok'],
-                    'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
-                    'harga_jual' => $data['harga_jual'],
-                    'profit_jual' => $data['profit'],
-                    'harga_sementara' => $data['harga_sementara'],
-                    'naik' => $request->kenaikan,
-                ]);
-            }
             if ($product) {
                 $dataProduct = [
-                    'harga_lama' => $data['harga_lama'],
+                    // 'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
-                    'harga_jual' => $data['harga_jual'],
-                    'profit' => number_format((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    'profit' => number_format((($product->harga_jual - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    // 'harga_jual' => $data['harga_jual'],
+                    // 'profit' => number_format((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                 ];
                 $product->update($dataProduct);
                 ProductPos::find($data['id_product'])->update($dataProduct);
