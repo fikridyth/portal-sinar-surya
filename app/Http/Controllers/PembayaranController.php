@@ -61,7 +61,7 @@ class PembayaranController extends Controller
 
         $supplier = Supplier::find($id);
         $getHutang = Hutang::where('id_supplier', $supplier->id)->whereNull('nomor_bukti')->whereNull('is_cancel')->whereNotNull('is_proses')->where('total', '!=', 0)->get();
-        $getReturn = Pengembalian::where('id_supplier', $supplier->id)->whereNull('nomor_bukti')->where('total', '!=', 0)->get();
+        $getReturn = Pengembalian::where('id_supplier', $supplier->id)->whereNotNull('nomor_return')->whereNull('nomor_bukti')->where('total', '!=', 0)->get();
         $hutangData = $getHutang->map(function($item) {
             return [
                 'nomor' => $item->nomor_receive,

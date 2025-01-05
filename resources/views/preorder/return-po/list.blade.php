@@ -1,7 +1,7 @@
 @extends('main')
 
 @section('content')
-    <div class="container">
+    <div class="container-fluid w-100" style="max-width: 90%; width: 90%;">
         <div class="card mt-n3">
             <div class="card-body mt-n4">
                 <div class="card-body">
@@ -15,6 +15,7 @@
                                             <th class="text-center">KASIR</th>
                                             <th class="text-center">TANGGAL</th>
                                             <th class="text-center">JAM</th>
+                                            <th class="text-center">DETAIL</th>
                                             <th class="text-center">PILIH</th>
                                             <th class="text-center">HAPUS</th>
                                         </tr>
@@ -25,8 +26,13 @@
                                                 <td class="text-center">{{ $retur->supplier->nama }}</td>
                                                 <td class="text-center">{{ $retur->created_by }}</td>
                                                 <td class="text-center">{{ $retur->date }}</td>
-                                                <td class="text-center">{{ $retur->time }}</td>
+                                                <td class="text-center">{{ $retur->jam }}</td>
                                                 <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($retur->detail) }}" data-total="{{ $retur->total }}"></td>
+                                                @if ($jabatan == 'OWNER')
+                                                    <td class="text-center"><input type="checkbox" class="edit-checkbox" data-detail="{{ enkrip($retur->id) }}"></td>
+                                                @else
+                                                    <td class="text-center"><input type="checkbox" class="show-checkbox" data-detail="{{ enkrip($retur->id) }}"></td>
+                                                @endif
                                                 <td class="text-center"><input type="checkbox" class="delete-checkbox"></td>
                                             </tr>
                                         @endforeach
@@ -145,6 +151,26 @@
                     // Jika tidak dikonfirmasi, uncheck checkbox
                     this.checked = false;
                 }
+            }
+        });
+
+        $(document).on('change', '.show-checkbox', function () {
+            if ($(this).is(':checked')) {
+                let detailId = $(this).data('detail'); // Ambil ID dari data-detail
+                let route = `/return-po/${detailId}`; // Sesuaikan dengan format route Anda
+                
+                // Redirect ke route
+                window.location.href = route;
+            }
+        });
+
+        $(document).on('change', '.edit-checkbox', function () {
+            if ($(this).is(':checked')) {
+                let detailId = $(this).data('detail'); // Ambil ID dari data-detail
+                let route = `/return-po/edit/${detailId}`; // Sesuaikan dengan format route Anda
+                
+                // Redirect ke route
+                window.location.href = route;
             }
         });
     </script>

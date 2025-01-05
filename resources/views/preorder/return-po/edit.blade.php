@@ -35,30 +35,22 @@
                                     <div class="row align-items-center mt-1">
                                         <label class="col-3 col-form-label">NAMA SUPPLIER</label>
                                         <div class="col-7">
-                                            <select id="supplier-select" name="id_supplier" required class="supplier-select btn-block">
-                                                <option value=""></option>
-                                                @foreach ($suppliers as $supplier)
-                                                    <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
-                                                @endforeach
-                                            </select>
+                                            <input type="text" disabled value="{{ $retur->supplier->nomor }} - {{ $retur->supplier->nama }}" size="61">
+                                            <input type="text" hidden name="id_supplier" value="{{ $retur->id_supplier }}">
                                         </div>
                                     </div>
 
                                     <div class="row align-items-center mt-1">
                                         <label class="col-3 col-form-label">BUKTI PENERIMAAN</label>
-                                        <div class="col-7">
-                                            <select id="preorder-select" disabled name="nomor_receive" required class="preorder-select btn-block">
-                                                <option value=""></option>
-                                                @foreach ($preorders as $preorder)
-                                                    <option value="{{ $preorder->nomor_receive }}">{{ $preorder->nomor_receive }} - {{ $preorder->supplier->nama }}</option>
-                                                @endforeach
-                                            </select>
+                                        <div class="col-6">
+                                            <input type="text" disabled value="{{ $retur->nomor_receive ?? '-' }}" size="45">
                                         </div>
+                                        <div class="col-1"><a href="{{ route('daftar-receive-supplier', ['id' => enkrip($retur->id), 'sup' => $retur->id_supplier]) }}" class="btn btn-warning" title="CARI DATA"><i class="fas fa-search"></i></a></div>
                                     </div>
                                 </div>
                                 <div class="form-group col-5 mb-4">
                                     <div class="row">
-                                        <textarea name="" id="" class="form-control" rows="3"></textarea>
+                                        <textarea readonly class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -83,6 +75,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr class="fs-need"></tr>
+                                                {{-- MUNCULKAN DATA DARI RETUR->DETAIL --}}
                                             </tbody>
                                         </table>
                                     </div>
@@ -93,8 +86,8 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    <button type="button" id="tambah-button" class="btn btn-success mx-2" disabled>TAMBAH</button>
-                                    <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger disabled-link">INVENTORY</a>
+                                    <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
+                                    {{-- <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a> --}}
                                 </div>
                             </div>
                             <div class="row align-items-center">
@@ -108,7 +101,7 @@
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <a href="{{ route('daftar-return-po') }}" id="daftar-return-button" class="btn btn-warning">DAFTAR RETUR BARANG</a>
+                            <a href="{{ route('daftar-return-po') }}" class="btn btn-warning">DAFTAR RETUR BARANG</a>
                             <a href="{{ route('index') }}" class="btn btn-danger mx-4">BATAL</a>
                             <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
                         </div>
@@ -156,8 +149,8 @@
 
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
-                document.getElementById('daftar-return-button').click();
-                // document.getElementById('tambah-button').disabled = true;
+                document.getElementById('tambah-button').click();
+                document.getElementById('tambah-button').disabled = true;
             }
         });
 

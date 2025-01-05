@@ -1427,6 +1427,76 @@ class PreOrderController extends Controller
         return view('preorder.return-po.index', compact('title', 'titleHeader', 'suppliers', 'preorders', 'products'));
     }
 
+    public function daftarReturnPo()
+    {
+        $title = 'Daftar Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
+        $returs = Pengembalian::whereNull('nomor_return')->get();
+        $jabatan = auth()->user()->jabatan;
+        // dd($returs);
+
+        return view('preorder.return-po.list', compact('title', 'titleHeader', 'returs', 'jabatan'));
+    }
+
+    public function showReturnPo($id)
+    {
+        $id = dekrip($id);
+        $title = 'Show Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
+
+        $retur = Pengembalian::find($id);
+        dd($retur);
+
+        return view('preorder.return-po.show', compact('title', 'titleHeader', 'retur'));
+    }
+
+    public function editReturnPo($id)
+    {
+        $id = dekrip($id);
+        $title = 'Edit Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
+
+        $retur = Pengembalian::find($id);
+
+        return view('preorder.return-po.edit', compact('title', 'titleHeader', 'retur'));
+    }
+
+    public function daftarReceiveSupplier($id, $sup)
+    {
+        $id = dekrip($id);
+        $title = 'Edit Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
+
+        $retur = Pengembalian::find($id);
+        $preorders = Preorder::where('receive_type', 'B')->where('id_supplier', $sup)->get();
+        // dd($retur, $preorders);
+
+        return view('preorder.return-po.index-edit', compact('title', 'titleHeader', 'retur', 'preorders'));
+    }
+
+    public function destroyReturnData($id)
+    {
+        $retur = Pengembalian::find($id);
+        $preorder = Preorder::where('nomor_return', $retur->nomor_return);
+        $detail = json_decode($retur->detail, true);
+        foreach ($detail as $data) {
+            $product = Product::where('kode', $data['kode'])->first();
+            $product->update([
+                'stok' => (int)$product->stok + $data['order']
+            ]);
+        }
+        
+        $preorder->update([
+            'is_return' => null, 
+            'nomor_return' => null
+        ]);
+        
+        ProductStock::where('tipe', $retur->nomor_return)->delete();
+        $retur->delete();
+
+        return response()->json(['success' => true]);
+    }
+
     public function storeReturnData(Request $request)
     {
         // dd($request->all());
@@ -1507,45 +1577,14 @@ class PreOrderController extends Controller
             'detail' => json_encode($detail)
         ]);
 
+        // if ($preorder->nomor_return == null) {
         $preorder->update([
             'is_return' => 1, 
             'nomor_return' => $getNomorReturn
         ]);
+        // }
 
         return Redirect::back()->with('alert.status', '00')->with('alert.message', "Sukses Menambah Data Return!");
-    }
-
-    public function daftarReturnPo()
-    {
-        $title = 'Daftar Return PO';
-        $titleHeader = 'DAFTAR KEMBALI BARANG';
-        $returs = Pengembalian::whereNull('nomor_bukti')->get();
-        // dd($returs);
-
-        return view('preorder.return-po.list', compact('title', 'titleHeader', 'returs'));
-    }
-
-    public function destroyReturnData($id)
-    {
-        $retur = Pengembalian::find($id);
-        $preorder = Preorder::where('nomor_return', $retur->nomor_return);
-        $detail = json_decode($retur->detail, true);
-        foreach ($detail as $data) {
-            $product = Product::where('kode', $data['kode'])->first();
-            $product->update([
-                'stok' => (int)$product->stok + $data['order']
-            ]);
-        }
-        
-        $preorder->update([
-            'is_return' => null, 
-            'nomor_return' => null
-        ]);
-        
-        ProductStock::where('tipe', $retur->nomor_return)->delete();
-        $retur->delete();
-
-        return response()->json(['success' => true]);
     }
 
     public function getDataFromBarcode(Request $request)
