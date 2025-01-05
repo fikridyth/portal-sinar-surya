@@ -27,80 +27,33 @@
 <body>
     {{-- @dd($results) --}}
     <div class="container mt-4">
-        <div class="row">
-            <div class="col-3">SINAR SURYA</div>
-            <div class="col-5"></div>
-            <div class="col-3">{{ now()->format('d/m/Y') }}</div>
+        <div class="text-center">
+            *** LAPORAN PERSEDIAAN ***
         </div>
-        <div class="row">
-            <div class="col-3">JL. PASAR BARU - BOGOR</div>
-            <div class="col-5"></div>
-            <div class="col-3">GAWIH JAYA</div>
+        <div>
+            TANGGAL : {{ now()->format('d/m/Y') }}
         </div>
-        <div class="row">
-            <div class="col-3">Telp : (0251)-324647</div>
-            <div class="col-5"></div>
-            <div class="col-3">Phone : 021 790875</div>
-        </div>
-        <div class="row">
-            <div class="col-3">Fax &nbsp;: (0251)-357029</div>
-            <div class="col-5"></div>
-            <div class="col-3">Fax &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 7964355</div>
-        </div>
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-5"></div>
-            <div class="col-3">CP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: EDI 087870000717</div>
-        </div>
-        <div class="row">
-            <div class="col-4"></div>
-            <div class="col-2">PENYESUAIAN HARGA</div>
-            <div class="col-4"></div>
-            <div class="col-2"></div>
-        </div>
-        {{-- <hr class="dashed-line">
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-5"></div>
-            <div class="col-4"></div>
-        </div>
-        <div class="row">
-            <div class="col-3">Type Of Payment : Credit</div>
-            <div class="col-5"></div>
-            <div class="col-3">Cancellation Date : {{ now()->format('d/m/Y') }}</div>
-        </div>
-        <div class="row">
-            <div class="col-3">Term Of Payment : 0</div>
-        </div> --}}
         <hr class="dashed-line">
         <hr class="dashed-line-2">
         <div class="row" style="margin-top: 10px;">
-            <div class="col-1">No</div>
-            <div class="col-4">Nama Barang</div>
-            <div class="col-1">Konv</div>
-            <div class="col-1">Isi</div>
-            <div class="col-2">Harga</div>
-            <div class="col-1">Stok</div>
-            {{-- <div class="col-1">Fisik</div> --}}
-            <div class="col-2">Rupiah</div>
-            {{-- <div class="col-1">Selisih Qty</div> --}}
-            {{-- <div class="col-1">Selisih Rp</div> --}}
+            <div class="col-4">NAMA BARANG</div>
+            <div class="col-2" style="display: flex; justify-content: flex-end;">HARGA</div>
+            <div class="col-1" style="display: flex; justify-content: flex-end;">STOK</div>
+            <div class="col-1" style="display: flex; justify-content: flex-end;">FISIK</div>
+            <div class="col-2" style="display: flex; justify-content: flex-end;">SELISIH QTY</div>
+            <div class="col-2" style="display: flex; justify-content: flex-end;">SELISIH RUPIAH</div>
         </div>
         <hr class="dashed-line">
         <hr class="dashed-line-2">
         @foreach ($products as $product)
-            {{-- @dd($result['product']['nama']) --}}
+            {{-- @dd($product) --}}
             <div class="row" style="margin-top: 10px;">
-                <div class="col-1">{{ $loop->iteration }}</div>
                 <div class="col-4">{{ $product->nama }}/{{ $product->unit_jual }}</div>
-                <div class="col-1">{{ $product->konversi }}</div>
-                <div class="col-1">{{ str_replace('P', '', $product->unit_jual) }}</div>
-                <div class="col-2">{{ number_format($product->harga_jual) }}</div>
-                <div class="col-1">{{ $product->stok }}</div>
-                {{-- <div class="col-1">{{ $product->stok }}</div> --}}
-                <div class="col-2">{{ number_format($product->harga_jual * $product->stok) }}</div>
-                {{-- <div class="col-1">{{ number_format(0, 2) }}</div>
-                <div class="col-1">{{  }}</div> --}}
+                <div class="col-2" style="display: flex; justify-content: flex-end;">{{ number_format($product->harga_jual) }}</div>
+                <div class="col-1" style="display: flex; justify-content: flex-end;">{{ number_format($product->stok,0) }}</div>
+                <div class="col-1" style="display: flex; justify-content: flex-end;">{{ number_format($product->stok,0) }}</div>
+                <div class="col-2" style="display: flex; justify-content: flex-end;">0</div>
+                <div class="col-2" style="display: flex; justify-content: flex-end;">0</div>
             </div>
         @endforeach
         <hr class="dashed-line">

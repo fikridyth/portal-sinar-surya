@@ -49,7 +49,7 @@ class AdjustmentController extends Controller
             $query->whereIn('id_departemen', $request->selected_departemens);
         }
 
-        $products = $query->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = $query->orderBy('nama', 'asc')->get();
         session(['products' => $products]);
         // dd(count($products));
 
@@ -91,8 +91,7 @@ class AdjustmentController extends Controller
             $query->whereIn('id_departemen', $request->selected_departemens);
         }
 
-        // $products = $query->where('stok', '>', 0)->orderBy('nama', 'asc')->get();
-        $products = $query->where('stok', '>', 0)->limit(180)->get();
+        $products = $query->orderBy('nama', 'asc')->get();
         // dd(count($products));
         session(['products' => $products]);
 
@@ -110,6 +109,35 @@ class AdjustmentController extends Controller
         // dd(count($products));
 
         return view('master.adjustment.edit', compact('title', 'titleHeader', 'products'));
+    }
+
+    public function cetak() {
+        $title = 'Adjustment';
+        $titleHeader = 'PENYESUAIAN PERSEDIAAN';
+
+        $products = session('products');
+
+        return view('master.adjustment.cetak', compact('title', 'titleHeader', 'products'));
+    }
+
+    public function cetakRokok() {
+        $title = 'Adjustment';
+        $titleHeader = 'PENYESUAIAN PERSEDIAAN';
+
+        $productsAll = session('products');
+        $products = [];
+        foreach ($productsAll as $product) {
+            if ($product->unit_jual == 'P1') {
+                $products[] = [
+                    'nama' => $product->nama,
+                    'unit_jual' => $product->unit_jual,
+                    'stok' => $product->stok,
+                ];
+            }
+        }
+        // dd(count($products));
+
+        return view('master.adjustment.cetak-rokok', compact('title', 'titleHeader', 'products'));
     }
     
     public function update(Request $request) {
@@ -139,19 +167,27 @@ class AdjustmentController extends Controller
         $selectedName = $request->input('name');
 
         $combined = [];
-        foreach ($selectedIds as $id) {
-            if ($selectedRupiah[$id] !== '0') {
-                $combined[] = [
-                    'id' => $id,
-                    'name' => $selectedName[$id] ?? null,
-                    'stok' => $selectedStok[$id] ?? null,
-                    'fisik' => $selectedFisik[$id] ?? null,
-                    'qty' => (int)$selectedQty[$id] ?? null,
-                    'rupiah' => $selectedRupiah[$id] ?? null,
-                ];
+        if (isset($selectedIds)) {
+            foreach ($selectedIds as $id) {
+                if ($selectedRupiah[$id] !== null) {
+                    $combined[] = [
+                        'id' => $id,
+                        'name' => $selectedName[$id] ?? null,
+                        'stok' => $selectedStok[$id] ?? null,
+                        'fisik' => $selectedFisik[$id] ?? null,
+                        'qty' => (int)$selectedQty[$id] ?? 0,
+                        'rupiah' => $selectedRupiah[$id] ?? 0,
+                    ];
+                }
             }
+        } else {
+            return Redirect::route('master.adjustment.index-edit');
         }
         // dd($combined);
+
+        if ($combined == []) {
+            return Redirect::route('master.adjustment.index-edit');
+        }
 
         $maxNo = Adjustment::max('nomor');
         $getNext = $maxNo + 1;
@@ -185,15 +221,6 @@ class AdjustmentController extends Controller
         return Redirect::route('master.adjustment.index-edit')
             ->with('alert.status', '00')
             ->with('alert.message', "Update Adjustment Success!");
-    }
-
-    public function cetak() {
-        $title = 'Adjustment';
-        $titleHeader = 'PENYESUAIAN PERSEDIAAN';
-
-        $products = session('products');
-
-        return view('master.adjustment.cetak', compact('title', 'titleHeader', 'products'));
     }
 
     public function indexHistory() {

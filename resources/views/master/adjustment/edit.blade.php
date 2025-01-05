@@ -1,10 +1,59 @@
 @extends('main')
 
 @include('preorder.add-on.styles')
+@section('styles')
+    <style>
+        /* Modal Style */
+        .modal {
+            display: none; /* Sembunyikan modal secara default */
+            position: fixed;
+            z-index: 1; /* Letakkan modal di atas konten lainnya */
+            left: 0;
+            top: 0;
+            width: 100%; /* Lebar penuh */
+            height: 100%; /* Tinggi penuh */
+            background-color: rgba(0, 0, 0, 0.4); /* Latar belakang gelap */
+            overflow: auto; /* Konten bisa di-scroll jika terlalu besar */
+            padding-top: 20px; /* Jarak atas untuk konten */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 20%; /* Lebar modal */
+            max-width: 1000px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+@endsection
 
 @section('content')
     <div class="mb-7 mx-5">
-        <form action="{{ route('master.adjustment.update-edit') }}" method="POST">
+        <form action="{{ route('master.adjustment.update-edit') }}" method="POST" id="filter-form">
             @csrf
             <div class="card mt-n3">
                 <div class="card-body mt-n3">
@@ -40,10 +89,11 @@
                                             <td class="text-end">{{ $product->konversi }}</td>
                                             <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td>
                                             <td id="product-harga" class="text-end">{{ number_format($product->harga_jual) }}</td>
-                                            <td id="product-stok" class="text-end">{{ $product->stok }}</td>
+                                            <td id="product-stok" class="text-end">{{  number_format($product->stok,0) }}</td>
                                             <td id="product-fisik" class="text-center">
-                                                <input type="number" class="text-end" name="fisik[{{ $product->id }}]" value="{{ $product->stok }}" 
-                                                       oninput="calculateSelisih({{ $no }}, {{ $product->harga_jual }}, {{ $product->stok }}, {{ $product->id }})">
+                                                <input type="number" class="text-end product-input" name="fisik[{{ $product->id }}]" value="{{ number_format($product->stok,0) }}" 
+                                                       oninput="calculateSelisih({{ $no }}, {{ $product->harga_jual }}, {{ $product->stok }}, {{ $product->id }})"
+                                                       data-original-value="{{ $product->stok }}" style="width: 70px;">
                                             </td>
                                             <td class="text-end">{{ number_format($product->harga_jual * $product->stok) }}</td>
                                             <td id="product-selisih-qty-{{ $no }}" class="text-end">{{ number_format(0, 2) }}</td>
@@ -53,6 +103,7 @@
                                             <input type="text" hidden name="stok[{{ $product->id }}]" value="{{ $product->stok }}">
                                             <input type="text" hidden name="qty[{{ $product->id }}]" id="input-selisih-qty-{{ $no }}" value="0.00">
                                             <input type="text" hidden name="rupiah[{{ $product->id }}]" id="input-selisih-rupiah-{{ $no }}" value="0">
+                                            <input type="checkbox" hidden id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox">
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -61,8 +112,8 @@
                         </div>
                     <div class="d-flex justify-content-center mt-3">
                         <div style="margin-right: 2%;">
-                            <a href="{{ route('master.adjustment.cetak') }}" class="btn btn-warning">CETAK</a>
-                            <button type="submit" class="btn btn-primary mx-3">PROSES</button>
+                            <button type="button" id="openModalBtn" class="btn btn-warning">CETAK</button>
+                            <button type="submit" id="proses-submit" disabled class="btn btn-primary mx-3">PROSES</button>
                             <a href="{{ route('master.adjustment.index-edit') }}" class="btn btn-danger">KEMBALI</a>
                         </div>
                     </div>
@@ -70,10 +121,110 @@
             </div>
         </form>
     </div>
+
+    <!-- Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h5 class="text-center"><u>JENIS LAPORAN</u></h5>
+            <a href="{{ route('master.adjustment.cetak') }}" class="btn btn-primary mt-2">HASIL ADJUSTMENT</a>
+            <a href="{{ route('master.adjustment.cetak-rokok') }}" class="btn btn-danger mt-3">LAPORAN ROKOK</a>
+            <button class="btn btn-warning mt-3" id="closeBtn">SELESAI</button>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     <script>
+        $(document).ready(function() {
+            $('.product-input')
+                // Saat fokus, set value jadi null
+                .focus(function() {
+                    const originalValue = $(this).val();
+                    $(this).data('original-value', originalValue); // Simpan nilai awal
+                    $(this).val(''); // Kosongkan input
+                })
+                // Jika blur (kehilangan fokus), kembalikan nilai awal jika tetap kosong
+                .blur(function() {
+                    if ($(this).val() === '') {
+                        $(this).val($(this).data('original-value')); // Kembalikan nilai awal
+                    }
+                })
+                // Saat Enter, cek apakah value kosong
+                .keydown(function(e) {
+                    if (e.key === "Enter") {
+                        e.preventDefault(); // Mencegah submit form
+
+                        if ($(this).val() === '') {
+                            $(this).val($(this).data('original-value')); // Kembalikan nilai awal jika kosong
+                            const nextInput = $('.product-input').eq($('.product-input').index(this) + 1);
+                            if (nextInput.length) {
+                                nextInput.focus();
+                            }
+                        } else {
+                            // Fokus ke input berikutnya
+                            const nextInput = $('.product-input').eq($('.product-input').index(this) + 1);
+                            if (nextInput.length) {
+                                nextInput.focus();
+                            }
+                        }
+                    }
+                });
+        });
+
+        // JavaScript untuk menghapus input harga_sementara jika checkbox tidak dicentang
+        const form = document.getElementById('filter-form');
+        form.addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    // Hapus input harga_sementara yang tidak dicentang
+                    const hiddenInput = document.querySelector(`input[name="selected[${checkbox.value}]"]`);
+                    const hiddenInput2 = document.querySelector(`input[name="name[${checkbox.value}]"]`);
+                    const hiddenInput3 = document.querySelector(`input[name="stok[${checkbox.value}]"]`);
+                    const hiddenInput4 = document.querySelector(`input[name="qty[${checkbox.value}]"]`);
+                    const hiddenInput5 = document.querySelector(`input[name="rupiah[${checkbox.value}]"]`);
+                    const hiddenInput6 = document.querySelector(`input[name="fisik[${checkbox.value}]"]`);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                        hiddenInput2.remove();
+                        hiddenInput3.remove();
+                        hiddenInput4.remove();
+                        hiddenInput5.remove();
+                        hiddenInput6.remove();
+                    }
+                }
+            });
+        });
+
+        // Ambil elemen modal dan tombol
+        const modal = document.getElementById("productModal");
+        const openModalBtn = document.getElementById("openModalBtn");
+        const closeModalBtn = document.getElementsByClassName("close-btn")[0];
+        const closeBtn = document.getElementById("closeBtn");
+
+        // Ketika tombol CETAK diklik, tampilkan modal dengan fade-in
+        openModalBtn.onclick = function () {
+            modal.style.display = "block"; // Tampilkan modal
+            modal.style.animation = "fadeIn 0.5s ease"; // Tambahkan efek animasi fade-in
+        };
+
+        // Ketika tombol "X" diklik, sembunyikan modal
+        closeModalBtn.onclick = function () {
+            modal.style.display = "none"; // Sembunyikan modal
+        };
+
+        // Ketika area di luar modal diklik, sembunyikan modal
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none"; // Sembunyikan modal
+            }
+        };
+
+        closeBtn.onclick = function () {
+            modal.style.display = "none"; // Sembunyikan modal setelah simpan
+        };
+
         function searchTableProduct() {
             var input, filter, table, tr, td, i, txtValue;
             input = document.getElementById("searchInputProduct");
@@ -128,43 +279,26 @@
             document.getElementById(`input-selisih-rupiah-${no}`).value = selisihRupiah;
 
             if (selisihQty === 0) {
-                document.getElementById(`input-selisih-qty-${index}`).value = "";
+                document.getElementById(`input-selisih-qty-${no}`).value = "";
             }
             if (selisihRupiah === 0) {
-                document.getElementById(`input-selisih-rupiah-${index}`).value = "";
+                document.getElementById(`input-selisih-rupiah-${no}`).value = "";
             }
 
             // Simpan nilai terbaru untuk perbandingan berikutnya
             lastValues[no] = productFisik;
+            document.getElementById('checkbox_select_' + no).checked = true;
+            document.getElementById('proses-submit').disabled = false;
         }
 
         function number_format(number) {
             return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
-        // function filterZeroValues() {
-        //     // Loop through all hidden inputs and remove those with zero values
-        //     const qtyInputs = document.querySelectorAll('input[name^="qty"]');
-        //     const rupiahInputs = document.querySelectorAll('input[name^="rupiah"]');
-
-        //     // Loop through qty inputs and clear the ones with zero value
-        //     qtyInputs.forEach(input => {
-        //         if (parseFloat(input.value) === 0) {
-        //             input.value = "";  // Remove zero values
-        //         }
-        //     });
-
-        //     // Loop through rupiah inputs and clear the ones with zero value
-        //     rupiahInputs.forEach(input => {
-        //         if (parseFloat(input.value) === 0) {
-        //             input.value = "";  // Remove zero values
-        //         }
-        //     });
-        // }
-
-        // // Attach filterZeroValues function to form submission (for example, using the submit event)
-        // document.querySelector('form').addEventListener('submit', function(event) {
-        //     filterZeroValues();  // Call the function before submitting
-        // });
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+            }
+        });
     </script>
 @endsection
