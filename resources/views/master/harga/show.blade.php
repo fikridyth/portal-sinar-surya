@@ -94,15 +94,19 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
                                                 <td class="text-end">{{ number_format($product->harga_lama) }}</td>
-                                                <td><input type="number" id="harga_pokok_{{ $no }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" oninput="updateProfitPokok({{ $no }})" onkeydown="handleEnterPokok(event, {{ $no }}, '{{ $product->harga_pokok }}')" onfocus="this.value = '';"></td>
+                                                <td><input type="number" id="harga_pokok_{{ $no }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" 
+                                                    onblur="handleBlurPokok({{ $no }}, '{{ $product->harga_pokok }}')"  oninput="updateProfitPokok({{ $no }})" onkeydown="handleEnterPokok(event, {{ $no }}, '{{ $product->harga_pokok }}')" onfocus="this.value = '';"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
                                                     <td id="profit_pokok_{{ $no }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
                                                     <td id="profit_pokok_{{ $no }}">0.00</td>
                                                 @endif
-                                                <td><input type="number" id="harga_jual_{{ $no }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';"></td>
-                                                <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
-                                                <td id="td_harga_sementara_{{ $no }}"><input type="text" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" onfocus="this.value = '';"></td>
+                                                <td><input type="number" id="harga_jual_{{ $no }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
+                                                    onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';"></td>
+                                                <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
+                                                    onblur="handleBlurProfit({{ $no }}, '{{ $product->profit }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
+                                                <td id="td_harga_sementara_{{ $no }}"><input type="text" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" 
+                                                    onblur="handleBlurSementara({{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" onfocus="this.value = '';"></td>
                                                 <input type="checkbox" hidden id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox">
                                             </tr>
                                         @endforeach
@@ -159,6 +163,15 @@
             }
         }
 
+        function handleBlurPokok(no, originalValue) {
+            var inputField = document.getElementById('harga_pokok_' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
         function handleEnterJual(event, no, originalValue) {
             if (event.key === 'Enter') {
                 var inputField = document.getElementById('harga_jual_' + no);
@@ -172,6 +185,15 @@
             }
         }
 
+        function handleBlurJual(no, originalValue) {
+            var inputField = document.getElementById('harga_jual_' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
         function handleEnterProfit(event, no, originalValue) {
             if (event.key === 'Enter') {
                 var inputField = document.getElementById('profit_' + no);
@@ -182,6 +204,15 @@
                 }
 
                 document.getElementById('harga_sementara_' + no).focus();
+            }
+        }
+
+        function handleBlurProfit(no, originalValue) {
+            var inputField = document.getElementById('profit_' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
             }
         }
 
@@ -204,6 +235,15 @@
                     document.getElementById('checkbox_select_' + no).checked = false;
                     document.getElementById('td_harga_sementara_' + no).style.backgroundColor = 'white';
                 }
+            }
+        }
+
+        function handleBlurSementara(no, originalValue) {
+            var inputField = document.getElementById('harga_sementara_' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
             }
         }
 

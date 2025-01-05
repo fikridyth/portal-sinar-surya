@@ -110,7 +110,8 @@
                             </div>
                             <div>
                                 <label class="mx-3" style="font-size: 13px;">KENAIKAN</label>
-                                <input type="number" id="kenaikan" name="kenaikan" autocomplete="off" max="100" value="{{ $hargaSementara->naik }}" style="width: 70px;" onkeydown="handleEnterKenaikan(event, '{{ $hargaSementara->naik }}')" onfocus="this.value = '';">
+                                <input type="number" id="kenaikan" name="kenaikan" autocomplete="off" max="100" value="{{ $hargaSementara->naik }}" style="width: 70px;" 
+                                    onblur="handleBlurKenaikan('{{ $hargaSementara->naik }}')" onkeydown="handleEnterKenaikan(event, '{{ $hargaSementara->naik }}')" onfocus="this.value = '';">
                                 <label>%</label>
                             </div>
                         </div>
@@ -168,6 +169,13 @@
                 }
 
                 updateHargaKenaikan()
+            }
+        }
+
+        function handleBlurKenaikan(originalValue) {
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (document.getElementById('kenaikan').value === '') {
+                document.getElementById('kenaikan').value = originalValue;
             }
         }
         

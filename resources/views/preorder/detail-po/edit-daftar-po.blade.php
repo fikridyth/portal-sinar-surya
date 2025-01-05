@@ -220,9 +220,24 @@
                                 <div class="column"><div class="form-group"><input type="text" id="diskon3-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="ppn-input" disabled size="9"></div></div>
                                 <div class="column"><div class="form-group"><input type="text" id="price-ppn-input" disabled size="9"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon4-input" size="9" onkeydown="handleDiskon4Price(event)" onfocus="this.value = '';"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon5-input" size="9" onkeydown="handleDiskon5Price(event)" onfocus="this.value = '';"></div></div>
-                                <div class="column"><div class="form-group"><input type="text" autocomplete="off" onkeypress='return event.charCode >= 48 && event.charCode <= 57' id="diskon6-input" size="9" onkeydown="handleDiskon6Price(event)" onfocus="this.value = '';"></div></div>
+                                <div class="column">
+                                    <div class="form-group">
+                                        <input type="number" style="width: 100px;" autocomplete="off" id="diskon4-input" size="9" 
+                                            onblur="handleBlurDiskon4()" onkeydown="handleDiskon4Price(event)" onfocus="this.value = '';">
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="form-group">
+                                        <input type="number" style="width: 100px;" autocomplete="off" id="diskon5-input" size="9" 
+                                            onblur="handleBlurDiskon5()" onkeydown="handleDiskon5Price(event)" onfocus="this.value = '';">
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="form-group">
+                                        <input type="number" style="width: 100px;" autocomplete="off" id="diskon6-input" size="9" 
+                                            onblur="handleBlurDiskon6()" onkeydown="handleDiskon6Price(event)" onfocus="this.value = '';">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="d-flex justify-content-between mt-2">
@@ -289,14 +304,14 @@
                                                                     <div class="order-container">
                                                                         <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
                                                                         <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3"
-                                                                            onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $detail['order'] }}')" onfocus="this.value = '';">
+                                                                            onblur="handleBlurOrder({{ $no }}, '{{ $detail['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $detail['order'] }}')" onfocus="this.value = '';">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end">
                                                                     <div class="price-container">
                                                                         <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
                                                                         <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10"
-                                                                            onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $dataProduct->harga_pokok }}')" onfocus="this.value = '';">
+                                                                            onblur="handleBlurPrice({{ $no }}, '{{ $dataProduct->harga_pokok }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $dataProduct->harga_pokok }}')" onfocus="this.value = '';">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
@@ -470,6 +485,15 @@
                 document.getElementById('delete-save-' + no).click();
             }
         }
+        
+        function handleBlurOrder(no, originalValue) {
+            var inputField = document.getElementById('order-input-' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
 
         function handleEnterPrice(event, no, originalValue) {
             if (event.key === 'Enter') {
@@ -485,6 +509,15 @@
             }
             if (event.key === 'Delete') {
                 document.getElementById('delete-save-' + no).click();
+            }
+        }
+        
+        function handleBlurPrice(no, originalValue) {
+            var inputField = document.getElementById('price-input-' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
             }
         }
 
@@ -604,6 +637,15 @@
             }
         }
         
+        function handleBlurDiskon4() {
+            var inputField = document.getElementById('diskon4-input');
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = diskon1Index;
+            }
+        }
+        
         function handleDiskon5Price(event) {
             if (event.key === 'Enter') {
                 // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
@@ -619,6 +661,15 @@
             }
         }
         
+        function handleBlurDiskon5() {
+            var inputField = document.getElementById('diskon5-input');
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = diskon2Index;
+            }
+        }
+        
         function handleDiskon6Price(event) {
             if (event.key === 'Enter') {
                 var inputField = document.getElementById('diskon6-input');
@@ -631,6 +682,15 @@
             }
             if (event.key === 'Delete') {
                 document.getElementById('delete-save-' + nomorIndex).click();
+            }
+        }
+        
+        function handleBlurDiskon6() {
+            var inputField = document.getElementById('diskon6-input');
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = diskon3Index;
             }
         }
 
