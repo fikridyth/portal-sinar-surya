@@ -82,11 +82,17 @@ Route::middleware('auth')->group(function () {
 
     // Return
     Route::get('/return-po', [PreOrderController::class, 'returnPo'])->name('return-po');
+    Route::post('/create-return-po', [PreOrderController::class, 'createReturnPo'])->name('create-return-po');
+    Route::get('/daftar-return-po', [PreOrderController::class, 'daftarReturnPo'])->name('daftar-return-po');
+    Route::get('/daftar-history-return-po', [PreOrderController::class, 'daftarHistoryReturnPo'])->name('daftar-history-return-po');
     Route::get('/return-po/{id}', [PreOrderController::class, 'showReturnPo'])->name('return-po.show');
     Route::get('/return-po/edit/{id}', [PreOrderController::class, 'editReturnPo'])->name('return-po.edit');
-    Route::post('/store-return-data', [PreOrderController::class, 'storeReturnData'])->name('return-po.store');
-    Route::get('/daftar-return-po', [PreOrderController::class, 'daftarReturnPo'])->name('daftar-return-po');
     Route::get('/daftar-receive-supplier/{id}/{sup}', [PreOrderController::class, 'daftarReceiveSupplier'])->name('daftar-receive-supplier');
+    Route::put('/update-nomor-receive/{id}', [PreOrderController::class, 'updateNomorReceive'])->name('update-nomor-receive');
+    Route::get('/daftar-return-product/{id}', [PreOrderController::class, 'daftarReturnProduct'])->name('daftar-return-product');
+    Route::put('/daftar-return-product/update/{id}', [PreOrderController::class, 'updateDaftarReturnProduct'])->name('daftar-return-product.update');
+    Route::post('/get-data-return-barcode', [PreOrderController::class, 'getDataReturnBarcode'])->name('daftar-po.get-data-return-barcode');
+    Route::post('/store-return-data/{id}', [PreOrderController::class, 'storeReturnData'])->name('return-po.store');
     Route::delete('/destroy-return-data/{id}', [PreOrderController::class, 'destroyReturnData'])->name('return-po.destroy');
 
     // Func in PO & Receive
@@ -103,7 +109,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-pembayaran', [PreOrderController::class, 'storePembayaran'])->name('daftar-po.store-pembayaran');
     Route::post('/get-data-from-barcode', [PreOrderController::class, 'getDataFromBarcode'])->name('daftar-po.get-data-from-barcode');
     Route::post('/store-data-from-barcode', [PreOrderController::class, 'storeDataFromBarcode'])->name('daftar-po.store-data-from-barcode');
-    Route::post('/get-data-return-barcode', [PreOrderController::class, 'getDataReturnBarcode'])->name('daftar-po.get-data-return-barcode');
     Route::post('/update-supplier-receive-data', [PreOrderController::class, 'updateSupplierReceiveData'])->name('update-supplier-receive-data');
 
     // Hutang

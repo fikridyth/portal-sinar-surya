@@ -4,116 +4,126 @@
     <div class="container-fluid mb-7 w-100" style="max-width: 90%; width: 90%;">
         <div class="card mt-n3">
             <div class="card-body mt-n4">
-                <form action="{{ route('return-po.store') }}" method="POST" class="form">
-                    @csrf
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <div class="row w-100">
-                                <div class="form-group col-7">
-                                    <div class="row align-items-center">
-                                        <label class="col-3 col-form-label">NOMOR RETUR</label>
-                                        <div class="col-3">
-                                            <input type="text" class="readonly-input form-control" value="Auto Generate" autocomplete="off" readonly>
-                                        </div>
-                                        <label class="col-2 col-form-label text-end">TANGGAL</label>
-                                        <div class="col-3">
-                                            <input type="text" name="date" class="readonly-input form-control" value="{{ now()->format('Y-m-d') }}" autocomplete="off" readonly>
-                                        </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="row w-100">
+                            <div class="form-group col-7">
+                                <div class="row align-items-center">
+                                    <label class="col-3 col-form-label">NOMOR RETUR</label>
+                                    <div class="col-3">
+                                        <input type="text" class="readonly-input form-control" value="Auto Generate" autocomplete="off" readonly>
                                     </div>
-                                </div>
-                                <div class="form-group col-5">
-                                    <div class="row">
-                                        <label for="inputPassword3" class="col-form-label text-center">KETERANGAN</label>
+                                    <label class="col-2 col-form-label text-end">TANGGAL</label>
+                                    <div class="col-3">
+                                        <input type="text" name="date" class="readonly-input form-control" value="{{ now()->format('Y-m-d') }}" autocomplete="off" readonly>
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group col-5">
+                                <div class="row">
+                                    <label for="inputPassword3" class="col-form-label text-center">KETERANGAN</label>
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="d-flex justify-content-between">
-                            <div class="row w-100">
-                                <div class="form-group col-7">
-                                    <div class="row align-items-center mt-1">
-                                        <label class="col-3 col-form-label">NAMA SUPPLIER</label>
-                                        <div class="col-7">
-                                            <select id="supplier-select" name="id_supplier" required class="supplier-select btn-block">
+                    <div class="d-flex justify-content-between">
+                        <div class="row w-100">
+                            <div class="form-group col-7">
+                                <div class="row align-items-center mt-1">
+                                    <label class="col-3 col-form-label">NAMA SUPPLIER</label>
+                                    <div class="col-7">
+                                        @if ($jabatan == 'OWNER')
+                                            <form id="supplier-form" action="{{ route('create-return-po') }}" method="POST">
+                                                @csrf
+                                                <select id="supplier-select" name="id_supplier" required class="supplier-select btn-block">
+                                                    <option value=""></option>
+                                                    @foreach ($suppliers as $supplier)
+                                                        <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </form>
+                                        @else
+                                            <select id="supplier-select" disabled name="id_supplier" required class="supplier-select btn-block">
                                                 <option value=""></option>
                                                 @foreach ($suppliers as $supplier)
                                                     <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                                 @endforeach
                                             </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="row align-items-center mt-1">
-                                        <label class="col-3 col-form-label">BUKTI PENERIMAAN</label>
-                                        <div class="col-7">
-                                            <select id="preorder-select" disabled name="nomor_receive" required class="preorder-select btn-block">
-                                                <option value=""></option>
-                                                @foreach ($preorders as $preorder)
-                                                    <option value="{{ $preorder->nomor_receive }}">{{ $preorder->nomor_receive }} - {{ $preorder->supplier->nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="form-group col-5 mb-4">
-                                    <div class="row">
-                                        <textarea name="" id="" class="form-control" rows="3"></textarea>
+
+                                <div class="row align-items-center mt-1">
+                                    <label class="col-3 col-form-label">BUKTI PENERIMAAN</label>
+                                    <div class="col-7">
+                                        <select id="preorder-select" disabled name="nomor_receive" required class="preorder-select btn-block">
+                                            <option value=""></option>
+                                            @foreach ($preorders as $preorder)
+                                                <option value="{{ $preorder->nomor_receive }}">{{ $preorder->nomor_receive }} - {{ $preorder->supplier->nama }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-2">
-                            <div class="row w-100">
-                                <div class="form-group col-12">
-                                    <div style="overflow-x: auto; height: 450px; border: 1px solid #ccc;">
-                                        <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">NO</th>
-                                                    <th class="text-center">NO BARANG</th>
-                                                    <th class="text-center">NAMA BARANG</th>
-                                                    {{-- <th class="text-center">KETERANGAN</th> --}}
-                                                    <th class="text-center">QTY</th>
-                                                    {{-- <th class="text-center">NOMOR PO</th> --}}
-                                                    <th class="text-center">HARGA</th>
-                                                    <th class="text-center">TOTAL</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="fs-need"></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                            <div class="form-group col-5 mb-4">
+                                <div class="row">
+                                    <textarea name="" id="" class="form-control" rows="3"></textarea>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between mt-2 mb-3">
-                            <div class="row">
-                                <div class="col-auto">
-                                    <button type="button" id="tambah-button" class="btn btn-success mx-2" disabled>TAMBAH</button>
-                                    <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger disabled-link">INVENTORY</a>
-                                </div>
-                            </div>
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <label class="col-form-label">TOTAL</label>
-                                </div>
-                                <div class="col-auto mx-4">
-                                    <input type="text" size="15" class="readonly-input form-control text-end" value="0" readonly>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ route('daftar-return-po') }}" id="daftar-return-button" class="btn btn-warning">DAFTAR RETUR BARANG</a>
-                            <a href="{{ route('index') }}" class="btn btn-danger mx-4">BATAL</a>
-                            <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
-                </form>
+
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="row w-100">
+                            <div class="form-group col-12">
+                                <div style="overflow-x: auto; height: 450px; border: 1px solid #ccc;">
+                                    <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-center">NO</th>
+                                                <th class="text-center">NO BARANG</th>
+                                                <th class="text-center">NAMA BARANG</th>
+                                                {{-- <th class="text-center">KETERANGAN</th> --}}
+                                                <th class="text-center">QTY</th>
+                                                {{-- <th class="text-center">NOMOR PO</th> --}}
+                                                <th class="text-center">HARGA</th>
+                                                <th class="text-center">TOTAL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="fs-need"></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-2 mb-3">
+                        <div class="row">
+                            <div class="col-auto">
+                                <button type="button" id="tambah-button" class="btn btn-success mx-2" disabled>TAMBAH</button>
+                                <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger disabled-link mx-2">INVENTORY</a>
+                                <a href="{{ route('daftar-return-po') }}" class="btn btn-warning mx-2">LIST DATA POS</a>
+                                <a href="{{ route('daftar-history-return-po') }}" class="btn btn-info mx-2">HISTORY</a>
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <label class="col-form-label">TOTAL</label>
+                            </div>
+                            <div class="col-auto mx-4">
+                                <input type="text" size="15" class="readonly-input form-control text-end" value="0" readonly>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <a href="{{ route('index') }}" class="btn btn-danger mx-4">BATAL</a>
+                        <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -132,6 +142,12 @@
                 const searchBox = $(this).data('select2').dropdown.$search[0];
                 if (searchBox) {
                     searchBox.focus();
+                }
+            });
+
+            $('#supplier-select').on('change', function() {
+                if ($(this).val()) {
+                    $('#supplier-form').submit();
                 }
             });
 

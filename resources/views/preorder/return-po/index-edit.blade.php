@@ -51,8 +51,14 @@
                                             <td>{{ $preorder->supplier->nama }}</td>
                                             <td class="text-end">{{ number_format($preorder->grand_total) }}</td>
                                             <td class="text-center">Terima</td>
-                                            {{-- LAKUKAN PROSES UPDATE NOMOR RECEIVE --}}
-                                            <td class="text-center"><a href="#" class="btn btn-sm btn-primary">PILIH</a></td>
+                                            <td class="text-center">
+                                                <form action="{{ route('update-nomor-receive', enkrip($retur->id)) }}" method="POST" style="display:inline;">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="nomor_receive" value="{{ $preorder->nomor_receive }}">
+                                                    <button type="submit" class="btn btn-sm btn-primary">PILIH</button>
+                                                </form>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

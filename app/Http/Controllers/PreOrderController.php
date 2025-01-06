@@ -1422,9 +1422,23 @@ class PreOrderController extends Controller
         // $preorders = Preorder::whereNotNull('nomor_receive')->whereNull('nomor_bukti')->whereNull('is_return')->whereNull('is_cancel')->get();
         $preorders = Preorder::where('receive_type', 'B')->get();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
+        $jabatan = auth()->user()->jabatan;
         // dd(count($products));
 
-        return view('preorder.return-po.index', compact('title', 'titleHeader', 'suppliers', 'preorders', 'products'));
+        return view('preorder.return-po.index', compact('title', 'titleHeader', 'suppliers', 'preorders', 'products', 'jabatan'));
+    }
+
+    public function createReturnPo(Request $request)
+    {
+        // dd($request->id_supplier);
+        $retur = Pengembalian::create([
+            'id_supplier' => $request->id_supplier,
+            'date' => now()->format('Y-m-d'),
+            'jam' => now()->format('H:i:s'),
+            'created_by' => auth()->user()->name,
+        ]);
+
+        return redirect()->route('return-po.edit', enkrip($retur->id));
     }
 
     public function daftarReturnPo()
@@ -1438,6 +1452,16 @@ class PreOrderController extends Controller
         return view('preorder.return-po.list', compact('title', 'titleHeader', 'returs', 'jabatan'));
     }
 
+    public function daftarHistoryReturnPo()
+    {
+        $title = 'Daftar Return PO';
+        $titleHeader = 'DAFTAR KEMBALI BARANG';
+        $returs = Pengembalian::whereNotNull('nomor_return')->get();
+        // dd($returs);
+
+        return view('preorder.return-po.history', compact('title', 'titleHeader', 'returs'));
+    }
+
     public function showReturnPo($id)
     {
         $id = dekrip($id);
@@ -1445,7 +1469,7 @@ class PreOrderController extends Controller
         $titleHeader = 'DAFTAR KEMBALI BARANG';
 
         $retur = Pengembalian::find($id);
-        dd($retur);
+        // dd($retur);
 
         return view('preorder.return-po.show', compact('title', 'titleHeader', 'retur'));
     }
@@ -1474,6 +1498,67 @@ class PreOrderController extends Controller
         return view('preorder.return-po.index-edit', compact('title', 'titleHeader', 'retur', 'preorders'));
     }
 
+    public function daftarReturnProduct(SearchProductDataTable $dataTable, $id)
+    {
+        $id = dekrip($id);
+        $title = 'Add Product';
+        $titleHeader = 'RETURN BARANG';
+
+        return $dataTable->render('preorder.return-po.add-product', compact('title', 'id', 'titleHeader'));
+    }
+
+    public function updateDaftarReturnProduct(Request $request, $id)
+    {
+        // dd($request->all());
+        $id = dekrip($id);
+        $retur = Pengembalian::find($id);
+        $detail = json_decode($retur->detail, true);
+
+        $total = 0;
+        $selectedIds = $request->input('selected_ids', []);
+        foreach ($selectedIds as $sId) {
+            $product = Product::find($sId);
+            
+            $detail[] = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => $product->stok,
+                'order' => 1,
+                'price' => $product->harga_pokok,
+                'field_total' => $product->harga_pokok,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => 0,
+                'diskon2' => 0,
+                'diskon3' => 0,
+                'penjualan_rata' => 0,
+                'waktu_kunjungan' => 0,
+                'stok_minimum' => 0,
+                'stok_maksimum' => 0,
+                'is_ppn' => 0,
+            ];
+            $total += $product->harga_pokok;
+        }
+        $retur->detail = json_encode($detail);
+        $retur->total = $retur->total + $total;
+        $retur->save();
+
+        return redirect()->route('return-po.edit', enkrip($id));
+    }
+
+    public function updateNomorReceive(Request $request, $id)
+    {
+        // dd($request->nomor_receive);
+        $id = dekrip($id);
+        
+        $retur = Pengembalian::find($id);
+        $retur->update([
+            'nomor_receive' => $request->nomor_receive
+        ]);
+
+        return redirect()->route('return-po.edit', enkrip($id));
+    }
+
     public function destroyReturnData($id)
     {
         $retur = Pengembalian::find($id);
@@ -1497,9 +1582,9 @@ class PreOrderController extends Controller
         return response()->json(['success' => true]);
     }
 
-    public function storeReturnData(Request $request)
+    public function storeReturnData(Request $request, $id)
     {
-        // dd($request->all());
+        // dd($request->all(), $id);
         // get nomor return
         $sequence = '0001';
         $dateNow = now()->format('ym');
@@ -1516,12 +1601,13 @@ class PreOrderController extends Controller
         }
         $getNomorReturn = 'RR-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
-        $preorder = Preorder::where('nomor_receive', $request->nomor_receive)->first();
-        $supplier = Supplier::find($request->id_supplier);
-        $detail = [];
-        $total = 0;
+        $retur = Pengembalian::find($id);
+        $retur->update([
+            'nomor_return' => $getNomorReturn
+        ]);
 
-        foreach ($request->input('items') as $item) {
+        foreach (json_decode($retur->detail, true) as $item) {
+            // dd($item['order']);
             $product = Product::where('kode', $item['kode'])->first();
             $product->update([
                 'stok' => (int)$product->stok - $item['order']
@@ -1536,55 +1622,9 @@ class PreOrderController extends Controller
                 'stok' => (int)$product->stok,
                 'unit_jual' => str_replace('P', '', $product->unit_jual)
             ]);
-
-            // Menghitung field_total
-            $field_total = $item['order'] * $item['price'];
-            
-            // Menambahkan field_total ke total keseluruhan
-            $total += $field_total;
-
-            $newEntry = [
-                'kode' => $product->kode,
-                'nama' => $product->nama,
-                'unit_jual' => $product->unit_jual,
-                'stok' => number_format($product->stok, 2),
-                'order' => $item['order'],
-                'price' => $item['price'],
-                'field_total' => $field_total,
-                'kode_sumber' => $product->kode_sumber,
-                'diskon1' => $product->diskon1,
-                'diskon2' => $product->diskon2,
-                'diskon3' => $product->diskon3,
-                'penjualan_rata' => $supplier->penjualan_rata,
-                'waktu_kunjungan' => $supplier->waktu_kunjungan,
-                'stok_minimum' => $supplier->stok_minimum,
-                'stok_maksimum' => $supplier->stok_maksimum,
-                'is_ppn' => 0,
-            ];
-
-            // Add the new entry to the detail array
-            $detail[] = $newEntry;
         }
 
-        date_default_timezone_set('Asia/Bangkok');
-        Pengembalian::create([
-            'id_supplier' => $request->id_supplier,
-            'nomor_return' => $getNomorReturn,
-            'date' => now()->format('Y-m-d'),
-            'jam' => now()->format('H:i:s'),
-            'total' => $total,
-            'created_by' => auth()->user()->name,
-            'detail' => json_encode($detail)
-        ]);
-
-        // if ($preorder->nomor_return == null) {
-        $preorder->update([
-            'is_return' => 1, 
-            'nomor_return' => $getNomorReturn
-        ]);
-        // }
-
-        return Redirect::back()->with('alert.status', '00')->with('alert.message', "Sukses Menambah Data Return!");
+        return Redirect::route('return-po')->with('alert.status', '00')->with('alert.message', "Sukses Proses Data Return!");
     }
 
     public function getDataFromBarcode(Request $request)
@@ -1609,36 +1649,36 @@ class PreOrderController extends Controller
             // dd($data['kode']);
             $product = Product::where('kode', $data['kode'])->first();
             if (isset($product)) {
-            $preorder = Preorder::find($request['preorderId']);
-            $supplier = Supplier::find($request['supplierId']);
-            $ppnValue = Ppn::pluck('ppn')->first();
-            // dd($preorder, $supplier, $ppnValue);
+                $preorder = Preorder::find($request['preorderId']);
+                $supplier = Supplier::find($request['supplierId']);
+                $ppnValue = Ppn::pluck('ppn')->first();
+                // dd($preorder, $supplier, $ppnValue);
 
-            $newEntry = [
-                'kode' => $product->kode,
-                'nama' => $product->nama,
-                'unit_jual' => $product->unit_jual,
-                'stok' => number_format($product->stok + 1, 2),
-                'order' => 1,
-                'price' => $product->harga_pokok,
-                'field_total' => $product->harga_pokok,
-                'kode_sumber' => $product->kode_sumber,
-                'diskon1' => $product->diskon1,
-                'diskon2' => $product->diskon2,
-                'diskon3' => $product->diskon3,
-                'penjualan_rata' => $supplier->penjualan_rata,
-                'waktu_kunjungan' => $supplier->waktu_kunjungan,
-                'stok_minimum' => $supplier->stok_minimum,
-                'stok_maksimum' => $supplier->stok_maksimum,
-                'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
-            ];
-            $detail = json_decode($preorder->detail, true);
-            $detail[] = $newEntry;
+                $newEntry = [
+                    'kode' => $product->kode,
+                    'nama' => $product->nama,
+                    'unit_jual' => $product->unit_jual,
+                    'stok' => number_format($product->stok + 1, 2),
+                    'order' => 1,
+                    'price' => $product->harga_pokok,
+                    'field_total' => $product->harga_pokok,
+                    'kode_sumber' => $product->kode_sumber,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'penjualan_rata' => $supplier->penjualan_rata,
+                    'waktu_kunjungan' => $supplier->waktu_kunjungan,
+                    'stok_minimum' => $supplier->stok_minimum,
+                    'stok_maksimum' => $supplier->stok_maksimum,
+                    'is_ppn' => $product->is_ppn == 1 ? $ppnValue : 0,
+                ];
+                $detail = json_decode($preorder->detail, true);
+                $detail[] = $newEntry;
 
-            $preorder->detail = json_encode($detail);
-            $preorder->total_harga += $product->harga_pokok;
-            $preorder->grand_total += $product->harga_pokok;
-            $preorder->save();
+                $preorder->detail = json_encode($detail);
+                $preorder->total_harga += $product->harga_pokok;
+                $preorder->grand_total += $product->harga_pokok;
+                $preorder->save();
             }
         }
 
@@ -1651,7 +1691,33 @@ class PreOrderController extends Controller
         // dd($request->all());
         $product = Product::where('kode_alternatif', $request['kode'])->first();
         if (isset($product)) {
-            return response()->json(['data' => $product]);
+            $retur = Pengembalian::find($request['id']);
+            $newEntry = [
+                'kode' => $product->kode,
+                'nama' => $product->nama,
+                'unit_jual' => $product->unit_jual,
+                'stok' => number_format($product->stok + 1, 2),
+                'order' => 1,
+                'price' => $product->harga_pokok,
+                'field_total' => $product->harga_pokok,
+                'kode_sumber' => $product->kode_sumber,
+                'diskon1' => 0,
+                'diskon2' => 0,
+                'diskon3' => 0,
+                'penjualan_rata' => 0,
+                'waktu_kunjungan' => 0,
+                'stok_minimum' => 0,
+                'stok_maksimum' => 0,
+                'is_ppn' => 0,
+            ];
+            $detail = json_decode($retur->detail, true);
+            $detail[] = $newEntry;
+
+            $retur->detail = json_encode($detail);
+            $retur->total += $product->harga_pokok;
+            $retur->save();
+
+            return response()->json(['success' => true]);
         } else {
             return response()->json(['error' => 'KODE BELUM TERSEDIA!']);
         }
