@@ -1559,22 +1559,78 @@ class PreOrderController extends Controller
         return redirect()->route('return-po.edit', enkrip($id));
     }
 
+    public function destroyReturnItem(Request $request)
+    {
+        // dd($request->input('index'), $request->input('retur_id'));
+        $index = $request->input('index');
+        $retur = Pengembalian::find($request->input('retur_id'));
+
+        if (!$retur) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.']);
+        }
+
+        // Decode detail dan hapus data berdasarkan index
+        $details = json_decode($retur->detail, true);
+        if (isset($details[$index])) {
+            $retur->total -= $details[$index]['field_total'];
+            unset($details[$index]);
+            $retur->detail = json_encode(array_values($details));
+            $retur->save();
+
+            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Index tidak valid.']);
+    }
+
+    public function saveReturnItem(Request $request)
+    {
+        $index = $request->input('index');
+        $retur = Pengembalian::find($request->input('retur_id'));
+        $order = $request->input('order');
+        $price = $request->input('price');
+        $total = $order * $price;
+
+        if (!$retur) {
+            return response()->json(['success' => false, 'message' => 'Data tidak ditemukan.']);
+        }
+
+        $details = json_decode($retur->detail, true);
+        if (isset($details[$index])) {
+            $getTotal = $total - $details[$index]['field_total'];
+            $retur->total += $getTotal;
+            $details[$index]['order'] = $order;
+            $details[$index]['price'] = $price;
+            $details[$index]['field_total'] = $total;
+            $retur->detail = json_encode(array_values($details));
+            $retur->save();
+
+            return response()->json(['success' => true, 'message' => 'Data berhasil dihapus.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Index tidak valid.']);
+    }
+
     public function destroyReturnData($id)
     {
         $retur = Pengembalian::find($id);
-        $preorder = Preorder::where('nomor_return', $retur->nomor_return);
+        $preorder = Preorder::where('nomor_return', $retur->nomor_return)->first();
         $detail = json_decode($retur->detail, true);
-        foreach ($detail as $data) {
-            $product = Product::where('kode', $data['kode'])->first();
-            $product->update([
-                'stok' => (int)$product->stok + $data['order']
-            ]);
+        if ($detail) {
+            foreach ($detail as $data) {
+                $product = Product::where('kode', $data['kode'])->first();
+                $product->update([
+                    'stok' => (int)$product->stok + $data['order']
+                ]);
+            }
         }
         
-        $preorder->update([
-            'is_return' => null, 
-            'nomor_return' => null
-        ]);
+        if ($preorder) {
+            $preorder->update([
+                'is_return' => null, 
+                'nomor_return' => null
+            ]);
+        }
         
         ProductStock::where('tipe', $retur->nomor_return)->delete();
         $retur->delete();

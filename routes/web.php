@@ -93,6 +93,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/daftar-return-product/update/{id}', [PreOrderController::class, 'updateDaftarReturnProduct'])->name('daftar-return-product.update');
     Route::post('/get-data-return-barcode', [PreOrderController::class, 'getDataReturnBarcode'])->name('daftar-po.get-data-return-barcode');
     Route::post('/store-return-data/{id}', [PreOrderController::class, 'storeReturnData'])->name('return-po.store');
+    Route::post('/destroy-return-item', [PreOrderController::class, 'destroyReturnItem'])->name('return-po.destroy-return-item');
+    Route::post('/save-return-item', [PreOrderController::class, 'saveReturnItem'])->name('return-po.save-return-item');
     Route::delete('/destroy-return-data/{id}', [PreOrderController::class, 'destroyReturnData'])->name('return-po.destroy');
 
     // Func in PO & Receive

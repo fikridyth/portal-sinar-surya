@@ -69,19 +69,33 @@
                                                     <th class="text-center">QTY</th>
                                                     <th class="text-center">HARGA</th>
                                                     <th class="text-center">TOTAL</th>
+                                                    <th class="text-center">AKSI</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr class="fs-need"></tr>
                                                 @if (isset($retur->detail))
                                                     @foreach (json_decode($retur->detail, true) as $index => $data)
-                                                        <tr>
+                                                        @php
+                                                            $no = $index + 1;
+                                                        @endphp
+                                                        <tr data-index="{{ $index }}" id="row-{{ $index }}">
                                                             <td class="text-center">{{ $loop->iteration }}</td>
                                                             <td class="text-center">{{ $data['kode'] }}</td>
                                                             <td>{{ $data['nama'] . '/' . $data['unit_jual'] }}</td>
-                                                            <td class="text-center"><input type="number" style="width: 70px" name="qty[]" value="1"></td>
-                                                            <td class="text-center"><input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}"></td>
-                                                            <td class="text-end">{{ number_format($data['price']) }}</td>
+                                                            <td class="text-center">
+                                                                <input type="number" style="width: 70px" name="qty[]" value="{{ $data['order'] }}" class="order-input" id="order-input-{{ $no }}"
+                                                                    onblur="handleBlurOrder({{ $no }}, '{{ $data['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $data['order'] }}')" onfocus="this.value = '';">
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input" id="price-input-{{ $no }}"
+                                                                    onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')" onfocus="this.value = '';">
+                                                            </td>
+                                                            <td class="text-end">{{ number_format($data['order'] * $data['price']) }}</td>
+                                                            <td class="text-center">
+                                                                <a href="#" class="btn btn-danger btn-sm delete-row" data-index="{{ $index }}"><i class="fa fa-trash"></i></a>
+                                                                <a href="#" class="btn btn-primary btn-sm save-row" id="save-row-{{ $no }}" hidden data-index="{{ $index }}"><i class="fa fa-save"></i></a>
+                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -165,12 +179,60 @@
             });
         });
 
+        function handleEnterOrder(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('order-input-' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('price-input-' + no).focus();
+            }
+        }
+
+        function handleBlurOrder(no, originalValue) {
+            var inputField = document.getElementById('order-input-' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
+        function handleEnterPrice(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('price-input-' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                // document.getElementById('price-input-' + no).focus();
+                document.getElementById('save-row-' + no).click();
+            }
+        }
+
+        function handleBlurPrice(no, originalValue) {
+            var inputField = document.getElementById('price-input-' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
         const tambahButton = document.getElementById('tambah-button');
         tambahButton.addEventListener('click', function() {
             tambahButton.disabled = true;
         });
 
         document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA')) {
+                return;
+            }
             if (event.key === 'Enter') {
                 document.getElementById('tambah-button').click();
                 document.getElementById('tambah-button').disabled = true;
@@ -206,6 +268,7 @@
                         <input type="number" size="1" autofocus class="kode-input" min="1" step="1" style="width: 300px;"
                         onkeydown="handleEnterKode(event)">
                     </td>
+                    <td class="text-center"></td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
                     <td class="text-center"></td>
@@ -258,40 +321,79 @@
             });
         }
 
-        // document.querySelector('form').addEventListener('submit', function(event) {
-        //     if (items.length === 0) {
-        //         event.preventDefault();
-        //         alert('Please add items before submitting!');
-        //         return;
-        //     }
+        $(document).on('click', '.save-row', function(e) {
+            e.preventDefault();
 
-        //     const form = this; // Store the form reference
+            let button = $(this);
+            let index = button.data('index');
+            let order = $(`#order-input-${index + 1}`).val();
+            let price = $(`#price-input-${index + 1}`).val();
 
-        //     // Dynamically add hidden input fields for each item
-        //     items.forEach(function(item, index) {
-        //         const inputKode = document.createElement('input');
-        //         inputKode.type = 'hidden';
-        //         inputKode.name = `items[${index}][kode]`; 
-        //         inputKode.value = item.kode;
-        //         form.appendChild(inputKode);
-        //     });
-        //     items.forEach(function(item, index) {
-        //         const inputOrder = document.createElement('input');
-        //         inputOrder.type = 'hidden';
-        //         inputOrder.name = `items[${index}][order]`; 
-        //         inputOrder.value = item.order;
-        //         form.appendChild(inputOrder);
-        //     });
-        //     items.forEach(function(item, index) {
-        //         const inputPrice = document.createElement('input');
-        //         inputPrice.type = 'hidden';
-        //         inputPrice.name = `items[${index}][price]`; 
-        //         inputPrice.value = item.price;
-        //         form.appendChild(inputPrice);
-        //     });
+            $.ajax({
+                url: '/save-return-item', // URL endpoint Laravel
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}', // Token CSRF untuk keamanan
+                    index: index,
+                    order: order,
+                    price: price,
+                    retur_id: returId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Hapus baris tabel setelah berhasil
+                        window.location.reload();
+                    } else {
+                        alert("Gagal save data: " + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert("Terjadi kesalahan. Silakan coba lagi.");
+                    console.error(xhr.responseText);
+                }
+            });
+        });
 
-        //     // After appending hidden inputs, submit the form manually
-        //     form.submit();
-        // });
+        $(document).on('click', '.delete-row', function(e) {
+            e.preventDefault();
+
+            let button = $(this);
+            let index = button.data('index'); // Ambil index dari atribut data
+
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: 'Apakah Anda yakin ingin menghapus item ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/destroy-return-item', // URL endpoint Laravel
+                        method: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}', // Token CSRF untuk keamanan
+                            index: index,
+                            retur_id: returId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Hapus baris tabel setelah berhasil
+                                window.location.reload();
+                            } else {
+                                alert("Gagal menghapus data: " + response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            alert("Terjadi kesalahan. Silakan coba lagi.");
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
+            });
+        });
     </script>
 @endsection
