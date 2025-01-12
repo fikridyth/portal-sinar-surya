@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\DataTables\ReceiveDataTable;
 use App\DataTables\ReceiveDoneDataTable;
 use App\DataTables\SearchProductDataTable;
+use App\Models\HargaSementara;
+use App\Models\HargaSementaraPos;
 use App\Models\Hutang;
 use App\Models\Pembayaran;
 use App\Models\Pengembalian;
@@ -12,6 +14,7 @@ use App\Models\Penjualan;
 use App\Models\Ppn;
 use App\Models\Preorder;
 use App\Models\Product;
+use App\Models\ProductPos;
 use App\Models\ProductStock;
 use App\Models\Supplier;
 use Carbon\Carbon;
@@ -1256,9 +1259,7 @@ class PreOrderController extends Controller
     {
         $title = 'Daftar Persetujuan Harga Jual';
         $titleHeader = 'PERSETUJUAN HARGA JUAL - PILIH BARANG';
-        // $preorders = Preorder::where('receive_type', 'B')->whereNotNull('is_cancel')->whereNotNull('detail')->get();
-        // $preorders = Preorder::where('receive_type', 'B')->whereNull('is_jual')->get();
-        $preorders = Preorder::where('receive_type', 'B')->get();
+        $preorders = Preorder::where('receive_type', 'B')->whereNull('is_cancel')->get();
 
         return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'titleHeader', 'preorders'));
     }
@@ -1301,7 +1302,7 @@ class PreOrderController extends Controller
     {
         // ubah hanya data yang dicentang
         // kirim ke pos hasil update
-        dd($request->all());
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'mark_up.*' => 'required|numeric|min:0',
         ]);
@@ -1365,16 +1366,43 @@ class PreOrderController extends Controller
         }, $sortName, $sortCode, $sortPrice, $request->harga_jual, $request->mark_up);
         // dd($newData);
         
+        $maxNo = HargaSementara::max('nomor');
+        $getNext = $maxNo + 1;
         foreach ($newData as $new) {
             // dd($new);
             // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
+            $productPos = ProductPos::where('kode', $new['kode'])->first();
             $product->update([
                 // 'harga_pokok' => $new['harga_pokok'],
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
                 'updated_at' => now()
             ]);
+            $productPos->update([
+                // 'harga_pokok' => $new['harga_pokok'],
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
+
+            $dataHarga = [
+                'id_supplier' => $product->id_supplier,
+                'id_product' => $product->id,
+                'nomor' => $getNext ?? 1,
+                'nama' => $product->nama . '/' . $product->unit_jual,
+                'harga_lama' => $product->harga_lama,
+                'harga_pokok' => $product->harga_pokok,
+                'profit_pokok' => number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) ?? 0.00,
+                'harga_jual' => $new['harga_jual'],
+                'profit_jual' => $new['mark_up'],
+                'harga_sementara' => $new['harga_jual'],
+                'date_first' => now()->format('Y-m-d'),
+                'date_last' => now()->format('Y-m-d'),
+                'naik' => 100,
+            ];
+            HargaSementara::create($dataHarga);
+            HargaSementaraPos::create($dataHarga);
         }
 
         $preorder = Preorder::find($request->preorder);

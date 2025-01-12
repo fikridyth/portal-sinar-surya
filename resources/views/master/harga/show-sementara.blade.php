@@ -92,7 +92,8 @@
                                                 @else
                                                     <td id="profit_pokok_{{ $index }}">0.00</td>
                                                 @endif
-                                                <td><input type="number" id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})"></td>
+                                                <input type="number" hidden id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})">
+                                                <td class="text-end">{{ number_format($product->harga_jual) }}</td>
                                                 <td><input type="text" id="profit_{{ $index }}" name="profit[{{ $product->id }}]" value="{{ $product->profit_jual }}" style="width: 70px;" oninput="updateHargaSementara({{ $index }})"></td>
                                                 <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ $product->harga_sementara }}" style="width: 100px;" oninput="updateHargaSementara2({{ $index }})"></td>
                                                 <input type="text" id="read_sementara_{{ $index }}" hidden value="{{ $product->harga_sementara }}">
@@ -125,23 +126,23 @@
 @section('scripts')
     <script>
         function updateHargaSementara(index) {
-            var hargaJual = parseFloat(document.getElementById('harga_jual_' + index).value) || 0;
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
             var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
 
             // Menghitung harga_sementara
-            var hargaSementara = (hargaJual * profit) / 100 + hargaJual;
+            var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
 
             // Memperbarui nilai harga_sementara berdasarkan indeks
             document.getElementById('harga_sementara_' + index).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
         }
 
         function updateHargaSementara2(index) {
-            var hargaJual = parseFloat(document.getElementById('harga_jual_' + index).value) || 0;
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
             var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + index).value) || 0;
 
             // Menghitung harga_sementara
-            var hitung = hargaSementara - hargaJual;
-            var hargaSementara = (hitung / hargaJual) * 100;
+            var hitung = hargaSementara - hargaPokok;
+            var hargaSementara = (hitung / hargaPokok) * 100;
 
             // Memperbarui nilai harga_sementara berdasarkan indeks
             document.getElementById('profit_' + index).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
@@ -185,15 +186,15 @@
             
             // Loop untuk setiap produk dan update harga sementaranya
             @foreach ($listProduct as $index => $product)
-                var hargaJual = parseFloat(document.getElementById('harga_jual_{{ $index }}').value) || 0;
+                var hargaPokok = parseFloat(document.getElementById('harga_pokok_{{ $index }}').value) || 0;
                 var hargaSementara = parseFloat(document.getElementById('harga_sementara_{{ $index }}').value) || 0;
                 var readSementara = document.getElementById('read_sementara_{{ $index }}').value || 0;
 
                 // Menghitung harga sementara setelah kenaikan
-                var hitung = readSementara - hargaJual;
+                var hitung = readSementara - hargaPokok;
                 var hitung2 = (kenaikan / 100) * hitung;
-                var hargaSetelahKenaikan = hargaJual + hitung2;
-                var profit = ((hargaSetelahKenaikan - hargaJual) / hargaJual) * 100
+                var hargaSetelahKenaikan = hargaPokok + hitung2;
+                var profit = ((hargaSetelahKenaikan - hargaPokok) / hargaPokok) * 100
 
                 // Update nilai harga sementara pada input
                 document.getElementById('harga_sementara_{{ $index }}').value = hargaSetelahKenaikan.toFixed(0);

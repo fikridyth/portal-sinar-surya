@@ -7,6 +7,7 @@ use App\Models\HargaSementaraPos;
 use App\Models\Product;
 use App\Models\ProductPos;
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -17,7 +18,8 @@ class HargaController extends Controller
         $title = "Master Harga";
         $titleHeader = 'MASTER HARGA';
         $suppliers = Supplier::where('status', 1)->get();
-        $products = HargaSementara::whereNotNull('nomor')->get()->unique('nomor');
+        $products = HargaSementara::whereNotNull('nomor')->where('date_first', '>=', now()->format('Y-m-d'))->get()->unique('nomor');
+        // dd($products[0]->date_first, now()->format('Y-m-d'));
         // $products = Product::whereNotNull('harga_sementara')
         //     ->where('tanggal_awal', '<=', now()->format('Y-m-d'))
         //     ->where('tanggal_akhir', '>=', now()->format('Y-m-d'))
@@ -34,7 +36,7 @@ class HargaController extends Controller
         // dd($request->all());
         $hargaLama = $request->input('harga_lama');
         $hargaPokok = $request->input('harga_pokok');
-        $hargaJual = $request->input('harga_jual');
+        // $hargaJual = $request->input('harga_jual');
         $profit = $request->input('profit');
         $hargaSementara = $request->input('harga_sementara');
         $selectedIds = $request->input('selected_ids');
@@ -46,7 +48,7 @@ class HargaController extends Controller
                     'id' => $id,
                     'harga_lama' => $hargaLama[$id] ?? null,
                     'harga_pokok' => $hargaPokok[$id] ?? null,
-                    'harga_jual' => $hargaJual[$id] ?? null,
+                    // 'harga_jual' => $hargaJual[$id] ?? null,
                     'profit' => $profit[$id] ?? null,
                     'harga_sementara' => $hargaSementara[$id] ?? null,
                 ];
@@ -66,9 +68,9 @@ class HargaController extends Controller
             if ($product) {
                 $dataProduct = [
                     // 'harga_lama' => $data['harga_lama'],
-                    // 'harga_jual' => $data['harga_jual'],
+                    'harga_jual' => $data['harga_sementara'],
                     'harga_pokok' => $data['harga_pokok'],
-                    'profit' => number_format((($product->harga_jual - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                 ];
                 $product->update($dataProduct);
                 ProductPos::find($data['id'])->update($dataProduct);
@@ -81,7 +83,7 @@ class HargaController extends Controller
                     'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
                     'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
-                    'harga_jual' => $data['harga_jual'],
+                    'harga_jual' => $data['harga_sementara'],
                     'profit_jual' => $data['profit'],
                     'harga_sementara' => $data['harga_sementara'],
                     'date_first' => $request->from_date,
@@ -94,12 +96,10 @@ class HargaController extends Controller
                 // update data dalam kelompok product tersebut
                 $getKelompok = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->whereNot('id', $product->id)->get();
                 $getMarkPokok = round((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2);
-                $getMarkJual = round((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2);
                 // dd($getKelompok, $data['harga_lama'], $data['harga_pokok'], $data['harga_jual'], $getMarkPokok, $getMarkJual);
                 foreach ($getKelompok as $kelompok) {
                     $kelompok->update([
-                        'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0),
-                        // 'harga_jual' => (int)round((($kelompok->harga_jual * $getMarkJual) / 100) + $kelompok->harga_jual,0)
+                        'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0)
                     ]);
                 }
             }
@@ -117,9 +117,10 @@ class HargaController extends Controller
         $titleHeader = 'MASTER HARGA';
         $suppliers = Supplier::where('status', 1)->get();
         $products = Product::where('id_supplier', $id)->where('status', 1)->orderBy('nama', 'asc')->get();
+        $owner = User::where('JABATAN', 'OWNER')->pluck('show_password')->first();
         // dd($id, count($products));
 
-        return view('master.harga.show', compact('title', 'titleHeader', 'suppliers', 'products'));
+        return view('master.harga.show', compact('title', 'titleHeader', 'suppliers', 'products', 'owner'));
     }
 
     public function update(Request $request, $id)

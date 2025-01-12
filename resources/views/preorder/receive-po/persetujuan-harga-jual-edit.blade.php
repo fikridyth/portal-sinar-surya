@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <form action="{{ route('persetujuan-harga-jual-update', enkrip($preorder->id)) }}" method="POST" class="form">
+        <form action="{{ route('persetujuan-harga-jual-update', enkrip($preorder->id)) }}" method="POST" class="form" id="filter-form">
             @csrf
             @method('PUT')
             <div class="card">
@@ -92,7 +92,7 @@
 
                                         <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
                                         {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
-                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" class="select-product"></td>
+                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" value="{{ $index }}" class="select-product"></td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -112,7 +112,7 @@
                             <a class="btn btn-danger" href="{{ route('persetujuan-harga-jual') }}">KEMBALI</a>
                         </div>
                         <div class="mx-2">
-                            <button type="submit" class="btn btn-primary">GANTI HARGA</button>
+                            <button type="submit" disabled id="ganti-harga-btn" class="btn btn-primary">GANTI HARGA</button>
                         </div>
                     </div>
                 </div>
@@ -132,7 +132,8 @@
                 checkbox.addEventListener('change', function(event) {
                     const kode = event.target.getAttribute('data-kode');
                     if (event.target.checked) {
-                        event.target.disabled = true;
+                        // event.target.disabled = true;
+                        document.getElementById('ganti-harga-btn').disabled = false;
 
                         // Fetch product data based on kode
                         fetch(`/get-products-by-kode/${kode}`)
@@ -160,7 +161,7 @@
                                             <td class="text-center">
                                                 <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${number_format_mark_up((product.harga_jual - product.harga_pokok) / product.harga_pokok * 100, 2)}" size="5">
                                             </td>
-                                            <td class="text-center"></td>
+                                            <td class="text-center"><input type="checkbox" class="select-product" value="${indexCounter}" checked></td>
                                         `;
                                         // tbody.appendChild(newRow);
                                         parentRow.insertAdjacentElement('afterend', newRow);
@@ -174,8 +175,9 @@
                     } else {
                         // Optional: Remove rows based on the unselected checkbox
                         const tbody = document.querySelector('table tbody');
+                        // document.getElementById('ganti-harga-btn').disabled = true;
                         tbody.querySelectorAll(`input[name="kode[]"][value="${kode}"]`).forEach(input => input.closest('tr').remove());
-                        updateTotalFaktur();
+                        // updateTotalFaktur();
                     }
                 });
             });
@@ -220,28 +222,6 @@
                     updateHargaJual({{ $index }});
                 });
             @endforeach
-
-            // Function to calculate the total of persetujuan_harga_jual fields
-            function updateTotalFaktur() {
-                let total = 0;
-                document.querySelectorAll('[id^=persetujuan_harga_jual_]').forEach(element => {
-                    const value = parseFloat(element.value.replace(/,/g, ''));
-                    if (!isNaN(value)) {
-                        total += value;
-                    }
-                });
-
-                // Update the total_faktur input
-                document.getElementById('total_faktur').value = total.toLocaleString();
-            }
-
-            // Attach event listeners to input fields
-            document.querySelectorAll('[id^=persetujuan_harga_jual_]').forEach(input => {
-                input.addEventListener('input', updateTotalFaktur);
-            });
-
-            // Initial calculation in case there are pre-filled values
-            updateTotalFaktur();
         });
 
         function validateNumberInput(event) {
@@ -262,5 +242,26 @@
         function number_format_mark_up(number) {
             return Number(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
+
+        const form = document.getElementById('filter-form');
+        form.addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.select-product');
+            console.log(checkboxes);
+            checkboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    // Hapus input harga_sementara yang tidak dicentang
+                    const hiddenInput = document.querySelector(`input[name="harga_pokok[${checkbox.value}]"]`);
+                    const hiddenInput2 = document.querySelector(`input[name="nama[${checkbox.value}]"]`);
+                    const hiddenInput3 = document.querySelector(`input[name="harga_jual[${checkbox.value}]"]`);
+                    const hiddenInput4 = document.querySelector(`input[name="mark_up[${checkbox.value}]"]`);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                        hiddenInput2.remove();
+                        hiddenInput3.remove();
+                        hiddenInput4.remove();
+                    }
+                }
+            });
+        });
     </script>
 @endsection

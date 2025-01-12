@@ -19,6 +19,31 @@
         background-color: #f9f9f9; /* Latar belakang header tabel */
         box-shadow: 0 2px 2px -2px gray; /* Bayangan untuk header */
     }
+
+    .modal-password {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        z-index: 1000;
+    }
+    
+    .modal-content-password {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #passwordInput {
+        padding: 8px;
+        font-size: 14px;
+        width: 100%;
+        margin-top: 10px;
+    }
     </style>
 @endsection
 
@@ -101,12 +126,13 @@
                                                 @else
                                                     <td id="profit_pokok_{{ $no }}">0.00</td>
                                                 @endif
-                                                <td><input type="number" id="harga_jual_{{ $no }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
-                                                    onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';"></td>
-                                                <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
+                                                <input type="number" id="harga_jual_{{ $no }}" hidden name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
+                                                    onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';">
+                                                <td class="text-end">{{ number_format($product->harga_jual) }}</td>
+                                                    <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
                                                     onblur="handleBlurProfit({{ $no }}, '{{ $product->profit }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
                                                 <td id="td_harga_sementara_{{ $no }}"><input type="text" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" 
-                                                    onblur="handleBlurSementara({{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}')" onfocus="this.value = '';"></td>
+                                                    onblur="handleBlurSementara({{ $no }}, '{{ round((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}')" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}')" onfocus="this.value = '';"></td>
                                                 <input type="checkbox" hidden id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox">
                                             </tr>
                                         @endforeach
@@ -131,6 +157,14 @@
             </div>
         </div>
     </div>
+    
+    {{-- pass modal --}}
+    <div id="passwordModal" class="modal-password" style="display:none;">
+        <div class="modal-content-password">
+            <h5>MASUKAN PASSWORD</h5>
+            <input type="password" id="passwordInput" onkeydown="handleValidatePassword(event)" oninput="this.value = this.value.toUpperCase()"/>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
@@ -150,26 +184,108 @@
             allowClear: true
         });
 
+        let tempInputData = {
+            inputField: null,
+            newValue: null,
+            originalValue: null
+        };
+
+        let modalActive = false;
+
         function handleEnterPokok(event, no, originalValue) {
             if (event.key === 'Enter') {
-                var inputField = document.getElementById('harga_pokok_' + no);
-                
-                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
-                if (inputField.value === '') {
-                    inputField.value = originalValue;
-                }
+                if (!modalActive) {
+                    // Tahap 1: Cek nilai input dan tampilkan modal jika perlu
+                    var inputField = document.getElementById('harga_pokok_' + no);
+                    var hargaLama = parseFloat(document.getElementById('harga_lama_' + no).value) || 0;
 
-                document.getElementById('harga_jual_' + no).focus();
+                    // Jika input kosong, kembalikan nilai ke nilai asli
+                    if (inputField.value === '') {
+                        inputField.value = originalValue;
+                    }
+
+                    if (parseFloat(inputField.value) < hargaLama) {
+                        tempInputData.inputField = inputField;
+                        tempInputData.newValue = inputField.value;
+                        tempInputData.originalValue = originalValue;
+
+                        // Buka modal
+                        showPasswordModal();
+                        return;
+                    }
+
+                    // Fokuskan pada elemen berikutnya
+                    document.getElementById('profit_' + no).focus();
+                } else {
+                    // Tahap 2: Validasi password setelah modal muncul
+                    validatePassword();
+                }
             }
         }
 
         function handleBlurPokok(no, originalValue) {
-            var inputField = document.getElementById('harga_pokok_' + no);
+            if (!modalActive) {
+                // Tahap 1: Cek nilai input dan tampilkan modal jika perlu
+                var inputField = document.getElementById('harga_pokok_' + no);
+                var hargaLama = parseFloat(document.getElementById('harga_lama_' + no).value) || 0;
 
-            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
-            if (inputField.value === '') {
-                inputField.value = originalValue;
+                // Jika input kosong, kembalikan nilai ke nilai asli
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                if (parseFloat(inputField.value) < hargaLama) {
+                    tempInputData.inputField = inputField;
+                    tempInputData.newValue = inputField.value;
+                    tempInputData.originalValue = originalValue;
+
+                    // Buka modal
+                    showPasswordModal();
+                    return;
+                }
+
+                // Fokuskan pada elemen berikutnya
+                document.getElementById('profit_' + no).focus();
+            } else {
+                // Tahap 2: Validasi password setelah modal muncul
+                validatePassword();
             }
+        }
+
+        function handleValidatePassword() {
+            if (event.key === 'Enter') {
+                validatePassword();
+            }
+        }
+
+        function showPasswordModal() {
+            var modal = document.getElementById('passwordModal');
+            modal.style.display = 'block';
+            document.getElementById('passwordInput').focus();
+            modalActive = true;
+        }
+
+        const ownerPassword = @json($owner);
+        function validatePassword() {
+            var password = document.getElementById('passwordInput').value;
+
+            // Validasi password
+            if (password === ownerPassword) {
+                tempInputData.inputField.value = tempInputData.newValue;
+            } else {
+                tempInputData.inputField.value = tempInputData.originalValue;
+                alert('Password salah!');
+            }
+
+            resetModal();
+        }
+
+        function resetModal() {
+            var modal = document.getElementById('passwordModal');
+            modal.style.display = 'none';
+            document.getElementById('passwordInput').value = ''; // Reset input password
+            tempInputData = { inputField: null, newValue: null, originalValue: null };
+            modalActive = false;
         }
 
         function handleEnterJual(event, no, originalValue) {
@@ -219,17 +335,19 @@
         function handleEnterSementara(event, no, originalValue) {
             if (event.key === 'Enter') {
                 var inputField = document.getElementById('harga_sementara_' + no);
-                var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+                var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+                var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
+                var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
                 
                 // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
                 if (inputField.value === '') {
-                    inputField.value = originalValue;
+                    inputField.value = hargaSementara.toFixed(0);
                 }
 
                 document.getElementById('checkbox_select_' + no).checked = true;
                 document.getElementById('td_harga_sementara_' + no).style.backgroundColor = 'red';
                 
-                if (inputField.value < hargaJual) {
+                if (inputField.value < hargaPokok) {
                     alert('HARGA SEMENTARA TIDAK BOLEH LEBIH KECIL');
                     inputField.value = originalValue;
                     document.getElementById('checkbox_select_' + no).checked = false;
@@ -240,31 +358,33 @@
 
         function handleBlurSementara(no, originalValue) {
             var inputField = document.getElementById('harga_sementara_' + no);
+            var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
+            var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
 
             // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
             if (inputField.value === '') {
-                inputField.value = originalValue;
+                inputField.value = hargaSementara.toFixed(0);
             }
         }
 
         function updateHargaSementara(no) {
-            var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
             var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
 
             // Menghitung harga_sementara
-            var hargaSementara = (hargaJual * profit) / 100 + hargaJual;
+            var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
 
             // Memperbarui nilai harga_sementara berdasarkan indeks
             document.getElementById('harga_sementara_' + no).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
         }
 
         function updateHargaSementara2(no) {
-            var hargaJual = parseFloat(document.getElementById('harga_jual_' + no).value) || 0;
+            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
             var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + no).value) || 0;
 
             // Menghitung harga_sementara
-            var hitung = hargaSementara - hargaJual;
-            var hargaSementara = (hitung / hargaJual) * 100;
+            var hitung = hargaSementara - hargaPokok;
+            var hargaSementara = (hitung / hargaPokok) * 100;
 
             // Memperbarui nilai harga_sementara berdasarkan indeks
             document.getElementById('profit_' + no).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
@@ -327,7 +447,6 @@
             // focus barcode
             if (event.key === 'Enter') {
                 event.preventDefault();
-                
             }
         });
 

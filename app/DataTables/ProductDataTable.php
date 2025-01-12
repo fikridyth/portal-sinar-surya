@@ -2,6 +2,7 @@
 
 namespace App\DataTables;
 
+use App\Models\HargaSementara;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
@@ -34,7 +35,17 @@ class ProductDataTable extends DataTable
             return number_format($row->harga_pokok);
         })
         ->editColumn('harga_jual', function ($row) {
-            return number_format($row->harga_jual);
+            $hargaJual = $row->harga_jual;
+            $now = now()->format('Y-m-d');
+            $hargaSementara = HargaSementara::where('date_first', '<=', $now)
+                ->where('id_product', $row->id)
+                ->orderBy('date_first', 'desc')
+                ->first();
+            if ($hargaSementara) {
+                $hargaJual = (float) $hargaSementara->harga_sementara;
+            }
+            // dd($hargaSementara);
+            return number_format($hargaJual);
         })
         ->editColumn('nama', function ($row) {
             return '<a href="' . route('master.product.show', enkrip($row->id)) . '">' . $row->nama . '/' . $row->unit_jual . '</a>';
