@@ -76,7 +76,7 @@
 
         document.addEventListener('keydown', function(event) {
             // focus barcode
-            if (event.key === 'Escape' || event.key === 'Backspace') {
+            if (event.key === 'Escape') {
                 document.getElementById('barcodeInput').focus();
             }
 

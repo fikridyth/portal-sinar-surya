@@ -220,7 +220,7 @@
                                 <label class="form-label h6 mt-2" for="profit">PROFIT</label>
                             </div>
                             <div class="col-6">
-                                <input type="text" id="profit" name="profit" value="{{ old('profit', $product->profit) }}"
+                                <input type="text" disabled id="profit" name="profit" value="{{ old('profit', $product->profit) }}"
                                     class="form-control @error('profit') is-invalid @enderror" autocomplete="off"
                                     onkeydown="if(event.key === 'Enter') document.getElementById('input-supplier-id').focus();" />
                             </div>
@@ -343,7 +343,7 @@
                                 <label class="form-label h6 mt-2" id="label_harga_jual" for="harga_jual">HARGA JUAL/{{ $product->unit_jual }}</label>
                             </div>
                             <div class="col">
-                                <input type="text" id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $product->harga_jual) }}"
+                                <input type="text" disabled id="harga_jual" name="harga_jual" value="{{ old('harga_jual', $product->harga_jual) }}"
                                     class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off"
                                     onkeydown="if(event.key === 'Enter') document.getElementById('profit').focus();" />
                             </div>

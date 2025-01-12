@@ -156,6 +156,9 @@ class PreOrderController extends Controller
         $allProducts = $allProductsByName->toArray();
         // dd($allProductsByName);
         $previousUrl = url()->previous();
+        if (count($allProducts) <= 0) {
+            $allProducts = Product::where('id_supplier', $request->dataSupplier1)->get();
+        }
         // dd(count($allProducts));
 
         return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
@@ -731,7 +734,7 @@ class PreOrderController extends Controller
         }
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
-            'harga_lama' => $product->harga_pokok,
+            // 'harga_lama' => $product->harga_pokok,
             'harga_pokok' => $request->price,
             'diskon1' => $request->diskon1,
             'diskon2' => $request->diskon2,
@@ -1133,23 +1136,26 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $title = 'Preview Receive PO';
+        $titleHeader = 'PENERIMAAN BARANG - PURCHASE ORDER';
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
         usort($detail, function ($a, $b) {
             return strcmp($a['nama'], $b['nama']);
         });
 
-        return view('preorder.receive-po.preview-data', compact('title', 'preorder', 'detail'));
+        return view('preorder.receive-po.preview-data', compact('title', 'titleHeader', 'preorder', 'detail'));
     }
 
     public function updateReceivePo($id)
     {
+        // dd($id);
         $id = dekrip($id);
         $preorder = Preorder::find($id);
         $detail = json_decode($preorder->detail, true);
         foreach ($detail as $data) {
             $product = Product::where('kode', $data['kode'])->first();
             $product->update([
+                'harga_lama' => $data['price'],
                 'stok' => $data['order'] + (int)$product->stok,
                 'is_transfer' => null,
             ]);
@@ -1164,10 +1170,15 @@ class PreOrderController extends Controller
                 'unit_jual' => str_replace('P', '', $product->unit_jual)
             ]);
         }
-        Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update([
-            'is_proses' => 1,
-            'is_cancel' => null
-        ]);
+
+        $hutang = Hutang::where('nomor_receive', $preorder->nomor_receive)->first();
+        if ($hutang) {
+            $hutang->update([
+                'is_proses' => 1,
+                'is_cancel' => null
+            ]);
+
+        }
         $preorder->update([
             'is_proses' => 1,
             'is_cancel' => null
@@ -1246,7 +1257,8 @@ class PreOrderController extends Controller
         $title = 'Daftar Persetujuan Harga Jual';
         $titleHeader = 'PERSETUJUAN HARGA JUAL - PILIH BARANG';
         // $preorders = Preorder::where('receive_type', 'B')->whereNotNull('is_cancel')->whereNotNull('detail')->get();
-        $preorders = Preorder::where('receive_type', 'B')->whereNull('is_jual')->get();
+        // $preorders = Preorder::where('receive_type', 'B')->whereNull('is_jual')->get();
+        $preorders = Preorder::where('receive_type', 'B')->get();
 
         return view('preorder.receive-po.persetujuan-harga-jual', compact('title', 'titleHeader', 'preorders'));
     }
@@ -1287,7 +1299,9 @@ class PreOrderController extends Controller
 
     public function updatePersetujuanHargaJual(Request $request)
     {
-        // dd($request->all());
+        // ubah hanya data yang dicentang
+        // kirim ke pos hasil update
+        dd($request->all());
         $validator = Validator::make($request->all(), [
             'mark_up.*' => 'required|numeric|min:0',
         ]);

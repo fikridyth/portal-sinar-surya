@@ -135,10 +135,10 @@
                                                         <input type="text" hidden name="harga[]" value="{{ $product['harga_pokok'] }}">
                                                         <input type="text" hidden name="previous_url" value="{{ $previousUrl }}">
                                                         <td class="text-end">{{ str_replace('P', '', $product['unit_jual']) }}</td>
-                                                        <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? '' }}</td>
-                                                        <td class="text-end minimum" id="minimum-{{ $index }}">{{ $product['minimum'] ?? '' }}</td>
+                                                        <td class="text-end average" id="average-{{ $index }}">{{ $product['average'] ?? 0 }}</td>
+                                                        <td class="text-end minimum" id="minimum-{{ $index }}">{{ $product['minimum'] ?? 0 }}</td>
                                                         <td class="text-end">{{ number_format($product['stok'], 2)}}</td>
-                                                        <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? '' }}</td>
+                                                        <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? 0 }}</td>
                                                         <td class="text-center">
                                                             <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
                                                             onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['stok'] - $product['maximum']),0) }}">
