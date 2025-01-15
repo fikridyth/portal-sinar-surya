@@ -21,7 +21,7 @@ class DepartemenDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->with('unit')->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->with('unit')->orderBy('id', 'asc')))
         ->addIndexColumn()
         ->addColumn('unit', function ($row) {
             return $row->unit->nama;
@@ -72,7 +72,8 @@ class DepartemenDataTable extends DataTable
                 "lengthMenu" => [
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]
-                ]
+                ],
+                'pageLength' => 100
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

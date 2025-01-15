@@ -395,7 +395,7 @@ class ProductController extends Controller
             'unit_beli' => strtoupper($request->unit_beli),
             'unit_jual' => strtoupper($request->unit_jual),
             'konversi' => $konversi,
-            'harga_jual' => round($request->harga_jual),
+            // 'harga_jual' => round($request->harga_jual),
             'profit' => $request->profit,
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
@@ -405,11 +405,11 @@ class ProductController extends Controller
             'status' => 1,
             'is_transfer' => null,
         ];
-        if ($product->kode_sumber == null) {
-            $data['harga_pokok'] = preg_replace('/[^0-9]/', '', $request->harga_pokok);
-        } else {
-            $data['harga_pokok'] = preg_replace('/[^0-9]/', '', $request->harga_pokok_rata);
-        }
+        // if ($product->kode_sumber == null) {
+        //     $data['harga_pokok'] = preg_replace('/[^0-9]/', '', $request->harga_pokok);
+        // } else {
+        //     $data['harga_pokok'] = preg_replace('/[^0-9]/', '', $request->harga_pokok_rata);
+        // }
         // dd($data);
 
         $product->update($data);

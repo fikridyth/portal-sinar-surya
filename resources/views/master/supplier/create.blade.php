@@ -26,7 +26,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">WILAYAH</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="wilayah" required value="{{ old('wilayah') }}"
+                                <input type="text" name="wilayah" value="{{ old('wilayah') }}"
                                     class="form-control @error('wilayah') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>
@@ -53,7 +53,7 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">KONTAK - 1</label>
                             </div>
                             <div class="col-7">
-                                <input type="text" name="kontak" required value="{{ old('kontak') }}"
+                                <input type="text" name="kontak" value="{{ old('kontak') }}"
                                     class="form-control @error('kontak') is-invalid @enderror"
                                     autocomplete="off" />
                             </div>

@@ -21,7 +21,7 @@ class KunjunganDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->orderBy('id', 'asc')))
         ->addIndexColumn()
         ->addColumn('senin', function ($row) {
             $checked = $row->hari === 'SENIN' ? 'checked' : '';
@@ -91,7 +91,7 @@ class KunjunganDataTable extends DataTable
                     [5, 10, 25, 50, 100],
                     [5, 10, 25, 50, 100]
                 ],
-                'pageLength' => 100
+                'pageLength' => 2000
             ])
             ->buttons([''])
             ->addTableClass('table align-middle table-rounded table-striped table-row-gray-300 fs-6 gy-5');

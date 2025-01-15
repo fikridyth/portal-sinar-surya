@@ -21,7 +21,7 @@ class SupplierDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->orderBy('id', 'asc')))
         ->addIndexColumn()
         ->editColumn('created_at', function ($row) {
             return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
@@ -68,7 +68,7 @@ class SupplierDataTable extends DataTable
             ->orderBy(1, 'asc')
             ->language(['processing' => '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>'])
             ->parameters([
-                'pageLength' => 500,
+                'pageLength' => 2000,
                 'createdRow' => "function(row, data, dataIndex) {
                     $(row).attr('data-id', data.encrypted_id);
                 }"

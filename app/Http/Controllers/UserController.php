@@ -17,11 +17,12 @@ class UserController extends Controller
     public function index()
     {
         $title = "Master User";
+        $titleHeader = 'MASTER USER';
         $users = User::all();
         $roles = Role::all();
         $cabangs = Cabang::all();
 
-        return view('master.user.index', compact('title', 'users', 'roles', 'cabangs'));
+        return view('master.user.index', compact('title', 'titleHeader', 'users', 'roles', 'cabangs'));
     }
 
     public function store(Request $request)
@@ -81,9 +82,10 @@ class UserController extends Controller
     public function indexRole()
     {
         $title = "Master Role";
+        $titleHeader = 'OTORISASI STANDAR';
         $roles = Role::all();
 
-        return view('master.role.index', compact('title', 'roles'));
+        return view('master.role.index', compact('title', 'titleHeader', 'roles'));
     }
 
     public function editRole($id)

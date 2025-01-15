@@ -3,22 +3,10 @@
 @section('content')
     <div class="d-flex justify-content-center">
         <div class="mb-7" style="width: 60%">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                OTORISASI STANDAR
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-center mt-2">
-                        <div style="border: 1px solid #ccc;">
+                        <div style="overflow-x: auto; height: 650px; border: 1px solid #ccc;">
                             <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                 <thead>
                                     <tr style="border: 1px solid black; font-size: 12px;">

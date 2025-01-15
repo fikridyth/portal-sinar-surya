@@ -220,7 +220,7 @@
                                 <label class="form-label h6 mt-2" for="profit">PROFIT</label>
                             </div>
                             <div class="col-6">
-                                <input type="text" disabled id="profit" name="profit" value="{{ old('profit', $product->profit) }}"
+                                <input type="text" readonly id="profit" name="profit" value="{{ old('profit', $product->profit) }}"
                                     class="form-control @error('profit') is-invalid @enderror" autocomplete="off"
                                     onkeydown="if(event.key === 'Enter') document.getElementById('input-supplier-id').focus();" />
                             </div>
@@ -256,13 +256,13 @@
                             </div>
                             @if($product->kode_sumber !== null)
                                 <div class="col">
-                                    <input type="text" id="harga_pokok" disabled name="harga_pokok" value="{{ old('harga_pokok', number_format($product->harga_pokok)) }}"
+                                    <input type="text" id="harga_pokok" readonly name="harga_pokok" value="{{ old('harga_pokok', number_format($product->harga_pokok)) }}"
                                         class="form-control readonly-input @error('harga_pokok') is-invalid @enderror" autocomplete="off" readonly
                                         onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" />
                                 </div>
                             @else
                                 <div class="col">
-                                    <input type="text" id="harga_pokok" disabled name="harga_pokok" value="{{ old('harga_pokok', number_format($product->harga_pokok)) }}"
+                                    <input type="text" id="harga_pokok" readonly name="harga_pokok" value="{{ old('harga_pokok', number_format($product->harga_pokok)) }}"
                                         class="form-control @error('harga_pokok') is-invalid @enderror"
                                         onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual').focus();" autocomplete="off" />
                                 </div>
@@ -343,7 +343,7 @@
                                 <label class="form-label h6 mt-2" id="label_harga_jual" for="harga_jual">HARGA JUAL/{{ $product->unit_jual }}</label>
                             </div>
                             <div class="col">
-                                <input type="text" disabled id="harga_jual" name="harga_jual" value="{{ old('harga_jual', number_format($product->harga_jual)) }}"
+                                <input type="text" readonly id="harga_jual" name="harga_jual" value="{{ old('harga_jual', number_format($product->harga_jual)) }}"
                                     class="form-control @error('harga_jual') is-invalid @enderror" autocomplete="off"
                                     onkeydown="if(event.key === 'Enter') document.getElementById('profit').focus();" />
                             </div>
@@ -569,7 +569,7 @@
 
 @section('scripts')
     {{-- @include('master.product.add-on.edit-scripts') --}}
-    @include('master.product.add-on.scripts')
+    @include('master.product.add-on.edit-scripts')
 
     <script>
         // Mengambil elemen input dengan ID 'kode'

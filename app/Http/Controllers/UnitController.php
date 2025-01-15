@@ -15,8 +15,9 @@ class UnitController extends Controller
     public function index(UnitDataTable $dataTable)
     {
         $title = 'Master Unit';
+        $titleHeader = 'MASTER UNIT';
 
-        return $dataTable->render('master.unit.index', compact('title'));
+        return $dataTable->render('master.unit.index', compact('title', 'titleHeader'));
     }
 
     /**

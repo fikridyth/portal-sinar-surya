@@ -2,16 +2,6 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">MASTER USER</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-center mb-4">
@@ -21,42 +11,44 @@
                 
                 <form id="promoForm" action="{{ route('master.user.store') }}" method="POST" class="form">
                     @csrf
-                    <div class="d-flex justify-content-between mt-2">
-                        <table id="promoTable" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th colspan="8" class="text-center">DATA-DATA PROMOSI</th>
-                                </tr>
-                                <tr>
-                                    <th class="text-center">USE ID</th>
-                                    <th class="text-center">NAMA USER</th>
-                                    <th class="text-center">CABANG</th>
-                                    <th class="text-center">PASSWORD</th>
-                                    <th class="text-center">V</th>
-                                    <th class="text-center">JABATAN</th>
-                                    <th class="text-center">STANDAR</th>
-                                    <th class="text-center">ACTION</th>
-                                </tr>
-                            </thead>
-                            <tbody id="promoTableBody">
-                                @foreach ($users as $user)
-                                    <tr data-id="{{ $user->id }}">
-                                        <td class="user_username">{{ $user->username }}</td>
-                                        <td class="user_name">{{ $user->name }}</td>
-                                        <td class="user_cabang">{{ $user->cabang->nama }}</td>
-                                        <td class="user_password text-center">*****</td>
-                                        <td class="user_show_password text-center"><input type="checkbox" class="showPasswordCheckbox" 
-                                            onclick="togglePasswordVisibility(this, '{{ $user->show_password }}')"></td>
-                                        <td class="user_jabatan">{{ $user->jabatan }}</td>
-                                        <td class="user_role">{{ $user->role->nama }}</td>
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-sm btn-warning mx-1 btn-correct" data-id="{{ $user->id }}">KOREKSI</button>
-                                            <button type="button" class="btn btn-sm btn-danger mx-1" onclick="confirmDelete({{ $user->id }})">HAPUS</button>
-                                        </td>
+                    <div class="d-flex justify-content-center mt-2">
+                        <div style="overflow-x: auto; height: 550px; border: 1px solid #ccc;">
+                            <table id="promoTable" class="table table-bordered" style="width: 100%; table-layout: auto;">
+                                <thead>
+                                    <tr>
+                                        <th colspan="8" class="text-center">DATA-DATA PROMOSI</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                    <tr>
+                                        <th class="text-center">USE ID</th>
+                                        <th class="text-center">NAMA USER</th>
+                                        <th class="text-center">CABANG</th>
+                                        <th class="text-center">PASSWORD</th>
+                                        <th class="text-center">V</th>
+                                        <th class="text-center">JABATAN</th>
+                                        <th class="text-center">STANDAR</th>
+                                        <th class="text-center">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="promoTableBody">
+                                    @foreach ($users as $user)
+                                        <tr data-id="{{ $user->id }}">
+                                            <td class="user_username">{{ $user->username }}</td>
+                                            <td class="user_name">{{ $user->name }}</td>
+                                            <td class="user_cabang">{{ $user->cabang->nama }}</td>
+                                            <td class="user_password text-center">*****</td>
+                                            <td class="user_show_password text-center"><input type="checkbox" class="showPasswordCheckbox" 
+                                                onclick="togglePasswordVisibility(this, '{{ $user->show_password }}')"></td>
+                                            <td class="user_jabatan">{{ $user->jabatan }}</td>
+                                            <td class="user_role">{{ $user->role->nama }}</td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm btn-warning mx-1 btn-correct" data-id="{{ $user->id }}">KOREKSI</button>
+                                                <button type="button" class="btn btn-sm btn-danger mx-1" onclick="confirmDelete({{ $user->id }})">HAPUS</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                         {{-- <div class="d-flex justify-content-end mt-3">
                             <button type="submit" class="btn btn-success">SUBMIT</button>
                         </div> --}}

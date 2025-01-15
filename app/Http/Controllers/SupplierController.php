@@ -168,19 +168,21 @@ class SupplierController extends Controller
     public function indexPromosi()
     {
         $title = 'Master Promosi';
+        $titleHeader = 'MASTER PROMOSI';
         $promosi = Promosi::whereNull('nomor_bukti')->get();
         $suppliers = Supplier::all();
         $now = now()->format('Y-m-d');
 
-        return view('master/supplier/promosi/index', compact('title', 'promosi', 'suppliers', 'now'));
+        return view('master/supplier/promosi/index', compact('title', 'titleHeader', 'promosi', 'suppliers', 'now'));
     }
     
     public function indexAllPromosi()
     {
         $title = 'Master Promosi';
+        $titleHeader = 'MASTER PROMOSI';
         $promosi = Promosi::all();
 
-        return view('master/supplier/promosi/index-all', compact('title', 'promosi'));
+        return view('master/supplier/promosi/index-all', compact('title', 'titleHeader', 'promosi'));
     }
 
     public function storePromosi(Request $request)
@@ -243,8 +245,9 @@ class SupplierController extends Controller
     public function indexMaterai(MateraiDataTable $dataTable)
     {
         $title = 'Master Materai';
+        $titleHeader = 'MASTER MATERAI';
 
-        return $dataTable->render('master.supplier.index-materai', compact('title'));
+        return $dataTable->render('master.supplier.index-materai', compact('title', 'titleHeader'));
     }
 
     public function updateMaterai($id)
@@ -293,8 +296,9 @@ class SupplierController extends Controller
     public function indexKunjungan(KunjunganDataTable $dataTable)
     {
         $title = 'Master Kunjungan';
+        $titleHeader = 'MASTER KUNJUNGAN';
 
-        return $dataTable->render('master.supplier.index-kunjungan', compact('title'));
+        return $dataTable->render('master.supplier.index-kunjungan', compact('title', 'titleHeader'));
     }
     
     public function indexChangeSupplier()

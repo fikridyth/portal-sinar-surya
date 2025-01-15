@@ -16,8 +16,9 @@ class DepartemenController extends Controller
     public function index(DepartemenDataTable $dataTable)
     {
         $title = 'Master Departemen';
+        $titleHeader = 'MASTER DEPARTEMEN';
 
-        return $dataTable->render('master.departemen.index', compact('title'));
+        return $dataTable->render('master.departemen.index', compact('title', 'titleHeader'));
     }
 
     public function getDepartemenByUnit(Request $request)
