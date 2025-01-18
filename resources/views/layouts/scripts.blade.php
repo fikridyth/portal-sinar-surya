@@ -1,17 +1,34 @@
 <!-- MDB -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
+{{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script> --}}
+{{-- <script type="text/javascript" src="/assets/js/mdb.umd.min.js"></script> --}}
+<script type="text/javascript" src="{{ asset('assets/js/mdb.umd.min.js') }}"></script>
+
 {{-- Swal --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+{{-- <script src="/assets/js/sweetalert2@11.js"></script> --}}
+<script src="{{ asset('assets/js/sweetalert2@11.js') }}"></script>
+
 {{-- Jquery --}}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+{{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
+{{-- <script src="/assets/js/jquery.min.js"></script> --}}
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
 {{-- DataTable --}}
-<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+{{-- <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script> --}}
+{{-- <script src="/assets/js/jquery.dataTables.min.js"></script> --}}
+<script src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
 
-{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script> --}}
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script> --}}
+{{-- <script type="text/javascript" src="/assets/js/moment.min.js"></script> --}}
+<script type="text/javascript" src="{{ asset('assets/js/moment.min.js') }}"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+{{-- <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script> --}}
+{{-- <script type="text/javascript" src="/assets/js/daterangepicker.min.js"></script> --}}
+<script type="text/javascript" src="{{ asset('assets/js/daterangepicker.min.js') }}"></script>
+
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script> --}}
+{{-- <script src="/assets/js/select2.min.js"></script> --}}
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
 
 {{-- Validation --}}
 <script>

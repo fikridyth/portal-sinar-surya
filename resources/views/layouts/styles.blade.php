@@ -2,18 +2,34 @@
 <link rel="manifest" href="/manifest.json">
 
 <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/zen-favicon.png') }}">
+
 <!-- Font Awesome -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+{{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" /> --}}
+{{-- <link href="/assets/css/all.min.css" rel="stylesheet" /> --}}
+<link href="{{ asset('assets/css/all.min.css') }}" rel="stylesheet" />
+
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+{{-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> --}}
+{{-- <link href="/assets/css/css.css" rel="stylesheet" /> --}}
+<link href="{{ asset('assets/css/css.css') }}" rel="stylesheet" />
+
 <!-- MDB -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" />
+{{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" /> --}}
+{{-- <link href="/assets/css/mdb.min.css" rel="stylesheet" /> --}}
+<link href="{{ asset('assets/css/mdb.min.css') }}" rel="stylesheet" />
+
 <!-- Include DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+{{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css"> --}}
+{{-- <link rel="stylesheet" href="/assets/css/jquery.dataTables.min.css"> --}}
+<link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
 
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+{{-- <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> --}}
+{{-- <link rel="stylesheet" type="text/css" href="/assets/css/daterangepicker.css" /> --}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/daterangepicker.css') }}" />
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+{{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" /> --}}
+{{-- <link href="/assets/css/select2.min.css" rel="stylesheet" /> --}}
+<link href="{{ asset('assets/css/select2.min.css') }}" rel="stylesheet" />
 
 <style>
     /* uppercase text */

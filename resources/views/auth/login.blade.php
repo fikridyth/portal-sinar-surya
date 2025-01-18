@@ -11,11 +11,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/zen-favicon.png') }}">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" /> --}}
+    {{-- <link href="/assets/css/all.min.css" rel="stylesheet" /> --}}
+    <link href="{{ asset('assets/css/all.min.css') }}" rel="stylesheet" />
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    {{-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" /> --}}
+    {{-- <link href="/assets/css/css.css" rel="stylesheet" /> --}}
+    <link href="{{ asset('assets/css/css.css') }}" rel="stylesheet" />
+    
     <!-- MDB -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" />
+    {{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css" rel="stylesheet" /> --}}
+    {{-- <link href="/assets/css/mdb.min.css" rel="stylesheet" /> --}}
+    <link href="{{ asset('assets/css/mdb.min.css') }}" rel="stylesheet" />
     <style type="text/css">
         .login {
             margin: 200px auto;
@@ -113,11 +121,19 @@
     </section>
 
     <!-- MDB -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script>
+    {{-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"></script> --}}
+    {{-- <script type="text/javascript" src="/assets/js/mdb.umd.min.js"></script> --}}
+    <script type="text/javascript" src="{{ asset('assets/js/mdb.umd.min.js') }}"></script>
+
     {{-- Swal --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+    {{-- <script src="/assets/js/sweetalert2@11.js"></script> --}}
+    <script src="{{ asset('assets/js/sweetalert2@11.js') }}"></script>
+
     {{-- Jquery --}}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
+    {{-- <script src="/assets/js/jquery.min.js"></script> --}}
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 
     {{-- Validation --}}
     <script>
