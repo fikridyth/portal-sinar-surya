@@ -101,7 +101,7 @@
                 <td class='tipe_data' id='tipe_data'>ANAK</td>
                 <td class='unit_beli_value' data-unit-beli='${formatCurrency(product.unit_beli)}'>P${formatCurrency(product.unit_beli)}</td>
                 <td>
-                    <input type="text" class='unit_jual_value' id='unit_jual_value' autocomplete="off" size="5" name="unit_jual" value="" autofocus
+                    P&nbsp;<input type="text" class='unit_jual_value' id='unit_jual_value' autocomplete="off" size="3" name="unit_jual" value="" autofocus
                         onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
                         onkeydown="if(event.key === 'Enter') document.getElementById('harga_jual_value').focus();" />
                 </td>

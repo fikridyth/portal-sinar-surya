@@ -519,24 +519,24 @@
             </div>
 
             <div class="row d-flex justify-content-start mb-7">
-                <div class="col-0-5">
-                    <a href="#" class="btn btn-success disabled-link" title="TAMBAH DATA"><i class="fas fa-plus"></i></a>
+                <div class="col-1">
+                    <a href="#" class="btn btn-success disabled-link" style="min-width: 100px;" title="TAMBAH DATA">TAMBAH</i></a>
                 </div>
-                <div class="col-0-5">
-                    <a href="#" class="btn btn-warning disabled-link" title="EDIT DATA"><i class="fas fa-edit"></i></a>
+                <div class="col-1">
+                    <a href="#" class="btn btn-warning disabled-link" style="min-width: 100px;" title="EDIT DATA">UBAH</a>
                 </div>
-                <div class="col-0-5">
-                    <button type="submit" class="btn btn-primary" title="SIMPAN DATA"><i class="fas fa-save"></i></button>
+                <div class="col-1">
+                    <button type="submit" class="btn btn-primary" style="min-width: 100px;" title="SIMPAN DATA">SIMPAN</button>
                 </div>
-                <div class="col-8"></div>
-                <div class="col-0-5 ml-auto">
-                    <a href="{{ route('master.supplier.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a>
+                <div class="col-6"></div>
+                <div class="col-1 ml-auto">
+                    <a href="{{ route('master.supplier.index') }}" class="btn btn-primary" style="min-width: 100px;" title="CARI DATA">CARI</i></a>
                 </div>
-                <div class="col-0-5">
-                    <button type="button" onclick="window.history.back()" class="btn btn-warning" title="KEMBALI"><i class="fas fa-arrow-left"></i></button>
+                <div class="col-1">
+                    <button type="button" onclick="window.history.back()" class="btn btn-warning" style="min-width: 100px;" title="KEMBALI">KEMBALI</button>
                 </div>
-                <div class="col-0-5">
-                    <a href="{{ route('index') }}" class="btn btn-danger" title="KELUAR"><i class="fas fa-sign-out-alt"></i></a>
+                <div class="col-1">
+                    <a href="{{ route('index') }}" class="btn btn-danger" style="min-width: 100px;" title="KELUAR">KELUAR</a>
                 </div>
             </div>
         </form>

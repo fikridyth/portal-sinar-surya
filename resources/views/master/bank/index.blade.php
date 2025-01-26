@@ -2,16 +2,6 @@
 
 @section('content')
     <div class="container">
-        <div class="d-flex align-items-center justify-content-center">
-            <div>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">MASTER BANK</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
         <div class="card">
             <div class="card-body">
                 <div class="d-flex justify-content-center mb-4">
@@ -21,8 +11,8 @@
                 
                 <form id="promoForm" action="{{ route('master.bank.store') }}" method="POST" class="form">
                     @csrf
-                    <div class="d-flex justify-content-between mt-2">
-                        <table id="promoTable" class="table table-bordered" style="font-size: 13px;">
+                    <div style="overflow-x: auto; height: 550px; border: 1px solid #ccc;">
+                        <table id="promoTable" class="table table-bordered" style="width: 100%; table-layout: auto; font-size: 13px;">
                             <thead>
                                 <tr>
                                     <th colspan="6" class="text-center">DATA BANK</th>
@@ -49,9 +39,6 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{-- <div class="d-flex justify-content-end mt-3">
-                            <button type="submit" class="btn btn-success">SUBMIT</button>
-                        </div> --}}
                     </div>
                 </form>
                 @foreach ($banks as $bank)
@@ -93,7 +80,7 @@
             </tr>
             `;
 
-            document.getElementById('promoTableBody').insertAdjacentHTML('beforeend', addrow);
+            document.getElementById('promoTableBody').insertAdjacentHTML('afterbegin', addrow);
             
             $(`.tipe-select`).select2({
                 allowClear: true

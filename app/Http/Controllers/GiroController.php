@@ -15,9 +15,10 @@ class GiroController extends Controller
     public function indexBank()
     {
         $title = 'Master Bank';
-        $banks = Bank::where('status', 1)->get();
+        $titleHeader = 'MASTER BANK';
+        $banks = Bank::all();
 
-        return view('master.bank.index', compact('title', 'banks'));
+        return view('master.bank.index', compact('title', 'titleHeader', 'banks'));
     }
 
     public function storeBank(Request $request)
@@ -307,6 +308,7 @@ class GiroController extends Controller
         $filledData = GiroDetail::where('id_bank', $idBank)->whereNotNull('jumlah')->orderBy('nomor', 'desc')->limit(5)->get()->reverse();
         $emptyData = GiroDetail::where('id_bank', $idBank)->whereNull('jumlah')->limit(10)->get();
         $dataDetail = $filledData->merge($emptyData);
+        $dataDetail = $dataDetail->sortBy('nomor')->values();
         // dd($dataDetails, $dataDetail);
 
         return response()->json([

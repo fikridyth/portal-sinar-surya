@@ -232,7 +232,13 @@ class PembayaranController extends Controller
             $formatter = new NumberFormatter('id_ID', NumberFormatter::SPELLOUT);
             $formatTotal = $formatter->format($totalHutang - $supplier->materai);
 
-            HutangCetak::where('nomor', $getHutang[0]['nomor'])->first()->update(['is_cetak' => 1]);
+            $isCetak = HutangCetak::where('nomor', $getHutang[0]['nomor'])->first();
+            if (!$isCetak) {
+                $isCetak = HutangCetak::create(['nomor' => $getHutang[0]['nomor']]);
+                $isCetak->update(['is_cetak' => 1]);
+            } else {
+                $isCetak->update(['is_cetak' => 1]);
+            }
 
             return view('pembayaran.hutang.cetak', compact('title', 'supplier', 'getHutang', 'totalHutang', 'getNomorBukti', 'formatTotal'));
         }

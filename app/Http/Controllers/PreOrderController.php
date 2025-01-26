@@ -1187,7 +1187,7 @@ class PreOrderController extends Controller
             'is_cancel' => null
         ]);
 
-        return Redirect::route('receive-po', enkrip($preorder->id))
+        return Redirect::route('daftar-receive-done-po', enkrip($preorder->id))
             ->with('alert.status', '00')
             ->with('alert.message', "Data Receive Berhasil Di Proses!");
     }

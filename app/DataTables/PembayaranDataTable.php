@@ -40,7 +40,7 @@ class PembayaranDataTable extends DataTable
         ->addColumn('action', function ($row) {
             // $button = '<div class="d-flex justify-content-center"><button disabled class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></button></div>';
             // if ($row->is_bayar == null) {
-            $btnDetail = '<a href="' . route('pembayaran-hutang.detail-hapus', enkrip($row->id)) . '" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i></a>';
+            $btnDetail = '<a href="' . route('pembayaran-hutang.detail-hapus', enkrip($row->id)) . '" class="btn btn-primary btn-sm">Detail</a>';
             $button = '<div class="d-flex justify-content-center">' . $btnDetail . '</div>';
             // }
             return $button;

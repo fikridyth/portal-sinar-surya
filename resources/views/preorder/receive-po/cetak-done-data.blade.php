@@ -64,7 +64,7 @@
             <div class="row">
                 <div class="col-3">Fax &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:</div>
                 <div class="col-5"></div>
-                <div class="col-3">Type Of Payment : Cash</div>
+                <div class="col-3">Type Of Payment : Kredit</div>
             </div>
             <div class="row">
                 <div class="col-3">P/O Number : {{ $preorder->nomor_po }}</div>
@@ -97,14 +97,14 @@
                     $product = App\Models\Product::where('kode', $detail['kode'])->first();
                 @endphp
                 <div class="row" style="margin-top: 10px;">
-                    <div class="col-3">{{ $detail['nama'] }}</div>
+                    <div class="col-3">{{ $detail['nama'] }}/{{ $product->unit_jual }}</div>
                     <div class="col-1">{{ $detail['order'] }}</div>
-                    <div class="col-1-5 text-center">{{ number_format($product->harga_pokok) }}</div>
+                    <div class="col-1-5 text-center">{{ number_format($product->harga_lama) }}</div>
                     <div class="col-1-5 text-center">{{ number_format($detail['price']) }}</div>
-                    <div class="col-1">{{ number_format((($detail['price'] - $product->harga_pokok) / $product->harga_pokok) * 100, 2) }}</div>
+                    <div class="col-1">{{ number_format((($detail['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</div>
                     <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
                     <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
-                    <div class="col-1">{{ $product->profit }}</div>
+                    <div class="col-1">{{ number_format((($product->harga_jual - $detail['price']) / $detail['price']) * 100, 2) }}</div>
                 </div>
             @endforeach
             <hr class="dashed-line">
@@ -117,23 +117,18 @@
             {{-- <hr class="dashed-line">
             <hr class="dashed-line-2"> --}}
             <div class="row" style="margin-top: 20px;">
-                <div class="col-2"></div>
-                <div class="col-1"></div>
+                <div class="col-3"></div>
                 <div class="col-2">Dibuat Oleh</div>
                 <div class="col-2"></div>
-                {{-- <div class="col-1"></div> --}}
                 <div class="col-3">Disetujui Oleh</div>
                 <div class="col-2"></div>
             </div>
             <br><br><br>
             <div class="row" style="margin-top: 25px;">
+                <div class="col-3"></div>
+                <div class="col-2">( {{ auth()->user()->name }} )</div>
                 <div class="col-2"></div>
-                <div class="col-1 mx-2">(</div>
-                <div class="col-2">LISTI</div>
-                <div class="col-1 mx-n5">)</div>
-                <div class="col-1"></div>
-                <div class="col-1" style="text-align: right">(</div>
-                <div class="col-2">LO HARYANTO &emsp14;&emsp14;&emsp14;&emsp14;&emsp14;)</div>
+                <div class="col-3">( LO HARYANTO )</div>
                 <div class="col-2"></div>
             </div>
             <hr class="dashed-line">

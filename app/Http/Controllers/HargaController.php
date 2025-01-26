@@ -170,7 +170,7 @@ class HargaController extends Controller
                     // 'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
                     'profit' => number_format((($product->harga_jual - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
-                    // 'harga_jual' => $data['harga_jual'],
+                    'harga_jual' => $data['harga_sementara'],
                     // 'profit' => number_format((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                 ];
                 $product->update($dataProduct);
@@ -184,7 +184,7 @@ class HargaController extends Controller
                     'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
                     'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
-                    'harga_jual' => $data['harga_jual'],
+                    'harga_jual' => $data['harga_sementara'],
                     'profit_jual' => $data['profit'],
                     'harga_sementara' => $data['harga_sementara'],
                     'date_first' => $request->from_date,

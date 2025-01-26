@@ -126,7 +126,7 @@
                 <td class='kode_sumber_value' data-kode-sumber-parent='${product.kode}'>${nextKode}</td>
                 <td class='tipe_data' id='tipe_data'>SUMBER</td>
                 <td>
-                    <input type="text" class='unit_beli_value' id='unit_beli_value' size="5" name="unit_beli" value="" autocomplete="off" autofocus
+                    P&nbsp;<input type="text" class='unit_beli_value' id='unit_beli_value' size="4" name="unit_beli" value="" autocomplete="off" autofocus
                         onkeypress='return event.charCode >= 48 && event.charCode <= 57' 
                         onkeydown="if(event.key === 'Enter') document.getElementById('parent_harga_beli').focus();" />
                 </td>
