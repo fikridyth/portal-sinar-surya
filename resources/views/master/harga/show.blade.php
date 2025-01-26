@@ -3,47 +3,47 @@
 @section('styles')
     <style>
         .sticky-column {
-        position: sticky;
-        left: 0;
-        background-color: white; /* Sesuaikan warna latar belakang */
-        z-index: 1; /* Agar tetap di atas saat scroll */
-        border-right: 2px solid #ccc; /* Border kanan untuk sticky column */
-    }
+            position: sticky;
+            left: 0;
+            background-color: white; /* Sesuaikan warna latar belakang */
+            z-index: 1; /* Agar tetap di atas saat scroll */
+            border-right: 2px solid #ccc; /* Border kanan untuk sticky column */
+        }
 
-    th, td {
-        border: 1px solid #ccc; /* Border untuk semua cell */
-        padding: 10px; /* Menambah padding untuk keterbacaan */
-    }
+        th, td {
+            border: 1px solid #ccc; /* Border untuk semua cell */
+            padding: 10px; /* Menambah padding untuk keterbacaan */
+        }
 
-    thead th {
-        background-color: #f9f9f9; /* Latar belakang header tabel */
-        box-shadow: 0 2px 2px -2px gray; /* Bayangan untuk header */
-    }
+        thead th {
+            background-color: #f9f9f9; /* Latar belakang header tabel */
+            box-shadow: 0 2px 2px -2px gray; /* Bayangan untuk header */
+        }
 
-    .modal-password {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 300px;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        padding: 30px;
-        z-index: 1000;
-    }
-    
-    .modal-content-password {
-        display: flex;
-        flex-direction: column;
-    }
+        .modal-password {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            z-index: 1000;
+        }
+        
+        .modal-content-password {
+            display: flex;
+            flex-direction: column;
+        }
 
-    #passwordInput {
-        padding: 8px;
-        font-size: 14px;
-        width: 100%;
-        margin-top: 10px;
-    }
+        #passwordInput {
+            padding: 8px;
+            font-size: 14px;
+            width: 100%;
+            margin-top: 10px;
+        }
     </style>
 @endsection
 
@@ -105,7 +105,7 @@
                                             <th class="text-center">HARGA JUAL</th>
                                             <th class="text-center">MARK UP</th>
                                             <th class="text-center">HARGA JUAL BARU</th>
-                                            {{-- <th class="text-center">V</th> --}}
+                                            <th class="text-center">V</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -119,7 +119,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
                                                 <td class="text-end">{{ number_format($product->harga_lama) }}</td>
-                                                <td><input type="number" id="harga_pokok_{{ $no }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" 
+                                                <td><input type="number" autocomplete="off" id="harga_pokok_{{ $no }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" 
                                                     onblur="handleBlurPokok({{ $no }}, '{{ $product->harga_pokok }}')"  oninput="updateProfitPokok({{ $no }})" onkeydown="handleEnterPokok(event, {{ $no }}, '{{ $product->harga_pokok }}')" onfocus="this.value = '';"></td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
                                                     <td id="profit_pokok_{{ $no }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
@@ -129,11 +129,11 @@
                                                 <input type="number" id="harga_jual_{{ $no }}" hidden name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
                                                     onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';">
                                                 <td class="text-end">{{ number_format($product->harga_jual) }}</td>
-                                                    <td><input type="text" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
+                                                <td><input type=" text"autocomplete="off" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
                                                     onblur="handleBlurProfit({{ $no }}, '{{ $product->profit }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
-                                                <td id="td_harga_sementara_{{ $no }}"><input type="text" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" 
+                                                <td id="td_harga_sementara_{{ $no }}"><input type="text" autocomplete="off" id="harga_sementara_{{ $no }}" name="harga_sementara[{{ $product->id }}]" required value="{{ round((($product->harga_jual * $product->profit) / 100) + $product->harga_jual) }}" style="width: 100px;" 
                                                     onblur="handleBlurSementara({{ $no }}, '{{ round((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}')" oninput="updateHargaSementara2({{ $no }})" onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}')" onfocus="this.value = '';"></td>
-                                                <input type="checkbox" hidden id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox">
+                                                <td><input type="checkbox" id="checkbox_select_{{ $no }}" name="selected_ids[]" value="{{ $product->id }}" class="product-checkbox" data-nama="{{ $product->nama }}" data-td-id="td_harga_sementara_{{ $no }}"></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -461,6 +461,41 @@
             fromDate.addEventListener("change", function () {
                 toDate.min = this.value;
                 toDate.value = this.value;
+            });
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const productName = this.dataset.nama;
+                    const isChecked = this.checked;
+                    const tdId = this.dataset.tdId;
+                    const tdElement = document.getElementById(tdId);
+
+                    if (tdElement) {
+                        if (isChecked) {
+                            tdElement.style.backgroundColor = 'red';
+                        } else {
+                            tdElement.style.backgroundColor = 'white';
+                        }
+                    }
+
+                    // Loop through all checkboxes and match by data-nama
+                    checkboxes.forEach(cb => {
+                        if (cb.dataset.nama === productName) {
+                            cb.checked = isChecked;
+
+                            const matchingTdId = cb.dataset.tdId;
+                            const matchingTdElement = document.getElementById(matchingTdId);
+
+                            if (matchingTdElement) {
+                                if (isChecked) {
+                                    matchingTdElement.style.backgroundColor = 'red';
+                                } else {
+                                    matchingTdElement.style.backgroundColor = 'white';
+                                }
+                            }
+                        }
+                    });
+                });
             });
         });
     </script>
