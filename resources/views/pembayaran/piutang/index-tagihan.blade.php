@@ -1,23 +1,12 @@
 @extends('main')
 
 @section('content')
-    <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">PEMBAYARAN PIUTANG
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
+    <div class="container mb-3">
         {{-- <a href="{{ route('daftar-tagihan.index-history') }}" class="btn btn-primary mb-2">HISTORY PIUTANG</a> --}}
         <div class="card">
             <div class="card-body">
                 <h6 class="text-center mb-3">DAFTAR TAGIHAN LANGGANAN</h6>
-                <div style="overflow-x: auto; height: 550px; border: 1px solid #ccc;">
+                <div style="overflow-x: auto; height: 600px; border: 1px solid #ccc;">
                     <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                         <thead>
                             <tr>

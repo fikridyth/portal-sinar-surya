@@ -48,9 +48,9 @@
                 <div class="d-flex justify-content-center">
                     <label class="mx-4">NAMA LANGGANAN</label>
                     <select class="langganan-select" id="langgananSelect" style="width: 500px;">
-                        <option value="">Select Langganan</option>
+                        <option value="{{ $pelanggan->id }}" selected>{{ $pelanggan->nomor }} - {{ $pelanggan->nama }}</option>
                         @foreach ($langganans as $langganan)
-                            <option value="{{ enkrip($langganan->id) }}">{{ $langganan->nama }} - {{ $langganan->zona }}</option>
+                            <option value="{{ enkrip($langganan->id) }}">{{ $langganan->nomor }} - {{ $langganan->nama }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -70,38 +70,52 @@
                             <input type="text" class="readonly-input" readonly name="created_by" value="{{ auth()->user()->name }}">
                         </div>
                         <div class="col-6"></div>
-                        {{-- <div class="col-1">
-                            <label for="">NO BUKTI</label>
+                        <div class="col-1">
+                            {{-- <label for="">NO BUKTI</label> --}}
                         </div>
                         <div class="col-2">
-                            <input type="text" class="readonly-input" readonly name="nomor_piutang" value="{{ $getNomor }}">
-                        </div> --}}
+                            <input type="text" hidden class="readonly-input" readonly name="nomor_piutang" value="{{ $getNomor }}">
+                        </div>
                     </div>
-                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
-                        <table id="pembayaranTable" class="table table-bordered" style="width: 100%; table-layout: auto;">
-                            <thead>
+                    <table id="pembayaranTable" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center">NAMA LANGGANAN</th>
+                                <th class="text-center">NO DOKUMEN</th>
+                                <th class="text-center">TANGGAL</th>
+                                <th class="text-center">JUMLAH RP</th>
+                                <th class="text-center">MATERAI</th>
+                                <th class="text-center">V</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($dataKredit->isEmpty())
                                 <tr>
-                                    <th class="text-center">NAMA LANGGANAN</th>
-                                    <th class="text-center">NO DOKUMEN</th>
-                                    <th class="text-center">TANGGAL</th>
-                                    <th class="text-center">JUMLAH RP</th>
-                                    <th class="text-center">MATERAI</th>
-                                    <th class="text-center">V</th>
+                                    <td class="text-center" colspan="6"><b>TIDAK ADA DATA</b></td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" colspan="6"><b>PILIH LANGGANAN</b></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                            @else
+                                @foreach ($dataKredit as $data)
+                                    <tr>
+                                        <td>{{ $pelanggan->nama }}
+                                        <td class="text-center">{{ $data['nomor_bukti'] }}
+                                        <td class="text-center">{{ $data['date'] }}
+                                        <td class="text-end">{{ number_format($data['total_with_materai']) }}
+                                        <td class="text-end">{{ number_format($data['beban_materai']) }}
+                                        <td class="text-center">
+                                            <input type="checkbox" class="payment-checkbox" name="check[bayar][{{ $loop->index }}][nomor_bukti]" value="{{ $data['nomor_bukti'] }}">
+                                            <input type="hidden" name="check[bayar][{{ $loop->index }}][beban_materai]" value="{{ $data['beban_materai'] }}">
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
+                        </tbody>
+                    </table>
                     <div class="d-flex justify-content-center align-items-center mt-4">
                         <div class="mx-2">
                             <a href="{{ route('index') }}" class="btn btn-danger">SELESAI</a>
                         </div>
                         <div class="mx-2">
-                            <button type="submit" disabled class="btn btn-primary">PROSES</button>
+                            <button type="submit" id="submit-button" disabled class="btn btn-primary">PROSES</button>
                         </div>
                     </div>
                 </form>
@@ -133,6 +147,20 @@
             if (searchBox) {
                 searchBox.focus();
             }
+        });
+
+        const checkboxes = document.querySelectorAll('.payment-checkbox');
+        const submitButton = document.getElementById('submit-button');
+
+        // Fungsi untuk memeriksa apakah ada checkbox yang dicentang
+        function updateSubmitButtonState() {
+            const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+            submitButton.disabled = !isChecked; // Aktifkan jika ada checkbox yang dicentang
+        }
+
+        // Tambahkan event listener pada semua checkbox
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateSubmitButtonState);
         });
 
         $(document).ready(function() {

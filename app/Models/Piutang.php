@@ -11,4 +11,8 @@ class Piutang extends Model
     
     protected $table = 'piutangs';
     protected $guarded = ['id'];
+
+    public function langganan() {
+        return $this->belongsTo(Langganan::class, 'id_langganan', 'id');
+    }
 }
