@@ -297,4 +297,13 @@ class PiutangController extends Controller
         
         return $dataTable->render('pembayaran.piutang.index-history', compact('title'));
     }
+
+    // KREDIT
+    public function indexKredit()
+    {
+        $title = "Proses Order Penjualan";
+        $titleHeader = "PROSES ORDER PENJUALAN";
+        
+        return view('pembayaran.kredit.index',compact('title', 'titleHeader'));
+    }
 }

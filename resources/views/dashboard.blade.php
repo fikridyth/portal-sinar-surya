@@ -63,9 +63,9 @@
                                 @if (in_array("23", $role))<a href="{{ route('pembayaran-hutang.index-hapus') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">HAPUS PEMBAYARAN HUTANG</a>@endif
                                 @if (in_array("24", $role))<a href="{{ route('pembayaran.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PEMBAYARAN CEK/GIRO</a>@endif
                                 @if (in_array("25", $role))<a href="{{ route('pembayaran-konfirmasi.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KONFIRMASI CEK/GIRO</a>@endif
-                                @if (in_array("38", $role))<a href="{{ route('master.adjustment.history.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">ORDER PENJUALAN</a>@endif
-                                @if (in_array("39", $role))<a href="{{ route('master.adjustment.history.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENJUALAN KREDIT</a>@endif
-                                @if (in_array("40", $role))<a href="{{ route('master.adjustment.history.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">RETUR PENJUALAN KREDIT</a>@endif
+                                @if (in_array("38", $role))<a href="{{ route('kredit.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">ORDER PENJUALAN</a>@endif
+                                @if (in_array("39", $role))<a href="{{ route('kredit.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENJUALAN KREDIT</a>@endif
+                                @if (in_array("40", $role))<a href="{{ route('kredit.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">RETUR PENJUALAN KREDIT</a>@endif
                                 @if (in_array("26", $role))<a href="{{ route('pembayaran-piutang.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PEMBAYARAN PIUTANG</a>@endif
                             </div>
                         </div>

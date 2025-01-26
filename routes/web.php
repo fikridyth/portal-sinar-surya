@@ -170,6 +170,9 @@ Route::middleware('auth')->group(function () {
     // new show piutang
     Route::get('/pembayaran-piutang/{id}', [PiutangController::class, 'show'])->name('pembayaran-piutang.show');
 
+    // Kredit
+    Route::get('/kredit', [PiutangController::class, 'indexKredit'])->name('kredit.index');
+
     // Master
     Route::prefix('master')->name('master.')->group(function () {
         // Unit
