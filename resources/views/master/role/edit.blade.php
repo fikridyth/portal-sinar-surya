@@ -255,6 +255,30 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-10" style="width: 95%;">
+                                        <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">ORDER PENJUALAN</a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
+                                        <input type="checkbox" name="value[]" @if (in_array("38", $listRole)) checked @endif value="38" class="checkbox-pembayaran">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-10" style="width: 95%;">
+                                        <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">PENJUALAN KREDIT</a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
+                                        <input type="checkbox" name="value[]" @if (in_array("39", $listRole)) checked @endif value="39" class="checkbox-pembayaran">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-10" style="width: 95%;">
+                                        <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">RETUR PENJUALAN KREDIT</a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
+                                        <input type="checkbox" name="value[]" @if (in_array("40", $listRole)) checked @endif value="40" class="checkbox-pembayaran">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-10" style="width: 95%;">
                                         <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">PEMBAYARAN PIUTANG</a>
                                     </div>
                                     <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
