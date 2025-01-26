@@ -30,6 +30,7 @@
                                 @if (in_array("9", $role))<a href="{{ route('master.bank.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">BANK</a>@endif
                                 @if (in_array("10", $role))<a href="{{ route('master.giro.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PENDAFTARAN GIRO</a>@endif
                                 @if (in_array("11", $role))<a href="{{ route('master.ppn.edit', enkrip($ppn->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">PPN</a>@endif
+                                @if (in_array("37", $role))<a href="{{ route('master.langganan.show', enkrip($langganan->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">LANGGANAN</a>@endif
                                 {{-- <a href="{{ route('master.generate-qrcode') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">QR Code</a>
                                 <a href="{{ route('master.generate-barcode') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">Barcode</a> --}}
                             </div>

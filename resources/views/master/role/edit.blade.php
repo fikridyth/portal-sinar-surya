@@ -121,6 +121,14 @@
                                         <input type="checkbox" name="value[]" @if (in_array("11", $listRole)) checked @endif value="11" class="checkbox-master">
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-10" style="width: 95%;">
+                                        <a href="#" class="btn btn-light disabled-not-blur mb-2" style="color: blue; border: 1px solid black; width: 100%;">LANGGANAN</a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center mx-n3" style="width: 10%;">
+                                        <input type="checkbox" name="value[]" @if (in_array("37", $listRole)) checked @endif value="37" class="checkbox-master">
+                                    </div>
+                                </div>
                             </div>                            
                         </div>
                         <div class="mx-5">

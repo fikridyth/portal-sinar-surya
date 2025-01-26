@@ -980,6 +980,7 @@ class PembayaranController extends Controller
     {
         $request->id_supplier = dekrip($request->id_supplier);
         $title = 'Show Konfirmasi Pembayaran';
+        $titleHeader = 'KONFIRMASI CEK / GIRO / TUNAI';
         $supplier = Supplier::find($request->id_supplier);
 
         if ($request->range == 1) {
@@ -1068,7 +1069,7 @@ class PembayaranController extends Controller
         }
         // dd($request->all(), $pembayarans);
         
-        return view('pembayaran.konfirmasi.show', compact('title', 'supplier', 'pembayarans', 'historypmb'));
+        return view('pembayaran.konfirmasi.show', compact('title', 'titleHeader', 'supplier', 'pembayarans', 'historypmb'));
     }
 
     public function indexCabang()

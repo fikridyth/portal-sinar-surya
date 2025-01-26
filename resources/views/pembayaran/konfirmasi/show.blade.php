@@ -13,29 +13,17 @@
 
 @section('content')
     <div class="d-flex justify-content-center">
-        <div class="mb-7" style="width: 95%">
-            <div class="d-flex align-items-center justify-content-center">
-                <div class="mt-4">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item active h3 text-center" aria-current="page">
-                                KONFIRMASI CEK / GIRO / TUNAI
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-
+        <div class="mb-3 mt-n3" style="width: 95%">
             <div class="card">
                 <div class="card-body">  
                     <form action="{{ route('master.giro.update', '') }}" class="form" method="POST" enctype="multipart/form-data" id="giroForm">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="giro_id" id="giro_id" value="">
-                        <div class="row w-100">
+                        <div class="row w-100 mt-n3">
                             <div class="form-group col-9">
                                 <div class="d-flex justify-content-center mt-2">
-                                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                    <div style="overflow-x: auto; height: 590px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                             <thead>
                                                 <h6 class="d-flex justify-content-center mt-2">DATA PEMBAYARAN</h6>
@@ -117,7 +105,7 @@
                             
                             <div class="form-group col-3">
                                 <div class="d-flex justify-content-center mt-2">
-                                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
+                                    <div style="overflow-x: auto; height: 590px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                             <thead>
                                                 <h6 class="d-flex justify-content-center mt-2">DATA DOKUMEN</h6>

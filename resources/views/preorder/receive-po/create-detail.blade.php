@@ -716,6 +716,7 @@
                 }
 
                 document.getElementById('edit-save-' + nomorIndex).click();
+                document.getElementById('edit-save-' + nomorIndex).disabled = true;
             }
             if (event.key === 'Delete') {
                 document.getElementById('delete-save-' + nomorIndex).click();

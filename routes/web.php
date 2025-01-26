@@ -8,6 +8,7 @@ use App\Http\Controllers\GiroController;
 use App\Http\Controllers\HargaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KartuStokController;
+use App\Http\Controllers\LanggananController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\PpnController;
@@ -282,5 +283,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/adjustment/cetak', [AdjustmentController::class, 'cetak'])->name('adjustment.cetak');
         Route::get('/adjustment/cetak-rokok', [AdjustmentController::class, 'cetakRokok'])->name('adjustment.cetak-rokok');
         Route::get('/adjustment/history', [AdjustmentController::class, 'indexHistory'])->name('adjustment.history.index');
+        
+        // Langganan
+        Route::resource('/langganan', LanggananController::class, ['parameters' => ['langganan' => 'id']]);
     });
 });
