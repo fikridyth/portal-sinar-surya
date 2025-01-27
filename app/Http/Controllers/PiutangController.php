@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\HistoryPiutangDataTable;
+use App\DataTables\KreditDataTable;
+use App\Models\Kredit;
 use App\Models\Langganan;
 use App\Models\Pembayaran;
 use App\Models\Piutang;
@@ -303,7 +305,45 @@ class PiutangController extends Controller
     {
         $title = "Proses Order Penjualan";
         $titleHeader = "PROSES ORDER PENJUALAN";
+        $langganans = Langganan::all();
         
-        return view('pembayaran.kredit.index',compact('title', 'titleHeader'));
+        return view('pembayaran.kredit.index',compact('title', 'titleHeader', 'langganans'));
+    }
+
+    public function createDataKredit(Request $request)
+    {
+        // dd($request->id_langganan);
+        $kredit = Kredit::create([
+            'id_langganan' => $request->id_langganan,
+            'date' => now()->format('Y-m-d'),
+        ]);
+
+        return redirect()->route('kredit.edit', enkrip($kredit->id));
+    }
+
+    public function editKredit($id)
+    {
+        $id = dekrip($id);
+        $title = "Proses Order Penjualan";
+        $titleHeader = "PROSES ORDER PENJUALAN";
+        $kredit = Kredit::find($id);
+
+
+        return view('pembayaran.kredit.edit',compact('title', 'titleHeader', 'kredit'));
+    }
+
+    public function storeDataKredit(Request $request, $id)
+    {
+        dd($request->all(), $id);
+
+        return redirect()->route('kredit.edit', enkrip($id));
+    }
+
+    public function listKredit(KreditDataTable $dataTable)
+    {
+        $title = "Proses Order Penjualan";
+        $titleHeader = "PROSES ORDER PENJUALAN";
+
+        return $dataTable->render('pembayaran.kredit.list', compact('title', 'titleHeader'));
     }
 }

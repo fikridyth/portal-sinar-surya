@@ -172,6 +172,10 @@ Route::middleware('auth')->group(function () {
 
     // Kredit
     Route::get('/kredit', [PiutangController::class, 'indexKredit'])->name('kredit.index');
+    Route::post('/create-data-kredit', [PiutangController::class, 'createDataKredit'])->name('create-data-kredit');
+    Route::get('/kredit/edit/{id}', [PiutangController::class, 'editKredit'])->name('kredit.edit');
+    Route::post('/kredit/store/{id}', [PiutangController::class, 'storeDataKredit'])->name('kredit.store');
+    Route::get('/kredit/list', [PiutangController::class, 'listKredit'])->name('kredit.list');
 
     // Master
     Route::prefix('master')->name('master.')->group(function () {

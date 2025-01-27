@@ -43,7 +43,7 @@
                                     <div class="col-6">
                                         <input type="text" disabled value="{{ $retur->nomor_receive ?? '-' }}" size="45">
                                     </div>
-                                    <div class="col-1"><a href="{{ route('daftar-receive-supplier', ['id' => enkrip($retur->id), 'sup' => $retur->id_supplier]) }}" class="btn btn-warning disabled-link" title="CARI DATA"><i class="fas fa-search"></i></a></div>
+                                    <div class="col-1"><a href="{{ route('daftar-receive-supplier', ['id' => enkrip($retur->id), 'sup' => $retur->id_supplier]) }}" class="btn btn-warning disabled-link" title="CARI DATA">UBAH</a></div>
                                 </div>
                             </div>
                             <div class="form-group col-5 mb-4">

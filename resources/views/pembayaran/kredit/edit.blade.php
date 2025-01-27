@@ -4,53 +4,44 @@
     <div class="container-fluid mb-7 w-100" style="max-width: 90%; width: 90%;">
         <div class="card mt-n3">
             <div class="card-body mt-n4">
-                <form action="{{ route('return-po.store', $retur->id) }}" method="POST" class="form">
+                <form action="{{ route('kredit.store', $kredit->id) }}" method="POST" class="form">
                     @csrf
                     <div class="card-body">
                         <div class="d-flex justify-content-between">
                             <div class="row w-100">
-                                <div class="form-group col-7">
+                                <div class="form-group">
                                     <div class="row align-items-center">
-                                        <label class="col-3 col-form-label">NOMOR RETUR</label>
-                                        <div class="col-3">
-                                            <input type="text" class="readonly-input form-control" value="Auto Generate" autocomplete="off" readonly>
+                                        <label class="col-2 col-form-label text-end">NOMOR KREDIT</label>
+                                        <div class="col-2">
+                                            <input type="text" value="AUTO-GENERATE" disabled>
                                         </div>
                                         <label class="col-2 col-form-label text-end">TANGGAL</label>
-                                        <div class="col-3">
-                                            <input type="text" name="date" class="readonly-input form-control" value="{{ now()->format('Y-m-d') }}" autocomplete="off" readonly>
+                                        <div class="col-2">
+                                            <input type="text" name="date" class="readonly-input form-control" style="width: 180px;" value="{{ now()->format('Y-m-d') }}" autocomplete="off" readonly>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="form-group col-5">
-                                    <div class="row">
-                                        <label for="inputPassword3" class="col-form-label text-center">KETERANGAN</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div class="d-flex justify-content-between">
                             <div class="row w-100">
-                                <div class="form-group col-7">
-                                    <div class="row align-items-center mt-1">
-                                        <label class="col-3 col-form-label">NAMA SUPPLIER</label>
-                                        <div class="col-7">
-                                            <input type="text" disabled value="{{ $retur->supplier->nomor }} - {{ $retur->supplier->nama }}" size="61">
-                                            <input type="text" hidden name="id_supplier" value="{{ $retur->id_supplier }}">
+                                <div class="form-group">
+                                    <div class="row align-items-center">
+                                        <label class="col-2 col-form-label text-end">PELANGGAN</label>
+                                        <div class="col-2">
+                                            <input type="text" disabled>
                                         </div>
-                                    </div>
-
-                                    <div class="row align-items-center mt-1">
-                                        <label class="col-3 col-form-label">BUKTI PENERIMAAN</label>
-                                        <div class="col-6">
-                                            <input type="text" disabled value="{{ $retur->nomor_receive ?? '-' }}" size="45">
+                                        
+                                        <label class="col-2 col-form-label text-end">KODE PELANGGAN</label>
+                                        <div class="col-2">
+                                            <input type="text" disabled value="{{ $kredit->langganan->nomor }}">
                                         </div>
-                                        <div class="col-1"><a href="{{ route('daftar-receive-supplier', ['id' => enkrip($retur->id), 'sup' => $retur->id_supplier]) }}" class="btn btn-warning" title="CARI DATA">UBAH</a></div>
-                                    </div>
-                                </div>
-                                <div class="form-group col-5 mb-4">
-                                    <div class="row">
-                                        <textarea readonly class="form-control" rows="3"></textarea>
+                                        
+                                        <label class="col-2 col-form-label text-end">NAMA PELANGGAN</label>
+                                        <div class="col-2">
+                                            <input type="text" disabled value="{{ $kredit->langganan->nama }}">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -59,14 +50,16 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <div style="overflow-x: auto; height: 450px; border: 1px solid #ccc;">
+                                    <div style="overflow-x: auto; height: 530px; border: 1px solid #ccc;">
                                         <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center">NO</th>
                                                     <th class="text-center">NO BARANG</th>
                                                     <th class="text-center">NAMA BARANG</th>
+                                                    {{-- <th class="text-center">KETERANGAN</th> --}}
                                                     <th class="text-center">QTY</th>
+                                                    {{-- <th class="text-center">NOMOR PO</th> --}}
                                                     <th class="text-center">HARGA</th>
                                                     <th class="text-center">TOTAL</th>
                                                     <th class="text-center">AKSI</th>
@@ -74,8 +67,8 @@
                                             </thead>
                                             <tbody>
                                                 <tr class="fs-need"></tr>
-                                                @if (isset($retur->detail))
-                                                    @foreach (json_decode($retur->detail, true) as $index => $data)
+                                                @if (isset($kredit->detail))
+                                                    @foreach (json_decode($kredit->detail, true) as $index => $data)
                                                         @php
                                                             $no = $index + 1;
                                                         @endphp
@@ -113,15 +106,9 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    @if (isset($retur->nomor_receive))
-                                        <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
-                                        <a href="{{ route('daftar-return-product', enkrip($retur->id)) }}" id="tambah-list-button" class="btn btn-danger mx-2">INVENTORY</a>
-                                    @else
-                                        <button type="button" disabled id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
-                                        <a href="{{ route('daftar-return-product', enkrip($retur->id)) }}" id="tambah-list-button" class="btn btn-danger mx-2 disabled-link">INVENTORY</a>
-                                    @endif
-                                    <a href="{{ route('daftar-return-po') }}" class="btn btn-warning mx-2">LIST DATA POS</a>
-                                    <a href="{{ route('daftar-history-return-po') }}" class="btn btn-info mx-2">HISTORY</a>
+                                    <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
+                                    <a href="{{ route('daftar-return-product', enkrip($kredit->id)) }}" id="tambah-list-button" class="btn btn-danger mx-2">INVENTORY</a>
+                                    <a href="{{ route('kredit.list') }}" class="btn btn-info mx-2">LIST ORDER</a>
                                 </div>
                             </div>
                             <div class="row align-items-center">
@@ -129,14 +116,14 @@
                                     <label class="col-form-label">TOTAL</label>
                                 </div>
                                 <div class="col-auto mx-4">
-                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format($retur->total) }}" readonly>
+                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format($kredit->total ?? 0) }}" readonly>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-center">
-                            <a href="{{ route('return-po') }}" class="btn btn-danger mx-4">BATAL</a>
-                            @if (isset($retur->nomor_receive) && isset($retur->detail))
+                            <a href="{{ route('kredit.index') }}" class="btn btn-danger mx-4">BATAL</a>
+                            @if (isset($kredit->detail))
                                 <button type="submit" id="simpan-button" class="btn btn-primary">PROSES</button>
                             @else
                                 <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
@@ -152,18 +139,18 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $(`.supplier-select`).select2({
-                placeholder: '---Select Supplier---',
-                allowClear: true
-            });
+            // $(`.supplier-select`).select2({
+            //     placeholder: '---Select Supplier---',
+            //     allowClear: true
+            // });
 
-            $(`.supplier-select`).on('select2:open', function(e) {
-                // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
-                const searchBox = $(this).data('select2').dropdown.$search[0];
-                if (searchBox) {
-                    searchBox.focus();
-                }
-            });
+            // $(`.supplier-select`).on('select2:open', function(e) {
+            //     // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
+            //     const searchBox = $(this).data('select2').dropdown.$search[0];
+            //     if (searchBox) {
+            //         searchBox.focus();
+            //     }
+            // });
 
             $(`.preorder-select`).select2({
                 placeholder: '---Select Receive---',
@@ -294,18 +281,18 @@
             }
         }
 
-        var returId = <?php echo json_encode($retur->id); ?>; 
+        var kreditId = <?php echo json_encode($kredit->id); ?>; 
         let items = []; 
         function ajaxProses(inputValue) {
             $.ajax({
-                url: '/get-data-return-barcode', // Ganti dengan URL yang sesuai
+                url: '/get-data-kreditn-barcode', // Ganti dengan URL yang sesuai
                 type: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
                     kode: inputValue,
-                    id: returId
+                    id: kreditId
                 },
                 success: function(response) {
                     if (response.error) {
@@ -330,14 +317,14 @@
             let price = $(`#price-input-${index + 1}`).val();
 
             $.ajax({
-                url: '/save-return-item', // URL endpoint Laravel
+                url: '/save-kreditn-item', // URL endpoint Laravel
                 method: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}', // Token CSRF untuk keamanan
                     index: index,
                     order: order,
                     price: price,
-                    retur_id: returId
+                    kredit_id: kreditId
                 },
                 success: function(response) {
                     if (response.success) {
@@ -372,12 +359,12 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '/destroy-return-item', // URL endpoint Laravel
+                        url: '/destroy-kreditn-item', // URL endpoint Laravel
                         method: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}', // Token CSRF untuk keamanan
                             index: index,
-                            retur_id: returId
+                            kredit_id: kreditId
                         },
                         success: function(response) {
                             if (response.success) {

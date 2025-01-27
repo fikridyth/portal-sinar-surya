@@ -9,7 +9,7 @@
                         <div class="row w-100">
                             <div class="form-group">
                                 <div class="row align-items-center">
-                                    <label class="col-2 col-form-label text-end">NOMOR RETUR</label>
+                                    <label class="col-2 col-form-label text-end">NOMOR KREDIT</label>
                                     <div class="col-2">
                                         <input type="text" disabled>
                                     </div>
@@ -28,7 +28,15 @@
                                 <div class="row align-items-center">
                                     <label class="col-2 col-form-label text-end">PELANGGAN</label>
                                     <div class="col-2">
-                                        <input type="text" disabled>
+                                        <form id="langganan-form" action="{{ route('create-data-kredit') }}" method="POST">
+                                            @csrf
+                                            <select id="langganan-select" name="id_langganan" required class="langganan-select btn-block">
+                                                <option value="">--PILIH PELANGGAN--</option>
+                                                @foreach ($langganans as $langganan)
+                                                    <option value="{{ $langganan->id }}">{{ $langganan->nomor }} - {{ $langganan->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                        </form>
                                     </div>
                                     
                                     <label class="col-2 col-form-label text-end">KODE PELANGGAN</label>
@@ -75,6 +83,7 @@
                         <div class="row">
                             <div class="col-auto">
                                 <button type="button" id="tambah-button" class="btn btn-success mx-2" disabled>TAMBAH</button>
+                                <a href="{{ route('kredit.list') }}" class="btn btn-warning mx-2">LIST ORDER</a>
                                 {{-- <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger disabled-link mx-2">INVENTORY</a>
                                 <a href="{{ route('daftar-return-po') }}" class="btn btn-warning mx-2">LIST DATA POS</a>
                                 <a href="{{ route('daftar-history-return-po') }}" class="btn btn-info mx-2">HISTORY</a> --}}
@@ -103,12 +112,12 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $(`.supplier-select`).select2({
-                placeholder: '---Select Supplier---',
+            $(`.langganan-select`).select2({
+                placeholder: '---Pilih Langganan---',
                 allowClear: true
             });
 
-            $(`.supplier-select`).on('select2:open', function(e) {
+            $(`.langganan-select`).on('select2:open', function(e) {
                 // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
                 const searchBox = $(this).data('select2').dropdown.$search[0];
                 if (searchBox) {
@@ -116,9 +125,9 @@
                 }
             });
 
-            $('#supplier-select').on('change', function() {
+            $('#langganan-select').on('change', function() {
                 if ($(this).val()) {
-                    $('#supplier-form').submit();
+                    $('#langganan-form').submit();
                 }
             });
 
