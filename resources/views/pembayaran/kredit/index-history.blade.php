@@ -94,6 +94,11 @@
                             <div class="row">
                                 <div class="col-auto">
                                     <a href="{{ route('kredit.cetak-history', enkrip($kredit->id)) }}" class="btn btn-warning mx-2">CETAK</a>
+                                    @if ($kredit->is_piutang)
+                                        <button disabled class="btn btn-primary mx-2">RETUR</button>
+                                    @else 
+                                        <a href="{{ route('kredit.retur', enkrip($kredit->id)) }}" class="btn btn-primary mx-2">RETUR</a>
+                                    @endif
                                     <a href="{{ route('kredit.list-history') }}" class="btn btn-info mx-2">LIST HISTORY</a>
                                     <a href="{{ route('index') }}" class="btn btn-danger mx-2">KEMBALI</a>
                                 </div>

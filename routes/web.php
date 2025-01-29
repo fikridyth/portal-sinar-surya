@@ -184,6 +184,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/kredit/history/{id}', [PiutangController::class, 'indexKreditHistory'])->name('kredit.index-history');
     Route::get('/kredit/list-history', [PiutangController::class, 'listKreditHistory'])->name('kredit.list-history');
     Route::get('/kredit/cetak-history/{id}', [PiutangController::class, 'cetakKreditHistory'])->name('kredit.cetak-history');
+    Route::get('/kredit/retur/{id}', [PiutangController::class, 'returKredit'])->name('kredit.retur');
 
     // Master
     Route::prefix('master')->name('master.')->group(function () {

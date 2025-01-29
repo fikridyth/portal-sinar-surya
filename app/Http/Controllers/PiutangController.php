@@ -580,4 +580,13 @@ class PiutangController extends Controller
         
         return view('pembayaran.kredit.cetak-history',compact('title', 'kredit'));
     }
+    
+    public function returKredit($id)
+    {
+        $id = dekrip($id);
+        $kredit = Kredit::find($id);
+        $kredit->update(['nomor' => null]);
+        
+        return Redirect::route('index')->with('alert.status', '00')->with('alert.message', "Sukses Retur Data Kredit!");
+    }
 }
