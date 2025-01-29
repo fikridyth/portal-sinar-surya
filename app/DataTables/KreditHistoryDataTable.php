@@ -12,7 +12,7 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class KreditDataTable extends DataTable
+class KreditHistoryDataTable extends DataTable
 {
     /**
      * Build the DataTable class.
@@ -21,10 +21,10 @@ class KreditDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNull('nomor')))
+        return (new EloquentDataTable($query->whereNotNull('nomor')))
             ->addIndexColumn()
             ->addColumn('nama', function ($row) {
-                return '<a href="' . route('kredit.edit',  enkrip($row->id)) . '">' . $row->langganan->nama . '</a>';
+                return '<a href="' . route('kredit.index-history',  enkrip($row->id)) . '">' . $row->langganan->nama . '</a>';
             })
             ->addColumn('zona', function ($row) {
                 return $row->langganan->zona;
@@ -78,14 +78,15 @@ class KreditDataTable extends DataTable
             Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
             Column::make('nama')->addClass('text-center'),
             Column::make('zona')->addClass('text-center'),
-            Column::make('total')->addClass('text-end'),
+            Column::make('nomor')->addClass('text-center'),
+            Column::make('total')->addClass('text-center'),
             Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
             // Column::computed('action')
             //     ->exportable(false)
             //     ->printable(false)
             //     ->width(60)
             //     ->addClass('text-center'),
-        ];  
+        ]; 
     }
 
     /**
@@ -93,6 +94,6 @@ class KreditDataTable extends DataTable
      */
     protected function filename(): string
     {
-        return 'Kredit_' . date('YmdHis');
+        return 'KreditHistory_' . date('YmdHis');
     }
 }

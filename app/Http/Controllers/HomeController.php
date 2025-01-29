@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Departemen;
+use App\Models\Kredit;
 use App\Models\Langganan;
 use App\Models\Ppn;
 use App\Models\Preorder;
@@ -25,7 +26,8 @@ class HomeController extends Controller
         $langganan = Langganan::orderBy('id', 'asc')->first();
         $ppn = Ppn::first();
         $preorder = Preorder::where('receive_type', 'B')->where('is_cancel', 1)->orderBy('id', 'desc')->first();
+        $kredit = Kredit::whereNotNull('nomor')->orderBy('id', 'desc')->first();
 
-        return view('dashboard', compact('title', 'user', 'product', 'unit', 'departemen', 'supplier', 'langganan', 'ppn', 'preorder'));
+        return view('dashboard', compact('title', 'user', 'product', 'unit', 'departemen', 'supplier', 'langganan', 'ppn', 'preorder', 'kredit'));
     }
 }

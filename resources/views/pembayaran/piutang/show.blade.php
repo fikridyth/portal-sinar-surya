@@ -97,13 +97,13 @@
                                 @foreach ($dataKredit as $data)
                                     <tr>
                                         <td>{{ $pelanggan->nama }}
-                                        <td class="text-center">{{ $data['nomor_bukti'] }}
+                                        <td class="text-center">{{ $data['nomor_bukti'] ?? $data['nomor'] }}
                                         <td class="text-center">{{ $data['date'] }}
-                                        <td class="text-end">{{ number_format($data['total_with_materai']) }}
-                                        <td class="text-end">{{ number_format($data['beban_materai']) }}
+                                        <td class="text-end">{{ number_format($data['total_with_materai'] ?? $data['total']) }}
+                                        <td class="text-end">{{ number_format($data['beban_materai'] ?? 10000) }}
                                         <td class="text-center">
-                                            <input type="checkbox" class="payment-checkbox" name="check[bayar][{{ $loop->index }}][nomor_bukti]" value="{{ $data['nomor_bukti'] }}">
-                                            <input type="hidden" name="check[bayar][{{ $loop->index }}][beban_materai]" value="{{ $data['beban_materai'] }}">
+                                            <input type="checkbox" class="payment-checkbox" name="check[bayar][{{ $loop->index }}][nomor_bukti]" value="{{ $data['nomor_bukti'] ?? $data['nomor'] }}">
+                                            <input type="hidden" name="check[bayar][{{ $loop->index }}][beban_materai]" value="{{ $data['beban_materai'] ?? 10000 }}">
                                         </td>
                                     </tr>
                                 @endforeach

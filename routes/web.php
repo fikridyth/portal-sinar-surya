@@ -174,8 +174,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/kredit', [PiutangController::class, 'indexKredit'])->name('kredit.index');
     Route::post('/create-data-kredit', [PiutangController::class, 'createDataKredit'])->name('create-data-kredit');
     Route::get('/kredit/edit/{id}', [PiutangController::class, 'editKredit'])->name('kredit.edit');
-    Route::post('/kredit/store/{id}', [PiutangController::class, 'storeDataKredit'])->name('kredit.store');
     Route::get('/kredit/list', [PiutangController::class, 'listKredit'])->name('kredit.list');
+    Route::get('/daftar-kredit-product/{id}', [PiutangController::class, 'daftarKreditProduct'])->name('daftar-kredit-product');
+    Route::put('/daftar-kredit-product/update/{id}', [PiutangController::class, 'updateDaftarKreditProduct'])->name('daftar-kredit-product.update');
+    Route::post('/get-data-kredit-barcode', [PiutangController::class, 'getDataKreditBarcode'])->name('kredit.get-data-kredit-barcode');
+    Route::post('/store-kredit-data/{id}', [PiutangController::class, 'storeKreditData'])->name('kredit.store');
+    Route::post('/destroy-kredit-item', [PiutangController::class, 'destroyKreditItem'])->name('kredit.destroy-kredit-item');
+    Route::post('/save-kredit-item', [PiutangController::class, 'saveKreditItem'])->name('kredit.save-kredit-item');
+    Route::get('/kredit/history/{id}', [PiutangController::class, 'indexKreditHistory'])->name('kredit.index-history');
+    Route::get('/kredit/list-history', [PiutangController::class, 'listKreditHistory'])->name('kredit.list-history');
+    Route::get('/kredit/cetak-history/{id}', [PiutangController::class, 'cetakKreditHistory'])->name('kredit.cetak-history');
 
     // Master
     Route::prefix('master')->name('master.')->group(function () {

@@ -13,11 +13,11 @@
                                     <div class="row align-items-center">
                                         <label class="col-2 col-form-label text-end">NOMOR KREDIT</label>
                                         <div class="col-2">
-                                            <input type="text" value="AUTO-GENERATE" disabled>
+                                            <input type="text" value="{{ $kredit->nomor }}" disabled>
                                         </div>
                                         <label class="col-2 col-form-label text-end">TANGGAL</label>
                                         <div class="col-2">
-                                            <input type="text" name="date" class="readonly-input form-control" style="width: 180px;" value="{{ now()->format('Y-m-d') }}" autocomplete="off" readonly>
+                                            <input type="text" name="date" class="readonly-input form-control" style="width: 180px;" value="{{ $kredit->created_at->format('Y-m-d') }}" autocomplete="off" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -57,12 +57,9 @@
                                                     <th class="text-center">NO</th>
                                                     <th class="text-center">NO BARANG</th>
                                                     <th class="text-center">NAMA BARANG</th>
-                                                    {{-- <th class="text-center">KETERANGAN</th> --}}
                                                     <th class="text-center">QTY</th>
-                                                    {{-- <th class="text-center">NOMOR PO</th> --}}
                                                     <th class="text-center">HARGA</th>
                                                     <th class="text-center">TOTAL</th>
-                                                    <th class="text-center">AKSI</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -76,19 +73,9 @@
                                                             <td class="text-center">{{ $loop->iteration }}</td>
                                                             <td class="text-center">{{ $data['kode'] }}</td>
                                                             <td>{{ $data['nama'] . '/' . $data['unit_jual'] }}</td>
-                                                            <td class="text-center">
-                                                                <input type="number" style="width: 70px" name="qty[]" value="{{ $data['order'] }}" class="order-input" id="order-input-{{ $no }}"
-                                                                    onblur="handleBlurOrder({{ $no }}, '{{ $data['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $data['order'] }}')" onfocus="this.value = '';">
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input" id="price-input-{{ $no }}"
-                                                                    onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')" onfocus="this.value = '';">
-                                                            </td>
+                                                            <td class="text-end">{{ $data['order'] }}</td>
+                                                            <td class="text-end">{{ number_format($data['price']) }}</td>
                                                             <td class="text-end">{{ number_format($data['order'] * $data['price']) }}</td>
-                                                            <td class="text-center">
-                                                                <a href="#" class="btn btn-danger btn-sm delete-row" data-index="{{ $index }}">HAPUS</a>
-                                                                <a href="#" class="btn btn-primary btn-sm save-row" id="save-row-{{ $no }}" hidden data-index="{{ $index }}"><i class="fa fa-save"></i></a>
-                                                            </td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -106,9 +93,9 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    <button type="button" id="tambah-button" class="btn btn-success mx-2">TAMBAH</button>
-                                    <a href="{{ route('daftar-kredit-product', enkrip($kredit->id)) }}" id="tambah-list-button" class="btn btn-danger mx-2">INVENTORY</a>
-                                    <a href="{{ route('kredit.list') }}" class="btn btn-info mx-2">LIST ORDER</a>
+                                    <a href="{{ route('kredit.cetak-history', enkrip($kredit->id)) }}" class="btn btn-warning mx-2">CETAK</a>
+                                    <a href="{{ route('kredit.list-history') }}" class="btn btn-info mx-2">LIST HISTORY</a>
+                                    <a href="{{ route('index') }}" class="btn btn-danger mx-2">KEMBALI</a>
                                 </div>
                             </div>
                             <div class="row align-items-center">
@@ -121,14 +108,10 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center">
-                            <a href="{{ route('kredit.index') }}" class="btn btn-danger mx-4">BATAL</a>
-                            @if (isset($kredit->detail))
-                                <button type="submit" id="simpan-button" class="btn btn-primary">PROSES</button>
-                            @else
-                                <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
-                            @endif
-                        </div>
+                        {{-- <div class="d-flex justify-content-center">
+                            <a href="{{ route('index') }}" class="btn btn-danger mx-4">KEMBALI</a>
+                            <button type="submit" id="simpan-button" disabled class="btn btn-primary">PROSES</button>
+                        </div> --}}
                     </div>
                 </form>
             </div>
