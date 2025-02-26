@@ -7,6 +7,9 @@ use App\Models\Departemen;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\ProductPos;
+use App\Models\ProductPos1;
+use App\Models\ProductPos2;
+use App\Models\ProductPos3;
 use App\Models\Supplier;
 use App\Models\Unit;
 use Endroid\QrCode\Color\Color;
@@ -64,7 +67,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $idSupplier = Supplier::where('nomor', $request->supplier)->first();
-        
+
         if (preg_replace('/[^0-9]/', '', $request->harga_pokok) > preg_replace('/[^0-9]/', '', $request->harga_jual)) {
             return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
         }
@@ -191,7 +194,7 @@ class ProductController extends Controller
             $newProduct = Product::create([
                 'id_supplier' => $parentProduct->id_supplier,
                 'id_unit' => $parentProduct->id_unit,
-                'id_departemen' => $parentProduct->id_departemen,    
+                'id_departemen' => $parentProduct->id_departemen,
                 'kode' => $data['kode'],
                 'kode_alternatif' => $data['kode_alternatif'],
                 'nama' => $data['nama'],
@@ -231,7 +234,7 @@ class ProductController extends Controller
             $newProduct = Product::create([
                 'id_supplier' => $parentProduct->id_supplier,
                 'id_unit' => $parentProduct->id_unit,
-                'id_departemen' => $parentProduct->id_departemen,    
+                'id_departemen' => $parentProduct->id_departemen,
                 'kode' => $data['kode'],
                 'nama' => $data['nama'],
                 'unit_beli' => 'P' . $data['unit_beli'] ?? null,
@@ -285,7 +288,7 @@ class ProductController extends Controller
                     'kode_alternatif_2' => $product->kode_alternatif_2,
                     'nama' => $product->nama,
                     'merek' => $product->merek,
-                    'label' => $product->label, 
+                    'label' => $product->label,
                     'unit_beli' => $product->unit_beli,
                     'unit_jual' => $product->unit_jual,
                     'konversi' => $product->konversi,
@@ -312,7 +315,7 @@ class ProductController extends Controller
                     'kode_alternatif_2' => $product->kode_alternatif_2,
                     'nama' => $product->nama,
                     'merek' => $product->merek,
-                    'label' => $product->label, 
+                    'label' => $product->label,
                     'unit_beli' => $product->unit_beli,
                     'unit_jual' => $product->unit_jual,
                     'konversi' => $product->konversi,
@@ -329,6 +332,176 @@ class ProductController extends Controller
                     'harga_lama' => $product->harga_pokok,
                 ]);
             }
+
+            $existingProductPos1 = ProductPos1::where('kode', $product->kode)->first();
+            if ($existingProductPos1) {
+                $existingProductPos1->update([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            } else {
+                ProductPos1::create([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode' => $product->kode,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            }
+
+            $existingProductPos2 = ProductPos2::where('kode', $product->kode)->first();
+            if ($existingProductPos2) {
+                $existingProductPos2->update([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            } else {
+                ProductPos2::create([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode' => $product->kode,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            }
+
+            $existingProductPos3 = ProductPos3::where('kode', $product->kode)->first();
+            if ($existingProductPos3) {
+                $existingProductPos3->update([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            } else {
+                ProductPos3::create([
+                    'id_supplier' => $product->id_supplier,
+                    'id_unit' => $product->id_unit,
+                    'id_departemen' => $product->id_departemen,
+                    'kode' => $product->kode,
+                    'kode_alternatif' => $product->kode_alternatif,
+                    'kode_sumber' => $product->kode_sumber,
+                    'kode_alternatif_2' => $product->kode_alternatif_2,
+                    'nama' => $product->nama,
+                    'merek' => $product->merek,
+                    'label' => $product->label,
+                    'unit_beli' => $product->unit_beli,
+                    'unit_jual' => $product->unit_jual,
+                    'konversi' => $product->konversi,
+                    'harga_pokok' => $product->harga_pokok,
+                    'harga_jual' => $product->harga_jual,
+                    'diskon1' => $product->diskon1,
+                    'diskon2' => $product->diskon2,
+                    'diskon3' => $product->diskon3,
+                    'isi' => $product->isi,
+                    'status' => $product->status,
+                    'harga_sementara' => $product->harga_sementara,
+                    'tanggal_awal' => $product->tanggal_awal,
+                    'tanggal_akhir' => $product->tanggal_akhir,
+                    'harga_lama' => $product->harga_pokok,
+                ]);
+            }
+
+            // update product status
             $product->update(['is_transfer' => 1]);
         }
 
@@ -363,7 +536,7 @@ class ProductController extends Controller
         // dd($request->all());
         $product = Product::find($id);
         $idSupplier = Supplier::where('nomor', $request->supplier)->first();
-        
+
         // if ($product->kode_sumber == null) {
         if (preg_replace('/[^0-9]/', '', $request->harga_pokok_rata) > preg_replace('/[^0-9]/', '', $request->harga_jual)) {
             return Redirect::Back()->with('alert.status', '99')->with('alert.message', "HARGA JUAL LEBIH KECIL DARI HARGA POKOK")->withInput();
@@ -375,7 +548,7 @@ class ProductController extends Controller
         } else {
             $ppn = 0;
         }
-        
+
         $childProduct = Product::where('kode_sumber', $product->kode)->orderBy('harga_pokok', 'desc')->get();
         foreach($childProduct as $child) {
             $child->harga_pokok = (preg_replace('/[^0-9]/', '', $request->harga_pokok) / preg_replace('/[^0-9]/', '', $request->unit_beli)) * preg_replace('/[^0-9]/', '', $child->unit_jual);
@@ -400,7 +573,7 @@ class ProductController extends Controller
             'is_ppn' => $ppn,
             'kode_alternatif' => $request->kode_alternatif,
             'merek' => strtoupper($request->merek),
-            'label' => strtoupper($request->label), 
+            'label' => strtoupper($request->label),
             'isi' => str_replace('P', '', $request->unit_jual),
             'status' => 1,
             'is_transfer' => null,
@@ -504,7 +677,7 @@ class ProductController extends Controller
 
     //     // Validate the result
     //     $writer->validateResult($result, 'Life is too short to be generating QR codes');
-    
+
     //     // Directly output the QR code
     //     header('Content-Type: '.$result->getMimeType());
     //     echo $result->getString();
@@ -620,7 +793,7 @@ class ProductController extends Controller
                             break;
                         }
                     }
-                    
+
                     if (!$alreadyExists) {
                         $orderProduct[] = $preorder;
                     }

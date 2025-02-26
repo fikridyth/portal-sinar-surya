@@ -15,6 +15,9 @@ use App\Models\Ppn;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\ProductPos;
+use App\Models\ProductPos1;
+use App\Models\ProductPos2;
+use App\Models\ProductPos3;
 use App\Models\ProductStock;
 use App\Models\Supplier;
 use Carbon\Carbon;
@@ -134,7 +137,7 @@ class PreOrderController extends Controller
         $getAllProducts = $products->collapse()->sortBy(['nama', 'unit_jual']);
         $allProductsByName = $getAllProducts->keyBy('kode');
         // dd($products, $getAllProducts, $allProductsByName, $rekapJualanByRange);
-        
+
         foreach ($allProductsByName as $name => $product) {
             // Jika nama tidak ada dalam rekap penjualan, beri nilai default 0
             $salesData = $rekapJualanByRange[$name] ?? [
@@ -148,13 +151,13 @@ class PreOrderController extends Controller
                 unset($allProductsByName[$name]);
                 continue; // Skip to the next iteration
             }
-        
+
             $product->total = number_format($salesData['total'], 2);
             $product->minimum = number_format($salesData['minimum'], 2);
             $product->average = $salesData['average'];
             $product->maximum = number_format($salesData['maximum'], 2);
         }
-        
+
         // Convert $allProductsByName to an array if needed
         $allProducts = $allProductsByName->toArray();
         // dd($allProductsByName);
@@ -176,7 +179,7 @@ class PreOrderController extends Controller
             // Ekstrak angka setelah 'P' dari kode_sumber
             $aNumber = intval(substr(strrchr($a->unit_jual, 'P'), 1));
             $bNumber = intval(substr(strrchr($b->unit_jual, 'P'), 1));
-            
+
             // Urutkan secara menurun
             return $aNumber - $bNumber;
         });
@@ -207,18 +210,18 @@ class PreOrderController extends Controller
                 'quantity' => (int) $parts[1]
             ];
         }
-        
+
         // Function to sort the array
         usort($sortProduct, function($a, $b) {
             $aParts = splitNamePo($a);
             $bParts = splitNamePo($b);
-        
+
             // Compare base names
             $nameComparison = strcmp($aParts['name'], $bParts['name']);
             if ($nameComparison !== 0) {
                 return $nameComparison;
             }
-            
+
             // If base names are the same, compare numeric parts
             return $aParts['quantity'] <=> $bParts['quantity'];
         });
@@ -297,7 +300,7 @@ class PreOrderController extends Controller
         }
 
         return view('preorder.add-po.list-barang', compact('title', 'titleHeader', 'getProducts', 'supplier1', 'results'));
-    } 
+    }
 
     public function cetakTambahPo(Request $request)
     {
@@ -379,7 +382,7 @@ class PreOrderController extends Controller
             }
         } else {
             (int) $sequence;
-        } 
+        }
         $getNomorPo = 'PO-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
         // dd($getNomorPo);
 
@@ -410,7 +413,7 @@ class PreOrderController extends Controller
         // $supplierIds = Supplier::whereHas('products', function ($query) {
         //     $query->where('stok', '>', 0);
         // })->pluck('id')->toArray();
-        
+
         $suppliers = Supplier::where('status', 1)->get();
         $supplierIds = Supplier::where('status', 1)->pluck('id')->toArray();
 
@@ -619,7 +622,7 @@ class PreOrderController extends Controller
 
         $preorder->detail = json_encode($detail);
         $preorder->save();
-        
+
         $totalHarga = 0;
         foreach ($detail as $dtl) {
             $totalHarga += $dtl['field_total'];
@@ -676,7 +679,7 @@ class PreOrderController extends Controller
             'ppn_global' => $preorder->ppn_global,
             'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
         ]);
-        
+
         $product = Product::where('kode', $request->kode)->first();
         $product->update([
             'harga_lama' => $product->harga_pokok,
@@ -700,10 +703,10 @@ class PreOrderController extends Controller
         $getNetto = str_replace(',', '', $request->netto);
         // $getTotal = str_replace(',', '', $request->total);
         $getoldPrice = str_replace(',', '', $request->oldPrice);
-        
+
         $preorder = Preorder::find($request->id);
         $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
-        
+
         // update detail
         $getDetail = json_decode($preorder->detail, true);
         $getArray = $getDetail[$request->array];
@@ -717,7 +720,7 @@ class PreOrderController extends Controller
         $getDetail[$request->array] = $getArray;
         $preorder->detail = json_encode($getDetail);
         $preorder->save();
-        
+
         $totalHarga = 0;
         foreach ($getDetail as $detail) {
             $totalHarga += $detail['field_total'];
@@ -849,7 +852,7 @@ class PreOrderController extends Controller
             ]);
         }
         // dd($preorder);
-        
+
         ProductStock::where('tipe', $preorder->nomor_receive)->delete();
         Hutang::where('nomor_receive', $preorder->nomor_receive)->first()->update(['is_cancel' => 1]);
         $preorder->update([
@@ -968,7 +971,7 @@ class PreOrderController extends Controller
         $selectedIds = $request->input('selected_ids', []);
         foreach ($selectedIds as $sId) {
             $product = Product::find($sId);
-            
+
             $detail[] = [
                 'kode' => $product->kode,
                 'nama' => $product->nama,
@@ -1069,7 +1072,7 @@ class PreOrderController extends Controller
             'ppn' => $preorder->ppn_global ?? 0,
             'grand_total' => $preorder->grand_total ?? 0,
         ];
-        
+
         Hutang::create($data);
 
         return redirect()->route('receive-po.create-detail', enkrip($preorder->id));
@@ -1098,7 +1101,7 @@ class PreOrderController extends Controller
         $ppn = Ppn::pluck('ppn')->first();
         $products = Product::where('status', 1)->where('stok', '>', 0)->orderBy('nama')->get();
         $suppliers = Supplier::where('status', 1)->whereNot('id', $preorder->supplier->id)->get();
-        
+
         if ($preorder->receive_type == 'A') {
             $preorder->update([
                 'receive_type' => 'B',
@@ -1246,7 +1249,7 @@ class PreOrderController extends Controller
     //         'date' => now()->format('Y-m-d'),
     //         'total' => $preorder->grand_total,
     //     ];
-        
+
     //     Pembayaran::create($data);
     //     $preorder->update(['is_pay' => 1]);
 
@@ -1287,7 +1290,7 @@ class PreOrderController extends Controller
             // Ekstrak angka setelah 'P' dari kode_sumber
             $aNumber = intval(substr(strrchr($a->unit_jual, 'P'), 1));
             $bNumber = intval(substr(strrchr($b->unit_jual, 'P'), 1));
-            
+
             // Urutkan secara menurun
             return $aNumber - $bNumber;
         });
@@ -1306,10 +1309,10 @@ class PreOrderController extends Controller
         $validator = Validator::make($request->all(), [
             'mark_up.*' => 'required|numeric|min:0',
         ]);
-    
+
         // Check if validation fails
         if ($validator->fails()) { return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!"); }
-        
+
         $sortProduct = $request->nama;
         function splitNameApprove($item) {
             $parts = explode('/', $item);
@@ -1318,18 +1321,18 @@ class PreOrderController extends Controller
                 'quantity' => (int) $parts[1]
             ];
         }
-        
+
         // Function to sort the array
         usort($sortProduct, function($a, $b) {
             $aParts = splitNameApprove($a);
             $bParts = splitNameApprove($b);
-        
+
             // Compare base names
             $nameComparison = strcmp($aParts['name'], $bParts['name']);
             if ($nameComparison !== 0) {
                 return $nameComparison;
             }
-            
+
             // If base names are the same, compare numeric parts
             return $aParts['quantity'] <=> $bParts['quantity'];
         });
@@ -1365,21 +1368,42 @@ class PreOrderController extends Controller
             ];
         }, $sortName, $sortCode, $sortPrice, $request->harga_jual, $request->mark_up);
         // dd($newData);
-        
+
         $maxNo = HargaSementara::max('nomor');
         $getNext = $maxNo + 1;
         foreach ($newData as $new) {
             // dd($new);
             // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
-            $productPos = ProductPos::where('kode', $new['kode'])->first();
             $product->update([
                 // 'harga_pokok' => $new['harga_pokok'],
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
                 'updated_at' => now()
             ]);
+            $productPos = ProductPos::where('kode', $new['kode'])->first();
             $productPos->update([
+                // 'harga_pokok' => $new['harga_pokok'],
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
+            $productPos1 = ProductPos1::where('kode', $new['kode'])->first();
+            $productPos1->update([
+                // 'harga_pokok' => $new['harga_pokok'],
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
+            $productPos2 = ProductPos2::where('kode', $new['kode'])->first();
+            $productPos2->update([
+                // 'harga_pokok' => $new['harga_pokok'],
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
+            $productPos3 = ProductPos3::where('kode', $new['kode'])->first();
+            $productPos3->update([
                 // 'harga_pokok' => $new['harga_pokok'],
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
@@ -1432,7 +1456,7 @@ class PreOrderController extends Controller
                 if (!isset($trackedKodes[$detail['kode']])) {
                     // Query products matching the code and price condition
                     $matchingProduct = Product::where('kode', $detail['kode'])->where('harga_jual', '<', $detail['price'])->first();
-                    
+
                     // If a product is found, add it to the collection and track the kode
                     if ($matchingProduct) {
                         $markupAmount = $matchingProduct->harga_jual - (int)$detail['price'];
@@ -1560,7 +1584,7 @@ class PreOrderController extends Controller
         $selectedIds = $request->input('selected_ids', []);
         foreach ($selectedIds as $sId) {
             $product = Product::find($sId);
-            
+
             $detail[] = [
                 'kode' => $product->kode,
                 'nama' => $product->nama,
@@ -1592,7 +1616,7 @@ class PreOrderController extends Controller
     {
         // dd($request->nomor_receive);
         $id = dekrip($id);
-        
+
         $retur = Pengembalian::find($id);
         $retur->update([
             'nomor_receive' => $request->nomor_receive
@@ -1666,14 +1690,14 @@ class PreOrderController extends Controller
                 ]);
             }
         }
-        
+
         if ($preorder) {
             $preorder->update([
-                'is_return' => null, 
+                'is_return' => null,
                 'nomor_return' => null
             ]);
         }
-        
+
         ProductStock::where('tipe', $retur->nomor_return)->delete();
         $retur->delete();
 

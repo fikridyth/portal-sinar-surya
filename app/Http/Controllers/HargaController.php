@@ -6,6 +6,9 @@ use App\Models\HargaSementara;
 use App\Models\HargaSementaraPos;
 use App\Models\Product;
 use App\Models\ProductPos;
+use App\Models\ProductPos1;
+use App\Models\ProductPos2;
+use App\Models\ProductPos3;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -59,7 +62,7 @@ class HargaController extends Controller
                 ->with('alert.message', "DATA PERLU DI ISI!");
         }
         // dd($combined);
-        
+
         // Proses data berdasarkan ID yang dipilih
         $maxNo = HargaSementara::max('nomor');
         $getNext = $maxNo + 1;
@@ -74,6 +77,9 @@ class HargaController extends Controller
                 ];
                 $product->update($dataProduct);
                 ProductPos::find($data['id'])->update($dataProduct);
+                ProductPos1::find($data['id'])->update($dataProduct);
+                ProductPos2::find($data['id'])->update($dataProduct);
+                ProductPos3::find($data['id'])->update($dataProduct);
 
                 $dataHarga = [
                     'id_supplier' => $request->id_supplier,
@@ -136,7 +142,7 @@ class HargaController extends Controller
         $profit = $request->input('profit');
         $hargaSementara = $request->input('harga_sementara');
         // dd($loop);
-        
+
         $combined = [];
         foreach ($loop as $id) {
             $combined[] = [
@@ -175,6 +181,9 @@ class HargaController extends Controller
                 ];
                 $product->update($dataProduct);
                 ProductPos::find($data['id_product'])->update($dataProduct);
+                ProductPos1::find($data['id_product'])->update($dataProduct);
+                ProductPos2::find($data['id_product'])->update($dataProduct);
+                ProductPos3::find($data['id_product'])->update($dataProduct);
 
                 $dataHarga = [
                     'id_supplier' => $request->id_supplier,
@@ -200,7 +209,7 @@ class HargaController extends Controller
             ->with('alert.status', '00')
             ->with('alert.message', "Update Harga Success!");
     }
-    
+
     public function indexHargaSementara()
     {
         $title = "Master Harga Sementara";
