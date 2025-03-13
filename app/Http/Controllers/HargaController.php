@@ -6,9 +6,6 @@ use App\Models\HargaSementara;
 use App\Models\HargaSementaraPos;
 use App\Models\Product;
 use App\Models\ProductPos;
-use App\Models\ProductPos1;
-use App\Models\ProductPos2;
-use App\Models\ProductPos3;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -61,30 +58,33 @@ class HargaController extends Controller
                 ->with('alert.status', '99')
                 ->with('alert.message', "DATA PERLU DI ISI!");
         }
-        // dd($combined);
 
         // Proses data berdasarkan ID yang dipilih
-        $maxNo = HargaSementara::max('nomor');
-        $getNext = $maxNo + 1;
+        $maxNo = HargaSementara::selectRaw('MAX(CAST(nomor AS UNSIGNED)) as max_nomor')->value('max_nomor');
+        $getNext = (int)$maxNo + 1;
         foreach ($combined as $data) {
             $product = Product::find($data['id']);
             if ($product) {
-                $dataProduct = [
+                $product->update([
                     // 'harga_lama' => $data['harga_lama'],
                     'harga_jual' => $data['harga_sementara'],
                     'harga_pokok' => $data['harga_pokok'],
                     'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
-                ];
-                $product->update($dataProduct);
-                ProductPos::find($data['id'])->update($dataProduct);
-                ProductPos1::find($data['id'])->update($dataProduct);
-                ProductPos2::find($data['id'])->update($dataProduct);
-                ProductPos3::find($data['id'])->update($dataProduct);
-
-                $dataHarga = [
+                    'is_transfer' => null
+                ]);
+                $productPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
+                if ($productPos) {
+                    $productPos->update([
+                        // 'harga_lama' => $data['harga_lama'],
+                        'harga_jual' => $data['harga_sementara'],
+                        'harga_pokok' => $data['harga_pokok'],
+                        'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    ]);
+                }
+                HargaSementara::create([
                     'id_supplier' => $request->id_supplier,
                     'id_product' => $data['id'],
-                    'nomor' => $getNext ?? 1,
+                    'nomor' => $getNext ?? null,
                     'nama' => $product->nama . '/' . $product->unit_jual,
                     'harga_lama' => $data['harga_lama'],
                     'harga_pokok' => $data['harga_pokok'],
@@ -94,10 +94,27 @@ class HargaController extends Controller
                     'harga_sementara' => $data['harga_sementara'],
                     'date_first' => $request->from_date,
                     'date_last' => $request->to_date,
-                    'naik' => 100,
-                ];
-                HargaSementara::create($dataHarga);
-                HargaSementaraPos::create($dataHarga);
+                    'naik' => $request->kenaikan ?? 100,
+                ]);
+                $dataProductPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
+                if ($dataProductPos) {
+                    HargaSementaraPos::create([
+                        'id_supplier' => $request->id_supplier,
+                        'id_product' => $dataProductPos->id,
+                        'nomor' => $getNext ?? null,
+                        'nama' => $product->nama . '/' . $product->unit_jual,
+                        'harga_lama' => $data['harga_lama'],
+                        'harga_pokok' => $data['harga_pokok'],
+                        'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
+                        'harga_jual' => $data['harga_sementara'],
+                        'profit_jual' => $data['profit'],
+                        'harga_sementara' => $data['harga_sementara'],
+                        'date_first' => $request->from_date,
+                        'date_last' => $request->to_date,
+                        'naik' => $request->kenaikan ?? 100,
+                        'is_transfer' => null
+                    ]);
+                }
 
                 // update data dalam kelompok product tersebut
                 $getKelompok = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->whereNot('id', $product->id)->get();
@@ -155,37 +172,27 @@ class HargaController extends Controller
                 'harga_sementara' => $hargaSementara[$id] ?? null,
             ];
         }
-        // dd($combined);
 
         foreach ($combined as $data) {
-            // $dataHargaSementara = HargaSementara::find($data['id']);
-            // if ($dataHargaSementara) {
-            //     $dataHargaSementara->update([
-            //         'harga_lama' => $data['harga_lama'],
-            //         'harga_pokok' => $data['harga_pokok'],
-            //         'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
-            //         'harga_jual' => $data['harga_jual'],
-            //         'profit_jual' => $data['profit'],
-            //         'harga_sementara' => $data['harga_sementara'],
-            //         // 'naik' => $request->kenaikan,
-            //     ]);
-            // }
             $product = Product::find($data['id_product']);
             if ($product) {
-                $dataProduct = [
+                $product->update([
                     // 'harga_lama' => $data['harga_lama'],
-                    'harga_pokok' => $data['harga_pokok'],
-                    'profit' => number_format((($product->harga_jual - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                     'harga_jual' => $data['harga_sementara'],
-                    // 'profit' => number_format((($data['harga_jual'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
-                ];
-                $product->update($dataProduct);
-                ProductPos::find($data['id_product'])->update($dataProduct);
-                ProductPos1::find($data['id_product'])->update($dataProduct);
-                ProductPos2::find($data['id_product'])->update($dataProduct);
-                ProductPos3::find($data['id_product'])->update($dataProduct);
-
-                $dataHarga = [
+                    'harga_pokok' => $data['harga_pokok'],
+                    'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    'is_transfer' => null
+                ]);
+                $productPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
+                if ($productPos) {
+                    $productPos->update([
+                        // 'harga_lama' => $data['harga_lama'],
+                        'harga_jual' => $data['harga_sementara'],
+                        'harga_pokok' => $data['harga_pokok'],
+                        'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
+                    ]);
+                }
+                HargaSementara::create([
                     'id_supplier' => $request->id_supplier,
                     'id_product' => $data['id_product'],
                     'nomor' => null,
@@ -198,10 +205,27 @@ class HargaController extends Controller
                     'harga_sementara' => $data['harga_sementara'],
                     'date_first' => $request->from_date,
                     'date_last' => $request->to_date,
-                    'naik' => $request->kenaikan,
-                ];
-                HargaSementara::create($dataHarga);
-                HargaSementaraPos::create($dataHarga);
+                    'naik' => $request->kenaikan ?? 100,
+                ]);
+                $dataProductPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
+                if ($dataProductPos) {
+                    HargaSementaraPos::create([
+                        'id_supplier' => $request->id_supplier,
+                        'id_product' => $dataProductPos->id,
+                        'nomor' => null,
+                        'nama' => $product->nama . '/' . $product->unit_jual,
+                        'harga_lama' => $data['harga_lama'],
+                        'harga_pokok' => $data['harga_pokok'],
+                        'profit_pokok' => number_format((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2) ?? 0.00,
+                        'harga_jual' => $data['harga_sementara'],
+                        'profit_jual' => $data['profit'],
+                        'harga_sementara' => $data['harga_sementara'],
+                        'date_first' => $request->from_date,
+                        'date_last' => $request->to_date,
+                        'naik' => $request->kenaikan ?? 100,
+                        'is_transfer' => null
+                    ]);
+                }
             }
         }
 

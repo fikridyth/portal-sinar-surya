@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\DataTables\ProductDataTable;
 use App\Models\Departemen;
+use App\Models\HargaSementaraPos;
+use App\Models\HargaSementaraPos1;
+use App\Models\HargaSementaraPos2;
+use App\Models\HargaSementaraPos3;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\ProductPos;
@@ -21,6 +25,8 @@ use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Picqer\Barcode\BarcodeGeneratorPNG;
@@ -333,176 +339,314 @@ class ProductController extends Controller
                 ]);
             }
 
-            $existingProductPos1 = ProductPos1::where('kode', $product->kode)->first();
-            if ($existingProductPos1) {
-                $existingProductPos1->update([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
-            } else {
-                ProductPos1::create([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode' => $product->kode,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_1')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                $existingProductPos1 = ProductPos1::where('kode', $product->kode)->first();
+                if ($existingProductPos1) {
+                    $existingProductPos1->update([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                } else {
+                    ProductPos1::create([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode' => $product->kode,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                }
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 1 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 1 Gagal! (Gagal Query)");
             }
 
-            $existingProductPos2 = ProductPos2::where('kode', $product->kode)->first();
-            if ($existingProductPos2) {
-                $existingProductPos2->update([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
-            } else {
-                ProductPos2::create([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode' => $product->kode,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_2')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                $existingProductPos2 = ProductPos2::where('kode', $product->kode)->first();
+                if ($existingProductPos2) {
+                    $existingProductPos2->update([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                } else {
+                    ProductPos2::create([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode' => $product->kode,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                }
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 2 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 2 Gagal! (Gagal Query)");
             }
 
-            $existingProductPos3 = ProductPos3::where('kode', $product->kode)->first();
-            if ($existingProductPos3) {
-                $existingProductPos3->update([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
-            } else {
-                ProductPos3::create([
-                    'id_supplier' => $product->id_supplier,
-                    'id_unit' => $product->id_unit,
-                    'id_departemen' => $product->id_departemen,
-                    'kode' => $product->kode,
-                    'kode_alternatif' => $product->kode_alternatif,
-                    'kode_sumber' => $product->kode_sumber,
-                    'kode_alternatif_2' => $product->kode_alternatif_2,
-                    'nama' => $product->nama,
-                    'merek' => $product->merek,
-                    'label' => $product->label,
-                    'unit_beli' => $product->unit_beli,
-                    'unit_jual' => $product->unit_jual,
-                    'konversi' => $product->konversi,
-                    'harga_pokok' => $product->harga_pokok,
-                    'harga_jual' => $product->harga_jual,
-                    'diskon1' => $product->diskon1,
-                    'diskon2' => $product->diskon2,
-                    'diskon3' => $product->diskon3,
-                    'isi' => $product->isi,
-                    'status' => $product->status,
-                    'harga_sementara' => $product->harga_sementara,
-                    'tanggal_awal' => $product->tanggal_awal,
-                    'tanggal_akhir' => $product->tanggal_akhir,
-                    'harga_lama' => $product->harga_pokok,
-                ]);
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_3')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                $existingProductPos3 = ProductPos3::where('kode', $product->kode)->first();
+                if ($existingProductPos3) {
+                    $existingProductPos3->update([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                } else {
+                    ProductPos3::create([
+                        'id_supplier' => $product->id_supplier,
+                        'id_unit' => $product->id_unit,
+                        'id_departemen' => $product->id_departemen,
+                        'kode' => $product->kode,
+                        'kode_alternatif' => $product->kode_alternatif,
+                        'kode_sumber' => $product->kode_sumber,
+                        'kode_alternatif_2' => $product->kode_alternatif_2,
+                        'nama' => $product->nama,
+                        'merek' => $product->merek,
+                        'label' => $product->label,
+                        'unit_beli' => $product->unit_beli,
+                        'unit_jual' => $product->unit_jual,
+                        'konversi' => $product->konversi,
+                        'harga_pokok' => $product->harga_pokok,
+                        'harga_jual' => $product->harga_jual,
+                        'diskon1' => $product->diskon1,
+                        'diskon2' => $product->diskon2,
+                        'diskon3' => $product->diskon3,
+                        'isi' => $product->isi,
+                        'status' => $product->status,
+                        'harga_sementara' => $product->harga_sementara,
+                        'tanggal_awal' => $product->tanggal_awal,
+                        'tanggal_akhir' => $product->tanggal_akhir,
+                        'harga_lama' => $product->harga_pokok,
+                    ]);
+                }
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 3 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Product Ke POS 3 Gagal! (Gagal Query)");
             }
 
             // update product status
             $product->update(['is_transfer' => 1]);
+        }
+
+        $hargaSementara = HargaSementaraPos::whereNull('is_transfer')->get();
+        foreach ($hargaSementara as $harga) {
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_1')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                HargaSementaraPos1::create([
+                    'id_supplier' => $hargaSementara->id_supplier,
+                    'id_product' => $hargaSementara->id_product,
+                    'nomor' => $hargaSementara->nomor,
+                    'nama' => $hargaSementara->nama,
+                    'harga_lama' => $hargaSementara->harga_lama,
+                    'harga_pokok' => $hargaSementara->harga_pokok,
+                    'profit_pokok' => $hargaSementara->profit_pokok,
+                    'harga_jual' => $hargaSementara->harga_jual,
+                    'profit_jual' => $hargaSementara->profit_jual,
+                    'harga_sementara' => $hargaSementara->harga_sementara,
+                    'date_first' => $hargaSementara->date_first,
+                    'date_last' => $hargaSementara->date_last,
+                    'naik' => $hargaSementara->naik
+                ]);
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 1 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 1 Gagal! (Gagal Query)");
+            }
+
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_2')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                HargaSementaraPos2::create([
+                    'id_supplier' => $hargaSementara->id_supplier,
+                    'id_product' => $hargaSementara->id_product,
+                    'nomor' => $hargaSementara->nomor,
+                    'nama' => $hargaSementara->nama,
+                    'harga_lama' => $hargaSementara->harga_lama,
+                    'harga_pokok' => $hargaSementara->harga_pokok,
+                    'profit_pokok' => $hargaSementara->profit_pokok,
+                    'harga_jual' => $hargaSementara->harga_jual,
+                    'profit_jual' => $hargaSementara->profit_jual,
+                    'harga_sementara' => $hargaSementara->harga_sementara,
+                    'date_first' => $hargaSementara->date_first,
+                    'date_last' => $hargaSementara->date_last,
+                    'naik' => $hargaSementara->naik
+                ]);
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 2 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 2 Gagal! (Gagal Query)");
+            }
+
+            try {
+                // Cek koneksi ke database client
+                DB::connection('mysql_pos_3')->getPdo();
+            
+                // Lanjutkan jika koneksi berhasil
+                HargaSementaraPos3::create([
+                    'id_supplier' => $hargaSementara->id_supplier,
+                    'id_product' => $hargaSementara->id_product,
+                    'nomor' => $hargaSementara->nomor,
+                    'nama' => $hargaSementara->nama,
+                    'harga_lama' => $hargaSementara->harga_lama,
+                    'harga_pokok' => $hargaSementara->harga_pokok,
+                    'profit_pokok' => $hargaSementara->profit_pokok,
+                    'harga_jual' => $hargaSementara->harga_jual,
+                    'profit_jual' => $hargaSementara->profit_jual,
+                    'harga_sementara' => $hargaSementara->harga_sementara,
+                    'date_first' => $hargaSementara->date_first,
+                    'date_last' => $hargaSementara->date_last,
+                    'naik' => $hargaSementara->naik
+                ]);
+            } catch (\PDOException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 3 Gagal! (Koneksi Jaringan)");
+            } catch (QueryException $e) {
+                return Redirect::route('index')
+                    ->with('alert.status', '99')
+                    ->with('alert.message', "Transfer Harga Ke POS 3 Gagal! (Gagal Query)");
+            }
+
+            // update harga status
+            $harga->update(['is_transfer' => 1]);
         }
 
         return Redirect::route('index')

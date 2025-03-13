@@ -72,17 +72,19 @@
                                         <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
-                                        <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                        {{-- <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td> --}}
+                                        <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
+                                        {{-- <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td> --}}
+                                        <td class="text-center">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
                                         @php
-                                        $roundedPrice = (($dtl['price'] * $product->profit) / 100) + $dtl['price'];
-                                            if (strlen($dtl['price']) >= 6) {
+                                        $roundedPrice = (($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok;
+                                            if (strlen($product->harga_pokok) >= 6) {
                                                 $roundedValue = round($roundedPrice, -3);
-                                            } elseif (strlen($dtl['price']) >= 4) {
+                                            } elseif (strlen($product->harga_pokok) >= 4) {
                                                 $roundedValue = round($roundedPrice, -2);
-                                            } elseif (strlen($dtl['price']) >= 2) {
+                                            } elseif (strlen($product->harga_pokok) >= 2) {
                                                 $roundedValue = round($roundedPrice, -1);
                                             } else {
                                                 $roundedValue = $roundedPrice;

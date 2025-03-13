@@ -15,9 +15,6 @@ use App\Models\Ppn;
 use App\Models\Preorder;
 use App\Models\Product;
 use App\Models\ProductPos;
-use App\Models\ProductPos1;
-use App\Models\ProductPos2;
-use App\Models\ProductPos3;
 use App\Models\ProductStock;
 use App\Models\Supplier;
 use Carbon\Carbon;
@@ -1379,7 +1376,8 @@ class PreOrderController extends Controller
                 // 'harga_pokok' => $new['harga_pokok'],
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
-                'updated_at' => now()
+                'updated_at' => now(),
+                'is_transfer' => null,
             ]);
             $productPos = ProductPos::where('kode', $new['kode'])->first();
             $productPos->update([
@@ -1388,29 +1386,8 @@ class PreOrderController extends Controller
                 'profit' => $new['mark_up'],
                 'updated_at' => now()
             ]);
-            $productPos1 = ProductPos1::where('kode', $new['kode'])->first();
-            $productPos1->update([
-                // 'harga_pokok' => $new['harga_pokok'],
-                'harga_jual' => $new['harga_jual'],
-                'profit' => $new['mark_up'],
-                'updated_at' => now()
-            ]);
-            $productPos2 = ProductPos2::where('kode', $new['kode'])->first();
-            $productPos2->update([
-                // 'harga_pokok' => $new['harga_pokok'],
-                'harga_jual' => $new['harga_jual'],
-                'profit' => $new['mark_up'],
-                'updated_at' => now()
-            ]);
-            $productPos3 = ProductPos3::where('kode', $new['kode'])->first();
-            $productPos3->update([
-                // 'harga_pokok' => $new['harga_pokok'],
-                'harga_jual' => $new['harga_jual'],
-                'profit' => $new['mark_up'],
-                'updated_at' => now()
-            ]);
 
-            $dataHarga = [
+            HargaSementara::create([
                 'id_supplier' => $product->id_supplier,
                 'id_product' => $product->id,
                 'nomor' => $getNext ?? 1,
@@ -1424,9 +1401,27 @@ class PreOrderController extends Controller
                 'date_first' => now()->format('Y-m-d'),
                 'date_last' => now()->format('Y-m-d'),
                 'naik' => 100,
-            ];
-            HargaSementara::create($dataHarga);
-            HargaSementaraPos::create($dataHarga);
+            ]);
+
+            $dataProductPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
+            if ($dataProductPos) {
+                HargaSementaraPos::create([
+                    'id_supplier' => $product->id_supplier,
+                    'id_product' => $dataProductPos->id,
+                    'nomor' => $getNext ?? 1,
+                    'nama' => $product->nama . '/' . $product->unit_jual,
+                    'harga_lama' => $product->harga_lama,
+                    'harga_pokok' => $product->harga_pokok,
+                    'profit_pokok' => number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) ?? 0.00,
+                    'harga_jual' => $new['harga_jual'],
+                    'profit_jual' => $new['mark_up'],
+                    'harga_sementara' => $new['harga_jual'],
+                    'date_first' => now()->format('Y-m-d'),
+                    'date_last' => now()->format('Y-m-d'),
+                    'naik' => 100,
+                    'is_transfer' => null
+                ]);
+            }
         }
 
         $preorder = Preorder::find($request->preorder);
