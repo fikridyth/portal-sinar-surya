@@ -967,10 +967,18 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($id);
 
-        $products = Product::where('nama', '>=', $product->nama)
+        $rawProducts = Product::where('nama', '>=', $product->nama)
                    ->orderBy('nama', 'asc')
-                   ->limit(1001) // termasuk yang sekarang + 500 berikutnya
+                   ->limit(1001)
                    ->get();
+
+        // Hilangkan karakter '/' dari nama produk dan ambil yang unik berdasarkan hasil replace
+        $products = $rawProducts->unique(function ($item) {
+            return str_replace('/', '', $item->nama);
+        });
+
+        // Jika ingin reset array index (opsional)
+        $products = $products->values();
 
         return view('master.product.edit-name', compact('title', 'titleHeader', 'products', 'product'));
     }
@@ -982,14 +990,17 @@ class ProductController extends Controller
             $hasil[] = [
                 'id' => $id,
                 'nama' => $request->input("fisik.$id"),
+                'nama_lama' => $request->input("old_fisik.$id"),
             ];
         }
 
         foreach ($hasil as $data) {
-            $product = Product::find($data['id']);
-            $product->update([
-                'nama' => $data['nama']
-            ]);
+            $products = Product::where('nama', $data['nama_lama'])->get();
+            foreach ($products as $product) {
+                $product->update([
+                    'nama' => $data['nama']
+                ]);
+            }
         }
 
         return Redirect::route('master.product.show', enkrip(1))

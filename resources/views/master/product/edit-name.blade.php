@@ -66,10 +66,7 @@
                                             {{-- <th class="text-center">NO</th> --}}
                                             <th class="text-center">NAMA BARANG</th>
                                             <th class="text-center">ISI</th>
-                                            <th class="text-center">HARGA</th>
-                                            <!-- <th class="text-center">STOK</th> -->
-                                            <th class="text-center">FISIK</th>
-                                            <th class="text-center">RUPIAH</th>
+                                            <th class="text-center">NAMA BARANG BARU</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -78,7 +75,12 @@
                                             $no = $index + 1;
                                         @endphp
                                         <tr id="product-{{ $no }}">
-                                            {{-- <td>{{ $loop->iteration }}</td> --}}
+                                            <td>
+                                                <input type="text" readonly name="old_fisik[{{ $product->id }}]" value="{{ $product->nama }}">
+                                            </td>
+                                            <td class="text-center">
+                                                {{ $product->unit_jual }}
+                                            </td>
                                             <td class="product-cell">
                                                 <input type="text" 
                                                        name="fisik[{{ $product->id }}]" 
@@ -94,22 +96,9 @@
                                                        class="product-checkbox">
                                                 
                                             </td>
-                                            <!-- <td class="text-end">{{ str_replace('P', '', $product->unit_jual) }}</td> -->
-                                            <td class="text-center">
-                                                {{ $product->unit_jual }}
-                                            </td>
-                                            <td id="product-harga" class="text-end">{{ number_format($product->harga_jual) }}</td>
-                                            <td id="product-stok" class="text-end">{{  number_format($product->stok,0) }}</td>
-                                            <!-- <td id="product-fisik" class="text-center">
-                                                <input type="number" class="text-end product-input" name="fisik[{{ $product->id }}]" value="{{ number_format($product->stok,0) }}" 
-                                                       oninput="calculateSelisih({{ $no }}, {{ $product->harga_jual }}, {{ $product->stok }}, {{ $product->id }})"
-                                                       data-original-value="{{ $product->stok }}" style="width: 70px;">
-                                            </td> -->
-                                            
                                             <td hidden class="text-center">
                                                 {{ $product->nama }}
                                             </td>
-                                            <td class="text-end">{{ number_format($product->harga_jual * $product->stok) }}</td>
                                        </tr>
                                         @endforeach
                                     </tbody>
