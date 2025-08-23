@@ -199,7 +199,7 @@ Route::middleware('auth')->group(function () {
 
         // Supplier
         Route::resource('/supplier', SupplierController::class, ['parameters' => ['supplier' => 'id']]);
-        Route::get('/cetak-faktur-supplier/{id}/{nama}/{date}', [SupplierController::class, 'cetakFakturSupplier'])->name('cetak-faktur-supplier');
+        Route::get('/cetak-faktur-supplier/{id}/{nama}/{dari}/{sampai}', [SupplierController::class, 'cetakFakturSupplier'])->name('cetak-faktur-supplier');
 
         // Change Supplier
         Route::get('/change-supplier', [SupplierController::class, 'indexChangeSupplier'])->name('change-supplier.index');

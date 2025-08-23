@@ -66,8 +66,12 @@
                                                 <td class="text-center">{{ $data['date'] }}</td>
                                                 <td>{{ $getName }}</td>
                                                 <!-- <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td> -->
-                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td>
-                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td>
+                                                <td class="text-center">
+                                                    <input type="checkbox" class="preorder-checkbox checkbox-dari" data-id="{{ $data['nomor'] }}" data-supid="{{ $supplier->id }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}">
+                                                </td>
+                                                <td class="text-center">
+                                                    <input type="checkbox" class="preorder-checkbox checkbox-sampai" data-id="{{ $data['nomor'] }}" data-supid="{{ $supplier->id }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}">
+                                                </td>
                                             </tr>
                                         @endforeach
                                         @foreach ($getHistory as $data)
@@ -190,57 +194,99 @@
             periode.value = '';
         });
 
-        document.querySelectorAll('.preorder-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const detail = JSON.parse(this.getAttribute('data-detail'));
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.preorder-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const isDari = this.classList.contains('checkbox-dari');
+                    const isSampai = this.classList.contains('checkbox-sampai');
+
+                    // Bila dicentang
+                    if (this.checked) {
+                        if (isDari) {
+                            document.querySelectorAll('.checkbox-dari').forEach(cb => {
+                                if (cb !== this) cb.disabled = true;
+                            });
+                        }
+
+                        if (isSampai) {
+                            document.querySelectorAll('.checkbox-sampai').forEach(cb => {
+                                if (cb !== this) cb.disabled = true;
+                            });
+                        }
+                    } else {
+                        if (isDari) {
+                            document.querySelectorAll('.checkbox-dari').forEach(cb => cb.disabled = false);
+                        }
+
+                        if (isSampai) {
+                            document.querySelectorAll('.checkbox-sampai').forEach(cb => cb.disabled = false);
+                        }
+                    }
+
+                    updateCetakUrl();
+                    updateOrderDetail(this);
+                });
+            });
+
+            function updateCetakUrl() {
+                const dariCheckbox = document.querySelector('.checkbox-dari:checked');
+                const sampaiCheckbox = document.querySelector('.checkbox-sampai:checked');
+                const cetakBtn = document.getElementById('cetakBtn');
+
+                if (dariCheckbox && sampaiCheckbox) {
+                    let dariDate = dariCheckbox.getAttribute('data-date');
+                    let sampaiDate = sampaiCheckbox.getAttribute('data-date');
+
+                    // Tukar jika dariDate > sampaiDate
+                    if (new Date(dariDate) > new Date(sampaiDate)) {
+                        [dariDate, sampaiDate] = [sampaiDate, dariDate];
+                    }
+
+                    const supplierId = dariCheckbox.getAttribute('data-supid');
+                    const supplierName = dariCheckbox.getAttribute('data-nama');
+
+                    cetakBtn.href = `/master/cetak-faktur-supplier/${supplierId}/${supplierName}/${dariDate}/${sampaiDate}`;
+                    cetakBtn.style.display = 'inline-block';
+                } else {
+                    cetakBtn.href = '#';
+                    cetakBtn.style.display = 'none';
+                }
+            }
+
+            function updateOrderDetail(checkbox) {
+                const detail = JSON.parse(checkbox.getAttribute('data-detail'));
                 const tbody = document.getElementById('orderDetailTableBody');
                 const totalCell = document.querySelector('.table tbody tr th.value-total');
                 let total = 0;
-                
-                if (this.checked) {
-                    const id = this.getAttribute('data-id');
-                    const dataDate = this.getAttribute('data-date');
-                    const dataNama = this.getAttribute('data-nama');
-                    const cetakBtn = document.getElementById('cetakBtn');
-                    cetakBtn.href = `/master/cetak-faktur-supplier/${id}/${dataNama}/${dataDate}`;
-                    
-                    document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
-                        if (otherCheckbox !== this) {
-                            otherCheckbox.disabled = true;
-                            document.querySelectorAll('.history-checkbox').forEach(historyCheckbox => {
-                                historyCheckbox.disabled = true;
-                            });
-                        }
-                    });
 
-                    tbody.innerHTML = ''; // Clear existing rows before adding new ones
+                if (checkbox.checked) {
+                    tbody.innerHTML = ''; // Bersihkan isi tabel
+
                     JSON.parse(detail).forEach(item => {
-                        const amount = item.order * item.price; // Menghitung jumlah per item
+                        const amount = item.order * item.price;
                         total += amount;
 
-                        const newRow = document.createElement('tr');
-                        newRow.innerHTML = `
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
                             <td>${item.nama}/${item.unit_jual}</td>
                             <td class="text-center">${item.order}</td>
                             <td class="text-end">${number_format(item.price)}</td>
                             <td class="text-end">${number_format(amount)}</td>
                         `;
-                        tbody.appendChild(newRow);
+                        tbody.appendChild(row);
                     });
 
                     totalCell.textContent = number_format(total);
                 } else {
-                    document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
-                        otherCheckbox.disabled = false;
-                        document.querySelectorAll('.history-checkbox').forEach(historyCheckbox => {
-                            historyCheckbox.disabled = false;
-                        });
-                    });
-
-                    tbody.innerHTML = ''; // Clear the table if checkbox is unchecked
+                    tbody.innerHTML = '';
                     totalCell.textContent = '0';
                 }
-            });
+            }
+
+            // Fungsi format angka (basic)
+            function number_format(number) {
+                return new Intl.NumberFormat('id-ID').format(number);
+            }
         });
 
         document.querySelectorAll('.history-checkbox').forEach(checkbox => {

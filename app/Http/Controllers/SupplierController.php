@@ -14,6 +14,7 @@ use App\Models\Promosi;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
 
 class SupplierController extends Controller
 {
@@ -345,16 +346,41 @@ class SupplierController extends Controller
             ->with('alert.message', "Change Supplier Success!");
     }
 
-    public function cetakFakturSupplier($id, $name, $date)
+    public function cetakFakturSupplier($id, $nama, $dari, $sampai)
     {
-        $prefix = substr($id, 0, 2);
+        $start = Carbon::parse($dari)->startOfDay();
+        $end = Carbon::parse($sampai)->endOfDay();
 
-        if ($prefix === 'RR') {
-            $data = Pengembalian::where('nomor_return', $id)->first();
-        } elseif ($prefix === 'RP') {
-            $data = Preorder::where('nomor_receive', $id)->first();
-        }
+        // Ambil data Pengembalian
+        $pengembalian = Pengembalian::where('id_supplier', $id)->whereNotNull('nomor_return')->where('total', '!=', 0)->whereBetween('date', [$start, $end])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tipe' => 'RETUR',
+                    'nomor' => $item->nomor_return,
+                    'date' => $item->date,
+                    'harga' => $item->total,
+                ];
+            });
 
-        return view('master.supplier.print-faktur', compact('data', 'id', 'name', 'date'));
+        // Ambil data Preorder
+        $preorder = Preorder::where('id_supplier', $id)->whereNotNull('nomor_receive')->where('grand_total', '!=', 0)->whereBetween('date_first', [$start, $end])
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tipe' => 'PEMBELIAN',
+                    'nomor' => $item->nomor_receive,
+                    'date' => $item->date_first,
+                    'harga' => $item->grand_total,
+                ];
+            });
+
+        // Gabungkan dan urutkan berdasarkan tanggal
+        $dataGabungan = $pengembalian
+            ->merge($preorder)
+            ->sortBy('date')
+            ->values();
+
+        return view('master.supplier.print-faktur', compact('dataGabungan', 'dari', 'sampai', 'nama'));
     }
 }

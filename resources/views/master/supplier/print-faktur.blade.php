@@ -62,8 +62,8 @@
 <body onload="window.print()">
 
     <div class="center report-title">DAFTAR PEMBELIAN SUPPLIER</div>
-    <div class="center">{{ $name }}</div>
-    <div class="center">{{ $date }}</div>
+    <div class="center">{{ $nama }}</div>
+    <div class="center">{{ $dari }} - {{ $sampai }}</div>
     <div class="page-info">Halaman : 1</div>
 
     <table class="table-report">
@@ -76,17 +76,16 @@
         </thead>
         <tbody>
             @php
-                $details = json_decode($data['detail'] ?? '[]', true);
                 $totalField = 0;
             @endphp
-            @foreach($details as $dt)
+            @foreach($dataGabungan as $dt)
                 @php
-                    $totalField += $dt['field_total'];
+                    $totalField += $dt['harga'];
                 @endphp
                 <tr>
-                    <td style="text-align: center;">{{ $id }}</td>
-                    <td style="text-align: center;">{{ $date }}</td>
-                    <td style="text-align: right;">{{ number_format($dt['field_total'], 0) }}</td>
+                    <td style="text-align: center;">{{ $dt['nomor'] }}</td>
+                    <td style="text-align: center;">{{ $dt['date'] }}</td>
+                    <td style="text-align: right;">{{ number_format($dt['harga'], 0) }}</td>
                 </tr>
             @endforeach
         </tbody>
