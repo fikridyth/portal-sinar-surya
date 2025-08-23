@@ -48,7 +48,9 @@
                                             <th class="text-center">DOKUMEN</th>
                                             <th class="text-center">TANGGAL</th>
                                             <th class="text-center">KETERANGAN</th>
-                                            <th class="text-center">PILIH</th>
+                                            <!-- <th class="text-center">PILIH</th> -->
+                                            <th class="text-center">DARI</th>
+                                            <th class="text-center">SAMPAI</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -63,7 +65,9 @@
                                                 <td class="text-center">{{ $data['nomor'] }}</td>
                                                 <td class="text-center">{{ $data['date'] }}</td>
                                                 <td>{{ $getName }}</td>
-                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($data['detail']) }}"></td>
+                                                <!-- <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td> -->
+                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td>
+                                                <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td>
                                             </tr>
                                         @endforeach
                                         @foreach ($getHistory as $data)
@@ -77,7 +81,9 @@
                                                 <td class="text-center">{{ $data->nomor_receive }}</td>
                                                 <td class="text-center">{{ $data->date }}</td>
                                                 <td>{{ $getName }}</td>
-                                                <td class="text-center"><input type="checkbox" class="history-checkbox" data-nomor="{{ $data->nomor_receive }}"></td>
+                                                <!-- <td class="text-center"><input type="checkbox" class="history-checkbox" data-nomor="{{ $data->nomor_receive }}"></td> -->
+                                                <td class="text-center"><input type="checkbox" disabled></td>
+                                                <td class="text-center"><input type="checkbox" disabled></td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -115,7 +121,7 @@
                 </div>
                 
                 <div class="text-center">
-                    {{-- <a href="{{ route('master.product.create') }}" class="btn btn-danger">Kembali</a> --}}
+                    <a href="#" id="cetakBtn" class="btn btn-success" style="margin-right: 20px;">CETAK</a>
                     <button type="button" onclick="window.history.back()" class="btn btn-danger mt-n2">KEMBALI</button>
                 </div>
             </div>
@@ -192,6 +198,12 @@
                 let total = 0;
                 
                 if (this.checked) {
+                    const id = this.getAttribute('data-id');
+                    const dataDate = this.getAttribute('data-date');
+                    const dataNama = this.getAttribute('data-nama');
+                    const cetakBtn = document.getElementById('cetakBtn');
+                    cetakBtn.href = `/master/cetak-faktur-supplier/${id}/${dataNama}/${dataDate}`;
+                    
                     document.querySelectorAll('.preorder-checkbox').forEach(otherCheckbox => {
                         if (otherCheckbox !== this) {
                             otherCheckbox.disabled = true;

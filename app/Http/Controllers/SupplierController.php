@@ -269,9 +269,9 @@ class SupplierController extends Controller
         $titleHeader = 'MASTER HISTORY PREORDER';
         $supplier = Supplier::find($id);
         $suppliers = Supplier::all();
-        $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->whereNotNull('nomor_receive')->orderBy('date_first')->get();
-        $getRetur = Pengembalian::select('nomor_return as nomor', 'date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->orderBy('date')->get();
-        $getData = $getPo->concat($getRetur)->sortBy('date')->values()->toArray();
+        $getPo = Preorder::select('nomor_receive as nomor', 'date_first as date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->where('receive_type', 'B')->where('detail', '!=', '[]')->whereNotNull('nomor_receive')->orderBy('created_at', 'desc')->get();
+        $getRetur = Pengembalian::select('nomor_return as nomor', 'date', 'detail')->Filter(request(['periode']))->where('id_supplier', $id)->whereNotNull('nomor_return')->where('nomor_return', '!=', '')->where('detail', '!=', '[]')->orderBy('date', 'desc')->get();
+        $getData = $getPo->concat($getRetur)->sortByDesc('date')->values()->toArray();
         $getHistory = HistoryPreorder::select('nomor_receive', 'date')->Filter(request(['periode']))->where('nomor', $supplier->nomor)->orderBy('date', 'desc')->get();
         // dd($getHistory);
 
@@ -343,5 +343,18 @@ class SupplierController extends Controller
         return Redirect::route('master.change-supplier.index')
             ->with('alert.status', '00')
             ->with('alert.message', "Change Supplier Success!");
+    }
+
+    public function cetakFakturSupplier($id, $name, $date)
+    {
+        $prefix = substr($id, 0, 2);
+
+        if ($prefix === 'RR') {
+            $data = Pengembalian::where('nomor_return', $id)->first();
+        } elseif ($prefix === 'RP') {
+            $data = Preorder::where('nomor_receive', $id)->first();
+        }
+
+        return view('master.supplier.print-faktur', compact('data', 'id', 'name', 'date'));
     }
 }
