@@ -125,7 +125,8 @@
                 </div>
                 
                 <div class="text-center">
-                    <a href="#" id="cetakBtn" class="btn btn-success" style="margin-right: 20px;">CETAK</a>
+                    <a href="#" class="btn btn-primary" style="margin-right: 15px;">CETAK BARANG</a>
+                    <a href="#" id="cetakBtn" class="btn btn-success" style="margin-right: 15px;">CETAK FAKTUR</a>
                     <button type="button" onclick="window.history.back()" class="btn btn-danger mt-n2">KEMBALI</button>
                 </div>
             </div>
@@ -248,8 +249,8 @@
                     cetakBtn.href = `/master/cetak-faktur-supplier/${supplierId}/${supplierName}/${dariDate}/${sampaiDate}`;
                     cetakBtn.style.display = 'inline-block';
                 } else {
+                    cetakBtn.disabled = true;
                     cetakBtn.href = '#';
-                    cetakBtn.style.display = 'none';
                 }
             }
 

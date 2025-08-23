@@ -375,7 +375,12 @@ class SupplierController extends Controller
                 ];
             });
 
+            // dd($pengembalian);
+
         // Gabungkan dan urutkan berdasarkan tanggal
+        $pengembalian = collect($pengembalian); // pastikan ini adalah Collection
+        $preorder = collect($preorder);         // pastikan ini juga Collection
+
         $dataGabungan = $pengembalian
             ->merge($preorder)
             ->sortBy('date')
