@@ -20,7 +20,7 @@
                         <div class="mx-5">
                             <div style="display: flex; flex-direction: column;">
                                 @if (in_array("1", $role))<a href="#" class="btn btn-danger disabled-not-blur mb-2">MASTER</a>@endif
-                                @if (in_array("2", $role))<a href="{{ route('master.unit.show', enkrip($unit->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">UNIT</a>@endif
+                                @if (in_array("2", $role))<a href="{{ route('master.unit.show', enkrip($unit->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">GROUP</a>@endif
                                 @if (in_array("3", $role))<a href="{{ route('master.departemen.show', enkrip($departemen->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">DEPARTEMEN</a>@endif
                                 @if (in_array("4", $role))<a href="{{ route('master.supplier.show', enkrip($supplier->id)) }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">SUPPLIER</a>@endif
                                 @if (in_array("5", $role))<a href="{{ route('master.kunjungan.index') }}" class="btn btn-light mb-2" style="color: blue; border: 1px solid black">KUNJUNGAN</a>@endif

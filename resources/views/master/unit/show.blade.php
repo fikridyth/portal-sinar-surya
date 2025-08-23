@@ -6,7 +6,7 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3" aria-current="page">MASTER UNIT</li>
+                        <li class="breadcrumb-item active h3" aria-current="page">MASTER GROUP</li>
                     </ol>
                 </nav>
             </div>
@@ -43,7 +43,7 @@
                     <div class="col-6">
                         <div class="row align-items-center">
                             <div class="col-3">
-                                <label class="form-label h6 mt-2" for="nama_sumber">UNIT</label>
+                                <label class="form-label h6 mt-2" for="nama_sumber">GROUP</label>
                             </div>
                             <div class="col-5">
                                 <input type="text" id="kode" name="kode"

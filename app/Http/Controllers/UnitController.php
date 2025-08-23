@@ -14,8 +14,8 @@ class UnitController extends Controller
      */
     public function index(UnitDataTable $dataTable)
     {
-        $title = 'Master Unit';
-        $titleHeader = "MASTER UNIT";
+        $title = 'Master Group';
+        $titleHeader = "MASTER GROUP";
 
         return $dataTable->render('master.unit.index', compact('title', 'titleHeader'));
     }
@@ -25,7 +25,7 @@ class UnitController extends Controller
      */
     public function create()
     {
-        $title = 'Create Unit';
+        $title = 'Create Group';
         $unit = new Unit();
 
         return view('master/unit/create', compact('title', 'unit'));
@@ -52,7 +52,7 @@ class UnitController extends Controller
      */
     public function show(string $id)
     {
-        $title = 'Show Unit';
+        $title = 'Show Group';
         $id = dekrip($id);
         $unit = Unit::find($id);
 
@@ -64,7 +64,7 @@ class UnitController extends Controller
      */
     public function edit(string $id)
     {
-        $title = 'Edit Unit';
+        $title = 'Edit Group';
         $id = dekrip($id);
         $unit = Unit::find($id);
 
