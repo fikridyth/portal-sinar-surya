@@ -35,8 +35,10 @@ class SupplierController extends Controller
     {
         $title = 'Create Supplier';
         $titleHeader = 'MASTER SUPPLIER';
+        $lastNomor = Supplier::max('nomor');
+        $nextNomor = str_pad(((int)$lastNomor + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('master/supplier/create', compact('title', 'titleHeader'));
+        return view('master/supplier/create', compact('title', 'titleHeader', 'nextNomor'));
     }
 
     /**

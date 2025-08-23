@@ -16,8 +16,8 @@
                                 <label class="form-label h6 mt-2" for="kode">NOMOR SUPPLIER</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="nomor" value="{{ $supplier->nomor }}"
-                                    class="form-control @error('nomor') is-invalid @enderror"
+                                <input type="text" name="nomor" readonly value="{{ $supplier->nomor }}"
+                                    class="form-control @error('nomor') is-invalid @enderror readonly-input"
                                     autocomplete="off" />
                             </div>
                         </div>
