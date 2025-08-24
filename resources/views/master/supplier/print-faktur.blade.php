@@ -97,5 +97,20 @@
         </tfoot>
     </table>
 
+    <script>
+        // Fungsi ini akan dipanggil saat halaman selesai dimuat
+        function autoPrint() {
+            window.print();
+        }
+
+        // Menjalankan fungsi autoPrint setelah halaman dimuat sepenuhnya
+        window.onload = autoPrint;
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Backspace') {
+                window.history.back();
+            }
+        });
+    </script>
 </body>
 </html>

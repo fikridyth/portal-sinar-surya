@@ -125,7 +125,7 @@
                 </div>
                 
                 <div class="text-center">
-                    <a href="#" class="btn btn-primary" style="margin-right: 15px;">CETAK BARANG</a>
+                    <a href="#" id="cetakBarangBtn" class="btn btn-primary" style="margin-right: 15px;">CETAK BARANG</a>
                     <a href="#" id="cetakBtn" class="btn btn-success" style="margin-right: 15px;">CETAK FAKTUR</a>
                     <button type="button" onclick="window.history.back()" class="btn btn-danger mt-n2">KEMBALI</button>
                 </div>
@@ -225,6 +225,7 @@
                     }
 
                     updateCetakUrl();
+                    updateCetakBarangUrl();
                     updateOrderDetail(this);
                 });
             });
@@ -251,6 +252,31 @@
                 } else {
                     cetakBtn.disabled = true;
                     cetakBtn.href = '#';
+                }
+            }
+
+            function updateCetakBarangUrl() {
+                const dariCheckbox = document.querySelector('.checkbox-dari:checked');
+                const sampaiCheckbox = document.querySelector('.checkbox-sampai:checked');
+                const cetakBarangBtn = document.getElementById('cetakBarangBtn');
+
+                if (dariCheckbox && sampaiCheckbox) {
+                    let dariDate = dariCheckbox.getAttribute('data-date');
+                    let sampaiDate = sampaiCheckbox.getAttribute('data-date');
+
+                    // Tukar jika dariDate > sampaiDate
+                    if (new Date(dariDate) > new Date(sampaiDate)) {
+                        [dariDate, sampaiDate] = [sampaiDate, dariDate];
+                    }
+
+                    const supplierId = dariCheckbox.getAttribute('data-supid');
+                    const supplierName = dariCheckbox.getAttribute('data-nama');
+
+                    cetakBarangBtn.href = `/master/cetak-barang-supplier/${supplierId}/${supplierName}/${dariDate}/${sampaiDate}`;
+                    cetakBarangBtn.style.display = 'inline-block';
+                } else {
+                    cetakBarangBtn.disabled = true;
+                    cetakBarangBtn.href = '#';
                 }
             }
 

@@ -375,8 +375,6 @@ class SupplierController extends Controller
                 ];
             });
 
-            // dd($pengembalian);
-
         // Gabungkan dan urutkan berdasarkan tanggal
         $pengembalian = collect($pengembalian); // pastikan ini adalah Collection
         $preorder = collect($preorder);         // pastikan ini juga Collection
@@ -387,5 +385,119 @@ class SupplierController extends Controller
             ->values();
 
         return view('master.supplier.print-faktur', compact('dataGabungan', 'dari', 'sampai', 'nama'));
+    }
+
+    public function cetakBarangSupplier($id, $nama, $dari, $sampai)
+    {
+        $title = 'CETAK BARANG';
+        $start = Carbon::parse($dari)->startOfDay();
+        $end = Carbon::parse($sampai)->endOfDay();
+
+        // Ambil data Pengembalian
+        $pengembalian = Pengembalian::where('id_supplier', $id)->whereNotNull('nomor_return')->where('total', '!=', 0)->whereBetween('date', [$start, $end])
+            ->get();
+
+        // Ambil data Preorder
+        $preorder = Preorder::where('id_supplier', $id)->whereNotNull('nomor_receive')->where('grand_total', '!=', 0)->whereBetween('date_first', [$start, $end])
+            ->get();
+
+        // Gabungkan dan urutkan berdasarkan tanggal
+        $pengembalian = collect($pengembalian); // pastikan ini adalah Collection
+        $preorder = collect($preorder);         // pastikan ini juga Collection
+
+        $dataGabungan = $pengembalian
+            ->merge($preorder)
+            ->sortBy('date')
+            ->values();
+
+        $allDetails = [];
+        foreach ($dataGabungan as $data) {
+            $detailList = json_decode($data->detail, true);
+            
+            if (is_array($detailList)) {
+                foreach ($detailList as $detail) {
+                    $allDetails[] = $detail;
+                }
+            }
+        }
+        
+        // Step 2: Ambil kode unik
+        $kodeList = [];
+        foreach ($allDetails as $detail) {
+            if (!in_array($detail['kode'], $kodeList)) {
+                $kodeList[] = $detail['kode'];
+            }
+        }
+        
+        // Step 3: Loop setiap kode dan ambil Product, lalu simpan ke collection
+        $products = collect(); // Inisialisasi collection kosong
+        
+        foreach ($kodeList as $kode) {
+            $product = Product::where('kode', $kode)->first();
+        
+            if ($product) {
+                // Default false
+                $product->ada_di_preorder = false;
+                $product->ada_di_pengembalian = false;
+                $nomor_dokumen = [];
+                $tanggal_dokumen = [];
+                $order_dokumen = [];
+                $price_dokumen = [];
+                $total_dokumen = [];
+        
+                // Cek apakah kode ini ada di preorder
+                foreach ($preorder as $po) {
+                    $detailList = json_decode($po->detail, true);
+                    if (is_array($detailList)) {
+                        foreach ($detailList as $detail) {
+                            if ($detail['kode'] === $kode) {
+                                $product->ada_di_preorder = true;
+                                $nomor_dokumen[] = $po->nomor_receive;
+                                $tanggal_dokumen[] = $po->date_first;
+                                $order_dokumen[] = $detail['order'];
+                                $price_dokumen[] = $detail['price'];
+                                $total_dokumen[] = $detail['field_total'];
+                                break; // keluar dari kedua foreach
+                            }
+                        }
+                    }
+                }
+        
+                // Cek apakah kode ini ada di pengembalian
+                foreach ($pengembalian as $retur) {
+                    $detailList = json_decode($retur->detail, true);
+                    if (is_array($detailList)) {
+                        foreach ($detailList as $detail) {
+                            if ($detail['kode'] === $kode) {
+                                $product->ada_di_pengembalian = true;
+                                $nomor_dokumen[] = $retur->nomor_return;
+                                $tanggal_dokumen[] = $retur->date;
+                                $order_dokumen[] = $detail['order'];
+                                $price_dokumen[] = $detail['price'];
+                                $total_dokumen[] = $detail['field_total'];
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                $data_order_return = [];
+                foreach ($nomor_dokumen as $i => $nomor) {
+                    $data_order_return[] = [
+                        'nomor_dokumen' => $nomor,
+                        'tanggal_dokumen' => $tanggal_dokumen[$i] ?? null,
+                        'order_dokumen' => $order_dokumen[$i] ?? null,
+                        'price_dokumen' => $price_dokumen[$i] ?? null,
+                        'total_dokumen' => $total_dokumen[$i] ?? null,
+                    ];
+                }
+
+                $product->data_order_return = json_encode($data_order_return);
+                $products->push($product); // Tambahkan ke collection
+            }
+        }
+        // dd($products);
+
+        return view('master.supplier.print-barang', compact('title', 'products', 'dari', 'sampai', 'nama'));
     }
 }
