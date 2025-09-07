@@ -269,9 +269,20 @@
                                 <label class="form-label h6 mt-2" for="nama_sumber">HARI</label>
                             </div>
                             <div class="col-3">
-                                <input type="text" name="hari" required value="{{ old('hari') }}"
-                                    class="form-control @error('hari') is-invalid @enderror"
-                                    autocomplete="off" />
+                                <select name="hari" required class="form-control @error('hari') is-invalid @enderror">
+                                    <option value="">-- PILIH HARI --</option>
+                                    <option value="SENIN" {{ old('hari') == 'SENIN' ? 'selected' : '' }}>SENIN</option>
+                                    <option value="SELASA" {{ old('hari') == 'SELASA' ? 'selected' : '' }}>SELASA</option>
+                                    <option value="RABU" {{ old('hari') == 'RABU' ? 'selected' : '' }}>RABU</option>
+                                    <option value="KAMIS" {{ old('hari') == 'KAMIS' ? 'selected' : '' }}>KAMIS</option>
+                                    <option value="JUMAT" {{ old('hari') == 'JUMAT' ? 'selected' : '' }}>JUMAT</option>
+                                    <option value="SABTU" {{ old('hari') == 'SABTU' ? 'selected' : '' }}>SABTU</option>
+                                    <option value="MINGGU" {{ old('hari') == 'MINGGU' ? 'selected' : '' }}>MINGGU</option>
+                                </select>
+                            
+                                @error('hari')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
