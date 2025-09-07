@@ -111,7 +111,7 @@ class PreOrderController extends Controller
             $stokMinimum = $penjualan->stok_minimum;
             $stokMaksimum = $penjualan->stok_maksimum;
 
-            $rekapJualanByRange = ProductStock::where('tipe', 'POS')->whereIn('tanggal', $tanggalRange)->get()->groupBy('kode')
+            $rekapJualanByRange = ProductStock::where('tipe', 'POS')->whereIn('tanggal', $tanggalRange)->orderBy('tanggal', 'desc')->get()->groupBy('kode')
             ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata){
                 $totalPerName = $items->sum('total'); // Hitung total
                 $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
@@ -136,6 +136,7 @@ class PreOrderController extends Controller
         // dd($products, $getAllProducts, $allProductsByName, $rekapJualanByRange);
 
         foreach ($allProductsByName as $name => $product) {
+            // dd($allProductsByName, $rekapJualanByRange);
             // Jika nama tidak ada dalam rekap penjualan, beri nilai default 0
             $salesData = $rekapJualanByRange[$name] ?? [
                 'total' => 0,
@@ -156,11 +157,11 @@ class PreOrderController extends Controller
         }
 
         // Convert $allProductsByName to an array if needed
-        $allProducts = $allProductsByName->toArray();
         // dd($allProductsByName);
+        $allProducts = $allProductsByName->toArray();
         $previousUrl = url()->previous();
         if (count($allProducts) <= 0) {
-            $allProducts = Product::where('id_supplier', $supplier1->id)->get();
+            $allProducts = Product::where('id_supplier', $supplier1->id)->limit(100)->get();
         }
         // dd(count($allProducts));
 
@@ -189,6 +190,7 @@ class PreOrderController extends Controller
 
     public function processBarang(Request $request)
     {
+        // dd($request->all());
         $title = 'List Barang';
         $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
 
@@ -196,6 +198,7 @@ class PreOrderController extends Controller
         $prevUrl = end($explodeUrl);
 
         $sortProduct = $request->name;
+        // dd($sortProduct);
         if ($sortProduct == null) {
             return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
         }

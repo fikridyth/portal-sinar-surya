@@ -47,7 +47,7 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <div style="overflow-x: auto; height: 620px; border: 1px solid #ccc;">
+                                    <div style="overflow-x: auto; height: 600px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                             <thead>
                                                 <tr>
