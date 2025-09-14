@@ -526,7 +526,7 @@ class PiutangController extends Controller
         } else {
             (int) $sequence;
         }
-        $getNomorReturn = 'RC-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        $getNomorReturn = 'PL-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
         $retur = Kredit::find($id);
         $retur->update([

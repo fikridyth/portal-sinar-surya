@@ -76,8 +76,8 @@ class KreditHistoryDataTable extends DataTable
     {
         return [
             Column::make('DT_RowIndex')->title('No.')->searchable(false)->orderable(false)->addClass('text-center'),
-            Column::make('nama')->addClass('text-center'),
-            Column::make('zona')->addClass('text-center'),
+            Column::make('nama'),
+            Column::make('zona'),
             Column::make('nomor')->addClass('text-center'),
             Column::make('total')->addClass('text-center'),
             Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
