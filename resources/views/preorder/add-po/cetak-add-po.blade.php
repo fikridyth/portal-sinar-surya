@@ -60,49 +60,39 @@
             <div class="col-4"></div>
             <div class="col-2">Halaman : 1</div>
         </div>
-        {{-- <hr class="dashed-line">
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col-5"></div>
-            <div class="col-4"></div>
-        </div>
-        <div class="row">
-            <div class="col-3">Type Of Payment : Credit</div>
-            <div class="col-5"></div>
-            <div class="col-3">Cancellation Date : {{ now()->format('d/m/Y') }}</div>
-        </div>
-        <div class="row">
-            <div class="col-3">Term Of Payment : 0</div>
-        </div> --}}
         <hr class="dashed-line">
         <hr class="dashed-line-2">
         <div class="row" style="margin-top: 10px;">
-            <div class="col-4">Nama Barang</div>
-            <div class="col-2">Stok</div>
-            <div class="col-2">Order</div>
-            <div class="col-2">Harga</div>
-            <div class="col-2">Jumlah Rp</div>
+            <div class="col-4 text-center">DESCRIPTION</div>
+            <div class="col-2 text-center">STOCK</div>
+            <div class="col-2 text-center">QTY</div>
+            <div class="col-2 text-center">PRICE</div>
+            <div class="col-2 text-center">TOTAL</div>
         </div>
         <hr class="dashed-line">
         <hr class="dashed-line-2">
+        @php
+            $totalOrder = collect($results)->sum(function ($r) {
+                return $r['details']['order'] * $r['details']['harga'];
+            });
+        @endphp
         @foreach ($results as $result)
-            {{-- @dd($result['product']['nama']) --}}
             <div class="row" style="margin-top: 10px;">
                 <div class="col-4">{{ $result['product']['nama'] . '/' . $result['product']['unit_jual'] }}</div>
-                <div class="col-2">{{ $result['details']['stok'] }}</div>
-                <div class="col-2">{{ $result['details']['order'] }}</div>
-                <div class="col-2">{{ number_format($result['details']['harga'], 2) }}</div>
-                <div class="col-2">{{ number_format(($result['details']['order'] * $result['details']['harga']), 2) }}</div>
+                <div class="col-2 text-center">{{ $result['details']['stok'] }}</div>
+                <div class="col-2 text-center">{{ $result['details']['order'] }}</div>
+                <div class="col-2 text-right">{{ number_format($result['details']['harga'], 2) }}</div>
+                <div class="col-2 text-right">{{ number_format(($result['details']['order'] * $result['details']['harga']), 2) }}</div>
             </div>
         @endforeach
         <hr class="dashed-line">
-        {{-- <div class="row">
+        <div class="row">
             <div class="col-6"></div>
             <div class="col-3">TOTAL ORDER &nbsp;====></div>
-            <div class="col-3" style="text-align: right;">{{ number_format($preorder->grand_total) }}</div>
+            <div class="col-3" style="text-align: right;">{{ number_format($totalOrder, 2) }}</div>
         </div>
         <div class="row">
-            <div class="col-6">JENIS BARANG : {{ count(json_decode($preorder->detail, true)) }}</div>
+            <div class="col-6">JENIS BARANG : {{ count($results) }}</div>
         </div>
         <hr class="dashed-line">
         <hr class="dashed-line-2">
@@ -126,7 +116,7 @@
             <div class="col-1" style="text-align: right">(</div>
             <div class="col-2">LO HARYANTO &emsp14;&emsp14;&emsp14;&emsp14;&emsp14;)</div>
             <div class="col-1"></div>
-        </div> --}}
+        </div>
         <hr class="dashed-line">
     </div>
 

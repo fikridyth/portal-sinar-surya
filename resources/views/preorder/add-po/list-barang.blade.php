@@ -103,9 +103,8 @@
                         </div>
 
                         <div class="d-flex justify-content-center mt-3">
-                            {{-- <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button> --}}
-                            <a href="{{ route('preorder.add-po.cetak', ['results' => urlencode(json_encode($results))]) }}" class="btn btn-warning">CETAK</a>
-                            <button type="submit" class="btn btn-primary mx-2">BUAT PO</button>
+                            <a href="{{ route('preorder.add-po.cetak', ['results' => urlencode(json_encode($results))]) }}" class="btn btn-warning mx-3">CETAK</a>
+                            <button type="submit" class="btn btn-primary mx-3">BUAT PO</button>
                         </div>
                     </div>
                 </form>
