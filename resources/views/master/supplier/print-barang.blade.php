@@ -33,8 +33,8 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center">NAMA BARANG</th>
-                                            <th class="text-center">QTY</th>
-                                            <th class="text-center">JUMLAH</th>
+                                            {{-- <th class="text-center">QTY</th> --}}
+                                            <th class="text-center">HARGA</th>
                                             <th class="text-center">PILIH</th>
                                         </tr>
                                     </thead>
@@ -42,7 +42,7 @@
                                         @foreach ($products as $product)
                                             <tr>
                                                 <td>{{ $product->nama }}</td>
-                                                <td class="text-end">{{ number_format($product->stok, 0) }}</td>
+                                                {{-- <td class="text-end">{{ number_format($product->stok, 0) }}</td> --}}
                                                 <td class="text-end">{{ number_format($product->harga_pokok, 0) }}</td>
                                                 <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $product->id }}" data-detail="{{ json_encode($product->data_order_return) }}"></td>
                                             </tr>
@@ -122,7 +122,7 @@
                         tbody.appendChild(row);
                     });
 
-                    totalCell.textContent = total;
+                    totalCell.textContent = number_format(total);
                 } else {
                     tbody.innerHTML = '';
                     totalCell.textContent = '0';
@@ -134,9 +134,5 @@
                 return new Intl.NumberFormat('id-ID').format(number);
             }
         });
-
-        function number_format(number) {
-            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
     </script>
 @endsection

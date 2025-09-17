@@ -4,27 +4,10 @@
     <div class="container">
         <div class="card">
             <div class="card-body mt-n2">
-                {{-- <div class="card-header" style="display: flex; justify-content: space-between;">
-                    Master Product
-                    <div>
-                        <a href="{{ route('master.product.create') }}" type="button" class="btn btn-md btn-primary">Add
-                            Product</a>
-                    </div>
-                </div> --}}
-
                 <div class="card-body mt-n4">
                     <div class="row w-100">
                         <div class="form-group col-6">
-                            {{-- <select name="supplier_id" required class="supplier-select" style="width: 300px;">
-                                <option value="{{ $supplier->id }}" selected>{{ $supplier->nama }}</option>
-                                @foreach ($suppliers as $sup)
-                                    @if ($sup->id !== $supplier->id)
-                                        <option value="{{ $sup->id }}">{{ $sup->nama }}</option>
-                                    @endif
-                                @endforeach
-                            </select> --}}
                             <h5>{{ $supplier->nama }}</h5>
-                            {{-- <a href="{{ route('master.supplier.index') }}" class="btn btn-primary" title="CARI DATA"><i class="fas fa-search"></i></a> --}}
                             <div class="d-flex align-items-center mt-2 mb-2">
                                 <form action="{{ route('master.history-preorder.index', enkrip($supplier->id)) }}" method="GET" class="d-flex align-items-center">
                                     <div class="mt-2 me-3">
@@ -48,7 +31,6 @@
                                             <th class="text-center">DOKUMEN</th>
                                             <th class="text-center">TANGGAL</th>
                                             <th class="text-center">KETERANGAN</th>
-                                            <!-- <th class="text-center">PILIH</th> -->
                                             <th class="text-center">DARI</th>
                                             <th class="text-center">SAMPAI</th>
                                         </tr>
@@ -56,7 +38,6 @@
                                     <tbody>
                                         @foreach ($getData as $data)
                                             @php
-                                                // dd(json_encode($data['detail']));
                                                 $getTipe = explode('-', $data['nomor']);
                                                 if ($getTipe[0] == 'RP') $getName = 'PEMBELIAN';
                                                 else $getName = 'RETUR';
@@ -65,7 +46,6 @@
                                                 <td class="text-center">{{ $data['nomor'] }}</td>
                                                 <td class="text-center">{{ $data['date'] }}</td>
                                                 <td>{{ $getName }}</td>
-                                                <!-- <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-id="{{ $data['nomor'] }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}"></td> -->
                                                 <td class="text-center">
                                                     <input type="checkbox" class="preorder-checkbox checkbox-dari" data-id="{{ $data['nomor'] }}" data-supid="{{ $supplier->id }}" data-date="{{ $data['date'] }}" data-nama="{{ $supplier->nama }}" data-detail="{{ json_encode($data['detail']) }}">
                                                 </td>
@@ -76,7 +56,6 @@
                                         @endforeach
                                         @foreach ($getHistory as $data)
                                             @php
-                                                // dd(json_encode($data['detail']));
                                                 $getTipe = explode('-', $data->nomor_receive);
                                                 if ($getTipe[0] == 'RP') $getName = 'PEMBELIAN';
                                                 else $getName = 'RETUR';
@@ -85,7 +64,6 @@
                                                 <td class="text-center">{{ $data->nomor_receive }}</td>
                                                 <td class="text-center">{{ $data->date }}</td>
                                                 <td>{{ $getName }}</td>
-                                                <!-- <td class="text-center"><input type="checkbox" class="history-checkbox" data-nomor="{{ $data->nomor_receive }}"></td> -->
                                                 <td class="text-center"><input type="checkbox" disabled></td>
                                                 <td class="text-center"><input type="checkbox" disabled></td>
                                             </tr>
@@ -140,14 +118,6 @@
             placeholder: '---Select Supplier---',
             allowClear: true
         });
-
-        // document.getElementById('supplier-select').addEventListener('change', function() {
-        //     const selectedId = this.value;
-        //     if (selectedId) {
-        //         // Redirect to the history-preorder route with the selected ID
-        //         window.location.href = `/history-preorder/${selectedId}`;
-        //     }
-        // });
 
         $("#periode").daterangepicker({
             locale: {
@@ -205,22 +175,14 @@
                     if (this.checked) {
                         if (isDari) {
                             document.querySelectorAll('.checkbox-dari').forEach(cb => {
-                                if (cb !== this) cb.disabled = true;
+                                if (cb !== this) cb.checked = false;
                             });
                         }
 
                         if (isSampai) {
                             document.querySelectorAll('.checkbox-sampai').forEach(cb => {
-                                if (cb !== this) cb.disabled = true;
+                                if (cb !== this) cb.checked = false;
                             });
-                        }
-                    } else {
-                        if (isDari) {
-                            document.querySelectorAll('.checkbox-dari').forEach(cb => cb.disabled = false);
-                        }
-
-                        if (isSampai) {
-                            document.querySelectorAll('.checkbox-sampai').forEach(cb => cb.disabled = false);
                         }
                     }
 
@@ -315,62 +277,5 @@
                 return new Intl.NumberFormat('id-ID').format(number);
             }
         });
-
-        document.querySelectorAll('.history-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const nomor = this.getAttribute('data-nomor');
-                const tbody = document.getElementById('orderDetailTableBody');
-                const totalCell = document.querySelector('.table tbody tr th.value-total');
-                let total = 0;
-                
-                if (this.checked) {
-                    document.querySelectorAll('.history-checkbox').forEach(otherCheckbox => {
-                        if (otherCheckbox !== this) {
-                            otherCheckbox.disabled = true;
-                            document.querySelectorAll('.preorder-checkbox').forEach(preorderCheckbox => {
-                                preorderCheckbox.disabled = true;
-                            });
-                        }
-                    });
-
-                    fetch(`/master/get-history-po?nomor=${nomor}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            tbody.innerHTML = ''; // Clear existing data
-
-                            data.dataDetail.forEach(item => {
-                                const amount = item.order * item.price; // Menghitung jumlah per item
-                                total += amount;
-
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${item.product_nama}/${item.product_unit_jual}</td>
-                                    <td class="text-center">${item.order}</td>
-                                    <td class="text-end">${number_format(item.price)}</td>
-                                    <td class="text-end">${number_format(amount)}</td>
-                                `;
-                                tbody.appendChild(row);
-                            });
-
-                            totalCell.textContent = number_format(total);
-                        })
-                        .catch(error => console.error('Error fetching data:', error));
-                } else {
-                    document.querySelectorAll('.history-checkbox').forEach(otherCheckbox => {
-                        otherCheckbox.disabled = false;
-                            document.querySelectorAll('.preorder-checkbox').forEach(preorderCheckbox => {
-                                preorderCheckbox.disabled = false;
-                            });
-                    });
-
-                    tbody.innerHTML = ''; // Clear the table if checkbox is unchecked
-                    totalCell.textContent = '0';
-                }
-            });
-        });
-
-        function number_format(number) {
-            return Number(number).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }
     </script>
 @endsection
