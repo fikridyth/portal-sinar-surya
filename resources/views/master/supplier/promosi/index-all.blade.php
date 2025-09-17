@@ -56,9 +56,22 @@
                         </table>
                     </div>
                 </div>
-
+                @if ($promosi->count())
+                    <div class="text-end fw-bold" style="font-size: 18px; margin-top: 10px; width: 75%;">
+                        TOTAL : {{ number_format($promosi->sum('total'), 0) }}
+                    </div>
+                @endif
                 <div class="d-flex justify-content-center mt-3">
-                    <button type="button" onclick="window.history.back()" class="btn btn-danger" style="min-width: 100px;" title="KEMBALI">KEMBALI</button>
+                    <a href="{{ route('master.promosi.print', request()->all()) }}"
+                        class="btn btn-primary mx-2"
+                        style="min-width: 100px;"
+                        title="PRINT">PRINT</a>
+                 
+                    <button type="button"
+                        onclick="window.history.back()"
+                        class="btn btn-danger mx-2"
+                        style="min-width: 100px;"
+                        title="KEMBALI">KEMBALI</button>
                 </div>
             </div>
         </div>

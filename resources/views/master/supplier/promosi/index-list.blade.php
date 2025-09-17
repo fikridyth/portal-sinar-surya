@@ -8,11 +8,11 @@
                     <div class="d-flex mt-n2 mb-2 mx-auto" style="width: 30%;">
                         <div class="d-flex align-items-center mb-2">
                             <div class="me-3">
-                                <label class="form-label fw-semibold mb-0" style="font-size: 18px">Periode :</label>
+                                <label class="form-label fw-semibold mb-0" style="font-size: 16px">PERIODE :</label>
                             </div>
                             <div class="flex-grow-1">
                                 <input class="form-control form-control-solid" placeholder="Pilih Periode"
-                                    autocomplete="off" id="periode" name="periode" value="{{ request('periode') }}" />
+                                    autocomplete="off" id="periode" style="margin-left: 9px;" name="periode" value="{{ request('periode') }}" />
                             </div>
                         </div>
                     </div>
@@ -20,7 +20,7 @@
                     <div class="d-flex mt-n2 mb-2 mx-auto" style="width: 30%;">
                         <div class="d-flex align-items-center mb-2">
                             <div class="me-3">
-                                <label class="form-label fw-semibold">Supplier :</label>
+                                <label class="form-label fw-semibold mb-0" style="font-size: 16px">SUPPLIER :</label>
                             </div>
                             <div class="flex-grow-1">
                                 <input type="hidden" name="supplier" id="supplierInput">

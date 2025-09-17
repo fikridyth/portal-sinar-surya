@@ -214,6 +214,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/promosi', [SupplierController::class, 'indexPromosi'])->name('promosi.index');
         Route::get('/promosi-list', [SupplierController::class, 'indexListPromosi'])->name('promosi.index-list');
         Route::get('/promosi-all', [SupplierController::class, 'indexAllPromosi'])->name('promosi.index-all');
+        Route::get('/promosi-print', [SupplierController::class, 'promosiPrint'])->name('promosi.print');
         Route::post('/promosi/store', [SupplierController::class, 'storePromosi'])->name('promosi.store');
         Route::put('/promosi/{id}/update', [SupplierController::class, 'updatePromosi'])->name('promosi.update');
         Route::delete('/promosi/{id}/destroy', [SupplierController::class, 'destroyPromosi'])->name('promosi.destroy');

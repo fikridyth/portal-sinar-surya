@@ -198,6 +198,17 @@ class SupplierController extends Controller
         return view('master/supplier/promosi/index-all', compact('title', 'titleHeader', 'promosi', 'suppliers'));
     }
 
+    public function promosiPrint(Request $request)
+    {
+        $title = 'Master Promosi';
+        $titleHeader = 'MASTER PROMOSI';
+        $promosi = Promosi::filter($request->only(['periode', 'supplier']))
+            ->whereNotNull('nomor_bukti')
+            ->get();
+
+        return view('master/supplier/promosi/print', compact('title', 'titleHeader', 'promosi'));
+    }
+
     public function storePromosi(Request $request)
     {
         // dd($request->all());
