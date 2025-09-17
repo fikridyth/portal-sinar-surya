@@ -15,34 +15,8 @@
                             </div>
                             <div class="flex-grow-1">
                                 <input class="form-control form-control-solid" placeholder="Pilih Periode"
-                                    autocomplete="off" id="periode" name="periode" value="{{ request('periode') }}" />
+                                    autocomplete="off" id="periode" readonly name="periode" value="{{ request('periode') }}" />
                             </div>
-                        </div>
-
-                        {{-- Row 2: Supplier Select --}}
-                        <div class="d-flex align-items-center mb-2">
-                            <div class="me-3">
-                                <label class="form-label fw-semibold">Supplier :</label>
-                            </div>
-                            <div class="flex-grow-1">
-                                <select name="supplier" id="supplier" class="form-select form-select-solid supplier"
-                                    data-control="select2" data-placeholder="PILIH SUPPLIER">
-                                    <option value="">-- Semua Supplier --</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}"
-                                            {{ request('supplier') == $supplier->id ? 'selected' : '' }}>
-                                            {{ strtoupper($supplier->nama) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        {{-- Row 3: Tombol Aksi --}}
-                        <div class="d-flex justify-content-center mb-3">
-                            <button type="button" class="btn btn-secondary me-2" id="clear">Clear</button>
-                            <button type="submit" class="btn btn-primary fw-semibold px-6" data-kt-menu-dismiss="true"
-                                data-kt-user-table-filter="filter" id="apply">Apply</button>
                         </div>
                     </form>
                 </div>
@@ -84,74 +58,9 @@
                 </div>
 
                 <div class="d-flex justify-content-center mt-3">
-                    <a href="{{ route('master.supplier.show', enkrip(1)) }}" class="btn btn-danger mx-2">KEMBALI</a>
+                    <button type="button" onclick="window.history.back()" class="btn btn-danger" style="min-width: 100px;" title="KEMBALI">KEMBALI</button>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@section('scripts')
-    <script>
-        $(`.supplier`).select2({
-            placeholder: '---PILIH SUPPLIER---',
-            allowClear: true
-        });
-
-        $(`.supplier`).on('select2:open', function(e) {
-            // Fokuskan kotak pencarian di dalam dropdown Select2 setelah dropdown terbuka
-            const searchBox = $(this).data('select2').dropdown.$search[0];
-            if (searchBox) {
-                searchBox.focus();
-            }
-        });
-
-        $("#periode").daterangepicker({
-            locale: {
-                cancelLabel: "Clear",
-                format: "YYYY-MM-DD",
-                monthNames: [
-                    "Januari",
-                    "Februari",
-                    "Maret",
-                    "April",
-                    "Mei",
-                    "Juni",
-                    "Juli",
-                    "Agustus",
-                    "September",
-                    "Oktober",
-                    "November",
-                    "Desember",
-                ],
-            },
-            dateLimit: {
-                days: 375
-            },
-            autoApply: true
-        });
-
-        document.getElementById("periode").value = "{{ request('periode') }}";
-
-        $("#periode").on(
-            "apply.daterangepicker",
-            function(ev, picker) {
-                $(this).val(picker.startDate.format("YYYY-MM-DD") + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-            }
-        );
-
-        $("#periode").on(
-            "cancel.daterangepicker",
-            function() {
-                $(this).val('');
-            }
-        );
-
-        var periode = document.getElementById("periode");
-        var supplier = $('#supplier'); // pakai jQuery karena Select2 pakai jQuery
-        document.getElementById("clear").addEventListener("click", function() {
-            periode.value = '';
-            supplier.val('').trigger('change'); // reset Select2
-        });
-    </script>
 @endsection

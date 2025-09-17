@@ -179,6 +179,15 @@ class SupplierController extends Controller
         return view('master/supplier/promosi/index', compact('title', 'titleHeader', 'promosi', 'suppliers', 'now'));
     }
 
+    public function indexListPromosi()
+    {
+        $title = 'Master Promosi';
+        $titleHeader = 'MASTER PROMOSI';
+        $suppliers = Supplier::all();
+
+        return view('master/supplier/promosi/index-list', compact('title', 'titleHeader', 'suppliers'));
+    }
+
     public function indexAllPromosi()
     {
         $title = 'Master Promosi';

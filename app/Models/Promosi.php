@@ -26,8 +26,23 @@ class Promosi extends Model
         });
 
         
-        $query->when($filters['supplier'] ?? false, function ($query, $supplier) {
-            $query->where('id_supplier', $supplier);
+        $query->when($filters['supplier'] ?? false, function ($query, $suppliers) {
+            if ($suppliers === 'all') {
+                // tidak filter supplier → semua supplier
+                return $query;
+            }
+    
+            // kalau JSON string, decode dulu
+            if (is_string($suppliers) && $this->isJson($suppliers)) {
+                $suppliers = json_decode($suppliers, true);
+            }
+    
+            return $query->whereIn('id_supplier', (array) $suppliers);
         });
+    }
+
+    protected function isJson($string) {
+        json_decode($string);
+        return json_last_error() === JSON_ERROR_NONE;
     }
 }

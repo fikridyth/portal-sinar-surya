@@ -510,7 +510,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-2-5 mb-2"></div>
                     <div class="col-1-5">
                         <a href="{{ route('master.promosi.index') }}" class="btn btn-success" style="width: 100%">DATA
@@ -524,7 +524,7 @@
                         <a href="{{ route('master.materai.index') }}" class="btn btn-success"
                             style="width: 100%">MATERAI</a>
                     </div>
-                </div>
+                </div> --}}
                 {{-- end border --}}
             </div>
 

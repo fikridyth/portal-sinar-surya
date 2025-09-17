@@ -495,7 +495,7 @@
                     <a href="{{ route('master.promosi.index') }}" class="btn btn-success" style="width: 100%">DATA PROMOSI</a>
                 </div>
                 <div class="col-1-5">
-                    <a href="{{ route('master.promosi.index-all') }}" class="btn btn-success" style="width: 100%">LIST PROMOSI</a>
+                    <a href="{{ route('master.promosi.index-list') }}" class="btn btn-success" style="width: 100%">LIST PROMOSI</a>
                 </div>
                 <div class="col-1-5">
                     <a href="{{ route('master.materai.index') }}" class="btn btn-success" style="width: 100%">MATERAI</a>
