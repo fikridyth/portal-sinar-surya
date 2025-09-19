@@ -20,6 +20,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use NumberFormatter;
 
@@ -1093,29 +1094,58 @@ class PembayaranController extends Controller
         $title = 'Show Cabang';
         $cabang = Cabang::find($id);
         $suppliers = Supplier::orderBy('nama', 'asc')->get();
-        $listBayar = PembayaranSecond::where('id_cabang', $id)->whereNull('id_parent')->where('tipe_giro', 'CABANG')->whereNull('is_send')->get();
+        try {
+            // Cek koneksi ke database client
+            DB::connection('mysql_second')->getPdo();
+            $listBayar = PembayaranSecond::whereNull('is_cabang')->get();
+        } catch (\PDOException $e) {
+            return Redirect::route('pembayaran.cabang-index')
+                ->with('alert.status', '99')
+                ->with('alert.message', "Ambil data dari cabang gagal! (Koneksi Jaringan)");
+        } catch (QueryException $e) {
+            return Redirect::route('pembayaran.cabang-index')
+                ->with('alert.status', '99')
+                ->with('alert.message', "Ambil data dari cabang gagal! (Gagal Query)");
+        }
         return view('pembayaran.cabang.show', compact('title', 'cabang', 'listBayar', 'suppliers'));
     }
 
     public function storeCabang(Request $request)
     {
-        $bayar = PembayaranSecond::find($request->nomor_bukti);
-        $supplier = Supplier::where('nomor', $request->data)->first();
-        Pembayaran::create([
-            'id_supplier' => $supplier->id,
-            'date' => $bayar->date,
-            'total' => $bayar->total,
-            'ppn' => $bayar->ppn,
-            'grand_total' => $bayar->grand_total,
-            'nomor_bukti' => $bayar->nomor_bukti,
-            'tipe_giro' => 'CABANG',
-            'is_hold' => 1
-        ]);
-        $bayar->update(['is_send' => 1]);
-
-        return Redirect::route('pembayaran.cabang-index')
-            ->with('alert.status', '00')
-            ->with('alert.message', "Add Pembayaran Cabang Success!");
+        try {
+            // Cek koneksi ke database client
+            DB::connection('mysql_second')->getPdo();
+            $bayar = PembayaranSecond::find($request->nomor_bukti);
+            $supplier = Supplier::where('nomor', $request->data)->first();
+            Pembayaran::create([
+                'id_supplier' => $supplier->id,
+                'date' => $bayar->date,
+                'total' => $bayar->total,
+                'ppn' => $bayar->ppn,
+                'grand_total' => $bayar->grand_total,
+                'nomor_bukti' => $bayar->nomor_bukti,
+                'tipe_giro' => 'CABANG',
+                'is_hold' => 1
+            ]);
+            $bayar->update([
+                'is_cabang' => 1,
+                'is_bayar' => 1,
+                'nomor_giro' => 1,
+                'total_with_materai' => $bayar->grand_total
+            ]);
+    
+            return Redirect::route('pembayaran.cabang-index')
+                ->with('alert.status', '00')
+                ->with('alert.message', "Add Pembayaran Cabang Success!");
+        } catch (\PDOException $e) {
+            return Redirect::route('pembayaran.cabang-index')
+                ->with('alert.status', '99')
+                ->with('alert.message', "Ambil data dari cabang gagal! (Koneksi Jaringan)");
+        } catch (QueryException $e) {
+            return Redirect::route('pembayaran.cabang-index')
+                ->with('alert.status', '99')
+                ->with('alert.message', "Ambil data dari cabang gagal! (Gagal Query)");
+        }
     }
 
     public function updateCabang(Request $request)

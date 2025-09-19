@@ -60,8 +60,9 @@
                                                     {{-- <th class="text-center">KETERANGAN</th> --}}
                                                     <th class="text-center">QTY</th>
                                                     {{-- <th class="text-center">NOMOR PO</th> --}}
-                                                    <th class="text-center">HARGA</th>
-                                                    <th class="text-center">TOTAL</th>
+                                                    <th class="text-center">HARGA JUAL</th>
+                                                    <th class="text-center">KENAIKAN</th>
+                                                    <th class="text-center">JUMLAH</th>
                                                     <th class="text-center">AKSI</th>
                                                 </tr>
                                             </thead>
@@ -84,7 +85,8 @@
                                                                 <input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input" id="price-input-{{ $no }}"
                                                                     onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')" onfocus="this.value = '';">
                                                             </td>
-                                                            <td class="text-end">{{ number_format($data['order'] * $data['price']) }}</td>
+                                                            <td class="text-end">{{ number_format($kredit->langganan->diskon) }}</td>
+                                                            <td class="text-end">{{ number_format(($data['order'] * $data['price']) + ($data['order'] * $kredit->langganan->diskon)) }}</td>
                                                             <td class="text-center">
                                                                 <a href="#" class="btn btn-danger btn-sm delete-row" data-index="{{ $index }}">HAPUS</a>
                                                                 <a href="#" class="btn btn-primary btn-sm save-row" id="save-row-{{ $no }}" hidden data-index="{{ $index }}"><i class="fa fa-save"></i></a>
@@ -116,7 +118,10 @@
                                     <label class="col-form-label">TOTAL</label>
                                 </div>
                                 <div class="col-auto mx-4">
-                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format($kredit->total ?? 0) }}" readonly>
+                                    @php
+                                        $totalOrder = array_sum(array_column(json_decode($kredit->detail, true), 'order'));
+                                    @endphp
+                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format(($kredit->total + ($totalOrder * $kredit->langganan->diskon)) ?? 0) }}" readonly>
                                 </div>
                             </div>
                         </div>

@@ -33,7 +33,7 @@ class KreditDataTable extends DataTable
                 return number_format($row->total);
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
+                return $row->created_at->format('d F Y, H:i:s');
             })
             ->rawColumns(['nama']);
     }

@@ -30,7 +30,7 @@
                                     <div class="row align-items-center">
                                         <label class="col-2 col-form-label text-end">PELANGGAN</label>
                                         <div class="col-2">
-                                            <input type="text" value="-" disabled>
+                                            <input type="text" disabled value="{{ $kredit->langganan->nama }}">
                                         </div>
                                         
                                         <label class="col-2 col-form-label text-end">KODE PELANGGAN</label>
@@ -38,10 +38,16 @@
                                             <input type="text" disabled value="{{ $kredit->langganan->nomor }}">
                                         </div>
                                         
-                                        <label class="col-2 col-form-label text-end">NAMA PELANGGAN</label>
-                                        <div class="col-2">
-                                            <input type="text" disabled value="{{ $kredit->langganan->nama }}">
-                                        </div>
+                                        <label class="col-1 col-form-label text-end"></label>
+                                        <div class="col-3">
+                                            <a 
+                                                href="{{ route('kredit.store-cabang', enkrip($kredit->id)) }}" 
+                                                class="btn btn-danger mx-2 {{ $kredit->is_piutang ? 'disabled' : '' }}"
+                                                @if($kredit->is_piutang) aria-disabled="true" onclick="return false;" @endif
+                                            >
+                                                TRANSFER ULANG PENJUALAN KREDIT
+                                            </a>
+                                        </div>                                        
                                     </div>
                                 </div>
                             </div>
@@ -58,8 +64,9 @@
                                                     <th class="text-center">NO BARANG</th>
                                                     <th class="text-center">NAMA BARANG</th>
                                                     <th class="text-center">QTY</th>
-                                                    <th class="text-center">HARGA</th>
-                                                    <th class="text-center">TOTAL</th>
+                                                    <th class="text-center">HARGA JUAL</th>
+                                                    <th class="text-center">KENAIKAN</th>
+                                                    <th class="text-center">JUMLAH</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -75,7 +82,8 @@
                                                             <td>{{ $data['nama'] . '/' . $data['unit_jual'] }}</td>
                                                             <td class="text-end">{{ $data['order'] }}</td>
                                                             <td class="text-end">{{ number_format($data['price']) }}</td>
-                                                            <td class="text-end">{{ number_format($data['order'] * $data['price']) }}</td>
+                                                            <td class="text-end">{{ number_format($kredit->langganan->diskon) }}</td>
+                                                            <td class="text-end">{{ number_format(($data['order'] * $data['price']) + ($data['order'] * $kredit->langganan->diskon)) }}</td>
                                                         </tr>
                                                     @endforeach
                                                 @else
@@ -93,13 +101,13 @@
                         <div class="d-flex justify-content-between mt-2 mb-3">
                             <div class="row">
                                 <div class="col-auto">
-                                    <a href="{{ route('kredit.cetak-history', enkrip($kredit->id)) }}" class="btn btn-warning mx-2">CETAK</a>
-                                    @if ($kredit->is_piutang)
+                                    <a href="{{ route('kredit.cetak-history', enkrip($kredit->id)) }}" class="btn btn-primary mx-2">CETAK</a>
+                                    {{-- @if ($kredit->is_piutang)
                                         <button disabled class="btn btn-primary mx-2">RETUR</button>
                                     @else 
                                         <a href="{{ route('kredit.retur', enkrip($kredit->id)) }}" class="btn btn-primary mx-2">RETUR</a>
-                                    @endif
-                                    <a href="{{ route('kredit.list-history') }}" class="btn btn-info mx-2">LIST HISTORY</a>
+                                    @endif --}}
+                                    <a href="{{ route('kredit.list-history') }}" class="btn btn-warning mx-2">LIST HISTORY</a>
                                     <a href="{{ route('index') }}" class="btn btn-danger mx-2">KEMBALI</a>
                                 </div>
                             </div>
@@ -108,7 +116,10 @@
                                     <label class="col-form-label">TOTAL</label>
                                 </div>
                                 <div class="col-auto mx-4">
-                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format($kredit->total ?? 0) }}" readonly>
+                                    @php
+                                        $totalOrder = array_sum(array_column(json_decode($kredit->detail, true), 'order'));
+                                    @endphp
+                                    <input type="text" size="15" class="readonly-input form-control text-end" value="{{ number_format(($kredit->total + ($totalOrder * $kredit->langganan->diskon)) ?? 0) }}" readonly>
                                 </div>
                             </div>
                         </div>

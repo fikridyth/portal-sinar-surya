@@ -10,10 +10,11 @@ use App\Models\Kredit;
 use App\Models\Langganan;
 use App\Models\Pembayaran;
 use App\Models\Piutang;
+use App\Models\PreorderSecond;
 use App\Models\Product;
 use App\Models\ProductStock;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 class PiutangController extends Controller
@@ -108,11 +109,11 @@ class PiutangController extends Controller
                 $dataKredit = collect([]);
             }
             
-            $dataKredit2 = Kredit::where('id_langganan', $id)->whereNotNull('nomor')->whereNull('is_piutang')->get();
+            $dataKredit2 = Kredit::where('id_langganan', $id)->whereNotNull('nomor')->whereNull('id_langganan')->get();
             $dataKredit = $dataKredit->merge($dataKredit2);
             // dd($dataKredit);
         } else {
-            $dataKredit = Kredit::where('id_langganan', $id)->whereNotNull('nomor')->whereNull('is_piutang')->get();
+            $dataKredit = Kredit::where('id_langganan', $id)->whereNotNull('nomor')->whereNull('id_langganan')->get();
         }
         
         return view('pembayaran.piutang.show',compact('title', 'titleHeader', 'listTunai', 'listBayar', 'getNomor', 'langganans', 'pelanggan', 'dataKredit'));
@@ -526,7 +527,7 @@ class PiutangController extends Controller
         } else {
             (int) $sequence;
         }
-        $getNomorReturn = 'PL-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
+        $getNomorReturn = 'SJ-' . $dateNow . '-' . str_pad($sequence, 4, 0, STR_PAD_LEFT);
 
         $retur = Kredit::find($id);
         $retur->update([
@@ -588,5 +589,54 @@ class PiutangController extends Controller
         $kredit->update(['nomor' => null]);
         
         return Redirect::route('index')->with('alert.status', '00')->with('alert.message', "Sukses Retur Data Kredit!");
+    }
+    
+    public function storeCabang($id)
+    {
+        $id = dekrip($id);
+        $kredit = Kredit::find($id);
+        $details = collect(json_decode($kredit->detail, true))
+            ->map(function ($item) use ($kredit) {
+                // hapus field yang tidak dipakai
+                unset($item['label'], $item['kode_alternatif']);
+
+                // tambahkan old_price
+                $item['price'] = $item['price'] + $kredit->langganan->diskon;
+                $item['field_total'] = $item['order'] * $item['price'];
+                $item['old_price'] = $item['price'];
+
+                return $item;
+            })
+            ->toArray();
+        try {
+            // Cek koneksi ke database client
+            DB::connection('mysql_second')->getPdo();
+            // dd($kredit);
+            $totalOrder = array_sum(array_column(json_decode($kredit->detail, true), 'order'));
+            $data = [
+                'nomor_po' => $kredit->nomor,
+                'id_supplier' => 173,
+                'detail' => json_encode($details),
+                'date_first' => $kredit->date,
+                'date_last' => \Carbon\Carbon::parse($kredit->date)->addWeeks(2)->format('Y-m-d'),
+                'total_harga' => (($totalOrder * $kredit->langganan->diskon)) + $kredit->total,
+                'grand_total' => (($totalOrder * $kredit->langganan->diskon)) + $kredit->total,
+                'is_cetak' => 1,
+                'receive_type' => 'A',
+                'is_cancel' => 1
+            ];
+            // dd($data);
+            PreorderSecond::create($data);
+            $kredit->update(['is_piutang' => 1]);
+            return Redirect::route('index')->with('alert.status', '00')->with('alert.message', "Sukses Store Data Ke Cabang!");
+        } catch (\PDOException $e) {
+            return Redirect::back()
+                ->with('alert.status', '99')
+                ->with('alert.message', "Kirim data ke cabang gagal! (Koneksi Jaringan)");
+        } catch (QueryException $e) {
+            return Redirect::back()
+                ->with('alert.status', '99')
+                ->with('alert.message', "Kirim data ke cabang gagal! (Gagal Query)");
+        }
     }
 }

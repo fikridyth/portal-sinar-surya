@@ -954,8 +954,8 @@ class PreOrderController extends Controller
         $dateNow = now()->format('ym');
         $getLastPo = Preorder::max("nomor_po");
         if ($getLastPo) $explodeLastPo = explode('-', $getLastPo);
-        if ($explodeLastPo[1] == $dateNow) {
-            $sequence = (int) $explodeLastPo[2] + 1;
+        if (($explodeLastPo[1] ?? $dateNow) == $dateNow) {
+            $sequence = (int) ($explodeLastPo[2] ?? 0) + 1;
         } else {
             (int) $sequence;
         }
@@ -1901,6 +1901,10 @@ class PreOrderController extends Controller
         $supplierId = dekrip($request->supplier_id);
         $preorder = Preorder::find($request->preorder_data);
         $preorder->update([
+            'id_supplier' => $supplierId
+        ]);
+        $hutang = Hutang::where('nomor_po', $preorder->nomor_po)->first();
+        $hutang->update([
             'id_supplier' => $supplierId
         ]);
 

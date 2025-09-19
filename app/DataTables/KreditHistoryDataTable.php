@@ -30,7 +30,8 @@ class KreditHistoryDataTable extends DataTable
                 return $row->langganan->zona;
             })
             ->editColumn('total', function ($row) {
-                return number_format($row->total);
+                $totalOrder = array_sum(array_column(json_decode($row->detail, true), 'order'));
+                return number_format($row->total + ($totalOrder * $row->langganan->diskon));
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
