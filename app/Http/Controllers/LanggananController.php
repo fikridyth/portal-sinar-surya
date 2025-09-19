@@ -51,6 +51,7 @@ class LanggananController extends Controller
             'telepon' => $request->telepon,
             'fax' => $request->fax,
             'zona' => $request->zona,
+            'diskon' => $request->diskon,
         ];
         // dd($data);
 
@@ -102,6 +103,7 @@ class LanggananController extends Controller
             'telepon' => $request->telepon,
             'fax' => $request->fax,
             'zona' => $request->zona,
+            'diskon' => $request->diskon,
         ];
 
         $langganan->update($data);

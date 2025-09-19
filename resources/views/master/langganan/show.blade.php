@@ -174,6 +174,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <label class="form-label h6 mt-2" for="nama_sumber">DISKON</label>
+                            </div>
+                            <div class="col-5">
+                                <input type="text" id="kode" name="kode"
+                                    value="{{ old('kode', number_format($langganan->diskon)) }}"
+                                    class="form-control readonly-input @error('kode') is-invalid @enderror"
+                                    autocomplete="off" readonly />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

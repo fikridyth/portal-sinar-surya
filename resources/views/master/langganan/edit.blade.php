@@ -183,6 +183,23 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="row align-items-center">
+                            <div class="col-3">
+                                <label class="form-label h6 mt-2" for="diskon">DISKON</label>
+                            </div>
+                            <div class="col-5">
+                                <input type="text" id="diskon" name="diskon" value="{{ $langganan->diskon }}"
+                                    class="form-control @error('diskon') is-invalid @enderror"
+                                    autocomplete="off" />
+                                @error('diskon')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
