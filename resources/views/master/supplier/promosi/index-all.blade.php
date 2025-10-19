@@ -67,11 +67,17 @@
                         style="min-width: 100px;"
                         title="PRINT">PRINT</a>
                  
-                    <button type="button"
+                    {{-- <button type="button"
                         onclick="window.history.back()"
                         class="btn btn-danger mx-2"
                         style="min-width: 100px;"
-                        title="KEMBALI">KEMBALI</button>
+                        title="KEMBALI">KEMBALI</button> --}}
+
+                        
+                    <a href="{{ route('master.promosi.index-list') }}"
+                        class="btn btn-danger mx-2"
+                        style="min-width: 100px;"
+                        title="KEMBALI">KEMBALI</a>
                 </div>
             </div>
         </div>

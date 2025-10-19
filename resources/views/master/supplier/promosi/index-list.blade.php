@@ -11,7 +11,7 @@
                                 <label class="form-label fw-semibold mb-0" style="font-size: 16px">PERIODE :</label>
                             </div>
                             <div class="flex-grow-1">
-                                <input class="form-control form-control-solid" placeholder="Pilih Periode"
+                                <input class="form-control form-control-solid" placeholder="PILIH PERIODE"
                                     autocomplete="off" id="periode" style="margin-left: 9px;" name="periode" value="{{ request('periode') }}" />
                             </div>
                         </div>
@@ -29,6 +29,17 @@
                         </div>
                     </div>
 
+                    <div class="d-flex mt-n1 mb-2 mx-auto" style="width: 30%;">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="me-3">
+                                <label class="form-label fw-semibold mb-0" style="font-size: 16px">CARI :</label>
+                            </div>
+                            <div class="flex-grow-1" style="margin-left: 35px;">
+                                <input type="text" id="searchInput" class="form-control" placeholder="CARI SUPPLIER..." />
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-center mt-2">
                         <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
                             <table id="promoTable" class="table table-bordered" style="width: 100%; table-layout: auto;">
@@ -39,17 +50,23 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($suppliers as $supplier)
+                                    @if ($suppliers->count())
+                                        @foreach ($suppliers as $supplier)
+                                            <tr class="supplier-row">
+                                                <td class="text-center">{{ $supplier->nama }}</td>
+                                                <td class="text-center">
+                                                    <input type="checkbox" 
+                                                        name="supplier[]" 
+                                                        value="{{ $supplier->id }}" 
+                                                        class="supplier-checkbox">
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
                                         <tr>
-                                            <td class="text-center">{{ $supplier->nama }}</td>
-                                            <td class="text-center">
-                                                <input type="checkbox" 
-                                                    name="supplier[]" 
-                                                    value="{{ $supplier->id }}" 
-                                                    class="supplier-checkbox">
-                                            </td>
+                                            <td class="text-center fw-bold" colspan="2">TIDAK ADA DATA</td>
                                         </tr>
-                                    @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -107,6 +124,22 @@
                 $(this).val('');
             }
         );
+
+        // Real-time search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchQuery = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.supplier-row');
+            
+            rows.forEach(row => {
+                const supplierName = row.querySelector('td').textContent.toLowerCase();
+                
+                if (supplierName.includes(searchQuery)) {
+                    row.style.display = ''; // Show the row if it matches
+                } else {
+                    row.style.display = 'none'; // Hide the row if it doesn't match
+                }
+            });
+        });
 
         document.getElementById('checkAll').addEventListener('click', function(e) {
             e.preventDefault();
