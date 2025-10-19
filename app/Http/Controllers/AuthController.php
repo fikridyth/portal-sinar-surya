@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -18,6 +19,15 @@ class AuthController extends Controller
 
     public function loginSubmit(Request $request)
     {
+        // Jalankan pengecekan waktu CMOS
+        $exitCode = Artisan::call('check:rtc-time');
+        // dd($exitCode);
+
+        // Jika waktu CMOS tidak valid (exitCode tidak 0), hentikan eksekusi dan beri respons error
+        if ($exitCode !== 0) {
+            return redirect()->back()->withInput()->withErrors(["The CMOS time is invalid!"]);
+        }
+
         $request->validate([
             'username' => 'required',
             'password' => 'required',
