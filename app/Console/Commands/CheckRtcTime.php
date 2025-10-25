@@ -28,11 +28,11 @@ class CheckRtcTime extends Command
     {
         // Mendapatkan waktu dari RTC (CMOS)
         $rtcTime = $this->getRtcTime();
-
+        
         // Mendapatkan waktu server
         $serverTime = now();
         // dd($serverTime->timestamp, $rtcTime);
-
+        
         // Menghitung selisih waktu dalam detik
         $timeDifference = abs($serverTime->timestamp - $rtcTime);
 
@@ -50,7 +50,7 @@ class CheckRtcTime extends Command
     private function getRtcTime()
     {
         // Menjalankan perintah w32tm untuk mendapatkan status sinkronisasi waktu
-        shell_exec('w32tm /resync');
+        shell_exec('runas /user:Administrator "w32tm /resync /force"');
         $output = shell_exec('w32tm /query /status');
 
         // Memeriksa apakah status sinkronisasi waktu adalah 'not synchronized'
@@ -92,6 +92,9 @@ class CheckRtcTime extends Command
     {
         // Menggunakan format untuk parse tanggal dan waktu
         try {
+            if (strpos($dateString, '.') !== false) {
+                $dateString = str_replace('.', ':', $dateString);
+            }
             $carbonDate = Carbon::createFromFormat('d/m/Y H:i:s', $dateString);
 
             // Mengembalikan timestamp
