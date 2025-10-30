@@ -21,13 +21,6 @@ class AuthController extends Controller
     {
         // Jalankan pengecekan waktu CMOS
         $exitCode = Artisan::call('check:rtc-time');
-        // dd($exitCode);
-
-        // Jika waktu CMOS tidak valid (exitCode tidak 0), hentikan eksekusi dan beri respons error
-        if ($exitCode !== 0) {
-            return redirect()->back()->withInput()->withErrors(["The CMOS time is invalid!"]);
-        }
-
         $request->validate([
             'username' => 'required',
             'password' => 'required',
