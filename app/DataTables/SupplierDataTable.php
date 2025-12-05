@@ -23,9 +23,6 @@ class SupplierDataTable extends DataTable
     {
         return (new EloquentDataTable($query->orderBy('id', 'asc')))
         ->addIndexColumn()
-        ->editColumn('created_at', function ($row) {
-            return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');
-        })
         ->editColumn('nama', function ($row) {
             return '<a href="' . route('master.supplier.show', enkrip($row->id)) . '">' . $row->nama . '</a>';
         })
@@ -88,6 +85,7 @@ class SupplierDataTable extends DataTable
             Column::make('nomor')->addClass('text-center'),
             Column::make('alamat1')->addClass('text-center'),
             Column::make('alamat2')->addClass('text-center'),
+            Column::make('alamat3')->addClass('text-center'),
             // Column::make('created_at')->title('Tanggal Dibuat')->addClass('text-center'),
             // Column::computed('action')
             //     ->exportable(false)
