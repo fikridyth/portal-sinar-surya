@@ -36,10 +36,12 @@ class HargaController extends Controller
         // dd($request->all());
         $hargaLama = $request->input('harga_lama');
         $hargaPokok = $request->input('harga_pokok');
-        // $hargaJual = $request->input('harga_jual');
+        $hargaPokokOld = $request->input('harga_pokok_read');
         $profit = $request->input('profit');
+        $hargaJual = $request->input('harga_jual');
         $hargaSementara = $request->input('harga_sementara');
         $selectedIds = $request->input('selected_ids');
+        // dd($hargaPokok);
 
         $combined = [];
         if (isset($selectedIds)) {
@@ -48,8 +50,9 @@ class HargaController extends Controller
                     'id' => $id,
                     'harga_lama' => $hargaLama[$id] ?? null,
                     'harga_pokok' => $hargaPokok[$id] ?? null,
-                    // 'harga_jual' => $hargaJual[$id] ?? null,
+                    'harga_pokok_old' => $hargaPokokOld[$id] ?? null,
                     'profit' => $profit[$id] ?? null,
+                    'harga_jual' => $hargaJual[$id] ?? null,
                     'harga_sementara' => $hargaSementara[$id] ?? null,
                 ];
             }
@@ -67,19 +70,22 @@ class HargaController extends Controller
             $product = Product::find($data['id']);
             if ($product) {
                 if ($data['harga_sementara'] && $data['harga_pokok']) {
+                    // dd($data);
                     $product->update([
-                        // 'harga_lama' => $data['harga_lama'],
+                        'harga_sementara' => $data['harga_sementara'],
                         'harga_jual' => $data['harga_sementara'],
                         'harga_pokok' => $data['harga_pokok'],
+                        'harga_lama' => $data['harga_pokok_old'],
                         'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                         'is_transfer' => null
                     ]);
                     $productPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
                     if ($productPos) {
                         $productPos->update([
-                            // 'harga_lama' => $data['harga_lama'],
+                            'harga_sementara' => $data['harga_sementara'],
                             'harga_jual' => $data['harga_sementara'],
                             'harga_pokok' => $data['harga_pokok'],
+                            'harga_lama' => $data['harga_pokok_old'],
                             'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                         ]);
                     }
@@ -120,14 +126,14 @@ class HargaController extends Controller
                 }
 
                 // update data dalam kelompok product tersebut
-                $getKelompok = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->whereNot('id', $product->id)->get();
-                $getMarkPokok = round((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2);
-                // dd($getKelompok, $data['harga_lama'], $data['harga_pokok'], $data['harga_jual'], $getMarkPokok, $getMarkJual);
-                foreach ($getKelompok as $kelompok) {
-                    $kelompok->update([
-                        'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0)
-                    ]);
-                }
+                // $getKelompok = Product::where('kode', $product->kode_sumber)->orWhere('kode_sumber', $product->kode_sumber)->whereNot('id', $product->id)->get();
+                // $getMarkPokok = round((($data['harga_pokok'] - $data['harga_lama']) / $data['harga_lama']) * 100, 2);
+                // // dd($getKelompok, $data['harga_lama'], $data['harga_pokok'], $data['harga_jual'], $getMarkPokok, $getMarkJual);
+                // foreach ($getKelompok as $kelompok) {
+                //     $kelompok->update([
+                //         'harga_pokok' => (int)round((($kelompok->harga_pokok * $getMarkPokok) / 100) + $kelompok->harga_pokok,0)
+                //     ]);
+                // }
             }
         }
 
@@ -157,42 +163,53 @@ class HargaController extends Controller
         $loop = $request->input('loop');
         $idProduct = $request->input('data_id');
         $hargaLama = $request->input('harga_lama');
+        $hargaPokokOld = $request->input('harga_pokok_read');
         $hargaPokok = $request->input('harga_pokok');
         $hargaJual = $request->input('harga_jual');
         $profit = $request->input('profit');
         $hargaSementara = $request->input('harga_sementara');
+        $selectedIds = $request->input('selected_ids');
         // dd($loop);
 
         $combined = [];
-        foreach ($loop as $id) {
-            $combined[] = [
-                'id' => $id,
-                'id_product' => $idProduct[$id] ?? null,
-                'harga_lama' => $hargaLama[$id] ?? null,
-                'harga_pokok' => $hargaPokok[$id] ?? null,
-                'harga_jual' => $hargaJual[$id] ?? null,
-                'profit' => $profit[$id] ?? null,
-                'harga_sementara' => $hargaSementara[$id] ?? null,
-            ];
+        if (isset($selectedIds)) {
+            foreach ($profit as $id => $value) {
+                $combined[] = [
+                    'id' => $id,
+                    'harga_lama' => $hargaLama[$id] ?? null,
+                    'harga_pokok' => $hargaPokok[$id] ?? null,
+                    'harga_pokok_old' => $hargaPokokOld[$id] ?? null,
+                    'profit' => $profit[$id] ?? null,
+                    'harga_jual' => $hargaJual[$id] ?? null,
+                    'harga_sementara' => $hargaSementara[$id] ?? null,
+                ];
+            }
+        } else {
+            return Redirect::route('master.harga-sementara.show', enkrip($request->id_file))
+                ->with('alert.status', '99')
+                ->with('alert.message', "DATA PERLU DI ISI!");
         }
+        dd($combined);
 
         foreach ($combined as $data) {
             $product = Product::find($data['id_product']);
             if ($product) {
                 if ($data['harga_sementara'] && $data['harga_pokok']) {
                     $product->update([
-                        // 'harga_lama' => $data['harga_lama'],
+                        'harga_sementara' => $data['harga_sementara'],
                         'harga_jual' => $data['harga_sementara'],
                         'harga_pokok' => $data['harga_pokok'],
+                        'harga_lama' => $data['harga_pokok_old'],
                         'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                         'is_transfer' => null
                     ]);
                     $productPos = ProductPos::where('nama', $product->nama)->where('unit_jual', $product->unit_jual)->first();
                     if ($productPos) {
                         $productPos->update([
-                            // 'harga_lama' => $data['harga_lama'],
+                            'harga_sementara' => $data['harga_sementara'],
                             'harga_jual' => $data['harga_sementara'],
                             'harga_pokok' => $data['harga_pokok'],
+                            'harga_lama' => $data['harga_pokok_old'],
                             'profit' => number_format((($data['harga_sementara'] - $data['harga_pokok']) / $data['harga_pokok']) * 100, 2) ?? 0.00,
                         ]);
                     }
@@ -259,10 +276,12 @@ class HargaController extends Controller
         $id = dekrip($id);
         $title = "Show Master Harga";
         $titleHeader = 'DATA HARGA SEMENTARA';
+        // dd($id);
         $hargaSementara = HargaSementara::find($id);
         $listProduct = HargaSementara::where('nomor', $hargaSementara->nomor)->get();
+        $owner = User::where('JABATAN', 'OWNER')->pluck('show_password')->first();
         // dd($listProduct);
 
-        return view('master.harga.show-sementara', compact('title', 'titleHeader', 'hargaSementara', 'listProduct'));
+        return view('master.harga.show-sementara', compact('title', 'titleHeader', 'hargaSementara', 'listProduct', 'owner'));
     }
 }

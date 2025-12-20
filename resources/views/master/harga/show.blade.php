@@ -113,13 +113,18 @@
                                             @php
                                                 $productHarga = App\Models\HargaSementara::where('id_product', $product->id)->orderBy('created_at', 'desc')->first();
                                                 $no = $index + 1;
+                                                $productUnitJual = (int) str_replace('P', '', $product->unit_jual);
+                                                $productUnitBeli = (int) str_replace('P', '', $product->unit_beli);
                                             @endphp
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
                                                 <input type="number" hidden id="harga_lama_{{ $no }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;">
+                                                <input type="number" hidden id="konversi_{{ $no }}" name="konversi[{{ $product->id }}]" required value="{{ $product->konversi }}" style="width: 100px;">
+                                                <input type="number" hidden id="unit_jual_{{ $no }}" name="unit_jual[{{ $product->id }}]" required value="{{ (int) str_replace('P', '', $product->unit_jual) }}" style="width: 100px;">
+                                                <input type="number" hidden id="harga_pokok_read{{ $no }}" name="harga_pokok_read[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;">
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
-                                                <td class="text-end">{{ number_format($productHarga->harga_lama ?? $product->harga_lama) }}</td>
+                                                <td class="text-end">{{ $product->harga_lama }}</td>
                                                 <td>
                                                     <input 
                                                         type="number" 
@@ -132,6 +137,9 @@
                                                         data-id="{{ $product->id }}"
                                                         data-index="{{ $no }}"
                                                         data-nama="{{ $product->nama }}" 
+                                                        data-konversi="{{ $product->konversi }}" 
+                                                        data-unit_jual="{{ $productUnitJual }}" 
+                                                        data-unit_beli="{{ $productUnitBeli }}" 
                                                         data-harga-lama="{{ $product->harga_pokok }}"
                                                         onblur="handleBlurPokok({{ $no }}, '{{ $product->harga_pokok }}')"  
                                                         oninput="updateProfitPokok({{ $no }}, {{ $product->id }})" 
@@ -167,6 +175,13 @@
                                                 </td>
                                                 <td><input type="checkbox" style="pointer-events:none;" id="checkbox_select_{{ $no }}" name="selected_ids[{{ $product->id }}]" value="{{ $product->id }}" class="product-checkbox" data-nama="{{ $product->nama }}"></td>
                                             </tr>
+                                            {{-- pass modal --}}
+                                            <div id="passwordModal" class="modal-password" style="display:none;">
+                                                <div class="modal-content-password">
+                                                    <h5>MASUKAN PASSWORD</h5>
+                                                    <input type="password" id="passwordInput" onkeydown="handleValidatePassword(event)" oninput="this.value = this.value.toUpperCase()"/>
+                                                </div>
+                                            </div>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -189,43 +204,10 @@
             </div>
         </div>
     </div>
-    
-    {{-- pass modal --}}
-    <div id="passwordModal" class="modal-password" style="display:none;">
-        <div class="modal-content-password">
-            <h5>MASUKAN PASSWORD</h5>
-            <input type="password" id="passwordInput" onkeydown="handleValidatePassword(event)" oninput="this.value = this.value.toUpperCase()"/>
-        </div>
-    </div>
 @endsection
 
 @section('scripts')
     <script>
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     const inputs = document.querySelectorAll('input[data-nama]');
-
-        //     inputs.forEach(input => {
-        //         input.addEventListener('input', function () {
-        //             const nama = this.dataset.nama;
-        //             const hargaLamaAsal = parseFloat(this.dataset.hargaLama || 1);
-        //             const inputBaru = parseFloat(this.value || 0);
-
-        //             if (hargaLamaAsal === 0) return; // hindari divide by zero
-
-        //             const rasio = inputBaru / hargaLamaAsal;
-
-        //             // Update semua input lain dengan nama produk sama
-        //             inputs.forEach(target => {
-        //                 if (target.dataset.nama === nama && target !== this) {
-        //                     const hargaLamaTarget = parseFloat(target.dataset.hargaLama || 1);
-        //                     const hasilBaru = Math.ceil(hargaLamaTarget * rasio);
-        //                     target.value = hasilBaru;
-        //                 }
-        //             });
-        //         });
-        //     });
-        // });
-        
         $(document).ready(function() {
             $('#supplierSelect').change(function() {
                 var supplierId = $(this).val();
@@ -267,7 +249,7 @@
                         tempInputData.originalValue = originalValue;
 
                         // Buka modal
-                        showPasswordModal();
+                        showPasswordModal(no);
                         return;
                     }
 
@@ -297,7 +279,7 @@
                     tempInputData.originalValue = originalValue;
 
                     // Buka modal
-                    showPasswordModal();
+                    showPasswordModal(no);
                     return;
                 }
 
@@ -309,16 +291,23 @@
             }
         }
 
+        let currentNo = null;
         function handleValidatePassword() {
             if (event.key === 'Enter') {
                 validatePassword();
             }
         }
 
-        function showPasswordModal() {
-            var modal = document.getElementById('passwordModal');
+        function showPasswordModal(no) {
+            currentNo = no; // ⬅️ SIMPAN no
+
+            const modal = document.getElementById('passwordModal');
             modal.style.display = 'block';
-            document.getElementById('passwordInput').focus();
+
+            const input = document.getElementById('passwordInput');
+            input.value = '';
+            input.focus();
+
             modalActive = true;
         }
 
@@ -329,9 +318,15 @@
             // Validasi password
             if (password === ownerPassword) {
                 tempInputData.inputField.value = tempInputData.newValue;
+                const target = document.getElementById('profit_' + currentNo);
+                if (target) {
+                    target.focus();
+                    target.select();
+                }
             } else {
                 tempInputData.inputField.value = tempInputData.originalValue;
                 alert('Password salah!');
+                location.reload();
             }
 
             resetModal();
@@ -439,45 +434,35 @@
                 inputField.value = hargaSementara.toFixed(0);
             }
         }
+        
+        function updateHargaSementara(no) {
+            const hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+            const profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
 
-        function updateHargaSementara2(no) {
-            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
-            var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + no).value) || 0;
+            if (hargaPokok <= 0) return;
 
-            // Menghitung harga_sementara
-            var hitung = hargaSementara - hargaPokok;
-            var hargaSementara = (hitung / hargaPokok) * 100;
+            // harga_jual = harga_pokok + (harga_pokok * profit / 100)
+            const hargaJual = hargaPokok + (hargaPokok * profit / 100);
 
-            // Memperbarui nilai harga_sementara berdasarkan indeks
-            document.getElementById('profit_' + no).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
+            document.getElementById('harga_sementara_' + no).value = Math.round(hargaJual / 50) * 50;
         }
 
-        // function updateProfitPokok(index, id) {
-        //     var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
-        //     var hargaLama = parseFloat(document.getElementById('harga_lama_' + index).value) || 0;
+        function updateHargaSementara2(no) {
+            const hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+            const hargaJual = parseFloat(document.getElementById('harga_sementara_' + no).value) || 0;
 
-        //     // Menghindari pembagian dengan nol
-        //     if (hargaLama === 0) {
-        //         document.getElementById('profit_pokok_' + index).innerHTML = '0.00';
-        //         return;
-        //     }
+            if (hargaPokok <= 0) return;
 
-        //     // Menghitung persentase profit
-        //     var profitPersen = ((hargaPokok - hargaLama) / hargaLama) * 100;
+            // profit (%) = ((harga_jual - harga_pokok) / harga_pokok) * 100
+            const profit = ((hargaJual - hargaPokok) / hargaPokok) * 100;
 
-        //     // Update tampilan profit
-        //     document.getElementById('profit_pokok_' + index).innerHTML = profitPersen.toFixed(2);
-
-        //     // Jika ingin juga menghitung harga_sementara, pastikan rumusnya sesuai
-        //     var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
-        //     var hargaSementara = hargaPokok + (hargaPokok * profit / 100);
-
-        //     // Update input harga_sementara
-        //     document.getElementById('harga_sementara_' + index).value = Math.ceil(hargaSementara);
-        // }
+            document.getElementById('profit_' + no).value = profit.toFixed(2);
+        }
 
         function updateProfitPokok(index, id) {
             var inputCurrent = document.getElementById('harga_pokok_' + index);
+            var inputKonversiCurrent = document.getElementById('konversi_' + index);
+            var inputUnitJualCurrent = document.getElementById('unit_jual_' + index);
             var hargaPokok = parseFloat(inputCurrent.value) || 0;
             var hargaLama = parseFloat(document.getElementById('harga_lama_' + index).value) || 0;
 
@@ -493,7 +478,7 @@
             // Hitung harga sementara
             var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
             var hargaSementara = hargaPokok + (hargaPokok * profit / 100);
-            document.getElementById('harga_sementara_' + index).value = Math.ceil(hargaSementara);
+            document.getElementById('harga_sementara_' + index).value = Math.round(Math.ceil(hargaSementara) / 50) * 50;
 
             // Ambil nama produk dari atribut data-nama pada input harga_pokok
             var namaProduk = inputCurrent.dataset.nama;
@@ -505,7 +490,21 @@
             inputs.forEach(function(targetInput) {
                 if (targetInput !== inputCurrent) {
                     var hargaLamaTarget = parseFloat(targetInput.dataset.hargaLama || 1);
-                    var hasilBaru = Math.ceil(hargaLamaTarget * rasio);
+                    var unitJualTarget = parseFloat(targetInput.dataset.unit_jual || 1);
+                    var unitBeliTarget = parseFloat(targetInput.dataset.unit_beli || 1);
+                    var unitKonversiTarget = parseFloat(targetInput.dataset.konversi || 1);
+                    var unitKonversiCurrent = parseFloat(inputKonversiCurrent.value || 1);
+                    var unitUnitJualCurrent = parseFloat(inputUnitJualCurrent.value || 1);
+
+                    if (unitJualTarget <= 1) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else if (unitUnitJualCurrent < unitJualTarget) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else if (unitJualTarget < unitUnitJualCurrent) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else {
+                        hasilBaru = Math.ceil(hargaPokok / (unitBeliTarget / unitJualTarget));
+                    }
                     targetInput.value = hasilBaru;
 
                     // Index target input diambil dari id, misal "harga_pokok_3" → 3
@@ -521,7 +520,7 @@
 
                     var profitTarget = parseFloat(document.getElementById('profit_' + targetIndex).value) || 0;
                     var hargaSementaraTarget = hasilBaru + (hasilBaru * profitTarget / 100);
-                    document.getElementById('harga_sementara_' + targetIndex).value = Math.ceil(hargaSementaraTarget);
+                    document.getElementById('harga_sementara_' + targetIndex).value = Math.round(Math.ceil(hargaSementaraTarget) / 50) * 50;
                 }
             });
         }
@@ -556,12 +555,14 @@
                     const hiddenInput3 = document.querySelector(`input[name="harga_sementara[${checkbox.value}]"]`);
                     const hiddenInput4 = document.querySelector(`input[name="harga_pokok[${checkbox.value}]"]`);
                     const hiddenInput5 = document.querySelector(`input[name="harga_lama[${checkbox.value}]"]`);
+                    const hiddenInput6 = document.querySelector(`input[name="harga_pokok_read[${checkbox.value}]"]`);
                     if (hiddenInput) {
                         hiddenInput.remove();
                         hiddenInput2.remove();
                         hiddenInput3.remove();
                         hiddenInput4.remove();
                         hiddenInput5.remove();
+                        hiddenInput6.remove();
                     }
                 }
             });

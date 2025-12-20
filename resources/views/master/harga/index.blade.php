@@ -121,5 +121,11 @@
             placeholder: '---Select Supplier---',
             allowClear: true
         });
+
+        $(document).on('select2:open', function () {
+            setTimeout(function () {
+                document.querySelector('.select2-search__field').focus();
+            }, 0);
+        });
     </script>
 @endsection

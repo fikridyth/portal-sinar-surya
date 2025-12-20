@@ -74,30 +74,83 @@
                                             <th class="text-center">HARGA JUAL</th>
                                             <th class="text-center">MARK UP</th>
                                             <th class="text-center">HARGA JUAL BARU</th>
+                                            <th class="text-center">V</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($listProduct as $index => $product)
+                                            @php
+                                                $productHarga = App\Models\HargaSementara::where('id_product', $product->id)->orderBy('created_at', 'desc')->first();
+                                                $no = $index + 1;
+                                                $productUnitJual = (int) str_replace('P', '', $product->unit_jual);
+                                                $productUnitBeli = (int) str_replace('P', '', $product->unit_beli);
+                                            @endphp
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
-                                                <input type="hidden" name="loop[{{ $product->id }}]" value="{{ $product->id }}">
-                                                <input type="hidden" name="data_id[{{ $product->id }}]" value="{{ $product->id_product }}">
-                                                <input type="hidden" id="harga_lama_{{ $index }}" name="harga_lama[{{ $product->id }}]" value="{{ $product->harga_lama }}">
+                                                <input type="hidden" name="id_file" value="{{ $hargaSementara->id }}">
+                                                <input type="number" hidden id="harga_lama_{{ $no }}" name="harga_lama[{{ $product->id }}]" required value="{{ $product->harga_lama }}" style="width: 100px;">
+                                                <input type="number" hidden id="unit_jual_{{ $no }}" name="unit_jual[{{ $product->id }}]" required value="{{ (int) str_replace('P', '', $product->unit_jual) }}" style="width: 100px;">
+                                                <input type="number" hidden id="harga_pokok_read{{ $no }}" name="harga_pokok_read[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;">
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $product->nama }}</td>
-                                                <td>{{ number_format($product->harga_lama) }}</td>
-                                                <td><input type="number" id="harga_pokok_{{ $index }}" name="harga_pokok[{{ $product->id }}]" required value="{{ $product->harga_pokok }}" style="width: 100px;" oninput="updateProfitPokok({{ $index }})"></td>
+                                                <td>{{ $product->nama }}/{{ $product->unit_jual }}</td>
+                                                <td class="text-end">{{ $product->harga_lama }}</td>
+                                                <td>
+                                                    <input 
+                                                        type="number" 
+                                                        autocomplete="off" 
+                                                        id="harga_pokok_{{ $no }}" 
+                                                        name="harga_pokok[{{ $product->id }}]" 
+                                                        required 
+                                                        value="{{ $product->harga_pokok }}" 
+                                                        style="width: 100px;" 
+                                                        data-id="{{ $product->id }}"
+                                                        data-index="{{ $no }}"
+                                                        data-nama="{{ $product->nama }}" 
+                                                        data-konversi="{{ $product->konversi }}" 
+                                                        data-unit_jual="{{ $productUnitJual }}" 
+                                                        data-unit_beli="{{ $productUnitBeli }}" 
+                                                        data-harga-lama="{{ $product->harga_pokok }}"
+                                                        onblur="handleBlurPokok({{ $no }}, '{{ $product->harga_pokok }}')"  
+                                                        oninput="updateProfitPokok({{ $no }}, {{ $product->id }})" 
+                                                        onkeydown="handleEnterPokok(event, {{ $no }}, '{{ $product->harga_pokok }}')" 
+                                                        onfocus="this.value = '';"
+                                                    >
+                                                </td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
-                                                    <td id="profit_pokok_{{ $index }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                    <td id="profit_pokok_{{ $no }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
-                                                    <td id="profit_pokok_{{ $index }}">0.00</td>
+                                                    <td id="profit_pokok_{{ $no }}">0.00</td>
                                                 @endif
-                                                <input type="number" hidden id="harga_jual_{{ $index }}" name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" oninput="updateHargaSementara({{ $index }})">
-                                                <td class="text-end">{{ number_format($product->harga_jual) }}</td>
-                                                <td><input type="text" id="profit_{{ $index }}" name="profit[{{ $product->id }}]" value="{{ $product->profit_jual }}" style="width: 70px;" oninput="updateHargaSementara({{ $index }})"></td>
-                                                <td><input type="text" id="harga_sementara_{{ $index }}" name="harga_sementara[{{ $product->id }}]" required value="{{ $product->harga_sementara }}" style="width: 100px;" oninput="updateHargaSementara2({{ $index }})"></td>
-                                                <input type="text" id="read_sementara_{{ $index }}" hidden value="{{ $product->harga_sementara }}">
+                                                <input type="number" id="harga_jual_{{ $no }}" hidden name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
+                                                    onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';">
+                                                <td class="text-end">{{ number_format($productHarga->harga_jual ?? $product->harga_jual) }}</td>
+                                                <td><input type=" text"autocomplete="off" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit_jual }}" style="width: 70px;" 
+                                                    onblur="handleBlurProfit({{ $no }}, '{{ $product->profit_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit_jual }}')" onfocus="this.value = '';"></td>
+                                                <td id="td_harga_sementara_{{ $no }}">
+                                                    <input 
+                                                        type="text" 
+                                                        autocomplete="off" 
+                                                        id="harga_sementara_{{ $no }}" 
+                                                        name="harga_sementara[{{ $product->id }}]" 
+                                                        required 
+                                                        value="{{ $productHarga->harga_jual ?? $product->harga_jual }}" 
+                                                        style="width: 100px;" 
+                                                        data-nama="{{ $product->nama }}"
+                                                        data-index="{{ $no }}"
+                                                        onblur="handleBlurSementara({{ $no }}, '{{ $productHarga->harga_jual ?? $product->harga_jual }}')"
+                                                        oninput="updateHargaSementara2({{ $no }})" 
+                                                        onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_pokok * $product->profit_jual) / 100) + $product->harga_pokok) }}')"
+                                                    >
+                                                </td>
+                                                <td><input type="checkbox" style="pointer-events:none;" id="checkbox_select_{{ $no }}" name="selected_ids[{{ $product->id }}]" value="{{ $product->id }}" class="product-checkbox" data-nama="{{ $product->nama }}"></td>
                                             </tr>
+                                            {{-- pass modal --}}
+                                            <div id="passwordModal" class="modal-password" style="display:none;">
+                                                <div class="modal-content-password">
+                                                    <h5>MASUKAN PASSWORD</h5>
+                                                    <input type="password" id="passwordInput" onkeydown="handleValidatePassword(event)" oninput="this.value = this.value.toUpperCase()"/>
+                                                </div>
+                                            </div>
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -125,95 +178,370 @@
 
 @section('scripts')
     <script>
-        function updateHargaSementara(index) {
-            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
-            var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
+        $(document).ready(function() {
+            $('#supplierSelect').change(function() {
+                var supplierId = $(this).val();
+                if (supplierId) {
+                    var url = "{{ route('master.harga.show', ':id') }}".replace(':id', supplierId);
+                    window.location.href = url;
+                }
+            });
+        });
 
-            // Menghitung harga_sementara
-            var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
+        $(`.supplier-select`).select2({
+            placeholder: '---Select Supplier---',
+            allowClear: true
+        });
 
-            // Memperbarui nilai harga_sementara berdasarkan indeks
-            document.getElementById('harga_sementara_' + index).value = hargaSementara.toFixed(0); // Menggunakan 2 desimal
-        }
+        let tempInputData = {
+            inputField: null,
+            newValue: null,
+            originalValue: null
+        };
 
-        function updateHargaSementara2(index) {
-            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
-            var hargaSementara = parseFloat(document.getElementById('harga_sementara_' + index).value) || 0;
+        let modalActive = false;
 
-            // Menghitung harga_sementara
-            var hitung = hargaSementara - hargaPokok;
-            var hargaSementara = (hitung / hargaPokok) * 100;
-
-            // Memperbarui nilai harga_sementara berdasarkan indeks
-            document.getElementById('profit_' + index).value = hargaSementara.toFixed(2); // Menggunakan 2 desimal
-        }
-
-        function updateProfitPokok(index) {
-            var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + index).value) || 0;
-            var hargaLama = parseFloat(document.getElementById('harga_lama_' + index).value) || 0;
-
-            // Menghitung harga_sementara
-            var hitung = hargaPokok - hargaLama;
-            var hargaSementara = (hitung / hargaLama) * 100;
-
-            // Memperbarui nilai harga_sementara berdasarkan indeks
-            document.getElementById('profit_pokok_' + index).innerHTML = hargaSementara.toFixed(2); // Menggunakan 2 desimal
-        }
-
-        function handleEnterKenaikan(event, originalValue) {
+        function handleEnterPokok(event, no, originalValue) {
             if (event.key === 'Enter') {
-                var inputField = document.getElementById('kenaikan').value || 1;
+                if (!modalActive) {
+                    // Tahap 1: Cek nilai input dan tampilkan modal jika perlu
+                    var inputField = document.getElementById('harga_pokok_' + no);
+                    var hargaLama = parseFloat(document.getElementById('harga_lama_' + no).value) || 0;
+
+                    // Jika input kosong, kembalikan nilai ke nilai asli
+                    if (inputField.value === '') {
+                        inputField.value = originalValue;
+                    }
+
+                    if (parseFloat(inputField.value) < hargaLama) {
+                        tempInputData.inputField = inputField;
+                        tempInputData.newValue = inputField.value;
+                        tempInputData.originalValue = originalValue;
+
+                        // Buka modal
+                        showPasswordModal(no);
+                        return;
+                    }
+
+                    // Fokuskan pada elemen berikutnya
+                    document.getElementById('profit_' + no).focus();
+                } else {
+                    // Tahap 2: Validasi password setelah modal muncul
+                    validatePassword();
+                }
+            }
+        }
+
+        function handleBlurPokok(no, originalValue) {
+            if (!modalActive) {
+                // Tahap 1: Cek nilai input dan tampilkan modal jika perlu
+                var inputField = document.getElementById('harga_pokok_' + no);
+                var hargaLama = parseFloat(document.getElementById('harga_lama_' + no).value) || 0;
+
+                // Jika input kosong, kembalikan nilai ke nilai asli
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                if (parseFloat(inputField.value) < hargaLama) {
+                    tempInputData.inputField = inputField;
+                    tempInputData.newValue = inputField.value;
+                    tempInputData.originalValue = originalValue;
+
+                    // Buka modal
+                    showPasswordModal(no);
+                    return;
+                }
+
+                // Fokuskan pada elemen berikutnya
+                document.getElementById('profit_' + no).focus();
+            } else {
+                // Tahap 2: Validasi password setelah modal muncul
+                validatePassword();
+            }
+        }
+
+        let currentNo = null;
+        function handleValidatePassword() {
+            if (event.key === 'Enter') {
+                validatePassword();
+            }
+        }
+
+        function showPasswordModal(no) {
+            currentNo = no; // ⬅️ SIMPAN no
+
+            const modal = document.getElementById('passwordModal');
+            modal.style.display = 'block';
+
+            const input = document.getElementById('passwordInput');
+            input.value = '';
+            input.focus();
+
+            modalActive = true;
+        }
+
+        const ownerPassword = @json($owner);
+        function validatePassword() {
+            var password = document.getElementById('passwordInput').value;
+
+            // Validasi password
+            if (password === ownerPassword) {
+                tempInputData.inputField.value = tempInputData.newValue;
+                const target = document.getElementById('profit_' + currentNo);
+                if (target) {
+                    target.focus();
+                    target.select();
+                }
+            } else {
+                tempInputData.inputField.value = tempInputData.originalValue;
+                alert('Password salah!');
+                location.reload();
+            }
+
+            resetModal();
+        }
+
+        function resetModal() {
+            var modal = document.getElementById('passwordModal');
+            modal.style.display = 'none';
+            document.getElementById('passwordInput').value = ''; // Reset input password
+            tempInputData = { inputField: null, newValue: null, originalValue: null };
+            modalActive = false;
+        }
+
+        function handleEnterJual(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('harga_jual_' + no);
                 
                 // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
                 if (inputField.value === '') {
                     inputField.value = originalValue;
                 }
 
-                updateHargaKenaikan()
+                document.getElementById('profit_' + no).focus();
             }
         }
 
-        function handleBlurKenaikan(originalValue) {
+        function handleBlurJual(no, originalValue) {
+            var inputField = document.getElementById('harga_jual_' + no);
+
             // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
-            if (document.getElementById('kenaikan').value === '') {
-                document.getElementById('kenaikan').value = originalValue;
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
+        function handleEnterProfit(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('profit_' + no);
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = originalValue;
+                }
+
+                document.getElementById('harga_sementara_' + no).focus();
+            }
+        }
+
+        function handleBlurProfit(no, originalValue) {
+            var inputField = document.getElementById('profit_' + no);
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = originalValue;
+            }
+        }
+
+        function handleEnterSementara(event, no, originalValue) {
+            if (event.key === 'Enter') {
+                var inputField = document.getElementById('harga_sementara_' + no);
+                var hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+                var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
+                var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
+                
+                // Jika input kosong, kembalikan nilai ke nilai asli (originalValue)
+                if (inputField.value === '') {
+                    inputField.value = hargaSementara.toFixed(0);
+                }
+
+                if (parseFloat(inputField.value) < hargaPokok) {
+                    alert('HARGA SEMENTARA TIDAK BOLEH LEBIH KECIL');
+                    inputField.value = originalValue;
+                    document.getElementById('checkbox_select_' + no).checked = false;
+                    document.getElementById('td_harga_sementara_' + no).style.backgroundColor = 'white';
+                    return;
+                }
+
+                // Ambil nama produk dari input yang ditekan
+                var namaProduk = inputField.dataset.nama;
+
+                // Tandai semua td dengan nama produk sama
+                const semuaInput = document.querySelectorAll('input[data-nama="' + namaProduk + '"]');
+
+                semuaInput.forEach(function(input) {
+                    const index = input.dataset.index;
+                    const td = document.getElementById('td_harga_sementara_' + index);
+                    const checkbox = document.getElementById('checkbox_select_' + index);
+                    if (td) {
+                        td.style.backgroundColor = 'red';
+                    }
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+        }
+
+        function handleBlurSementara(no, originalValue) {
+            var inputField = document.getElementById('harga_sementara_' + no);
+            var profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
+            var hargaSementara = (hargaPokok * profit) / 100 + hargaPokok;
+
+            // Kembalikan nilai ke originalValue jika kosong saat kehilangan fokus
+            if (inputField.value === '') {
+                inputField.value = hargaSementara.toFixed(0);
             }
         }
         
-        function updateHargaKenaikan() {
-            // Ambil nilai kenaikan dari input
-            var kenaikan = parseFloat(document.getElementById('kenaikan').value) || 1;
-            
-            // Loop untuk setiap produk dan update harga sementaranya
-            @foreach ($listProduct as $index => $product)
-                var hargaPokok = parseFloat(document.getElementById('harga_pokok_{{ $index }}').value) || 0;
-                var hargaSementara = parseFloat(document.getElementById('harga_sementara_{{ $index }}').value) || 0;
-                var readSementara = document.getElementById('read_sementara_{{ $index }}').value || 0;
+        function updateHargaSementara(no) {
+            const hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+            const profit = parseFloat(document.getElementById('profit_' + no).value) || 0;
 
-                // Menghitung harga sementara setelah kenaikan
-                var hitung = readSementara - hargaPokok;
-                var hitung2 = (kenaikan / 100) * hitung;
-                var hargaSetelahKenaikan = hargaPokok + hitung2;
-                var profit = ((hargaSetelahKenaikan - hargaPokok) / hargaPokok) * 100
+            if (hargaPokok <= 0) return;
 
-                // Update nilai harga sementara pada input
-                document.getElementById('harga_sementara_{{ $index }}').value = hargaSetelahKenaikan.toFixed(0);
-                document.getElementById('profit_{{ $index }}').value = profit.toFixed(2);
-            @endforeach
+            // harga_jual = harga_pokok + (harga_pokok * profit / 100)
+            const hargaJual = hargaPokok + (hargaPokok * profit / 100);
+
+            document.getElementById('harga_sementara_' + no).value = Math.round(hargaJual / 50) * 50;
+        }
+
+        function updateHargaSementara2(no) {
+            const hargaPokok = parseFloat(document.getElementById('harga_pokok_' + no).value) || 0;
+            const hargaJual = parseFloat(document.getElementById('harga_sementara_' + no).value) || 0;
+
+            if (hargaPokok <= 0) return;
+
+            // profit (%) = ((harga_jual - harga_pokok) / harga_pokok) * 100
+            const profit = ((hargaJual - hargaPokok) / hargaPokok) * 100;
+
+            document.getElementById('profit_' + no).value = profit.toFixed(2);
+        }
+
+        function updateProfitPokok(index, id) {
+            var inputCurrent = document.getElementById('harga_pokok_' + index);
+            var inputKonversiCurrent = document.getElementById('konversi_' + index);
+            var inputUnitJualCurrent = document.getElementById('unit_jual_' + index);
+            var hargaPokok = parseFloat(inputCurrent.value) || 0;
+            var hargaLama = parseFloat(document.getElementById('harga_lama_' + index).value) || 0;
+
+            if (hargaLama === 0) {
+                document.getElementById('profit_pokok_' + index).innerHTML = '0.00';
+                return;
+            }
+
+            // Hitung profit persen untuk current index
+            var profitPersen = ((hargaPokok - hargaLama) / hargaLama) * 100;
+            document.getElementById('profit_pokok_' + index).innerHTML = profitPersen.toFixed(2);
+
+            // Hitung harga sementara
+            var profit = parseFloat(document.getElementById('profit_' + index).value) || 0;
+            var hargaSementara = hargaPokok + (hargaPokok * profit / 100);
+            document.getElementById('harga_sementara_' + index).value = Math.round(Math.ceil(hargaSementara) / 50) * 50;
+
+            // Ambil nama produk dari atribut data-nama pada input harga_pokok
+            var namaProduk = inputCurrent.dataset.nama;
+            var hargaLamaAsal = parseFloat(inputCurrent.dataset.hargaLama || 1);
+            var rasio = hargaPokok / hargaLamaAsal;
+
+            // Update semua input harga_pokok lain dengan nama produk sama (kecuali yang sedang diubah)
+            var inputs = document.querySelectorAll('input[id^="harga_pokok_"][data-nama="' + namaProduk + '"]');
+            inputs.forEach(function(targetInput) {
+                if (targetInput !== inputCurrent) {
+                    var hargaLamaTarget = parseFloat(targetInput.dataset.hargaLama || 1);
+                    var unitJualTarget = parseFloat(targetInput.dataset.unit_jual || 1);
+                    var unitBeliTarget = parseFloat(targetInput.dataset.unit_beli || 1);
+                    var unitKonversiTarget = parseFloat(targetInput.dataset.konversi || 1);
+                    var unitKonversiCurrent = parseFloat(inputKonversiCurrent.value || 1);
+                    var unitUnitJualCurrent = parseFloat(inputUnitJualCurrent.value || 1);
+
+                    if (unitJualTarget <= 1) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else if (unitUnitJualCurrent < unitJualTarget) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else if (unitJualTarget < unitUnitJualCurrent) {
+                        hasilBaru = Math.ceil(hargaPokok * (unitJualTarget / unitUnitJualCurrent));
+                    } else {
+                        hasilBaru = Math.ceil(hargaPokok / (unitBeliTarget / unitJualTarget));
+                    }
+                    targetInput.value = hasilBaru;
+
+                    // Index target input diambil dari id, misal "harga_pokok_3" → 3
+                    var targetIndex = targetInput.id.split('_')[2];
+
+                    // Update profit dan harga sementara untuk input target
+                    if (hargaLamaTarget === 0) {
+                        document.getElementById('profit_pokok_' + targetIndex).innerHTML = '0.00';
+                        return;
+                    }
+                    var profitPersenTarget = ((hasilBaru - hargaLamaTarget) / hargaLamaTarget) * 100;
+                    document.getElementById('profit_pokok_' + targetIndex).innerHTML = profitPersenTarget.toFixed(2);
+
+                    var profitTarget = parseFloat(document.getElementById('profit_' + targetIndex).value) || 0;
+                    var hargaSementaraTarget = hasilBaru + (hasilBaru * profitTarget / 100);
+                    document.getElementById('harga_sementara_' + targetIndex).value = Math.round(Math.ceil(hargaSementaraTarget) / 50) * 50;
+                }
+            });
         }
 
         // Memanggil fungsi pada saat halaman pertama kali dimuat untuk memastikan nilai sudah benar
-        // window.onload = function() {
-        //     @foreach ($listProduct as $index => $product)
-        //         updateHargaSementara({{ $index }});
-        //     @endforeach
-        // };
+        window.onload = function() {
+            @foreach ($listProduct as $index => $product)
+                updateHargaSementara({{ $index + 1 }});
+            @endforeach
+        };
+
+        // Mengaktifkan tombol "Proses" hanya ketika ada checkbox yang dicentang
+        const checkboxes = document.querySelectorAll('.product-checkbox');
+        const buttonSelesai = document.getElementById('button-selesai');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+                buttonSelesai.disabled = !anyChecked;
+            });
+        });
+
+        // JavaScript untuk menghapus input harga_sementara jika checkbox tidak dicentang
+        const form = document.getElementById('filter-form');
+        form.addEventListener('submit', function(e) {
+            const checkboxes = document.querySelectorAll('.product-checkbox');
+            checkboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    // Hapus input harga_sementara yang tidak dicentang
+                    const hiddenInput = document.querySelector(`input[name="harga_jual[${checkbox.value}]"]`);
+                    const hiddenInput2 = document.querySelector(`input[name="profit[${checkbox.value}]"]`);
+                    const hiddenInput3 = document.querySelector(`input[name="harga_sementara[${checkbox.value}]"]`);
+                    const hiddenInput4 = document.querySelector(`input[name="harga_pokok[${checkbox.value}]"]`);
+                    const hiddenInput5 = document.querySelector(`input[name="harga_lama[${checkbox.value}]"]`);
+                    const hiddenInput6 = document.querySelector(`input[name="harga_pokok_read[${checkbox.value}]"]`);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                        hiddenInput2.remove();
+                        hiddenInput3.remove();
+                        hiddenInput4.remove();
+                        hiddenInput5.remove();
+                        hiddenInput6.remove();
+                    }
+                }
+            });
+        });
 
         document.addEventListener('keydown', function(event) {
             // focus barcode
             if (event.key === 'Enter') {
                 event.preventDefault();
-                
             }
         });
 
@@ -228,6 +556,41 @@
             fromDate.addEventListener("change", function () {
                 toDate.min = this.value;
                 toDate.value = this.value;
+            });
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const productName = this.dataset.nama;
+                    const isChecked = this.checked;
+                    const tdId = this.dataset.tdId;
+                    const tdElement = document.getElementById(tdId);
+
+                    if (tdElement) {
+                        if (isChecked) {
+                            tdElement.style.backgroundColor = 'red';
+                        } else {
+                            tdElement.style.backgroundColor = 'white';
+                        }
+                    }
+
+                    // Loop through all checkboxes and match by data-nama
+                    checkboxes.forEach(cb => {
+                        if (cb.dataset.nama === productName) {
+                            cb.checked = isChecked;
+
+                            const matchingTdId = cb.dataset.tdId;
+                            const matchingTdElement = document.getElementById(matchingTdId);
+
+                            if (matchingTdElement) {
+                                if (isChecked) {
+                                    matchingTdElement.style.backgroundColor = 'red';
+                                } else {
+                                    matchingTdElement.style.backgroundColor = 'white';
+                                }
+                            }
+                        }
+                    });
+                });
             });
         });
     </script>

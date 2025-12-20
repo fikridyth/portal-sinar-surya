@@ -72,7 +72,7 @@
                                         <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $productHarga->harga_pokok ?? $product->harga_pokok }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
+                                        <td class="text-center" style="color: <?= $product->harga_lama !== $product->harga_pokok ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
                                         <td class="text-center">{{ number_format(((($productHarga->harga_pokok ?? $product->harga_pokok) - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
