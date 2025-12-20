@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/preorder-get-supplier-data', [PreOrderController::class, 'getSupplierData']);
     Route::get('/get-products-by-kode-po/{kode}', [PreOrderController::class, 'getProductsByKodePo']);
     Route::prefix('preorder')->name('preorder.')->group(function () {
+        Route::post('/get-data-penjualan', [PreOrderController::class, 'getDataPenjualan'])->name('get-data-penjualan');
         Route::post('/get-list-barang', [PreOrderController::class, 'getListBarang'])->name('get-list-barang');
         Route::post('/process-barang', [PreOrderController::class, 'processBarang'])->name('process-barang');
         Route::get('/add-po/cetak', [PreOrderController::class, 'cetakTambahPo'])->name('add-po.cetak');

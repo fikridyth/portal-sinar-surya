@@ -54,8 +54,9 @@ class PreOrderController extends Controller
         }
     }
 
-    public function getListBarang(Request $request)
+    public function getDataPenjualan(Request $request)
     {
+        // dd($request->all());
         $title = 'Get Barang';
         $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
         $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
@@ -164,8 +165,126 @@ class PreOrderController extends Controller
             $allProducts = Product::where('id_supplier', $supplier1->id)->limit(100)->get();
         }
         // dd(count($allProducts));
+        // dd($supplier1->nama);
 
-        return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
+        return view('preorder.add-po.get-data-penjualan', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl'));
+    }
+
+    public function getListBarang(Request $request)
+    {
+        
+        // dd($request->all());
+        $title = 'Get Barang';
+        $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
+        $supplier1 = Supplier::where('nama', $request->dataSupplier1)->first();
+        $supplier2 = Supplier::where('nama', $request->dataSupplier2)->first();
+        $supplier3 = Supplier::where('nama', $request->dataSupplier3)->first();
+        // Ambil semua supplier dalam satu query
+        $supplierNames = array_filter([
+            $request->dataSupplier1,
+            $request->dataSupplier2,
+            $request->dataSupplier3
+        ]);
+
+        $suppliers = Supplier::whereIn('nama', $supplierNames)->get()->keyBy('nama');
+
+        // Ambil semua ID supplier
+        $supplierIds = $suppliers->pluck('id');
+
+        // Ambil produk berdasarkan ID supplier secara batch
+        $products = Product::whereIn('id_supplier', $supplierIds)
+            ->whereNull('kode_sumber')
+            ->where('stok', '>', 0)
+            ->whereNotNull('harga_pokok')
+            ->get()
+            ->groupBy('id_supplier');
+
+        // Proses stok anak dalam satu query
+        $productCodes = $products->flatMap(function ($items) {
+            return $items->pluck('kode');
+        });
+        $childProducts = Product::whereIn('kode_sumber', $productCodes)->get()->groupBy('kode_sumber');
+
+        // Tambahkan stok anak ke produk
+        foreach ($products as $supplierId => $supplierProducts) {
+            foreach ($supplierProducts as $product) {
+                if ($childProducts->has($product->kode)) {
+                    $childStok = $childProducts->get($product->kode)->sum(function ($child) {
+                        return $child->stok / $child->konversi;
+                    });
+                    $product->stok += $childStok;
+                }
+            }
+        }
+
+        $penjualan = Supplier::where('id', $supplier1->id)->first();
+        if ($penjualan) {
+            $now = Carbon::now();
+            $tanggalRange = [];
+            for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
+                $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
+            }
+
+            $penjualanRata = $request->penjualan_rata ?? $penjualan->penjualan_rata;
+            $stokMinimum = $request->stok_minimum ?? $penjualan->stok_minimum;
+            $stokMaksimum = $request->stok_maksimum ?? $penjualan->stok_maksimum;
+            $waktuKunjungan = $request->waktu_kunjungan ?? $penjualan->waktu_kunjungan;
+
+            $rekapJualanByRange = ProductStock::where('tipe', 'POS')->whereIn('tanggal', $tanggalRange)->orderBy('tanggal', 'desc')->get()->groupBy('kode')
+            ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata){
+                $totalPerName = $items->sum('total'); // Hitung total
+                $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
+                return [
+                    'total' => $totalPerName,
+                    'minimum' => abs($averagePerName * $stokMinimum),
+                    'average' => abs($averagePerName),
+                    'maximum' => abs($averagePerName * $stokMaksimum)
+                ];
+            });
+            // dd($rekapJualanByRange, $tanggalRange, $penjualan);
+        }
+
+        // filter cari average lebih dari 0
+        // $rekapJualanByRange = $rekapJualanByRange->filter(function ($item) {
+        //     return $item['average'] > 0;
+        // });
+
+        // Gabungkan produk dari semua supplier
+        $getAllProducts = $products->collapse()->sortBy(['nama', 'unit_jual']);
+        $allProductsByName = $getAllProducts->keyBy('kode');
+        // dd($products, $getAllProducts, $allProductsByName, $rekapJualanByRange);
+
+        foreach ($allProductsByName as $name => $product) {
+            // dd($allProductsByName, $rekapJualanByRange);
+            // Jika nama tidak ada dalam rekap penjualan, beri nilai default 0
+            $salesData = $rekapJualanByRange[$name] ?? [
+                'total' => 0,
+                'minimum' => 0,
+                'average' => 0,
+                'maximum' => 0
+            ];
+
+            if ($salesData['average'] == 0 || $product->stok > $salesData['maximum']) {
+                unset($allProductsByName[$name]);
+                continue; // Skip to the next iteration
+            }
+
+            $product->total = number_format($salesData['total'], 2);
+            $product->minimum = number_format($salesData['minimum'], 2);
+            $product->average = $salesData['average'];
+            $product->maximum = number_format($salesData['maximum'], 2);
+        }
+
+        // Convert $allProductsByName to an array if needed
+        // dd($allProductsByName);
+        $allProducts = $allProductsByName->toArray();
+        $previousUrl = url()->previous();
+        if (count($allProducts) <= 0) {
+            $allProducts = Product::where('id_supplier', $supplier1->id)->limit(100)->get();
+        }
+        // dd(count($allProducts));
+
+        return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl', 'penjualanRata', 'stokMinimum', 'stokMaksimum', 'waktuKunjungan'));
     }
 
     public function getProductsByKodePo($kode)

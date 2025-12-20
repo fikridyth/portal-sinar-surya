@@ -17,7 +17,7 @@
 
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('preorder.get-list-barang') }}" method="POST">
+                <form action="{{ route('preorder.get-data-penjualan') }}" method="POST">
                     @csrf
                     <div class="card-body">
                         <div class="d-flex justify-content-between">

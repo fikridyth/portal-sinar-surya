@@ -4,7 +4,7 @@
     <div class="container mb-7">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('preorder.process-barang') }}" method="POST">
+                <form action="{{ route('preorder.get-list-barang') }}" method="POST">
                     @csrf
                     <div class="card-body mt-n4">
                         <div class="d-flex justify-content-between">
@@ -27,7 +27,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Penjualan Rata2</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $penjualanRata }}" name="penjualan_rata" class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->penjualan_rata }}" name="penjualan_rata" class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -54,7 +54,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Waktu Kunjungan</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $waktuKunjungan }}" name="waktu_kunjungan" class="form-control" id="inputPassword3">
+                                            <input type="text" value="{{ $penjualan->waktu_kunjungan }}" name="waktu_kunjungan" class="form-control" id="inputPassword3">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -81,7 +81,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Minimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $stokMinimum }}" name="stok_minimum" oninput="updateStokMin(this)" class="form-control" id="inputStokMinimum">
+                                            <input type="text" value="{{ $penjualan->stok_minimum }}" name="stok_minimum" oninput="updateStokMin(this)" class="form-control" id="inputStokMinimum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -97,7 +97,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Maksimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $stokMaksimum }}" readonly name="stok_maksimum" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
+                                            <input type="text" value="{{ $penjualan->stok_maksimum }}" name="stok_maksimum" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -105,7 +105,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between mt-2">
+                        <!-- <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
                                     <div style="overflow-x: auto; height: 450px; border: 1px solid #ccc;">
@@ -158,21 +158,23 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="row">
+                        <!-- <div class="row">
                             <div class="col-8">
-                                <!-- Content for the main part of the row goes here -->
                             </div>
                             <div class="col-3 d-flex align-items-center mx-5 mt-2">
                                 <label for="total-price" class="col-5">TOTAL RP</label>
                                 <input id="total-price" type="text" value="0" disabled class="form-control">
                             </div>
-                        </div>
+                        </div> -->
 
                         <div class="d-flex justify-content-center mt-2">
+                            <input type="text" id="nama_supplier_1" name='dataSupplier1' value="{{ $supplier1->nama ?? null }}" hidden />
+                            <input type="text" id="nama_supplier_2" name='dataSupplier2' value="{{ $supplier2->nama ?? null }}" hidden />
+                            <input type="text" id="nama_supplier_3" name='dataSupplier3' value="{{ $supplier3->nama ?? null }}" hidden />
                             <button type="button" onclick="window.history.back()" class="btn btn-danger mx-5">BATAL</button>
-                            <button type="submit" class="btn btn-primary">BUAT PO</button>
+                            <button type="submit" class="btn btn-primary">GET BARANG</button>
                         </div>
                     </div>
                 </form>
