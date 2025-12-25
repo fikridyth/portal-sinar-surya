@@ -6,18 +6,18 @@
             <div class="card-body">
                 <form action="{{ route('preorder.process-barang') }}" method="POST">
                     @csrf
-                    <div class="card-body mt-n4">
+                    <div class="card-body mt-n5" style="font-size: 14px;">
                         <div class="d-flex justify-content-between">
                             <div class="row w-100">
                                 <div class="form-group col-9">
                                     <div class="row">
                                         <label for="nomorSupplier1" class="col-sm-2 col-form-label">Supplier Header</label>
                                         <div class="col-sm-2">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier1->nomor }}" placeholder="Email">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier1->nama }}" placeholder="Email">
                                             <input type="hidden" name="supplierId" value="{{ $supplier1->id }}">
                                         </div>
@@ -41,11 +41,11 @@
                                     <div class="row">
                                         <label for="nomorSupplier2" class="col-sm-2 col-form-label">Nomor Supplier 2</label>
                                         <div class="col-sm-2">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier2->nomor ?? '' }}">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier2->nama ?? '' }}">
                                         </div>
                                     </div>
@@ -68,11 +68,11 @@
                                     <div class="row">
                                         <label for="nomorSupplier2" class="col-sm-2 col-form-label">Nomor Supplier 3</label>
                                         <div class="col-sm-2">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier3->nomor ?? '' }}">
                                         </div>
                                         <div class="col-sm-6">
-                                            <input type="email" disabled class="form-control" id="inputEmail3"
+                                            <input type="email" disabled class="form-control form-control-sm" id="inputEmail3"
                                                 value="{{ $supplier3->nama ?? '' }}">
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                                     <div class="row">
                                         <label for="inputPassword3" class="col-sm-6 col-form-label">Stok Maksimum</label>
                                         <div class="col-sm-3">
-                                            <input type="text" value="{{ $stokMaksimum }}" readonly name="stok_maksimum" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
+                                            <input type="text" value="{{ $stokMaksimum }}" name="stok_maksimum" oninput="updateStokMax(this)" class="form-control" id="inputStokMaximum">
                                         </div>
                                         <label for="inputPassword3" class="col-sm-3 col-form-label">Hari</label>
                                     </div>
@@ -108,9 +108,35 @@
                         <div class="d-flex justify-content-between mt-2">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <div style="overflow-x: auto; height: 450px; border: 1px solid #ccc;">
-                                        <table class="table table-bordered" style="width: 100%; table-layout: auto;">
-                                            <thead>
+                                    <div class="mb-3">
+                                        <h6 class="mb-2">DAFTAR BARANG TERPILIH</h6>
+                                        <div style="overflow-x:auto; max-height:200px; border:1px solid #ccc;">
+                                            <table class="table table-bordered table-sm" id="selected-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">NAMA BARANG</th>
+                                                        <th class="text-center">ISI</th>
+                                                        <th class="text-center">PENJUALAN</th>
+                                                        <th class="text-center">MINIMUM</th>
+                                                        <th class="text-center">STOK</th>
+                                                        <th class="text-center">MAKSIMUM</th>
+                                                        <th class="text-center">ORDER</th>
+                                                        <th class="text-center">V</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr id="empty-selected">
+                                                        <td colspan="8" class="text-center text-muted">
+                                                            Belum ada barang dipilih
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div style="overflow-x: auto; height: 350px; border: 1px solid #ccc;">
+                                        <table class="table table-bordered table-sm" style="width: 100%; table-layout: auto;">
+                                            <thead style="position: sticky; top: 0; z-index: 10;">
                                                 <tr>
                                                     <th class="text-center">NAMA BARANG</th>
                                                     <th class="text-center">ISI</th>
@@ -121,14 +147,23 @@
                                                     <th class="text-center">ORDER</th>
                                                     <th class="text-center">HARGA</th>
                                                     <th class="text-center">JUMLAH</th>
-                                                    <th class="text-center">CHILD</th>
+                                                    {{-- <th class="text-center">CHILD</th> --}}
+                                                    <th class="text-center">PILIH</th>
                                                     {{-- <th class="text-center">Harga Jual</th> --}}
                                                     {{-- <th class="text-center">Pilih</th> --}}
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($allProducts as $index => $product)
-                                                    <tr>
+                                                @foreach ($allProducts  as $index => $product)
+                                                    <tr
+                                                        data-kode="{{ $product['kode'] }}"
+                                                        data-kode-sumber="{{ $product['kode_sumber'] ?? '' }}"
+                                                        data-nama="{{ $product['nama'] }}"
+                                                        data-stok="{{ $product['stok'] }}"
+                                                        data-isi="{{ $product['isi'] }}"
+                                                        data-harga="{{ $product['harga_pokok'] }}"
+                                                        data-jual="{{ $product['unit_jual'] }}"
+                                                    >
                                                         <td>{{ $product['nama'] . '/' . $product['unit_jual'] }}</td>
                                                         <input type="text" hidden name="name[]" value="{{ $product['nama'] . '/' . $product['unit_jual'] . '/' . number_format($product['stok'], 2) . '/' . $product['harga_pokok']}}">
                                                         <input type="text" hidden name="stock[]" value="{{ number_format($product['stok'], 2)}}">
@@ -141,12 +176,13 @@
                                                         <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? 0 }}</td>
                                                         <td class="text-center">
                                                             <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
-                                                            onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ number_format(round($product['stok'] - $product['maximum']),0) }}">
+                                                            onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product['maximum'] <= 0 ? 0 : number_format(round($product['stok'] - $product['maximum']),0) }}">
                                                         </td>
                                                         <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                         <td class="text-end" id="total-{{ $index }}">0</td>
                                                         <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
-                                                        <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td>
+                                                        {{-- <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td> --}}
+                                                        <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product-modal"></td>
                                                         {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
                                                         {{-- <td class="text-center"><input type="checkbox" id="products[]"
                                                                 name="products[]" value="{{ $product->id }}"></td> --}}
@@ -182,6 +218,7 @@
 @endsection
 
 @section('scripts')
+@include('preorder.add-po.js.get-child-modal')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let index = document.querySelectorAll('table tbody tr').length;

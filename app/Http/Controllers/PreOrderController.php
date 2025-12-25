@@ -113,16 +113,16 @@ class PreOrderController extends Controller
             $stokMaksimum = $penjualan->stok_maksimum;
 
             $rekapJualanByRange = ProductStock::where('tipe', 'POS')->whereIn('tanggal', $tanggalRange)->orderBy('tanggal', 'desc')->get()->groupBy('kode')
-            ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata){
-                $totalPerName = $items->sum('total'); // Hitung total
-                $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
-                return [
-                    'total' => $totalPerName,
-                    'minimum' => abs($averagePerName * $stokMinimum),
-                    'average' => abs($averagePerName),
-                    'maximum' => abs($averagePerName * $stokMaksimum)
-                ];
-            });
+                ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata) {
+                    $totalPerName = $items->sum('total'); // Hitung total
+                    $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
+                    return [
+                        'total' => $totalPerName,
+                        'minimum' => abs($averagePerName * $stokMinimum),
+                        'average' => abs($averagePerName),
+                        'maximum' => abs($averagePerName * $stokMaksimum)
+                    ];
+                });
             // dd($rekapJualanByRange, $tanggalRange, $penjualan);
         }
 
@@ -172,7 +172,7 @@ class PreOrderController extends Controller
 
     public function getListBarang(Request $request)
     {
-        
+
         // dd($request->all());
         $title = 'Get Barang';
         $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
@@ -192,12 +192,16 @@ class PreOrderController extends Controller
         $supplierIds = $suppliers->pluck('id');
 
         // Ambil produk berdasarkan ID supplier secara batch
+        // $products = Product::whereIn('id_supplier', $supplierIds)->whereNull('kode_sumber')->get();
+        // dd(count($products));
         $products = Product::whereIn('id_supplier', $supplierIds)
             ->whereNull('kode_sumber')
-            ->where('stok', '>', 0)
+            // ->where('stok', '>', 0)
             ->whereNotNull('harga_pokok')
             ->get()
             ->groupBy('id_supplier');
+
+        // dd($products);
 
         // Proses stok anak dalam satu query
         $productCodes = $products->flatMap(function ($items) {
@@ -231,16 +235,16 @@ class PreOrderController extends Controller
             $waktuKunjungan = $request->waktu_kunjungan ?? $penjualan->waktu_kunjungan;
 
             $rekapJualanByRange = ProductStock::where('tipe', 'POS')->whereIn('tanggal', $tanggalRange)->orderBy('tanggal', 'desc')->get()->groupBy('kode')
-            ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata){
-                $totalPerName = $items->sum('total'); // Hitung total
-                $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
-                return [
-                    'total' => $totalPerName,
-                    'minimum' => abs($averagePerName * $stokMinimum),
-                    'average' => abs($averagePerName),
-                    'maximum' => abs($averagePerName * $stokMaksimum)
-                ];
-            });
+                ->map(function ($items) use ($stokMinimum, $stokMaksimum, $penjualanRata) {
+                    $totalPerName = $items->sum('total'); // Hitung total
+                    $averagePerName = (float)number_format($totalPerName / $penjualanRata, 2); // Hitung total
+                    return [
+                        'total' => $totalPerName,
+                        'minimum' => abs($averagePerName * $stokMinimum),
+                        'average' => abs($averagePerName),
+                        'maximum' => abs($averagePerName * $stokMaksimum)
+                    ];
+                });
             // dd($rekapJualanByRange, $tanggalRange, $penjualan);
         }
 
@@ -264,10 +268,10 @@ class PreOrderController extends Controller
                 'maximum' => 0
             ];
 
-            if ($salesData['average'] == 0 || $product->stok > $salesData['maximum']) {
-                unset($allProductsByName[$name]);
-                continue; // Skip to the next iteration
-            }
+            // if ($salesData['average'] == 0 || $product->stok > $salesData['maximum']) {
+            //     unset($allProductsByName[$name]);
+            //     continue; // Skip to the next iteration
+            // }
 
             $product->total = number_format($salesData['total'], 2);
             $product->minimum = number_format($salesData['minimum'], 2);
@@ -279,12 +283,15 @@ class PreOrderController extends Controller
         // dd($allProductsByName);
         $allProducts = $allProductsByName->toArray();
         $previousUrl = url()->previous();
-        if (count($allProducts) <= 0) {
-            $allProducts = Product::where('id_supplier', $supplier1->id)->limit(100)->get();
-        }
         // dd(count($allProducts));
 
-        return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl', 'penjualanRata', 'stokMinimum', 'stokMaksimum', 'waktuKunjungan'));
+        $getChildProducts = Product::whereIn('id_supplier', $supplierIds)
+            ->whereNotNull('kode_sumber')
+            ->whereNotNull('harga_pokok')
+            ->get();
+        // dd(count($getChildProducts));
+
+        return view('preorder.add-po.get-barang', compact('title', 'titleHeader', 'supplier1', 'supplier2', 'supplier3', 'penjualan', 'allProducts', 'previousUrl', 'penjualanRata', 'stokMinimum', 'stokMaksimum', 'waktuKunjungan', 'getChildProducts'));
     }
 
     public function getProductsByKodePo($kode)
@@ -309,99 +316,70 @@ class PreOrderController extends Controller
 
     public function processBarang(Request $request)
     {
-        // dd($request->all());
         $title = 'List Barang';
         $titleHeader = 'DAFTAR BARANG YANG HARUS DIPESAN';
 
+        // Ambil previous URL
         $explodeUrl = explode('/', $request->previous_url);
         $prevUrl = end($explodeUrl);
 
-        $sortProduct = $request->name;
-        // dd($sortProduct);
-        if ($sortProduct == null) {
-            return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+        // Ambil semua input
+        $names = (array) $request->name;
+        $stocks = (array) $request->stock;
+        $prices = (array) $request->harga;
+        $orders = (array) $request->orderPo;
+
+        if (empty($names)) {
+            return redirect()->back()
+                ->with('alert.status', '99')
+                ->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
         }
 
-        function splitNamePo($item) {
-            $parts = explode('/', $item);
-            return [
-                'name' => $parts[0],
-                'quantity' => (int) $parts[1]
+        $results = [];
+
+        foreach ($orders as $key => $orderQty) {
+            // Skip jika order 0/null
+            if ($orderQty === null || $orderQty === '0' || $orderQty === 0) continue;
+
+            // Ambil data dari masing-masing array
+            $itemNama  = $names[$key] ?? null;
+            $itemStock = $stocks[$key] ?? null;
+            $itemHarga = $prices[$key] ?? null;
+
+            if (!$itemNama) continue;
+
+            // Pisahkan nama/unit dari string
+            $splitNama = explode('/', $itemNama);
+            $baseNama = $splitNama[0] ?? null;
+            $unit     = $splitNama[1] ?? null;
+
+            // Ambil product dari DB
+            $product = Product::where('nama', $baseNama)
+                ->where('unit_jual', $unit)
+                ->orderBy('nama', 'asc')
+                ->first();
+
+            // Simpan ke results
+            $results[] = [
+                'product' => $product,
+                'details' => [
+                    'nama'  => $itemNama,
+                    'stok'  => $itemStock,
+                    'order' => $orderQty,
+                    'harga' => $itemHarga,
+                    'type'  => is_numeric($key) ? 'parent' : 'child',
+                    'key'   => $key
+                ]
             ];
         }
 
-        // Function to sort the array
-        usort($sortProduct, function($a, $b) {
-            $aParts = splitNamePo($a);
-            $bParts = splitNamePo($b);
-
-            // Compare base names
-            $nameComparison = strcmp($aParts['name'], $bParts['name']);
-            if ($nameComparison !== 0) {
-                return $nameComparison;
-            }
-
-            // If base names are the same, compare numeric parts
-            return $aParts['quantity'] <=> $bParts['quantity'];
-        });
-
-        $sortName = [];
-        $sortStock = [];
-        $sortPrice = [];
-
-        // Memproses inputArray untuk mendapatkan hasil yang diinginkan
-        foreach ($sortProduct as $item) {
-            // Memisahkan item berdasarkan '/'
-            $parts = explode('/', $item);
-
-            // Bagian pertama adalah deskripsi dan kuantitas
-            $description = "{$parts[0]}/{$parts[1]}";
-            $price = $parts[2];
-            $quantity = $parts[3];
-
-            // Menyimpan hasil ke dalam array yang sesuai
-            $sortName[] = $description;
-            $sortStock[] = $price;
-            $sortPrice[] = $quantity;
+        if (empty($results)) {
+            return redirect()->route('preorder.index')
+                ->with('alert.status', '99')
+                ->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
         }
-        // dd($descriptions, $prices, $quantities, $request->all());
-        $parameters = $request->request->all();
 
-        $names = isset($sortName) ? (array) $sortName : [];
-        $stocks = isset($sortStock) ? (array) $sortStock : [];
-        $orders = isset($parameters["orderPo"]) ? (array) $parameters["orderPo"] : [];
-        $harga = isset($sortPrice) ? (array) $sortPrice : [];
-
-        // dd($names, $stocks, $orders, $harga);
-
-        // Prepare the formatted data
-        $data = $result = [];
-        $maxItems = max(count($names), count($stocks), count($orders), count($harga));
-
-        // Prepare the formatted data and fetch products
-        for ($i = 0; $i < count($names); $i++) {
-            // dd($orders);
-            if ($orders[$i] !== null && $orders[$i] !== '0' && $orders[$i] !== 0) { // Skip items with null orders
-                $item = [
-                    'nama' => $names[$i] ?? null,
-                    'stok' => $stocks[$i] ?? null,
-                    'order' => $orders[$i] ?? null,
-                    'harga' => $harga[$i] ?? null
-                ];
-
-                // Fetch products based on the 'nama' field
-                $splitItemNama = explode('/', $item['nama']);
-                $getProducts = Product::where('nama', $splitItemNama[0])->where('unit_jual', $splitItemNama[1])->orderBy('nama', 'asc')->first();
-
-                // Combine product details with item data
-                $results[] = [
-                    'product' => $getProducts,
-                    'details' => $item
-                ];
-            }
-        }
-        // dd($results);
-
+        // Update data supplier
         $supplier1 = Supplier::find($request->supplierId);
         $supplier1->update([
             'penjualan_rata' => $request->penjualan_rata,
@@ -410,15 +388,12 @@ class PreOrderController extends Controller
             'stok_maksimum' => $request->stok_maksimum,
         ]);
 
-        if (empty($results)) {
-            if ($prevUrl == 'preorder') {
-                return redirect()->route('preorder.index')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
-            } else {
-                return redirect()->route('daftar-po')->with('alert.status', '99')->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
-            }
-        }
-
-        return view('preorder.add-po.list-barang', compact('title', 'titleHeader', 'getProducts', 'supplier1', 'results'));
+        return view('preorder.add-po.list-barang', compact(
+            'title',
+            'titleHeader',
+            'supplier1',
+            'results'
+        ));
     }
 
     public function cetakTambahPo(Request $request)
@@ -554,7 +529,7 @@ class PreOrderController extends Controller
         }
 
         // Create the final list of suppliers with their associated preorders
-        $listPreorders = array_map(function($preorders, $id) {
+        $listPreorders = array_map(function ($preorders, $id) {
             return [
                 'supplier' => Supplier::where('id', $id)->first(),
                 'preorders' => $preorders,
@@ -1294,8 +1269,7 @@ class PreOrderController extends Controller
         foreach ($detail as $data) {
             $product = Product::where('kode', $data['kode'])->first();
             $childProduct = Product::where('kode_sumber', $data['kode'])->exists();
-            if($childProduct);
-            {
+            if ($childProduct); {
                 $listProduct = Product::where('kode_sumber', $data['kode'])->get();
                 foreach ($listProduct as $lp) {
                     $lp->update([
@@ -1327,7 +1301,6 @@ class PreOrderController extends Controller
                 'is_proses' => 1,
                 'is_cancel' => null
             ]);
-
         }
         $preorder->update([
             'is_proses' => 1,
@@ -1479,10 +1452,13 @@ class PreOrderController extends Controller
         ]);
 
         // Check if validation fails
-        if ($validator->fails()) { return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!"); }
+        if ($validator->fails()) {
+            return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!");
+        }
 
         $sortProduct = $request->nama;
-        function splitNameApprove($item) {
+        function splitNameApprove($item)
+        {
             $parts = explode('/', $item);
             return [
                 'name' => $parts[0],
@@ -1491,7 +1467,7 @@ class PreOrderController extends Controller
         }
 
         // Function to sort the array
-        usort($sortProduct, function($a, $b) {
+        usort($sortProduct, function ($a, $b) {
             $aParts = splitNameApprove($a);
             $bParts = splitNameApprove($b);
 
@@ -1525,7 +1501,7 @@ class PreOrderController extends Controller
             $sortPrice[] = $price;
         }
 
-        $newData = array_map(function($name, $kode, $harga_pokok, $harga_jual, $mark_up) {
+        $newData = array_map(function ($name, $kode, $harga_pokok, $harga_jual, $mark_up) {
             $hargaJual = str_replace(['.', ','], '', $harga_jual);
             return [
                 'name' => $name,

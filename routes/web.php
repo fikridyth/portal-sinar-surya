@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
     // Route::middleware('admin.transaction')->resource('/transaction', TransactionController::class, ['parameters' => ['transaction' => 'id']]);
 
     // Preorder
-    Route::resource('/preorder', PreOrderController::class, ['parameters' => ['preorder' => 'id']]);
+    Route::resource('/preorder', PreOrderController::class, ['parameters' => ['preorder' => 'id']])->except(['show']);
     Route::get('/preorder-get-supplier-data', [PreOrderController::class, 'getSupplierData']);
     Route::get('/get-products-by-kode-po/{kode}', [PreOrderController::class, 'getProductsByKodePo']);
     Route::prefix('preorder')->name('preorder.')->group(function () {

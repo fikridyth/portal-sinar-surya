@@ -21,6 +21,13 @@ class KartuStokDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
+        if (request()->has('search') && request()->input('search.value') != '') {
+            $search = request()->input('search.value');
+        
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', $search . '%');
+            });
+        }
         return (new EloquentDataTable($query->whereNull('kode_sumber')->orderBy('created_at', 'desc')))
         ->addIndexColumn()
         ->editColumn('created_at', function ($row) {

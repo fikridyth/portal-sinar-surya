@@ -7,7 +7,7 @@
         <div class="card mt-n3 mb-2">
             <div class="card-body">
                 {{-- TAMBAH PO --}}
-                <form action="{{ route('preorder.get-list-barang') }}" method="POST">
+                <form action="{{ route('preorder.get-data-penjualan') }}" method="POST">
                     @csrf
                     <div class="card-body mt-n4">
                         <div class="d-flex justify-content-between">
