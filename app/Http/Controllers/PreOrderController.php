@@ -514,7 +514,7 @@ class PreOrderController extends Controller
 
         // Fetch all preorders
         // $preorders = Preorder::all();
-        $preorders = Preorder::where('receive_type', '!=', 'B')->get();
+        $preorders = Preorder::where('receive_type', '!=', 'B')->whereNull('is_receive')->get();
 
         // Initialize an array with supplier IDs as keys and empty arrays as default values
         $supplierPreorders = array_fill_keys($supplierIds, []);
