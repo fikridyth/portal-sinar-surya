@@ -21,38 +21,38 @@ class KunjunganDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('id', 'asc')))
+        return (new EloquentDataTable($query->where('status', 1)->where('waktu_kunjungan', '!=', 0)->orderBy('id', 'asc')))
         ->addIndexColumn()
         ->addColumn('senin', function ($row) {
             $checked = $row->hari === 'SENIN' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="SENIN" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('selasa', function ($row) {
             $checked = $row->hari === 'SELASA' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="SELASA" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('rabu', function ($row) {
             $checked = $row->hari === 'RABU' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="RABU" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('kamis', function ($row) {
             $checked = $row->hari === 'KAMIS' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="KAMIS" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('jumat', function ($row) {
             $checked = $row->hari === 'JUMAT' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="JUMAT" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('sabtu', function ($row) {
             $checked = $row->hari === 'SABTU' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="SABTU" data-id="' . $row->id . '" ' . $checked . '>';
         })
         ->addColumn('minggu', function ($row) {
             $checked = $row->hari === 'MINGGU' ? 'checked' : '';
-            return '<div style="text-align: center;"><input type="checkbox" ' . $checked . '></div>';
-        })
+            return '<input type="checkbox" class="kunjungan-checkbox" data-hari="MINGGU" data-id="' . $row->id . '" ' . $checked . '>';
+        })                                                        
         ->addColumn('action', function ($row) {
-            $editUrl = route('master.materai.update', $row->id);
+            $editUrl = route('master.kunjungan.update', $row->id);
             $csrfToken = csrf_token();
             $methodPut = method_field('PUT');
 
@@ -80,7 +80,7 @@ class KunjunganDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('materai-table')
+            ->setTableId('kunjungan-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             //->dom('Bfrtip')

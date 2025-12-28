@@ -325,6 +325,26 @@ class SupplierController extends Controller
         return $dataTable->render('master.supplier.index-kunjungan', compact('title', 'titleHeader'));
     }
 
+    public function updateWaktuKunjungan(Request $request, $id)
+    {
+        $supplier = Supplier::find($id);
+        if(!$supplier) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        $supplier->update([
+            'hari' => $request->hari
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ubah Waktu Kunjungan berhasil'
+        ]);
+    }
+
     public function indexChangeSupplier()
     {
         $title = "Perubahan Supplier";

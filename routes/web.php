@@ -211,6 +211,7 @@ Route::middleware('auth')->group(function () {
 
         // Kunjungan
         Route::get('/kunjungan', [SupplierController::class, 'indexKunjungan'])->name('kunjungan.index');
+        Route::put('/kunjungan/{id}/update', [SupplierController::class, 'updateWaktuKunjungan'])->name('kunjungan.update');
 
         // Promosi
         Route::get('/promosi', [SupplierController::class, 'indexPromosi'])->name('promosi.index');
