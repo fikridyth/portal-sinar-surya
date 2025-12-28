@@ -1,5 +1,13 @@
 @extends('main')
 
+@section('styles')
+<style>
+    tr.selected td {
+        background-color: #e9f5ff !important;
+    }
+</style>
+@endsection
+
 @section('content')
     <div class="container mb-7">
         <div class="card">
@@ -148,7 +156,7 @@
                                                     <th class="text-center">HARGA</th>
                                                     <th class="text-center">JUMLAH</th>
                                                     {{-- <th class="text-center">CHILD</th> --}}
-                                                    <th class="text-center">PILIH</th>
+                                                    {{-- <th class="text-center">PILIH</th> --}}
                                                     {{-- <th class="text-center">Harga Jual</th> --}}
                                                     {{-- <th class="text-center">Pilih</th> --}}
                                                 </tr>
@@ -176,16 +184,12 @@
                                                         <td class="text-end maximum" id="maximum-{{ $index }}">{{ $product['maximum'] ?? 0 }}</td>
                                                         <td class="text-center">
                                                             <input type="text" name="orderPo[]" size="3" data-index="{{ $index }}" oninput="updateTotal(this)" id="orderPoInput-{{ $index }}"
-                                                            onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product['maximum'] <= 0 ? 0 : number_format(round($product['stok'] - $product['maximum']),0) }}">
+                                                            onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $product['maximum'] <= 0 || $product['stok'] >= $product['maximum'] ? 0 : number_format(round($product['stok'] - $product['maximum']),0) }}">
                                                         </td>
                                                         <td class="text-end" id="price-{{ $index }}">{{ number_format($product['harga_pokok']) }}</td>
                                                         <td class="text-end" id="total-{{ $index }}">0</td>
                                                         <td class="text-end totally" hidden id="total-hidden-{{ $index }}">0</td>
-                                                        {{-- <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product"></td> --}}
-                                                        <td class="text-center"><input type="checkbox" data-kode="{{ $product['kode'] }}" class="select-product-modal"></td>
-                                                        {{-- <td class="text-end">{{ number_format($product->harga_jual) }}</td> --}}
-                                                        {{-- <td class="text-center"><input type="checkbox" id="products[]"
-                                                                name="products[]" value="{{ $product->id }}"></td> --}}
+                                                        <td hidden class="text-center"><input type="checkbox" hidden data-kode="{{ $product['kode'] }}" class="select-product-modal"></td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>

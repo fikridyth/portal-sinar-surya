@@ -2,8 +2,20 @@
     const childProducts = @json($getChildProducts);
     let selectedToParent = [];
     let currentParentRow = null;
-    $(document).ready(function () {
-        $('.select-product-modal').on('change', function () {
+    $(document).ready(function() {
+        $(document).on('click', 'tr', function (e) {
+            // Kalau klik langsung checkbox, biarkan change handler yang jalan
+            if ($(e.target).is('input')) return;
+
+            const $checkbox = $(this).find('.select-product-modal');
+
+            if ($checkbox.length) {
+                $checkbox.prop('checked', !$checkbox.prop('checked'))
+                        .trigger('change');
+            }
+        });
+
+        $('.select-product-modal').on('change', function() {
             let $currentCheckbox = $(this);
             let kodeDipilih = $currentCheckbox.data('kode');
 
@@ -13,6 +25,12 @@
 
                 // 1️⃣ Uncheck checkbox lain
                 $('.select-product-modal').not(this).prop('checked', false);
+
+                // 2️⃣ Hapus semua highlight
+                $('tr').removeClass('selected');
+
+                // 3️⃣ Tandai row yang dipilih
+                currentParentRow.addClass('selected');
 
                 // 2️⃣ Reset table selected
                 $('#selected-table tbody').html(`
@@ -43,11 +61,11 @@
                                 <td class="text-end">${item.stok}</td>
                                 <td class="text-end">0</td>
                                 <td class="text-end">0</td>
-                                <td class="text-center">Order 
-                                    <input 
+                                <td class="text-center">Order
+                                    <input
                                         type="checkbox"
                                         class="select-child-to-parent"
-                                        data-kode="${item.kode}" 
+                                        data-kode="${item.kode}"
                                         data-nama="${item.nama}"
                                         data-unit="${item.unit_jual}"
                                         data-stok="${item.stok}"
@@ -76,7 +94,7 @@
         });
 
         // tombol hapus manual
-        $(document).on('click', '.remove-selected', function () {
+        $(document).on('click', '.remove-selected', function() {
             let kode = $(this).data('kode');
             $('#selected-' + kode).remove();
 
@@ -91,7 +109,7 @@
             }
         });
 
-        $(document).on('change', '.select-child-to-parent', function () {
+        $(document).on('change', '.select-child-to-parent', function() {
             let checkbox = $(this);
 
             let childData = {
@@ -140,8 +158,8 @@
                         <td class="text-end price-child">${number_format(childData.harga)}</td>
                         <td class="text-end total-child">0</td>
                         <td class="totally total-child-hidden" hidden>0</td>
-                        <td class="text-center">
-                            <input type="checkbox" disabled>
+                        <td hidden class="text-center">
+                            <input type="checkbox" hidden disabled>
                         </td>
                     </tr>
                 `);
@@ -153,7 +171,7 @@
             }
         });
 
-        $(document).on('input', '.order-child', function () {
+        $(document).on('input', '.order-child', function() {
             updateTotalChild(this);
         });
 

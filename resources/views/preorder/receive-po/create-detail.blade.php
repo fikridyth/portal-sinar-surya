@@ -243,7 +243,7 @@
                                                 <thead style="position: sticky; top: 0; z-index: 1; background-color: white;">
                                                     <tr class="fs-need">
                                                         {{-- <th class="text-center">NO</th> --}}
-                                                        <th class="text-center">&#9989;</th>
+                                                        {{-- <th class="text-center">&#9989;</th> --}}
                                                         <th class="text-center">KODE</th>
                                                         <th class="text-center">NAMA BARANG</th>
                                                         <th class="text-center">ISI</th>
@@ -275,8 +275,8 @@
                                                         @endphp
                                                             <tr class="fs-need">
                                                                 {{-- <td>{{ $no }}</td> --}}
-                                                                <td class="text-center" style="width: 100px;">
-                                                                    <div class="select-container">
+                                                                <td hidden class="text-center" style="width: 100px;">
+                                                                    <div hidden class="select-container">
                                                                         <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
                                                                         data-stok-value="{{ $detail['stok'] }}" data-rata2-value="{{ $detail['penjualan_rata'] }}" data-maximum-value="{{ $detail['stok_maksimum'] }}"
                                                                         data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
@@ -285,7 +285,7 @@
                                                                         data-noindex="{{ $no }}"
                                                                         >
                                                                     </div>
-                                                                    <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
+                                                                    <button hidden class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
                                                                     <div style="display: none"><button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button></div>
                                                                 </td>
 
@@ -312,13 +312,13 @@
                                                                 <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
                                                                 <td class="text-end field-total" id="field-total-{{ $no }}">{{ number_format($detail['field_total']) }}</td>
                                                                 <td>
-                                                                    <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form" id="bonusForm-{{ $no }}">
+                                                                    <form action="{{ route('daftar-po.set-bonus', $preorder->id) }}" method="POST" class="form" id="bonusForm-{{ $no }}" style="margin:0; padding:0;">
                                                                         @csrf
-                                                                        <div class="row align-items-center">
+                                                                        <div class="row align-items-center" style="margin:0; padding:0;">
                                                                             <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
                                                                             <input type="hidden" name="nomor_receive" value="{{ $preorder->nomor_receive }}">
                                                                             <input type="hidden" name="no" value="{{ $no - 1 }}">
-                                                                            <button type="submit" style="display:none;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
+                                                                            <button type="submit" style="display:none; margin:0; padding:2px 6px; font-size:10px;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
                                                                         </div>
                                                                     </form>
                                                                 </td>
@@ -470,6 +470,35 @@
     @include('preorder.detail-po.js.netto')
     @include('preorder.detail-po.js.new-row-receive')
     <script>
+        $(document).on('click', 'tr.fs-need', function (e) {
+            // Abaikan klik langsung di input / button
+            if (
+                $(e.target).is('input') ||
+                $(e.target).is('button') ||
+                $(e.target).closest('button').length
+            ) return;
+
+            const $currentCheckbox = $(this).find('.select-checkbox');
+            if (!$currentCheckbox.length) return;
+
+            // Jika checkbox ini mau dicentang
+            const willCheck = !$currentCheckbox.prop('checked');
+
+            // Uncheck checkbox lain
+            $('.select-checkbox').not($currentCheckbox).each(function () {
+                if ($(this).prop('checked')) {
+                    $(this)
+                        .prop('checked', false)
+                        .trigger('change');
+                }
+            });
+
+            // Set checkbox yang diklik
+            $currentCheckbox
+                .prop('checked', willCheck)
+                .trigger('change');
+        });
+        
         var preorderData = <?php echo json_encode($preorder->id); ?>; 
         $(document).ready(function() {
             $('#supplierSelect').change(function() {
