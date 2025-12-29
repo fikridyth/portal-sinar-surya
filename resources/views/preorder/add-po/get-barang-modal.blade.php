@@ -38,6 +38,10 @@
                                     <input type="text" disabled class="form-control" value="1"
                                         id="inputPassword3">
                                 </div>
+                                <input type="text" hidden value="{{ $penjualanRata }}" name="penjualan_rata" class="form-control">
+                                <input type="text" hidden value="{{ $waktuKunjungan }}" name="waktu_kunjungan" class="form-control">
+                                <input type="text" hidden value="{{ $stokMinimum }}" name="stok_minimum" class="form-control">
+                                <input type="text" hidden value="{{ $stokMaksimum }}" name="stok_maksimum" class="form-control">
                             </div>
                         </div>
                     </div>

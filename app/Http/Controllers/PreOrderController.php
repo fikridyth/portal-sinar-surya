@@ -496,6 +496,14 @@ class PreOrderController extends Controller
         // dd($supplier1->id, $dataDetail);
 
         Preorder::create($data);
+        
+        $supplier1 = Supplier::find($request->supplierId);
+        $supplier1->update([
+            'penjualan_rata' => $request->penjualan_rata,
+            'waktu_kunjungan' => $request->waktu_kunjungan,
+            'stok_minimum' => $request->stok_minimum,
+            'stok_maksimum' => $request->stok_maksimum,
+        ]);
 
         return Redirect::route('daftar-po')
             ->with('alert.status', '00')
