@@ -323,6 +323,8 @@ class PreOrderController extends Controller
         $explodeUrl = explode('/', $request->previous_url);
         $prevUrl = end($explodeUrl);
 
+        // dd($request->all());
+
         // Ambil semua input
         $names = (array) $request->name;
         $stocks = (array) $request->stock;
@@ -561,6 +563,16 @@ class PreOrderController extends Controller
         $preorder->update(['is_cetak' => $preorder->is_cetak + 1]);
 
         return view('preorder.detail-po.cetak-daftar-po', compact('title', 'preorder'));
+    }
+
+    public function destroyPo($id)
+    {
+        $id = dekrip($id);
+        Preorder::findOrFail($id)->delete();
+
+        return Redirect::route('daftar-po')
+            ->with('alert.status', '00')
+            ->with('alert.message', "PreOrder Berhasil Dihapus!");
     }
 
     public function editDaftarPo($id)

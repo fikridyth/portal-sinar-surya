@@ -203,8 +203,18 @@
                                                     </form>
                                                 </td>
                                                 <td class="text-center">{{ $po['preorders'][0]['is_cetak'] }}</td>
-                                                <td class="text-center" style="margin: 0; padding: 0;">
-                                                    <input type="checkbox" style="width: 16px; height: 16px; margin-top: 8px;">
+                                                <td class="text-center" style="margin:0; padding:0;">
+                                                    <form action="{{ route('daftar-po.destroy-po', enkrip($po['preorders'][0]['id'])) }}"
+                                                          method="POST"
+                                                          onsubmit="return confirm('Yakin ingin menghapus PO ini?')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                
+                                                        <button type="submit"
+                                                                style="border:none; background:none; cursor:pointer; margin-top:4px;">
+                                                            🗑️
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             @else
                                                 <td></td>
