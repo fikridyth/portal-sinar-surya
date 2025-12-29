@@ -411,11 +411,12 @@ class PreOrderController extends Controller
     {
         // dd($request->all());
         $idSupplier = $request->input('id_supplier');
+        if (!$idSupplier) {
+            return redirect()->route('daftar-po')
+                ->with('alert.status', '99')
+                ->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+        }
         $getSupplier = Supplier::whereIn('id', $idSupplier)->get()->keyBy('id');
-
-        $ppnValue = Ppn::pluck('ppn')->first();
-        $isPpn = $request->input('is_ppn');
-
         $nama = $request->input('nama');
         $stok = $request->input('stok');
         $unitJual = $request->input('unit_jual');
@@ -437,7 +438,6 @@ class PreOrderController extends Controller
         $totalHarga = 0;
         for ($i = 0; $i < $count; $i++) {
             $supplierId = $idSupplier[$i];
-            $ppnId = $isPpn[$i];
             $supplier = $getSupplier->get($supplierId);
 
             $dataDetail[] = [
@@ -457,7 +457,7 @@ class PreOrderController extends Controller
                 'waktu_kunjungan' => $supplier ? $supplier->waktu_kunjungan : null,
                 'stok_minimum' => $supplier ? $supplier->stok_minimum : null,
                 'stok_maksimum' => $supplier ? $supplier->stok_maksimum : null,
-                'is_ppn' => (int) $ppnId == 1 ? $ppnValue : 0
+                'is_ppn' => (int) 0
             ];
 
             $totalHarga += (int) $fieldTotal[$i];
