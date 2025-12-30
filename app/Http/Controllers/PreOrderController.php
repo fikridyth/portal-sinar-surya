@@ -400,9 +400,63 @@ class PreOrderController extends Controller
 
     public function cetakTambahPo(Request $request)
     {
-        // $id = dekrip($id);
+        // dd($request->all());
         $title = 'Cetak PreOrder';
-        $results = json_decode(urldecode($request->input('results')), true);
+        $idSupplier = $request->input('id_supplier');
+        if (!$idSupplier) {
+            return redirect()->route('daftar-po')
+                ->with('alert.status', '99')
+                ->with('alert.message', 'PILIH BARANG YANG AKAN DI ORDER');
+        }
+        $getSupplier = Supplier::whereIn('id', $idSupplier)->get()->keyBy('id');
+        $nama = $request->input('nama');
+        $stok = $request->input('stok');
+        $unitJual = $request->input('unit_jual');
+        $kode = $request->input('kode');
+        $order = $request->input('order');
+        $price = $request->input('price');
+        $oldPrice = $request->input('old_price');
+        $fieldTotal = $request->input('fieldtotal');
+        $kodeSumber = $request->input('kode_sumber');
+        $diskon1 = $request->input('diskon1');
+        $diskon2 = $request->input('diskon2');
+        $diskon3 = $request->input('diskon3');
+        $dataDetail = [];
+        $count = count($order);
+        if (count($price) !== $count || count($fieldTotal) !== $count) {
+            return response()->json(['error' => 'Array lengths do not match.'], 400);
+        }
+
+        $totalHarga = 0;
+        for ($i = 0; $i < $count; $i++) {
+            $supplierId = $idSupplier[$i];
+            $supplier = $getSupplier->get($supplierId);
+
+            $dataDetail[] = [
+                'kode' => $kode[$i],
+                'nama' => $nama[$i],
+                'unit_jual' => $unitJual[$i],
+                'stok' => $stok[$i],
+                'order' => $order[$i],
+                'price' => (int) $price[$i],
+                'old_price' => (int) $oldPrice[$i],
+                'field_total' => (int) $fieldTotal[$i],
+                'kode_sumber' => $kodeSumber[$i],
+                'diskon1' => (int) $diskon1[$i],
+                'diskon2' => (int) $diskon2[$i],
+                'diskon3' => (int) $diskon3[$i],
+                'penjualan_rata' => $supplier ? $supplier->penjualan_rata : null,
+                'waktu_kunjungan' => $supplier ? $supplier->waktu_kunjungan : null,
+                'stok_minimum' => $supplier ? $supplier->stok_minimum : null,
+                'stok_maksimum' => $supplier ? $supplier->stok_maksimum : null,
+                'is_ppn' => (int) 0
+            ];
+
+            $totalHarga += (int) $fieldTotal[$i];
+        }
+        $jumlahHarga = (int) $totalHarga;
+        $results = $dataDetail;
+        // dd($results);
 
         return view('preorder.add-po.cetak-add-po', compact('title', 'results'));
     }

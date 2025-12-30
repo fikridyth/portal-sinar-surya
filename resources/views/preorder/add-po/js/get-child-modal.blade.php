@@ -53,7 +53,21 @@
 
                     filteredChild.forEach(item => {
                         $('#selected-table tbody').append(`
-                            <tr id="selected-${item.kode}">
+                            <tr
+                                id="selected-${item.kode}"
+                                data-kode="${item.kode}"
+                                data-kode-sumber="${item.kode_sumber ?? ''}"
+                                data-nama="${item.nama}"
+                                data-stok="${item.stok}"
+                                data-isi="${item.isi}"
+                                data-harga="${item.harga_pokok}"
+                                data-jual="${item.unit_jual}"
+                                data-diskon1="${item.diskon1}"
+                                data-diskon2="${item.diskon2}"
+                                data-diskon3="${item.diskon3}"
+                                data-id-supplier="${item.id_supplier}"
+                                data-harga-lama="${item.harga_lama}"
+                            >
                                 <td>${item.nama}/${item.unit_jual}</td>
                                 <td class="text-end">${item.isi}</td>
                                 <td class="text-end">0</td>
@@ -71,6 +85,13 @@
                                         data-stok="${item.stok}"
                                         data-isi="${item.isi}"
                                         data-harga="${item.harga_pokok ?? 0}"
+                                        data-sumber="${item.kode_sumber ?? ''}"
+                                        data-jual="${item.unit_jual}"
+                                        data-diskon1="${item.diskon1}"
+                                        data-diskon2="${item.diskon2}"
+                                        data-diskon3="${item.diskon3}"
+                                        data-supplier="${item.id_supplier}"
+                                        data-lama="${item.harga_lama}"
                                     >
                                 </td>
                             </tr>
@@ -119,6 +140,12 @@
                 stok: checkbox.data('stok'),
                 isi: checkbox.data('isi'),
                 harga: checkbox.data('harga'),
+                sumber: checkbox.data('sumber'),
+                diskon1: checkbox.data('diskon1'),
+                diskon2: checkbox.data('diskon2'),
+                diskon3: checkbox.data('diskon3'),
+                supplier: checkbox.data('supplier'),
+                lama: checkbox.data('lama'),
             };
 
             if (!currentParentRow) {
@@ -134,7 +161,21 @@
 
                 // ➕ insert row child tepat setelah parent
                 currentParentRow.after(`
-                    <tr class="child-row" data-kode="${childData.kode}">
+                    <tr
+                        class="child-row"
+                        data-kode="${childData.kode}"
+                        data-kode-sumber="${childData.sumber}"
+                        data-nama="${childData.nama}"
+                        data-stok="${childData.stok}"
+                        data-isi="${childData.isi}"
+                        data-harga="${childData.harga}"
+                        data-jual="${childData.unit_jual}"
+                        data-diskon1="${childData.diskon1}"
+                        data-diskon2="${childData.diskon2}"
+                        data-diskon3="${childData.diskon3}"
+                        data-id-supplier="${childData.supplier}"
+                        data-harga-lama="${childData.lama}"
+                    >
                         <td style="display:none">
                             <input type="hidden" name="name[${key}]" value="${childData.nama}/${childData.unit_jual}/${childData.stok}/${childData.harga}">
                             <input type="hidden" name="stock[${key}]" value="${childData.stok}">

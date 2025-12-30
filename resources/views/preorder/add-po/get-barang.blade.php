@@ -472,11 +472,11 @@
 
         function fillPoModal() {
             const tbody = document.querySelector('#modal-po-table tbody');
-            const buatPoBtn = document.querySelector('#poModal button[type="submit"]');
+            const buatPoBtn = document.querySelectorAll('#poModal button[type="submit"]');
             tbody.innerHTML = '';
             let hasItem = false;
 
-            document.querySelectorAll('input[name="orderPo[]"]').forEach(input => {
+            document.querySelectorAll('.order-child, input[name="orderPo[]"]').forEach(input => {
                 const order = parseFloat(input.value) || 0;
                 if (order > 0) {
                     hasItem = true;
@@ -526,9 +526,9 @@
                         </td>
                     </tr>
                 `;
-                buatPoBtn.disabled = true; // Disable tombol BUAT PO
+                buatPoBtn.forEach(btn => btn.disabled = true); // Disable tombol BUAT PO
             } else {
-                buatPoBtn.disabled = false; // Enable tombol BUAT PO
+                buatPoBtn.forEach(btn => btn.disabled = false); // Disable tombol BUAT PO
             }
 
             // Bind input event untuk menghitung total

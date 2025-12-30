@@ -73,16 +73,16 @@
         <hr class="dashed-line-2">
         @php
             $totalOrder = collect($results)->sum(function ($r) {
-                return $r['details']['order'] * $r['details']['harga'];
+                return $r['order'] * $r['price'];
             });
         @endphp
         @foreach ($results as $result)
             <div class="row" style="margin-top: 10px;">
-                <div class="col-4">{{ $result['product']['nama'] . '/' . $result['product']['unit_jual'] }}</div>
-                <div class="col-2 text-center">{{ $result['details']['stok'] }}</div>
-                <div class="col-2 text-center">{{ $result['details']['order'] }}</div>
-                <div class="col-2 text-right">{{ number_format($result['details']['harga'], 2) }}</div>
-                <div class="col-2 text-right">{{ number_format(($result['details']['order'] * $result['details']['harga']), 2) }}</div>
+                <div class="col-4">{{ $result['nama'] . '/' . $result['unit_jual'] }}</div>
+                <div class="col-2 text-center">{{ $result['stok'] }}</div>
+                <div class="col-2 text-center">{{ $result['order'] }}</div>
+                <div class="col-2 text-right">{{ number_format($result['price'], 2) }}</div>
+                <div class="col-2 text-right">{{ number_format(($result['order'] * $result['price']), 2) }}</div>
             </div>
         @endforeach
         <hr class="dashed-line">
@@ -128,12 +128,6 @@
 
         // Menjalankan fungsi autoPrint setelah halaman dimuat sepenuhnya
         window.onload = autoPrint;
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' || event.key === 'Backspace') {
-                window.history.back();
-            }
-        });
     </script>
     {{-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> --}}
     {{-- <script src="/assets/js/jquery-3.5.1.slim.min.js"></script> --}}

@@ -81,7 +81,9 @@
                 <button type="button" class="btn btn-secondary mx-5" id="cancelPoModal">
                     KEMBALI
                 </button>
-                {{-- <a href="{{ route('preorder.add-po.cetak', ['results' => urlencode(json_encode($supplier))]) }}" class="btn btn-warning">CETAK</a> --}}
+                <button type="submit" formaction="{{ route('preorder.add-po.cetak') }}" formmethod="POST" formtarget="_blank" class="btn btn-warning mx-2">
+                    CETAK
+                </button>
                 <button type="submit" class="btn btn-primary mx-5">
                     PROSES
                 </button>
