@@ -242,12 +242,9 @@
                                             <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
                                                 <thead style="position: sticky; top: 0; z-index: 1; background-color: white;">
                                                     <tr class="fs-need">
-                                                        {{-- <th class="text-center">NO</th> --}}
-                                                        {{-- <th class="text-center">&#9989;</th> --}}
                                                         <th class="text-center">KODE</th>
                                                         <th class="text-center">NAMA BARANG</th>
                                                         <th class="text-center">ISI</th>
-                                                        {{-- <th class="text-center">SAT</th> --}}
                                                         <th class="text-center">HARGA POKOK</th>
                                                         <th class="text-center">ORDER</th>
                                                         <th class="text-center">TERIMA</th>
@@ -274,7 +271,6 @@
                                                             $dataProduct = Product::where('kode', $detail['kode'])->first();
                                                         @endphp
                                                             <tr class="fs-need">
-                                                                {{-- <td>{{ $no }}</td> --}}
                                                                 <td hidden class="text-center" style="width: 100px;">
                                                                     <div hidden class="select-container">
                                                                         <input class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
@@ -292,7 +288,6 @@
                                                                 <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
                                                                 <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
                                                                 <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
                                                                 <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok ?? 0) }}</td>
                                                                 <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                                 <td class="text-end">
@@ -346,15 +341,14 @@
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a>
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-primary">INVENTORY</a>
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <form action="{{ route('create-receive.cancel-receive', enkrip($preorder->id)) }}" method="POST" class="form" id="myForm">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit" class="btn btn-danger" id="batal-button" onclick="confirmAlert(event, 'Batal proses data receive?')">BATAL</button>
-                                        </form>
-                                    </div> --}}
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-warning" disabled id="ubah-button">GANTI</button>
+                                    </div>
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -365,12 +359,6 @@
                                     </div>
                                     <div class="mx-4">
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <label for="totalOrder" class="mt-1">Jumlah Koli</label>
-                                    </div>
-                                    <div class="mx-2">
-                                        <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
-                                    </div> --}}
                                     <div class="mx-2">
                                         <a class="btn btn-danger" href="{{ route('index') }}">KEMBALI</a>
                                     </div>
@@ -618,12 +606,14 @@
         let diskon1Index = '0';
         let diskon2Index = '0';
         let diskon3Index = '0';
+        let selectedRowIndex = null;
         function handleCheckboxChange(selectedCheckbox) {
             // input diskon when enter
             nomorIndex = selectedCheckbox.getAttribute('data-noindex')
             diskon1Index = selectedCheckbox.getAttribute('data-diskon1-value');
             diskon2Index = selectedCheckbox.getAttribute('data-diskon2-value');
             diskon3Index = selectedCheckbox.getAttribute('data-diskon3-value');
+            selectedRowIndex = nomorIndex;
 
             const index = selectedCheckbox.id.split('-')[1];
             
@@ -636,7 +626,7 @@
             const tambahButton = document.getElementById('tambah-button');
             // const batalButton = document.getElementById('batal-button');
             const prosesButton = document.getElementById('proses-button');
-            // const hapusButton = document.getElementById('hapus-button');
+            const hapusButton = document.getElementById('hapus-button');
             
             // Get the current price and parse it as a float
             let currentPrice = parseFloat(priceInput.value.replace(/[^0-9.-]+/g, ""));
@@ -661,6 +651,7 @@
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
+                hapusButton.disabled = false;
                 prosesButton.classList.add('disabled-link');
             } else {
                 // Remove the discount if the checkbox is unchecked
@@ -670,6 +661,7 @@
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
+                hapusButton.disabled = true;
                 prosesButton.classList.remove('disabled-link');
             }
 
@@ -761,14 +753,11 @@
             }
         }
 
-        function handleDestroyClick(button) {
-            // Extract the index from the button's ID
-            const index = button.id.split('-')[2];
-            
+        function handleDestroyClick() {
             // Prepare data to be sent
             var data = {
                 id: {{ $preorder->id }},
-                array: index - 1,
+                array: selectedRowIndex - 1,
             };
 
             Swal.fire({

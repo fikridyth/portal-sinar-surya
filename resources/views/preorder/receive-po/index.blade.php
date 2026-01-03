@@ -311,9 +311,6 @@
                                                         <button class="btn btn-sm btn-primary mb-2" type="button"
                                                             id="edit-save-{{ $no }}" style="display:none;"
                                                             onclick="handleSaveClick(this)">Save</button>
-                                                        <button class="btn btn-sm btn-danger" type="button"
-                                                            id="delete-save-{{ $no }}" style="display:none;"
-                                                            onclick="handleDestroyClick(this)">Delete</button>
                                                     </td>
                                                     <td class="text-center">{{ $detail['kode'] }}</td>
                                                     <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
@@ -378,12 +375,6 @@
                                     <button type="button" class="btn btn-primary" disabled
                                         id="simpan-button">SIMPAN</button>
                                 </div>
-                                {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
-                                    </div> --}}
-                                {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
-                                    </div> --}}
                             </div>
                             <div class="d-flex">
                                 <div class="mx-2">
@@ -537,43 +528,6 @@
 
             // Call function to handle other inputs if necessary
             toggleInputs(selectedCheckbox);
-        }
-
-        function handleDestroyClick(button) {
-            // Extract the index from the button's ID
-            const index = button.id.split('-')[2];
-
-            // Prepare data to be sent
-            var data = {
-                id: {{ $preorder->id }},
-                array: index - 1,
-            };
-
-            // Perform AJAX request
-            $.ajax({
-                url: '{{ route('daftar-po.destroy') }}', // Use the named route to generate URL
-                type: 'DELETE',
-                data: data,
-                headers: {
-                    // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    // Handle success response
-                    if (response.success) {
-                        var redirectUrl = @json(route('daftar-po.edit', $preorder->id));
-                        window.location.href = redirectUrl;
-                    } else {
-                        // Handle error response if needed
-                        alert('Failed to save data.');
-                    }
-                },
-                error: function(xhr, status, error) {
-                    // Handle AJAX error
-                    console.error('AJAX error:', status, error);
-                    alert('An error occurred while saving data.');
-                }
-            });
         }
 
         function handleSaveClick(button) {

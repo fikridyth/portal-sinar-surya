@@ -221,7 +221,6 @@
                                                                         >
                                                                     </div>
                                                                     <button class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
-                                                                    <button class="btn btn-sm btn-danger" type="button" id="delete-save-{{ $no }}" style="display:none;" onclick="handleDestroyClick(this)">Delete</button>
                                                                 </td>
                                                                 <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
                                                                 <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
@@ -294,12 +293,6 @@
                                     </div>
                                     <div class="mx-4">
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <label for="totalOrder" class="mt-1">Jumlah Koli</label>
-                                    </div>
-                                    <div class="mx-2">
-                                        <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
-                                    </div> --}}
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-danger" onclick="window.history.back()">KEMBALI</button>
                                     </div>
@@ -448,56 +441,6 @@
 
             // Call function to handle other inputs if necessary
             toggleInputs(selectedCheckbox);
-        }
-
-        function handleDestroyClick(button) {
-            // Extract the index from the button's ID
-            const index = button.id.split('-')[2];
-            
-            // Prepare data to be sent
-            var data = {
-                id: {{ $preorder->id }},
-                array: index - 1,
-            };
-
-            Swal.fire({
-                title: 'Notifikasi?',
-                text: 'Apakah kamu yakin ingin menghapus item ini?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Perform AJAX request
-                    $.ajax({
-                        url: '{{ route('daftar-po.destroy') }}', // Use the named route to generate URL
-                        type: 'DELETE',
-                        data: data,
-                        headers: {
-                            // 'X-CSRF-TOKEN': '{{ csrf_token() }}' // Include CSRF token for security
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            // Handle success response
-                            if (response.success) {
-                                var redirectUrl = @json(route('receive-po.create-detail', $preorder->id));
-                                window.location.href = redirectUrl;
-                            } else {
-                                // Handle error response if needed
-                                alert('Failed to save data.');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            // Handle AJAX error
-                            console.error('AJAX error:', status, error);
-                            alert('An error occurred while saving data.');
-                        }
-                    });
-                }
-            });
         }
 
         function handleSaveClick(button) {

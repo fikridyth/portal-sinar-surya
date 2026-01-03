@@ -243,17 +243,13 @@
                             <div class="d-flex justify-content-between mt-2">
                                 <div class="row w-100">
                                     <div class="form-group col-12">
-                                        {{-- <table id="details-table" class="table table-bordered"> --}}
                                         <div style="overflow-x: auto; height: 400px; border: 1px solid #ccc;">
                                             <table id="details-table" class="table table-bordered" style="width: 100%; table-layout: auto;">
                                                 <thead style="position: sticky; top: 0; z-index: 1; background-color: white;" >
                                                     <tr class="fs-need">
-                                                        {{-- <th class="text-center">NO</th> --}}
-                                                        {{-- <th class="text-center" style="width: 100px;">&#9989;</th> --}}
                                                         <th class="text-center">KODE</th>
                                                         <th class="text-center">NAMA BARANG</th>
                                                         <th class="text-center">ISI</th>
-                                                        {{-- <th class="text-center">SAT</th> --}}
                                                         <th class="text-center">SATUAN</th>
                                                         <th class="text-center">ORDER</th>
                                                         <th class="text-center">TERIMA</th>
@@ -280,7 +276,6 @@
                                                             $dataProduct = Product::where('kode', $detail['kode'])->first();
                                                         @endphp
                                                             <tr class="fs-need">
-                                                                {{-- <td>{{ $no }}</td> --}}
                                                                 <td hidden class="text-center" style="width: 100px;">
                                                                     <div class="select-container">
                                                                         <input hidden class="form-check-input select-checkbox" type="checkbox" id="checkbox-{{ $no }}" onchange="handleCheckboxChange(this)"
@@ -297,7 +292,6 @@
                                                                 <td class="text-center" id="kode-text-{{ $no }}">{{ $detail['kode'] }}</td>
                                                                 <td>{{ $detail['nama'] . '/' . $detail['unit_jual'] }}</td>
                                                                 <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td>
-                                                                {{-- <td class="text-end">{{ str_replace('P', '', $detail['unit_jual']) }}</td> --}}
                                                                 <td class="text-end" id="old-price-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</td>
                                                                 <td class="text-end" id="order-view-text-{{ $no }}">{{ $detail['order'] }}</td>
                                                                 <td class="text-end">
@@ -349,18 +343,18 @@
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
                                     </div>
-                                    <div class="mx-2">
-                                        <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
+                                    <div>
+                                        <button type="button" class="btn btn-primary" hidden id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div class="mx-2">
-                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-danger">INVENTORY</a>
+                                        <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-primary">INVENTORY</a>
                                     </div>
-                                    {{-- <div class="mx-2">
+                                    <div class="mx-2">
+                                        <button type="button" class="btn btn-warning" disabled id="ubah-button">GANTI</button>
+                                    </div>
+                                    <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
-                                    </div> --}}
-                                    {{-- <div class="mx-2">
-                                        <button type="button" class="btn btn-warning" id="ubah-button">UBAH</button>
-                                    </div> --}}
+                                    </div>
                                 </div>
                                 <div class="d-flex">
                                     <div class="mx-2">
@@ -371,12 +365,6 @@
                                     </div>
                                     <div class="mx-4">
                                     </div>
-                                    {{-- <div class="mx-2">
-                                        <label for="totalOrder" class="mt-1">Jumlah Koli</label>
-                                    </div>
-                                    <div class="mx-2">
-                                        <input id="total-order" type="text" value="{{ number_format(1000000) }}" disabled size="5" class="form-control">
-                                    </div> --}}
                                     <div class="mx-2">
                                         <a class="btn btn-danger" href="{{ route('daftar-po') }}">KEMBALI</a>
                                     </div>
@@ -573,12 +561,14 @@
         let diskon1Index = '0';
         let diskon2Index = '0';
         let diskon3Index = '0';
+        let selectedRowIndex = null;
         function handleCheckboxChange(selectedCheckbox) {
             // input diskon when enter
             nomorIndex = selectedCheckbox.getAttribute('data-noindex')
             diskon1Index = selectedCheckbox.getAttribute('data-diskon1-value');
             diskon2Index = selectedCheckbox.getAttribute('data-diskon2-value');
             diskon3Index = selectedCheckbox.getAttribute('data-diskon3-value');
+            selectedRowIndex = nomorIndex;
 
             const index = selectedCheckbox.id.split('-')[1];
 
@@ -589,7 +579,7 @@
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
-            // const hapusButton = document.getElementById('hapus-button');
+            const hapusButton = document.getElementById('hapus-button');
 
             // Get the current price and parse it as a float
             let currentPrice = parseFloat(priceInput.value.replace(/[^0-9.-]+/g, ""));
@@ -616,7 +606,7 @@
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
-                // hapusButton.disabled = false;
+                hapusButton.disabled = false;
                 
                 // document.addEventListener('keydown', function(event) {
                 //     if (event.key === 'Enter') {
@@ -633,7 +623,7 @@
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
-                // hapusButton.disabled = true;
+                hapusButton.disabled = true;
             }
 
             // Update the netto value in the DOM
@@ -723,14 +713,11 @@
             }
         }
 
-        function handleDestroyClick(button) {
-            // Extract the index from the button's ID
-            const index = button.id.split('-')[2];
-
+        function handleDestroyClick() {
             // Prepare data to be sent
             var data = {
                 id: {{ $preorder->id }},
-                array: index - 1,
+                array: selectedRowIndex - 1,
             };
 
             Swal.fire({

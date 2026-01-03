@@ -70,7 +70,6 @@
                 <td class="text-center"></td>
                 <td class="text-center"></td>
                 <td class="text-center"></td>
-                <td class="text-center"></td>
             `;
             
             // tableBody.appendChild(newRow);
