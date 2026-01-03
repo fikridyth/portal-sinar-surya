@@ -107,6 +107,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/store-new-receive', [PreOrderController::class, 'storeNewReceive'])->name('create-receive.store');
     Route::post('/update-edited-data', [PreOrderController::class, 'updateEditedData'])->name('daftar-po.update');
     Route::post('/update-receive-data', [PreOrderController::class, 'updateReceiveData'])->name('create-receive.update');
+    Route::put('/change-current-data', [PreOrderController::class, 'changeCurrentData'])->name('daftar-po.change');
     Route::delete('/destroy-current-data', [PreOrderController::class, 'destroyCurrentData'])->name('daftar-po.destroy');
     Route::post('/set-ppn/{id}', [PreOrderController::class, 'setPpn'])->name('daftar-po.set-ppn');
     Route::post('/set-ppn-receive/{id}', [PreOrderController::class, 'setPpnReceive'])->name('create-receive.set-ppn-receive');
@@ -254,6 +255,7 @@ Route::middleware('auth')->group(function () {
 
         // Product
         Route::resource('/product', ProductController::class, ['parameters' => ['product' => 'id'], 'except' => ['create']]);
+        Route::get('/products/datatable', [ProductController::class, 'productDatatable'])->name('product.datatable');
         Route::get('/product/child/{id}', [ProductController::class, 'productChild'])->name('product.child');
         Route::get('/product/create/{id}', [ProductController::class, 'create'])->name('product.create');
         Route::get('/product/parent/{id}', [ProductController::class, 'productParent'])->name('product.parent');

@@ -916,6 +916,87 @@ class PreOrderController extends Controller
         ]);
     }
 
+    public function changeCurrentData(Request $request)
+    {
+        // dd($request->all());
+        // Cari produk baru berdasarkan product_id
+        $product = Product::find($request->product_id);
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan'], 404);
+        }
+
+        // Cari preorder berdasarkan id
+        $preorder = Preorder::find($request->id);
+        if (!$preorder) {
+            return response()->json(['success' => false, 'message' => 'Preorder tidak ditemukan'], 404);
+        }
+
+        // Decode detail preorder (asumsi JSON)
+        $getDetail = json_decode($preorder->detail, true);
+
+        // Pastikan index array yang akan diubah ada
+        if (!isset($getDetail[$request->array])) {
+            return response()->json(['success' => false, 'message' => 'Index detail tidak ditemukan'], 400);
+        }
+
+        // Ambil data lama
+        $oldData = $getDetail[$request->array];
+
+        // Build data baru dengan gabungkan data product dan beberapa field dari data lama
+        $newData = [
+            'kode' => $product->kode,
+            'nama' => $product->nama,
+            'unit_jual' => $product->unit_jual,
+            'stok' => $product->stok,
+            'order' => $oldData['order'] ?? 0,
+            'price' => $product->harga_pokok,
+            'old_price' => $product->harga_pokok,
+            'field_total' => $product->harga_pokok * ($oldData['order'] ?? 0),
+            'kode_sumber' => $product->kode_sumber,
+            'diskon1' => $product->diskon1 ?? 0,
+            'diskon2' => $product->diskon2 ?? 0,
+            'diskon3' => $product->diskon3 ?? 0,
+            'penjualan_rata' => $oldData['penjualan_rata'] ?? 0,
+            'waktu_kunjungan' => $oldData['waktu_kunjungan'] ?? 0,
+            'stok_minimum' => $oldData['stok_minimum'] ?? 0,
+            'stok_maksimum' => $oldData['stok_maksimum'] ?? 0,
+            'is_ppn' => $oldData['is_ppn'] ?? 0,
+        ];
+
+        // Update detail pada index yang ditentukan
+        $getDetail[$request->array] = $newData;
+
+        // Simpan kembali ke database (encode JSON)
+        $preorder->detail = json_encode($getDetail);
+        $preorder->save();
+
+        // Calculate the new total harga
+        $totalHarga = 0;
+        foreach ($getDetail as $detail) {
+            $totalHarga += $detail['field_total'] ?? 0; // Ensure field_total exists
+        }
+
+        $jumlahHarga = (int) $totalHarga;
+        $preorder->update([
+            'total_harga' => $jumlahHarga,
+            'ppn_global' => $preorder->ppn_global,
+            'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+        ]);
+
+        if ($preorder->receive_type == 'B') {
+            Hutang::where('nomor_receive', $preorder->nomor_receive)->update([
+                'total' => $jumlahHarga,
+                'ppn' => $preorder->ppn_global,
+                'grand_total' => $jumlahHarga + ($jumlahHarga * $preorder->ppn_global / 100),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'newTotalHarga' => number_format($jumlahHarga)
+        ]);
+    }
+
     public function destroyCurrentData(Request $request)
     {
         // dd($request->all());

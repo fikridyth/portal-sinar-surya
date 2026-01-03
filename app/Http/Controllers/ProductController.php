@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ProductDataTable;
+use App\DataTables\SearchProductDataTable;
 use App\Models\Departemen;
 use App\Models\HargaSementaraPos;
 use App\Models\HargaSementaraPos1;
@@ -43,6 +44,11 @@ class ProductController extends Controller
         $titleHeader = 'MASTER PERSEDIAAN';
 
         return $dataTable->render('master.product.index', compact('title', 'titleHeader'));
+    }
+
+    public function productDatatable(SearchProductDataTable $dataTable)
+    {
+        return $dataTable->ajax();
     }
 
     /**

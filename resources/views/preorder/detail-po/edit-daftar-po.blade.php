@@ -68,6 +68,61 @@
         text-decoration: none;
         cursor: pointer;
     }
+
+    /* backdrop */
+    .modal-custom {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1050;
+    }
+
+    .modal-content-custom {
+        width: 95vw;
+        height: 90vh;
+        margin: 5vh auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        flex: 1;
+        padding: 15px;
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        max-height: 650px;
+        overflow-y: auto;
+    }
+
+    /* sticky header */
+    #product-table thead th {
+        position: sticky;
+        top: 0;
+        background: #a0f7dc; /* warna header hijau muda */
+        z-index: 10;
+        border-bottom: 2px solid #000; /* agar lebih jelas */
+    }
+
+    /* Beri padding dan border */
+    #product-table th, #product-table td {
+        padding: 8px 12px;
+        border: 1px solid #000;
+        white-space: nowrap; /* agar kolom tidak terlalu melebar */
+    }
 </style>
 
 @section('content')
@@ -121,25 +176,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            {{-- <div class="d-flex justify-content-center mb-2">
-                                <div class="row w-100">
-                                    <div class="col-2"></div>
-                                    <div class="col-2">
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">NAMA SUPPLIER</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-5">
-                                        <div class="col">
-                                            <input type="text" value="{{ $preorder->supplier->nama }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> --}}
-
                             <div class="d-flex justify-content-center mt-3 mb-2">
                                 <div class="row w-100">
                                     <div class="col-3">
@@ -283,7 +319,7 @@
                                                                         data-ppn-value="{{ $detail['is_ppn'] }}" data-price-value="{{ $detail['old_price'] ?? $detail['price'] }}" data-price-ppn-value="{{ $priceWithPpn }}"
                                                                         data-diskon1-value="{{ $detail['diskon1'] }}" data-diskon2-value="{{ $detail['diskon2'] }}" data-diskon3-value="{{ $detail['diskon3'] }}"
                                                                         data-diskon4-value="{{ $detail['diskon1'] }}" data-diskon5-value="{{ $detail['diskon2'] }}" data-diskon6-value="{{ $detail['diskon3'] }}"
-                                                                        data-noindex="{{ $no }}"
+                                                                        data-noindex="{{ $no }}" data-nonama="{{ $detail['nama'] }}"
                                                                         >
                                                                     </div>
                                                                     <button hidden class="btn btn-sm btn-primary mb-2" type="button" id="edit-save-{{ $no }}" style="display:none;" onclick="handleSaveClick(this)">Save</button>
@@ -350,7 +386,7 @@
                                         <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-primary">INVENTORY</a>
                                     </div>
                                     <div class="mx-2">
-                                        <button type="button" class="btn btn-warning" disabled id="ubah-button">GANTI</button>
+                                        <button type="button" class="btn btn-warning" disabled id="ubah-button" onclick="handleChangeClick(this)">GANTI</button>
                                     </div>
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
@@ -422,7 +458,7 @@
         </div>
     </div>
 
-    <!-- Modal Structure -->
+    <!-- Modal Barcode -->
     <div id="productModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -445,6 +481,33 @@
             <button class="btn btn-primary mt-2" id="saveBtn">SIMPAN</button>
         </div>
     </div>
+
+    {{-- Modal Change Product --}}     
+    <div id="productChangeModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <div class="modal-header">
+                <h5 class="modal-title">GANTI PRODUK</h5>
+                <button type="button" class="btn-close" onclick="closeProductModal()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-wrapper">
+                    <table class="table table-bordered table-striped" id="product-table">
+                        <thead>
+                            <tr>
+                                <th hidden>ID</th>
+                                <th>NAMA BARANG</th>
+                                <th>UNIT BELI</th>
+                                <th>UNIT JUAL</th>
+                                <th>STOK</th>
+                                <th>HARGA BELI</th>
+                                <th>HARGA JUAL</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>    
 @endsection
 
 @section('scripts')
@@ -562,13 +625,16 @@
         let diskon2Index = '0';
         let diskon3Index = '0';
         let selectedRowIndex = null;
+        let selectedRowNama = null;
         function handleCheckboxChange(selectedCheckbox) {
             // input diskon when enter
             nomorIndex = selectedCheckbox.getAttribute('data-noindex')
+            namaIndex = selectedCheckbox.getAttribute('data-nonama')
             diskon1Index = selectedCheckbox.getAttribute('data-diskon1-value');
             diskon2Index = selectedCheckbox.getAttribute('data-diskon2-value');
             diskon3Index = selectedCheckbox.getAttribute('data-diskon3-value');
             selectedRowIndex = nomorIndex;
+            selectedRowNama = namaIndex;
 
             const index = selectedCheckbox.id.split('-')[1];
 
@@ -579,6 +645,7 @@
             const priceInput = document.querySelector('.price-input');
             const nettoElement = document.getElementById(`netto-${index}`);
             const tambahButton = document.getElementById('tambah-button');
+            const ubahButton = document.getElementById('ubah-button');
             const hapusButton = document.getElementById('hapus-button');
 
             // Get the current price and parse it as a float
@@ -606,6 +673,7 @@
                 buttonD.style.display = 'inline-block';
                 buttonB.style.display = 'inline-block';
                 tambahButton.disabled = true;
+                ubahButton.disabled = false;
                 hapusButton.disabled = false;
                 
                 // document.addEventListener('keydown', function(event) {
@@ -623,6 +691,7 @@
                 buttonD.style.display = 'none';
                 buttonB.style.display = 'none';
                 tambahButton.disabled = false;
+                ubahButton.disabled = true;
                 hapusButton.disabled = true;
             }
 
@@ -711,6 +780,102 @@
             if (inputField.value === '') {
                 inputField.value = diskon3Index;
             }
+        }
+
+        let productTableInitialized = false;
+        let yajraTable;
+        let rowName = '';
+        function handleChangeClick() {
+            rowName = selectedRowNama;  
+            $('#productChangeModal').fadeIn(200, function () {
+                if (!productTableInitialized) {
+                    yajraTable = $('#product-table').DataTable({
+                        processing: true,
+                        serverSide: true,
+                        ajax: '{{ route('master.product.datatable') }}',
+                        pageLength: 500,
+                        lengthMenu: [[10, 25, 50, 100, 500], [10, 25, 50, 100, 500]],
+                        columns: [
+                            { data: 'id', name: 'id', visible: false },
+                            { data: 'nama', name: 'nama' },
+                            { data: 'unit_beli', name: 'unit_beli' },
+                            { data: 'unit_jual', name: 'unit_jual' },
+                            { data: 'stok', name: 'stok' },
+                            { data: 'harga_pokok', name: 'harga_pokok' },
+                            { data: 'harga_jual', name: 'harga_jual' }
+                        ],
+                        initComplete: function () {
+                            if (rowName) {
+                                yajraTable.search(rowName, true, false).draw(false);
+                            }
+                        }
+                    });
+
+                    $('#product-table tbody').on('click', 'tr', function () {
+                        const data = yajraTable.row(this).data();
+                        if (data) {
+                            selectProduct(data.id, data.nama);
+                        }
+                    });
+
+                    productTableInitialized = true;
+                } else {
+                    yajraTable.search('').draw(false);
+                    if (rowName) {
+                        yajraTable.search(rowName, true, false).draw(false);
+                    }
+                }
+            });
+        }
+
+        function closeProductModal() {
+            $('#productChangeModal').fadeOut(200, function() {
+                // Reset search dan rowName saat modal ditutup
+                if (productTableInitialized) {
+                    yajraTable.search('').draw(false);
+                }
+                rowName = '';
+            });
+        }
+
+        $(window).click(function(event) {
+            if ($(event.target).is('#productChangeModal')) {
+                closeProductModal();
+            }
+        });
+
+        // dipanggil dari tombol PILIH di DataTable
+        function selectProduct(productId, productName) {
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: 'Ganti dengan produk ' + productName + '?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '{{ route('daftar-po.change') }}',
+                        type: 'PUT',
+                        data: {
+                            id: {{ $preorder->id }},
+                            array: selectedRowIndex - 1,
+                            product_id: productId
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                $('#productChangeModal').fadeOut(200);
+                                location.reload();
+                            }
+                        }
+                    });
+
+                }
+            });
         }
 
         function handleDestroyClick() {
