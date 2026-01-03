@@ -192,15 +192,10 @@ class PreOrderController extends Controller
         $supplierIds = $suppliers->pluck('id');
 
         // Ambil produk berdasarkan ID supplier secara batch
-        // $products = Product::whereIn('id_supplier', $supplierIds)->whereNull('kode_sumber')->get();
-        // dd(count($products));
         $products = Product::whereIn('id_supplier', $supplierIds)
-            ->whereNull('kode_sumber')
-            // ->where('stok', '>', 0)
             ->whereNotNull('harga_pokok')
             ->get()
             ->groupBy('id_supplier');
-
         // dd($products);
 
         // Proses stok anak dalam satu query
@@ -209,7 +204,7 @@ class PreOrderController extends Controller
         });
         $childProducts = Product::whereIn('kode_sumber', $productCodes)->get()->groupBy('kode_sumber');
 
-        // Tambahkan stok anak ke produk
+        // Tambahkan stok anak ke produk parent
         foreach ($products as $supplierId => $supplierProducts) {
             foreach ($supplierProducts as $product) {
                 if ($childProducts->has($product->kode)) {
@@ -225,9 +220,11 @@ class PreOrderController extends Controller
         if ($penjualan) {
             $now = Carbon::now();
             $tanggalRange = [];
-            for ($i = 0; $i <= $penjualan->penjualan_rata; $i++) {
+            $limit = $request->penjualan_rata ?? $penjualan->penjualan_rata;
+            for ($i = 0; $i <= $limit; $i++) {
                 $tanggalRange[] = $now->copy()->subDays($i)->format('Y-m-d');
             }
+            // dd(isset($request->penjualan_rata));
 
             $penjualanRata = $request->penjualan_rata ?? $penjualan->penjualan_rata;
             $stokMinimum = $request->stok_minimum ?? $penjualan->stok_minimum;
@@ -248,18 +245,12 @@ class PreOrderController extends Controller
             // dd($rekapJualanByRange, $tanggalRange, $penjualan);
         }
 
-        // filter cari average lebih dari 0
-        // $rekapJualanByRange = $rekapJualanByRange->filter(function ($item) {
-        //     return $item['average'] > 0;
-        // });
-
         // Gabungkan produk dari semua supplier
         $getAllProducts = $products->collapse()->sortBy(['nama', 'unit_jual']);
         $allProductsByName = $getAllProducts->keyBy('kode');
         // dd($products, $getAllProducts, $allProductsByName, $rekapJualanByRange);
 
         foreach ($allProductsByName as $name => $product) {
-            // dd($allProductsByName, $rekapJualanByRange);
             // Jika nama tidak ada dalam rekap penjualan, beri nilai default 0
             $salesData = $rekapJualanByRange[$name] ?? [
                 'total' => 0,
@@ -267,11 +258,12 @@ class PreOrderController extends Controller
                 'average' => 0,
                 'maximum' => 0
             ];
+            // dd($salesData, $product->kode, $penjualan);
 
-            // if ($salesData['average'] == 0 || $product->stok > $salesData['maximum']) {
-            //     unset($allProductsByName[$name]);
-            //     continue; // Skip to the next iteration
-            // }
+            if ($salesData['average'] == 0 && $product->kode_sumber !== null) {
+                unset($allProductsByName[$name]);
+                continue; // Skip to the next iteration
+            }
 
             $product->total = number_format($salesData['total'], 2);
             $product->minimum = number_format($salesData['minimum'], 2);
