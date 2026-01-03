@@ -21,7 +21,7 @@ class ReceiveDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->whereNotNull('is_cancel')->orderBy('created_at', 'asc')))
+        return (new EloquentDataTable($query->where('receive_type', 'B')->whereNotNull('is_cancel')->orderBy('created_at', 'asc')))
             ->addIndexColumn()
             ->addColumn('supplier_name', function ($row) {
                 return $row->supplier->nama;
