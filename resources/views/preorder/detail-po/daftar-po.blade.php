@@ -156,7 +156,7 @@
                 <div class="d-flex justify-content-between">
                     <div class="row w-100">
                         <input type="text" autocomplete="off" id="searchInputSupplier" class="mb-2" style="width: 30%;" placeholder="Cari Supplier" onkeyup="searchTableSupplier()">
-                        <div class="table-responsive" style="height: 420px; border: 1px solid #ccc;">
+                        <div class="table-responsive" style="height: 500px; border: 1px solid #ccc;">
                             <table id="table-supplier" class="table table-bordered table-sm text-center" style="width: 100%; table-layout: auto;">
                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                     <tr>

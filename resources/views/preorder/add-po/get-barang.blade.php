@@ -163,7 +163,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div style="overflow-x: auto; height: 250px; border: 1px solid #ccc;">
+                                <div style="overflow-x: auto; height: 350px; border: 1px solid #ccc;">
                                     <table class="table table-bordered table-sm" style="width: 100%; table-layout: auto;">
                                         <thead style="position: sticky; top: 0; z-index: 10;">
                                             <tr>
