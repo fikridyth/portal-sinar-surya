@@ -21,7 +21,7 @@ class SupplierHutangDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('created_at', 'desc')))
+        return (new EloquentDataTable($query->orderBy('nama', 'asc')))
             ->addIndexColumn()
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->setTimezone('Asia/Jakarta')->format('d F Y, H:i:s');

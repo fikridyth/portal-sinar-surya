@@ -21,7 +21,7 @@ class SupplierDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->orderBy('id', 'asc')))
+        return (new EloquentDataTable($query->orderBy('nama', 'asc')))
         ->addIndexColumn()
         ->editColumn('nama', function ($row) {
             return '<a href="' . route('master.supplier.show', enkrip($row->id)) . '">' . $row->nama . '</a>';

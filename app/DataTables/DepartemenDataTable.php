@@ -21,7 +21,7 @@ class DepartemenDataTable extends DataTable
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
-        return (new EloquentDataTable($query->with('unit')->orderBy('id', 'asc')))
+        return (new EloquentDataTable($query->with('unit')->orderBy('nama', 'asc')))
         ->addIndexColumn()
         ->addColumn('unit', function ($row) {
             return $row->unit->nama;
