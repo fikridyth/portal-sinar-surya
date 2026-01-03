@@ -1200,30 +1200,46 @@ class PreOrderController extends Controller
 
     public function storeReceiveData(Request $request)
     {
-        // dd($request->all());
+        // dd($request->all(), json_decode($request->details, true)[0]);
         $supplier = Supplier::where('nomor', $request->supplier)->first();
         $nomor_receive = str_replace('PO', 'RP', $request->nomor_po);
 
         if ($request->old_nomor_po !== null) {
-            $oldPo = Preorder::where('nomor_po', $request->old_nomor_po)->first();
+            // Ambil value dari request
+            $oldPoString = $request->old_nomor_po;
 
+            // Ubah jadi array
+            $oldPoArray = array_map('trim', explode(',', $oldPoString));
+
+            // Ambil semua preorder lama (SEBELUM delete)
+            $oldPreorders = Preorder::whereIn('nomor_po', $oldPoArray)->get();
+
+            // Gabungkan (sum) semua field yang dibutuhkan
+            $total_harga   = $oldPreorders->sum('total_harga');
+            $ppn_global    = $oldPreorders->sum('ppn_global');
+            $grand_total   = $oldPreorders->sum('grand_total');
+            $diskon_global = $oldPreorders->sum('diskon_global');
+            // dd($total_harga);
+
+            // Hapus semua PO lama
+            Preorder::whereIn('nomor_po', $oldPoArray)->delete();
+
+            // Create preorder baru pakai hasil gabungan
             $preorder = Preorder::create([
-                'nomor_po' => $request->nomor_po,
+                'nomor_po'       => $request->nomor_po,
                 'nomor_receive' => $nomor_receive,
-                'id_supplier' => $supplier->id,
-                'detail' => $request->details,
-                'date_last' => $request->tanggal_po,
-                'date_first' => $request->tanggal_po,
-                'receive_type' => 'B',
-                'is_receive' => 1,
-                'total_harga' => $oldPo->total_harga,
-                'ppn_global' => $oldPo->ppn_global,
-                'grand_total' => $oldPo->grand_total,
-                'diskon_global' => $oldPo->diskon_global,
-                'is_cancel' => 1
+                'id_supplier'   => $supplier->id,
+                'detail'        => $request->details,
+                'date_last'     => $request->tanggal_po,
+                'date_first'    => $request->tanggal_po,
+                'receive_type'  => 'B',
+                'is_receive'    => 1,
+                'total_harga'   => $total_harga,
+                'ppn_global'    => $ppn_global,
+                'grand_total'   => $grand_total,
+                'diskon_global' => $diskon_global,
+                'is_cancel'     => 1
             ]);
-
-            $oldPo->update(['is_receive' => 1]);
         } else {
             $preorder = Preorder::create([
                 'nomor_po' => $request->nomor_po,
