@@ -564,8 +564,9 @@ class PreOrderController extends Controller
         //     $query->where('stok', '>', 0);
         // })->pluck('id')->toArray();
 
-        $suppliers = Supplier::where('status', 1)->where('waktu_kunjungan', '!=', 0)->where('hari', '!=', 'MINGGU')->get();
-        $supplierIds = Supplier::where('status', 1)->where('waktu_kunjungan', '!=', 0)->where('hari', '!=', 'MINGGU')->pluck('id')->toArray();
+        $today = strtoupper(Carbon::now()->locale('id')->dayName);
+        $suppliers = Supplier::where('status', 1)->where('waktu_kunjungan', '!=', 0)->where('hari', '=', $today)->get();
+        $supplierIds = Supplier::where('status', 1)->where('waktu_kunjungan', '!=', 0)->where('hari', '=', $today)->pluck('id')->toArray();
         // dd(count($suppliers));
 
         // Fetch all preorders
