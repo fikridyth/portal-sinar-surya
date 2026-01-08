@@ -69,20 +69,20 @@
                                         <td class="text-center"></td>
                                         <td class="text-center">{{ $dtl['nama'] . '/' . $dtl['unit_jual'] }}</td>
                                         <td class="text-center">{{ $dtl['order'] }}</td>
-                                        <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $productHarga->harga_pokok ?? $product->harga_pokok }}">
+                                        <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $product->harga_lama !== $product->harga_pokok ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
-                                        <td class="text-center">{{ number_format(((($productHarga->harga_pokok ?? $product->harga_pokok) - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                        <td class="text-center" style="color: <?= $product->harga_lama !== $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
+                                        <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
                                         @php
-                                        $roundedPrice = ((($productHarga->harga_pokok ?? $product->harga_pokok) * $product->profit) / 100) + $product->harga_jual;
-                                            if (strlen(($productHarga->harga_pokok ?? $product->harga_pokok)) >= 6) {
+                                        $roundedPrice = ((($dtl['price']) * $product->profit) / 100) + $product->harga_jual;
+                                            if (strlen(($dtl['price'])) >= 6) {
                                                 $roundedValue = round($roundedPrice, -3);
-                                            } elseif (strlen(($productHarga->harga_pokok ?? $product->harga_pokok)) >= 4) {
+                                            } elseif (strlen(($dtl['price'])) >= 4) {
                                                 $roundedValue = round($roundedPrice, -2);
-                                            } elseif (strlen(($productHarga->harga_pokok ?? $product->harga_pokok)) >= 2) {
+                                            } elseif (strlen(($dtl['price'])) >= 2) {
                                                 $roundedValue = round($roundedPrice, -1);
                                             } else {
                                                 $roundedValue = $roundedPrice;
@@ -143,7 +143,19 @@
                                     const tbody = document.querySelector('table tbody');
                                     const parentRow = event.target.closest('tr');
                                     data.products.forEach(product => {
-                                        const hargaJual = Math.round(((product.harga_pokok * product.profit) / 100) + product.harga_pokok);
+                                        const hargaPokok = product.harga_pokok;
+                                        const diskon = product.diskon1 || 0;
+                                        let hargaSetelahDiskon = hargaPokok;
+                                        if (diskon > 0 && diskon <= 99) {
+                                            hargaSetelahDiskon = hargaPokok - (hargaPokok * diskon / 100);
+                                        } else if (diskon >= 100) {
+                                            hargaSetelahDiskon = hargaPokok - diskon;
+                                        }
+                                        
+                                        hargaSetelahDiskon = Math.max(0, hargaSetelahDiskon);
+                                        const hargaJual = Math.round(hargaSetelahDiskon + (hargaSetelahDiskon * product.profit / 100));
+                                        const hargaKelipatan = Math.round(hargaJual / 50) * 50;
+
                                         // Create a new row
                                         const newRow = document.createElement('tr');
                                         newRow.innerHTML = `
@@ -151,13 +163,13 @@
                                             <td class="text-center">${product.nama}/${product.unit_jual}</td>
                                             <td class="text-center">0</td>
                                             <input type="text" hidden name="nama[${indexCounter}]" value="${product.nama}/${product.unit_jual}/${product.kode}/${product.harga_pokok}">
-                                            <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${product.harga_pokok}">
+                                            <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${hargaSetelahDiskon}">
                                             <td class="text-center">${number_format(product.harga_pokok)}</td>
-                                            <td class="text-center">${number_format(product.harga_pokok)}</td>
+                                            <td class="text-center">${number_format(hargaSetelahDiskon)}</td>
                                             <td class="text-center">0.00</td>
                                             <td class="text-center">${number_format(product.harga_jual)}</td>
                                             <td class="text-center">
-                                                <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${hargaJual}" size="10">
+                                                <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${hargaKelipatan}" size="10">
                                             </td>
                                             <td class="text-center">
                                                 <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${product.profit}" size="5">
@@ -211,7 +223,7 @@
 
                 if (!isNaN(hargaPokok) && hargaPokok > 0) {
                     const hargaJualValue = ((hargaPokok * markUp) / 100) + hargaPokok;
-                    document.getElementById(`persetujuan_harga_jual_${index}`).value = number_format(hargaJualValue);
+                    document.getElementById(`persetujuan_harga_jual_${index}`).value = number_format_harga_jual(hargaJualValue);
                 }
             }
 
@@ -242,6 +254,10 @@
 
         function number_format_mark_up(number) {
             return Number(number).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function number_format_harga_jual(number) {
+            return Number(number).toFixed(0);
         }
 
         const form = document.getElementById('filter-form');

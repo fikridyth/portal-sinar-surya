@@ -573,5 +573,9 @@
                 }
             });
         });
+
+        document.getElementById('nama_barang').addEventListener('input', function () {
+            this.value = this.value.replace(/"/g, '');
+        });
     </script>
 @endsection
