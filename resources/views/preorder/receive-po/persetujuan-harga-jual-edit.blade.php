@@ -72,7 +72,7 @@
                                         <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $product->harga_lama !== $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
+                                        <td class="text-center" style="color: <?= $product->harga_lama >= $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
                                         <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
@@ -166,7 +166,7 @@
                                             <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${hargaSetelahDiskon}">
                                             <td class="text-center">${number_format(product.harga_lama)}</td>
                                             <td class="text-center"
-                                                style="color: ${product.harga_lama !== hargaSetelahDiskon ? 'red' : 'black'}">
+                                                style="color: ${product.harga_lama >= hargaSetelahDiskon ? 'red' : 'black'}">
                                                 ${number_format(hargaSetelahDiskon)}
                                             </td>
                                             <td class="text-center">${number_format_mark_up(((hargaSetelahDiskon - product.harga_lama) / product.harga_lama) * 100)}</td>
