@@ -165,7 +165,10 @@
                                             <input type="text" hidden name="nama[${indexCounter}]" value="${product.nama}/${product.unit_jual}/${product.kode}/${product.harga_pokok}">
                                             <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${hargaSetelahDiskon}">
                                             <td class="text-center">${number_format(product.harga_lama)}</td>
-                                            <td class="text-center">${number_format(hargaSetelahDiskon)}</td>
+                                            <td class="text-center"
+                                                style="color: ${product.harga_lama !== hargaSetelahDiskon ? 'red' : 'black'}">
+                                                ${number_format(hargaSetelahDiskon)}
+                                            </td>
                                             <td class="text-center">${number_format_mark_up(((hargaSetelahDiskon - product.harga_lama) / product.harga_lama) * 100)}</td>
                                             <td class="text-center">${number_format(product.harga_jual)}</td>
                                             <td class="text-center">
