@@ -90,7 +90,7 @@
                                         @endphp
                                         <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $roundedValue }}" size="10"></td>
 
-                                        <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
+                                        <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($roundedValue - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td>
                                         {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
                                         <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" value="{{ $index }}" class="select-product"></td>
                                     </tr>
@@ -164,9 +164,9 @@
                                             <td class="text-center">0</td>
                                             <input type="text" hidden name="nama[${indexCounter}]" value="${product.nama}/${product.unit_jual}/${product.kode}/${product.harga_pokok}">
                                             <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${hargaSetelahDiskon}">
-                                            <td class="text-center">${number_format(product.harga_pokok)}</td>
+                                            <td class="text-center">${number_format(product.harga_lama)}</td>
                                             <td class="text-center">${number_format(hargaSetelahDiskon)}</td>
-                                            <td class="text-center">0.00</td>
+                                            <td class="text-center">${number_format_mark_up(((hargaSetelahDiskon - product.harga_lama) / product.harga_lama) * 100)}</td>
                                             <td class="text-center">${number_format(product.harga_jual)}</td>
                                             <td class="text-center">
                                                 <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${hargaKelipatan}" size="10">
@@ -223,7 +223,7 @@
 
                 if (!isNaN(hargaPokok) && hargaPokok > 0) {
                     const hargaJualValue = ((hargaPokok * markUp) / 100) + hargaPokok;
-                    document.getElementById(`persetujuan_harga_jual_${index}`).value = number_format_harga_jual(hargaJualValue);
+                    document.getElementById(`persetujuan_harga_jual_${index}`).value = number_format_harga_jual(Math.round(hargaJualValue / 50) * 50);
                 }
             }
 
