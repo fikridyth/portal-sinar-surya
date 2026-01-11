@@ -34,20 +34,9 @@
 </style>
 
 @section('content')
-    <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">KARTU STOK
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
+    <div class="container mb-2 mt-n3">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body mt-n4">
                 <form action="{{ route('master.kartu-stok.show', enkrip($product->id)) }}" method="GET" class="d-flex align-items-center">
                     <div class="card-body">
                         <div class="d-flex justify-content-center mb-2">
@@ -110,46 +99,10 @@
                             </div>
                         </div>
 
-                        {{-- <div class="d-flex justify-content-center mb-2">
-                            <div class="row w-100">
-                                <div class="col-2"></div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">DARI TANGGAL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="col">
-                                        <input type="text" value="{{ now()->format('d/m/Y') }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-center mb-2">
-                            <div class="row w-100">
-                                <div class="col-2"></div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <label for="nomorSupplier2" class="col col-form-label d-flex justify-content-end">SAMPAI TANGGAL</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="col">
-                                        <input type="text" value="{{ now()->format('d/m/Y') }}" disabled class="form-control" id="nomorSupplier2" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div> --}}
-
                         <div class="d-flex justify-content-between mt-4">
                             <div class="row w-100">
                                 <div class="form-group col-12">
-                                    <div style="overflow-x: auto; height: 700px; border: 1px solid #ccc;">
+                                    <div style="overflow-x: auto; height: 500px; border: 1px solid #ccc;">
                                         <table class="table table-bordered" style="width: 100%; table-layout: auto;">
                                             <thead>
                                                 <tr>
@@ -189,20 +142,6 @@
                                                         <td class="text-end">@if ($flow['total'] <= 0) {{ str_replace('-', '', $flow['total']) * ($flow['unit_jual'] ?? 1) }} @endif</td>
                                                         <td class="text-end"></td>
                                                     </tr>
-                                                    {{-- @if ($flow['stok'] !== null)
-                                                        <tr>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td style="color: red;">SALDO</td>
-                                                            <td class="text-center"><input type="checkbox" name="" id=""></td>
-                                                            @foreach ($allProducts as $prd)
-                                                                <td class="text-end" style="color: red;"></td>
-                                                            @endforeach
-                                                            <td class="text-end" style="color: red;"></td>
-                                                            <td class="text-end" style="color: red;"></td>
-                                                            <td class="text-end" style="color: red;"></td>
-                                                        </tr>
-                                                    @endif --}}
                                                 @endforeach
                                                 <tr>
                                                     <td></td>
@@ -223,7 +162,7 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-center align-items-center mt-3">
+                        <div class="d-flex justify-content-center align-items-center mt-3 mb-n5">
                             <div class="mx-2">
                                 <a class="btn btn-primary" href="{{ route('master.kartu-stok.index') }}">BARANG LAIN</a>
                             </div>
@@ -240,7 +179,12 @@
 
 @section('scripts')
     <script>
+        let today = moment();
+        let startOfMonth = moment().startOf('month');
+
         $("#periode").daterangepicker({
+            startDate: startOfMonth,
+            endDate: today,
             locale: {
                 cancelLabel: "Clear",
                 format: "YYYY-MM-DD",
@@ -265,25 +209,31 @@
             autoApply: true
         });
 
-        document.getElementById("periode").value = "{{ request('periode') }}";
-
-        $("#periode").on(
-            "apply.daterangepicker",
-            function(ev, picker) {
-                $(this).val(picker.startDate.format("YYYY-MM-DD") + ' - ' + picker.endDate.format('YYYY-MM-DD'));
-            }
+        // set default value di input
+        $("#periode").val(
+            startOfMonth.format("YYYY-MM-DD") + ' - ' + today.format("YYYY-MM-DD")
         );
 
-        $("#periode").on(
-            "cancel.daterangepicker",
-            function() {
-                $(this).val('');
-            }
-        );
-        
-        var periode = document.getElementById("periode");
+        // jika ada request dari backend, override default
+        @if(request('periode'))
+            $("#periode").val("{{ request('periode') }}");
+        @endif
+
+        $("#periode").on("apply.daterangepicker", function(ev, picker) {
+            $(this).val(
+                picker.startDate.format("YYYY-MM-DD") +
+                ' - ' +
+                picker.endDate.format("YYYY-MM-DD")
+            );
+        });
+
+        $("#periode").on("cancel.daterangepicker", function() {
+            $(this).val('');
+        });
+
         document.getElementById("clear").addEventListener("click", function() {
-            periode.value = '';
+            $("#periode").val('');
         });
     </script>
 @endsection
+

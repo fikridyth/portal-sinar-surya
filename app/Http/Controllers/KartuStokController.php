@@ -13,14 +13,16 @@ class KartuStokController extends Controller
     public function index(KartuStokDataTable $dataTable)
     {
         $title = 'Master Kartu Stok';
+        $titleHeader = 'KARTU STOK';
 
-        return $dataTable->render('master.kartu-stok.index', compact('title'));
+        return $dataTable->render('master.kartu-stok.index', compact('title', 'titleHeader'));
     }
 
     public function show(string $id)
     {
         $id = dekrip($id);
         $title = 'Show Master Kartu Stok';
+        $titleHeader = 'KARTU STOK';
         $product = Product::find($id);
         
         $parentAndChildUnits = Product::where(function($query) use ($product) {
@@ -78,6 +80,6 @@ class KartuStokController extends Controller
             return strtotime($a['tanggal']) - strtotime($b['tanggal']);
         });
 
-        return view('master.kartu-stok.show', compact('title', 'product', 'allProducts', 'totalMasuk', 'productFlow'));
+        return view('master.kartu-stok.show', compact('title', 'product', 'allProducts', 'totalMasuk', 'productFlow', 'titleHeader'));
     }
 }
