@@ -115,6 +115,27 @@
                                                 $no = $index + 1;
                                                 $productUnitJual = (int) str_replace('P', '', $product->unit_jual);
                                                 $productUnitBeli = (int) str_replace('P', '', $product->unit_beli);
+                                                $hargaSetelahDiskon = round($product->harga_pokok);
+
+                                                if ($product->diskon1 > 0 && $product->diskon1 <= 99) {
+                                                    $hargaSetelahDiskon = round($product->harga_pokok - ($product->harga_pokok * $product->diskon1 / 100));
+                                                } else if ($product->diskon1 >= 100) {
+                                                    $hargaSetelahDiskon = round($product->harga_pokok - $product->diskon1);
+                                                } else {
+                                                    $hargaSetelahDiskon = round($product->harga_pokok);
+                                                }
+
+                                                $roundedPrice = ((($hargaSetelahDiskon) * $product->profit) / 100) + $hargaSetelahDiskon;
+                                                $roundedValue = round($roundedPrice / 50) * 50
+                                                // if (strlen(($hargaSetelahDiskon)) >= 6) {
+                                                //     $roundedValue = round($roundedPrice, -3);
+                                                // } elseif (strlen(($hargaSetelahDiskon)) >= 4) {
+                                                //     $roundedValue = round($roundedPrice, -2);
+                                                // } elseif (strlen(($hargaSetelahDiskon)) >= 2) {
+                                                //     $roundedValue = round($roundedPrice, -1);
+                                                // } else {
+                                                //     $roundedValue = $roundedPrice;
+                                                // }
                                             @endphp
                                             <tr>
                                                 <input type="hidden" name="id_supplier" value="{{ $product->id_supplier }}">
@@ -132,7 +153,7 @@
                                                         id="harga_pokok_{{ $no }}" 
                                                         name="harga_pokok[{{ $product->id }}]" 
                                                         required 
-                                                        value="{{ $product->harga_pokok }}" 
+                                                        value="{{ $hargaSetelahDiskon }}" 
                                                         style="width: 100px;" 
                                                         data-id="{{ $product->id }}"
                                                         data-index="{{ $no }}"
@@ -148,13 +169,13 @@
                                                     >
                                                 </td>
                                                 @if (isset($product->harga_lama) && $product->harga_lama !== 0)
-                                                    <td id="profit_pokok_{{ $no }}">{{ number_format((($product->harga_pokok - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
+                                                    <td id="profit_pokok_{{ $no }}">{{ number_format((($hargaSetelahDiskon - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                                 @else
                                                     <td id="profit_pokok_{{ $no }}">0.00</td>
                                                 @endif
-                                                <input type="number" id="harga_jual_{{ $no }}" hidden name="harga_jual[{{ $product->id }}]" required value="{{ $product->harga_jual }}" style="width: 100px;" 
-                                                    onblur="handleBlurJual({{ $no }}, '{{ $product->harga_jual }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $product->harga_jual }}')" onfocus="this.value = '';">
-                                                <td class="text-end">{{ number_format($productHarga->harga_jual ?? $product->harga_jual) }}</td>
+                                                <input type="number" id="harga_jual_{{ $no }}" hidden name="harga_jual[{{ $product->id }}]" required value="{{ $roundedValue }}" style="width: 100px;" 
+                                                    onblur="handleBlurJual({{ $no }}, '{{ $roundedValue }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterJual(event, {{ $no }}, '{{ $roundedValue }}')" onfocus="this.value = '';">
+                                                <td class="text-end">{{ number_format($product->harga_jual) }}</td>
                                                 <td><input type=" text"autocomplete="off" id="profit_{{ $no }}" name="profit[{{ $product->id }}]" value="{{ $product->profit }}" style="width: 70px;" 
                                                     onblur="handleBlurProfit({{ $no }}, '{{ $product->profit }}')" oninput="updateHargaSementara({{ $no }})" onkeydown="handleEnterProfit(event, {{ $no }}, '{{ $product->profit }}')" onfocus="this.value = '';"></td>
                                                 <td id="td_harga_sementara_{{ $no }}">
@@ -164,13 +185,13 @@
                                                         id="harga_sementara_{{ $no }}" 
                                                         name="harga_sementara[{{ $product->id }}]" 
                                                         required 
-                                                        value="{{ $productHarga->harga_jual ?? $product->harga_jual }}" 
+                                                        value="{{ $roundedValue }}" 
                                                         style="width: 100px;" 
                                                         data-nama="{{ $product->nama }}"
                                                         data-index="{{ $no }}"
-                                                        onblur="handleBlurSementara({{ $no }}, '{{ $productHarga->harga_jual ?? $product->harga_jual }}')"
+                                                        onblur="handleBlurSementara({{ $no }}, '{{ $roundedValue }}')"
                                                         oninput="updateHargaSementara2({{ $no }})" 
-                                                        onkeydown="handleEnterSementara(event, {{ $no }}, '{{ round((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}')"
+                                                        onkeydown="handleEnterSementara(event, {{ $no }}, '{{ $roundedValue }}')"
                                                     >
                                                 </td>
                                                 <td><input type="checkbox" style="pointer-events:none;" id="checkbox_select_{{ $no }}" name="selected_ids[{{ $product->id }}]" value="{{ $product->id }}" class="product-checkbox" data-nama="{{ $product->nama }}"></td>
@@ -209,6 +230,13 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            $('.supplier-select').select2({
+                placeholder: '---Select Supplier---',
+                allowClear: true
+            });
+            $(document).on('select2:open', () => {
+                document.querySelector('.select2-container--open .select2-search__field').focus();
+            });
             $('#supplierSelect').change(function() {
                 var supplierId = $(this).val();
                 if (supplierId) {
@@ -216,11 +244,6 @@
                     window.location.href = url;
                 }
             });
-        });
-
-        $(`.supplier-select`).select2({
-            placeholder: '---Select Supplier---',
-            allowClear: true
         });
 
         let tempInputData = {

@@ -62,6 +62,15 @@
                                         $product = App\Models\Product::where('kode', $dtl['kode'])->first();
                                         $productHarga = App\Models\HargaSementara::where('id_product', $product->id)->orderBy('created_at', 'desc')->first();
                                         $changeTextColor = (($product->harga_jual - $dtl['price']) / $dtl['price']) * 100;
+
+                                        $hargaSetelahDiskonHeader = round($product->harga_pokok);
+                                        if ($product->diskon1 > 0 && $product->diskon1 <= 99) {
+                                            $hargaSetelahDiskonHeader = round($product->harga_pokok - ($product->harga_pokok * $product->diskon1 / 100));
+                                        } else if ($product->diskon1 >= 100) {
+                                            $hargaSetelahDiskonHeader = round($product->harga_pokok - $product->diskon1);
+                                        } else {
+                                            $hargaSetelahDiskonHeader = round($product->harga_pokok);
+                                        }
                                     @endphp
                                     <tr>
                                         <input type="text" name="preorder" value="{{ $preorder->id }}" hidden>
@@ -72,25 +81,26 @@
                                         <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $product->harga_lama >= $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
+                                        <td class="text-center" style="color: <?= $product->harga_lama >= $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($hargaSetelahDiskonHeader) }}</td>
                                         <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
                                         @php
-                                        $roundedPrice = ((($dtl['price']) * $product->profit) / 100) + $product->harga_jual;
-                                            if (strlen(($dtl['price'])) >= 6) {
-                                                $roundedValue = round($roundedPrice, -3);
-                                            } elseif (strlen(($dtl['price'])) >= 4) {
-                                                $roundedValue = round($roundedPrice, -2);
-                                            } elseif (strlen(($dtl['price'])) >= 2) {
-                                                $roundedValue = round($roundedPrice, -1);
-                                            } else {
-                                                $roundedValue = $roundedPrice;
-                                            }
+                                            $roundedPrice = ((($hargaSetelahDiskonHeader) * $product->profit) / 100) + $hargaSetelahDiskonHeader;
+                                            $roundedValue = round($roundedPrice / 50) * 50
+                                            // if (strlen(($hargaSetelahDiskonHeader)) >= 6) {
+                                            //     $roundedValue = round($roundedPrice, -3);
+                                            // } elseif (strlen(($hargaSetelahDiskonHeader)) >= 4) {
+                                            //     $roundedValue = round($roundedPrice, -2);
+                                            // } elseif (strlen(($hargaSetelahDiskonHeader)) >= 2) {
+                                            //     $roundedValue = round($roundedPrice, -1);
+                                            // } else {
+                                            //     $roundedValue = $roundedPrice;
+                                            // }
                                         @endphp
                                         <td class="text-center"><input type="text" name="harga_jual[{{ $index }}]" id="persetujuan_harga_jual_{{ $index }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57' value="{{ $roundedValue }}" size="10"></td>
 
-                                        <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($roundedValue - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td>
+                                        <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
                                         {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
                                         <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" value="{{ $index }}" class="select-product"></td>
                                     </tr>
