@@ -40,7 +40,7 @@ class KartuStokController extends Controller
                 'kode' => $items->pluck('kode')->first(),
                 'unit_jual' => $unit_jual,
                 'stok' => number_format($stok, 0),
-                'masuk' => (int)number_format($get_number * $stok, 0),
+                'masuk' => (int) $stok * (int) $get_number,
                 'get_number' => (int)$get_number
             ];
         })
