@@ -20,7 +20,7 @@ class AdjustmentController extends Controller
         $grups = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::where('status', 1)->get();
-        $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = Product::where('stok', '>', 0)->where('kode_sumber', null)->orderBy('nama', 'asc')->get();
         // dd(count($products));
 
         return view('master.adjustment.index', compact('title', 'titleHeader', 'grups', 'departemens', 'suppliers', 'products'));
@@ -29,27 +29,41 @@ class AdjustmentController extends Controller
     public function show(Request $request) {
         $title = 'Adjustment';
         $titleHeader = 'PENYESUAIAN PERSEDIAAN';
-        // dd($request->all());
-
         $query = Product::query();
+        $kodeProduk = [];
+        // dd($kodeProduk, $request->all());
 
-        if (!empty($request->selected_products)) {
-            $query->whereIn('id', $request->selected_products);
-        }
+        $query->where(function ($q) use ($request) {
+            if (!empty($request->selected_products)) {
+                $kodeProduk = Product::whereIn('id', $request->selected_products)
+                    ->pluck('kode')
+                    ->toArray();
+                $q->orWhereIn('kode_sumber', $kodeProduk);
+            }
+    
+            if (!empty($request->selected_suppliers)) {
+                $q->orWhereIn('id_supplier', $request->selected_suppliers);
+            }
+    
+            if (!empty($request->selected_grups)) {
+                $q->orWhereIn('id_unit', $request->selected_grups);
+            }
+    
+            if (!empty($request->selected_departemens)) {
+                $q->orWhereIn('id_departemen', $request->selected_departemens);
+            }
+        });
 
-        if (!empty($request->selected_suppliers)) {
-            $query->whereIn('id_supplier', $request->selected_suppliers);
-        }
-
-        if (!empty($request->selected_grups)) {
-            $query->whereIn('id_unit', $request->selected_grups);
-        }
-
-        if (!empty($request->selected_departemens)) {
-            $query->whereIn('id_departemen', $request->selected_departemens);
-        }
-
-        $products = $query->orderBy('nama', 'asc')->get();
+        $products = $query
+            ->whereRaw("
+                CAST(SUBSTRING(unit_jual, 2) AS UNSIGNED) = (
+                    SELECT MIN(CAST(SUBSTRING(p2.unit_jual, 2) AS UNSIGNED))
+                    FROM products p2
+                    WHERE p2.nama = products.nama
+                )
+            ")
+            ->orderBy('nama', 'asc')
+            ->get();
         session(['products' => $products]);
         // dd(count($products));
 
@@ -62,7 +76,7 @@ class AdjustmentController extends Controller
         $grups = Unit::all();
         $departemens = Departemen::all();
         $suppliers = Supplier::where('status', 1)->get();
-        $products = Product::where('stok', '>', 0)->orderBy('nama', 'asc')->get();
+        $products = Product::where('stok', '>', 0)->where('kode_sumber', null)->orderBy('nama', 'asc')->get();
         // dd(count($products));
 
         return view('master.adjustment.index-edit', compact('title', 'titleHeader', 'grups', 'departemens', 'suppliers', 'products'));
@@ -71,29 +85,43 @@ class AdjustmentController extends Controller
     public function password(Request $request) {
         $title = 'Adjustment';
         $titleHeader = 'PENYESUAIAN PERSEDIAAN';
-        // dd($request->all());
-
         $query = Product::query();
+        $kodeProduk = [];
+        // dd($kodeProduk, $request->all());
 
-        if (!empty($request->selected_products)) {
-            $query->whereIn('id', $request->selected_products);
-        }
+        $query->where(function ($q) use ($request) {
+            if (!empty($request->selected_products)) {
+                $kodeProduk = Product::whereIn('id', $request->selected_products)
+                    ->pluck('kode')
+                    ->toArray();
+                $q->orWhereIn('kode_sumber', $kodeProduk);
+            }
+    
+            if (!empty($request->selected_suppliers)) {
+                $q->orWhereIn('id_supplier', $request->selected_suppliers);
+            }
+    
+            if (!empty($request->selected_grups)) {
+                $q->orWhereIn('id_unit', $request->selected_grups);
+            }
+    
+            if (!empty($request->selected_departemens)) {
+                $q->orWhereIn('id_departemen', $request->selected_departemens);
+            }
+        });
 
-        if (!empty($request->selected_suppliers)) {
-            $query->whereIn('id_supplier', $request->selected_suppliers);
-        }
-
-        if (!empty($request->selected_grups)) {
-            $query->whereIn('id_unit', $request->selected_grups);
-        }
-
-        if (!empty($request->selected_departemens)) {
-            $query->whereIn('id_departemen', $request->selected_departemens);
-        }
-
-        $products = $query->orderBy('nama', 'asc')->get();
-        // dd(count($products));
+        $products = $query
+            ->whereRaw("
+                CAST(SUBSTRING(unit_jual, 2) AS UNSIGNED) = (
+                    SELECT MIN(CAST(SUBSTRING(p2.unit_jual, 2) AS UNSIGNED))
+                    FROM products p2
+                    WHERE p2.nama = products.nama
+                )
+            ")
+            ->orderBy('nama', 'asc')
+            ->get();
         session(['products' => $products]);
+        // dd(count($products));
 
         $getUser = User::where('name', 'LO HARYANTO')->first();
         $passUser = $getUser->show_password;
