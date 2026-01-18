@@ -350,7 +350,7 @@
                                                                             <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
                                                                             <input type="hidden" name="nomor_receive" value="{{ $preorder->nomor_receive }}">
                                                                             <input type="hidden" name="no" value="{{ $no - 1 }}">
-                                                                            <button type="submit" style="display:none; margin:0; padding:2px 6px; font-size:10px;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
+                                                                            <button type="submit" style="display:none; margin:0; padding:2px 6px; font-size:10px;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Apakah barang ini bonus sebesar {{ number_format($detail['field_total']) }}?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">BONUS</button>
                                                                         </div>
                                                                     </form>
                                                                 </td>

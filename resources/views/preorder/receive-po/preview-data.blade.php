@@ -45,19 +45,19 @@
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-end">{{ number_format($product->harga_lama ? $product->harga_lama : $product->harga_pokok) }}</td>
                                         @if ($product->harga_lama !== 0)
-                                            @if ($product->harga_pokok > $product->harga_lama)
-                                                <td class="text-end" style="background-color: red; color: white;">{{ number_format($product->harga_pokok) }}</td>
+                                            @if ($dtl['price'] > $product->harga_lama)
+                                                <td class="text-end" style="background-color: red; color: white;">{{ number_format($dtl['price']) }}</td>
                                             @else
-                                                <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_pokok) }}</td>
+                                                <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
                                             @endif 
                                         @else
-                                            <td class="text-end">{{ number_format($product->harga_pokok) }}</td>
+                                            <td class="text-end">{{ number_format($dtl['price']) }}</td>
                                         @endif
-                                        <td class="text-end">{{ number_format((($product->harga_pokok - ($product->harga_lama ? $product->harga_lama : $product->harga_pokok)) / ($product->harga_lama ? $product->harga_lama : $product->harga_pokok)) * 100, 2) }}</td>
+                                        <td class="text-end">{{ number_format((($dtl['price'] - ($product->harga_lama ? $product->harga_lama : $dtl['price'])) / ($product->harga_lama ? $product->harga_lama : $dtl['price'])) * 100, 2) }}</td>
                                         <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
-                                        <td class="text-end">{{ number_format((($product->harga_pokok * $product->profit) / 100) + $product->harga_pokok) }}</td>
-                                        <td class="text-end">{{ $product->profit }}</td>
-                                        <td class="text-center"></td>
+                                        <td class="text-end">{{ number_format($product->harga_jual) }}</td>
+                                        <td class="text-end">{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}</td>
+                                        <td class="text-center">{{ $dtl['field_total'] == 0 ? 'BONUS' : '' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
