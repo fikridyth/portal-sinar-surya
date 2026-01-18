@@ -93,19 +93,21 @@
             <hr class="dashed-line">
             <hr class="dashed-line-2">
             @foreach (json_decode($preorder->detail, true) as $detail)
-                @php
-                    $product = App\Models\Product::where('kode', $detail['kode'])->first();
-                @endphp
-                <div class="row" style="margin-top: 10px;">
-                    <div class="col-3">{{ $detail['nama'] }}/{{ $product->unit_jual }}</div>
-                    <div class="col-1">{{ $detail['order'] }}</div>
-                    <div class="col-1-5 text-center">{{ number_format($product->harga_lama) }}</div>
-                    <div class="col-1-5 text-center">{{ number_format($detail['price']) }}</div>
-                    <div class="col-1">{{ number_format((($detail['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</div>
-                    <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
-                    <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
-                    <div class="col-1">{{ number_format((($product->harga_jual - $detail['price']) / $detail['price']) * 100, 2) }}</div>
-                </div>
+                @if (!empty($detail['field_total']) && $detail['field_total'] > 0)
+                    @php
+                        $product = App\Models\Product::where('kode', $detail['kode'])->first();
+                    @endphp
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-3">{{ $detail['nama'] }}/{{ $product->unit_jual }}</div>
+                        <div class="col-1">{{ $detail['order'] }}</div>
+                        <div class="col-1-5 text-center">{{ number_format($product->harga_lama) }}</div>
+                        <div class="col-1-5 text-center">{{ number_format($detail['price']) }}</div>
+                        <div class="col-1">{{ number_format((($detail['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</div>
+                        <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
+                        <div class="col-1-5 text-center">{{ number_format($product->harga_jual) }}</div>
+                        <div class="col-1">{{ number_format((($product->harga_jual - $detail['price']) / $detail['price']) * 100, 2) }}</div>
+                    </div>
+                @endif
             @endforeach
             <hr class="dashed-line">
             <hr class="dashed-line-2">
@@ -114,6 +116,22 @@
                 <div class="col-3">Total Faktur Rp :</div>
                 <div class="col-3" style="text-align: right;">{{ number_format($preorder->grand_total) }}</div>
             </div>
+            
+            @foreach (json_decode($preorder->detail, true) as $detail)
+                @if ($detail['field_total'] == 0)
+                    @php
+                        $product = App\Models\Product::where('kode', $detail['kode'])->first();
+                    @endphp
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-4">BONUS {{ $detail['nama'] }}/{{ $product->unit_jual }}</div>
+                        <div class="col-1">{{ $detail['order'] }}</div>
+                        <div class="col-1-5"></div>
+                        <div class="col-1-5"></div>
+                        <div class="col-1-5"></div>
+                        <div class="col-1-5"></div>
+                    </div>
+                @endif
+            @endforeach
             {{-- <hr class="dashed-line">
             <hr class="dashed-line-2"> --}}
             <div class="row" style="margin-top: 20px;">

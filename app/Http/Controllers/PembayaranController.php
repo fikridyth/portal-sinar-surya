@@ -149,13 +149,14 @@ class PembayaranController extends Controller
             $filteredData['date'][] = $allData['date'][$index];
             $filteredData['total'][] = $allData['total'][$index];
         }
+        $sumTotal = array_sum(array_map('intval', $filteredData['total']));
         
         // cek bila hanya return bawa ke halaman password
         // dd($request->donePass == null);
         if ($request->donePass == null) {
             foreach ($filteredData['nomor'] as $nomor) {
                 $parts = explode('-', $nomor);
-                if ($parts[0] === 'RP') {
+                if ($parts[0] === 'RP' && $sumTotal > 0) {
                     break;
                 } else {
                     $getUser = User::where('name', 'LO HARYANTO')->first();

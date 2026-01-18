@@ -16,7 +16,7 @@ class GiroController extends Controller
     {
         $title = 'Master Bank';
         $titleHeader = 'MASTER BANK';
-        $banks = Bank::all();
+        $banks = Bank::orderBy('nama')->get();
 
         return view('master.bank.index', compact('title', 'titleHeader', 'banks'));
     }

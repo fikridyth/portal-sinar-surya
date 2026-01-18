@@ -361,7 +361,7 @@ class SupplierController extends Controller
         $titleHeader = 'PERUBAHAN SUPPLIER';
         $supplier = Supplier::find($id);
         $suppliers = Supplier::where('status', 1)->get();
-        $products = Product::where('id_supplier', $id)->whereNotNull('stok')->where('stok', '>', 0)->get();
+        $products = Product::where('id_supplier', $id)->whereNotNull('stok')->where('stok', '>', 0)->orderBy('nama')->get();
         // dd(count($products));
 
         return view('master.supplier.perubahan.show', compact('title', 'titleHeader', 'supplier', 'suppliers', 'products'));
