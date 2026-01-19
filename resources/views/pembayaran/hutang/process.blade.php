@@ -101,7 +101,7 @@
                     <div class="row align-items-center mt-4">
                         <div class="col-12 col-md-1"></div>
                         <div class="col-12 col-md-4">
-                            <button type="button" onclick="window.history.back()" class="btn btn-danger mx-2">KEMBALI</button>
+                            <a href="{{ route('pembayaran-hutang.show', enkrip($supplier->id)) }}" class="btn btn-danger mx-2">KEMBALI</a>
                             <button type="submit" name="tipe" value="cetak" class="btn btn-warning mx-2" onclick="setTarget('_self')">CETAK</button>
                             <button type="submit" name="tipe" value="store" class="btn btn-primary mx-2" onclick="setTarget('_self')">PROSES</button>
                         </div>

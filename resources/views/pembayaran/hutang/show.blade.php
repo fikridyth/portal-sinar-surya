@@ -101,7 +101,7 @@
                     </table>
                     <div class="d-flex justify-content-center align-items-center mt-4">
                         <div class="mx-2">
-                            <button type="button" onclick="window.history.back()" class="btn btn-danger">KEMBALI</button>
+                            <a href="{{ route('pembayaran-hutang.index') }}" class="btn btn-danger">KEMBALI</a>
                         </div>
                         <div class="mx-2">
                             <button type="submit" class="btn btn-primary">PROSES</button>

@@ -408,9 +408,18 @@
                                     <div class="mx-2">
                                         <a href="{{ route('receive-po.create') }}" class="btn btn-success">TAMBAH PREORDER</a>
                                     </div>
+                                    @php
+                                        $hasZero = false;
+                                        foreach (json_decode($preorder->detail, true) as $detail) {
+                                            if (isset($detail['field_total']) && $detail['field_total'] == 0) {
+                                                $hasZero = true;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
                                     <div class="mx-2">
                                         @if ($preorder->is_cancel !== null && $preorder->detail !== '[]')
-                                            <a href="{{ route('receive-po.preview-data', enkrip($preorder->id)) }}" id="proses-button" class="btn btn-warning">PENERIMAAN</a>
+                                            <a href="{{ route('receive-po.preview-data', enkrip($preorder->id)) }}" id="proses-button" class="btn btn-warning" data-has-zero="{{ $hasZero ? '1' : '0' }}">PENERIMAAN</a>
                                         @else
                                             <button disabled class="btn btn-warning">PENERIMAAN</button>
                                         @endif
@@ -524,6 +533,28 @@
     @include('preorder.detail-po.js.netto')
     @include('preorder.detail-po.js.new-row-receive')
     <script>
+        document.getElementById('proses-button').addEventListener('click', function (e) {
+            let hasZero = this.getAttribute('data-has-zero');
+            let url = this.getAttribute('href');
+
+            if (hasZero === '1') {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: 'Apakah barang ini bonus?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, lanjutkan',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            }
+        });
+
         $(document).on('click', 'tr.fs-need', function (e) {
             // Abaikan klik langsung di input / button
             if (
