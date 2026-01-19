@@ -334,14 +334,16 @@
                                                                     <div class="order-container">
                                                                         <span class="order-text" id="order-text-{{ $no }}">{{ $detail['order'] }}</span>
                                                                         <input type="text" class="order-input" hidden disabled id="order-input-{{ $no }}" value="{{ $detail['order'] }}" size="3"
-                                                                            onblur="handleBlurOrder({{ $no }}, '{{ $detail['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $detail['order'] }}')" onfocus="this.value = '';">
+                                                                            onblur="handleBlurOrder({{ $no }}, '{{ $detail['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $detail['order'] }}')" onfocus="this.value = '';"
+                                                                            onkeypress="return handleKeyPress(event, this)" oninput="handleInput(this)">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end">
                                                                     <div class="price-container">
                                                                         <span class="price-text" id="price-text-{{ $no }}">{{ number_format($dataProduct->harga_pokok) }}</span>
                                                                         <input type="text" class="price-input" id="price-input-{{ $no }}" hidden disabled value="{{ $dataProduct->harga_pokok }}" size="10"
-                                                                            onblur="handleBlurPrice({{ $no }}, '{{ $dataProduct->harga_pokok }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $dataProduct->harga_pokok }}')" onfocus="this.value = '';">
+                                                                            onblur="handleBlurPrice({{ $no }}, '{{ $dataProduct->harga_pokok }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $dataProduct->harga_pokok }}')" onfocus="this.value = '';"
+                                                                            onkeypress="return handleKeyPress(event, this)" oninput="handleInput(this)">
                                                                     </div>
                                                                 </td>
                                                                 <td class="text-end netto" id="netto-{{ $no }}">{{ number_format($detail['price']) }}</td>
@@ -352,7 +354,7 @@
                                                                         <div class="row align-items-center" style="margin: 0; padding: 0;">
                                                                             <input type="hidden" name="receive_type" value="{{ $preorder->receive_type }}">
                                                                             <input type="hidden" name="no" value="{{ $no - 1 }}">
-                                                                            <button type="submit" style="display:none; margin:0; padding:2px 6px; font-size:10px;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Set bonus untuk item ini?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">SET</button>
+                                                                            <button type="submit" style="display:none; margin:0; padding:2px 6px; font-size:10px;" id="bonus-save-{{ $no }}" onclick="confirmAlertBonus(event, 'Apakah barang ini bonus sebesar {{ number_format($detail['field_total']) }}?', 'bonusForm-{{ $no }}')" class="btn btn-sm btn-primary">BONUS</button>
                                                                         </div>
                                                                     </form>
                                                                 </td>
@@ -382,11 +384,11 @@
                                     <div>
                                         <button type="button" class="btn btn-primary" hidden id="simpan-button">SIMPAN</button>
                                     </div>
-                                    <div class="mx-2">
+                                    <div hidden>
                                         <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-primary">INVENTORY</a>
                                     </div>
                                     <div class="mx-2">
-                                        <button type="button" class="btn btn-warning" disabled id="ubah-button" onclick="handleChangeClick(this)">GANTI</button>
+                                        <button type="button" class="btn btn-primary" disabled id="ubah-button" onclick="handleChangeClick(this)">INVENTORY</button>
                                     </div>
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>
@@ -548,6 +550,27 @@
                 document.getElementById('tambah-button').click();
             }
         });
+
+        function handleKeyPress(event, input) {
+            const char = event.key;
+
+            // Hanya angka
+            if (!/^[0-9]$/.test(char)) {
+                return false;
+            }
+
+            // Jika karakter pertama dan angka 0 → blok
+            if (input.value.length === 0 && char === '0') {
+                return false;
+            }
+
+            return true;
+        }
+
+        function handleInput(input) {
+            // Hapus leading zero jika ada (pengaman tambahan)
+            input.value = input.value.replace(/^0+/, '');
+        }
 
         function handleEnterOrder(event, no, originalValue) {
             if (event.key === 'Enter') {
