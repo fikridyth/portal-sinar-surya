@@ -374,16 +374,16 @@
                             <div class="d-flex justify-content-between align-items-center mt-3">
                                 <div class="d-flex">
                                     <div class="mx-2">
-                                        <button type="button" class="btn btn-primary" id="tambah-button">TAMBAH</button>
+                                        <button type="button" class="btn btn-success" id="tambah-button">TAMBAH</button>
                                     </div>
-                                    <div class="mx-2">
+                                    <div hidden>
                                         <button type="button" class="btn btn-primary" disabled id="simpan-button">SIMPAN</button>
                                     </div>
                                     <div hidden>
                                         <a href="{{ route('receive-po.add-product', enkrip($preorder->id)) }}" id="tambah-list-button" class="btn btn-primary">INVENTORY</a>
                                     </div>
                                     <div class="mx-2">
-                                        <button type="button" class="btn btn-primary" disabled id="ubah-button" onclick="handleChangeClick(this)">GANTI</button>
+                                        <button type="button" class="btn btn-primary" disabled id="ubah-button" onclick="handleChangeClick(this)">INVENTORY</button>
                                     </div>
                                     <div class="mx-2">
                                         <button type="button" class="btn btn-danger" disabled id="hapus-button" onclick="handleDestroyClick(this)">HAPUS</button>

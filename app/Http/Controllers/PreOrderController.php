@@ -1046,7 +1046,7 @@ class PreOrderController extends Controller
         if ($request->ppn == 'on') {
             $valuePpn = 11;
         } else {
-            $valuePpn = null;
+            $valuePpn = 0;
         }
         $preorder = Preorder::find($id);
         $preorder->update([
@@ -1059,26 +1059,58 @@ class PreOrderController extends Controller
 
     public function setPpnReceive(Request $request, $id)
     {
-        // dd($request->all(), $id);
-        if ($request->ppn == 'on') {
-            $valuePpn = 11;
-        } else {
-            $valuePpn = null;
+        $valuePpn = ($request->ppn === 'on') ? 11 : 0;
+        $preorder = Preorder::findOrFail($id);
+        $detail   = json_decode($preorder->detail, true);
+        $grandTotal = 0;
+
+        foreach ($detail as $key => $item) {
+            $qty       = (float) $item['order'];
+            $basePrice = (float) $item['price'];
+            $oldPrice = (float) ($item['old_price'] ?? $item['price']);
+
+            // Hitung PPN per item
+            if ($valuePpn > 0) {
+                $ppnAmount = $basePrice * ($valuePpn / 100);
+                $priceWithPpn = $basePrice + $ppnAmount;
+            } else {
+                $priceWithPpn = $oldPrice;
+            }
+
+            // Hitung total per item
+            $fieldTotal = $qty * $priceWithPpn;
+
+            // Update item
+            $item['is_ppn']     = $valuePpn;
+            $item['old_price']  = round($basePrice);
+            $item['price']      = round($priceWithPpn);
+            $item['field_total']= round($fieldTotal);
+
+            // Simpan kembali ke detail
+            $detail[$key] = $item;
+
+            // Akumulasi grand total
+            $grandTotal += $fieldTotal;
         }
-        $preorder = Preorder::find($id);
-        $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
+
+        // Update preorder
         $preorder->update([
-            'total_harga' => $request->total_harga,
-            'ppn_global' => $valuePpn ?? 0,
-            'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100),
+            'detail'       => json_encode($detail),
+            'ppn_global'   => $valuePpn,
+            'total_harga'  => round($grandTotal),
+            'grand_total'  => round($grandTotal),
         ]);
+
+        // Update hutang jika ada
+        $getPayment = Hutang::where('nomor_po', $preorder->nomor_po)->first();
         if ($getPayment) {
             $getPayment->update([
-                'total' => $request->total_harga ?? 0,
-                'ppn' => $preorder->ppn_global ?? 0,
-                'grand_total' => $request->total_harga + ($request->total_harga * $valuePpn / 100) ?? 0,
+                'ppn'   => $valuePpn,
+                'total'  => round($grandTotal),
+                'grand_total' => round($grandTotal),
             ]);
         }
+
         return redirect()->back();
     }
 

@@ -421,7 +421,7 @@
                                             <div class="col-auto">
                                                 <input type="hidden" name="total_harga" value="{{ $preorder->total_harga }}">
                                                 <div class="slider-container">
-                                                    <input type="checkbox" name="ppn" id="ppn" {{ $preorder->ppn_global ? 'checked' : '' }} class="slider-checkbox">
+                                                    <input type="checkbox" disabled name="ppn" id="ppn" {{ $preorder->ppn_global ? 'checked' : '' }} class="slider-checkbox">
                                                     <label for="ppn" class="slider-label"></label>
                                                 </div>
                                             </div>
