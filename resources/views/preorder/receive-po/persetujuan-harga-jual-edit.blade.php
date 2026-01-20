@@ -71,6 +71,10 @@
                                         } else {
                                             $hargaSetelahDiskonHeader = round($product->harga_pokok);
                                         }
+
+                                        if ($product->ppn > 0) {
+                                            $hargaSetelahDiskonHeader += round($hargaSetelahDiskonHeader * $product->ppn / 100);
+                                        }
                                     @endphp
                                     <tr>
                                         <input type="text" name="preorder" value="{{ $preorder->id }}" hidden>

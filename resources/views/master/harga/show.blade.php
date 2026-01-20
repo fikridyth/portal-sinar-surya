@@ -125,6 +125,10 @@
                                                     $hargaSetelahDiskon = round($product->harga_pokok);
                                                 }
 
+                                                if ($product->ppn > 0) {
+                                                    $hargaSetelahDiskon += round($hargaSetelahDiskon * $product->ppn / 100);
+                                                }
+
                                                 $roundedPrice = ((($hargaSetelahDiskon) * $product->profit) / 100) + $hargaSetelahDiskon;
                                                 $roundedValue = round($roundedPrice / 50) * 50
                                                 // if (strlen(($hargaSetelahDiskon)) >= 6) {

@@ -1063,6 +1063,7 @@ class PreOrderController extends Controller
         $preorder = Preorder::findOrFail($id);
         $detail   = json_decode($preorder->detail, true);
         $grandTotal = 0;
+        // dd($request->all(), $detail);
 
         foreach ($detail as $key => $item) {
             $qty       = (float) $item['order'];
@@ -1073,8 +1074,10 @@ class PreOrderController extends Controller
             if ($valuePpn > 0) {
                 $ppnAmount = $basePrice * ($valuePpn / 100);
                 $priceWithPpn = $basePrice + $ppnAmount;
+                Product::where('kode', $item['kode'])->update(['ppn' => 11]);
             } else {
                 $priceWithPpn = $oldPrice;
+                Product::where('kode', $item['kode'])->update(['ppn' => 0]);
             }
 
             // Hitung total per item
