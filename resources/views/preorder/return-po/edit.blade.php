@@ -83,14 +83,25 @@
                                                             <td class="text-center">{{ $loop->iteration }}</td>
                                                             <td class="text-center">{{ $data['kode'] }}</td>
                                                             <td>{{ $data['nama'] . '/' . $data['unit_jual'] }}</td>
-                                                            <td class="text-center">
-                                                                <input type="number" style="width: 70px" name="qty[]" value="{{ $data['order'] }}" class="order-input" id="order-input-{{ $no }}"
-                                                                    onblur="handleBlurOrder({{ $no }}, '{{ $data['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $data['order'] }}')" onfocus="this.value = '';">
-                                                            </td>
-                                                            <td class="text-center">
-                                                                <input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input" id="price-input-{{ $no }}"
-                                                                    onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')" onfocus="this.value = '';">
-                                                            </td>
+                                                            @if($jabatan == 'OWNER')
+                                                                <td class="text-center">
+                                                                    <input type="number" style="width: 70px" name="qty[]" value="{{ $data['order'] }}" class="order-input" id="order-input-{{ $no }}"
+                                                                        onblur="handleBlurOrder({{ $no }}, '{{ $data['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $data['order'] }}', '{{ $jabatan }}')" onfocus="this.value = '';">
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <input type="number" style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input" id="price-input-{{ $no }}"
+                                                                        onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')" onfocus="this.value = '';">
+                                                                </td>
+                                                            @else
+                                                                <td class="text-center">
+                                                                    <input type="number" style="width: 70px" name="qty[]" value="{{ $data['order'] }}" class="order-input" id="order-input-{{ $no }}"
+                                                                        onblur="handleBlurOrder({{ $no }}, '{{ $data['order'] }}')" onkeydown="handleEnterOrder(event, {{ $no }}, '{{ $data['order'] }}', '{{ $jabatan }}')" onfocus="this.value = '';">
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <input type="number" readonly style="width: 120px" name="harga[]" value="{{ $data['price'] }}" class="price-input readonly-input" id="price-input-{{ $no }}"
+                                                                        onblur="handleBlurPrice({{ $no }}, '{{ $data['price'] }}')" onkeydown="handleEnterPrice(event, {{ $no }}, '{{ $data['price'] }}')">
+                                                                </td>
+                                                            @endif
                                                             <td class="text-end">{{ number_format($data['order'] * $data['price']) }}</td>
                                                             <td class="text-center">
                                                                 <a href="#" class="btn btn-danger btn-sm delete-row" data-index="{{ $index }}">HAPUS</a>
@@ -179,7 +190,7 @@
             });
         });
 
-        function handleEnterOrder(event, no, originalValue) {
+        function handleEnterOrder(event, no, originalValue, jabatan) {
             if (event.key === 'Enter') {
                 var inputField = document.getElementById('order-input-' + no);
                 
@@ -188,7 +199,11 @@
                     inputField.value = originalValue;
                 }
 
-                document.getElementById('price-input-' + no).focus();
+                if (jabatan === 'OWNER') {
+                    document.getElementById('price-input-' + no).focus();
+                } else {
+                    document.getElementById('save-row-' + no).click();
+                }
             }
         }
 

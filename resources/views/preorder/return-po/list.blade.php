@@ -28,13 +28,8 @@
                                                 <td class="text-center">{{ $retur->date }}</td>
                                                 <td class="text-center">{{ $retur->jam }}</td>
                                                 <td class="text-center"><input type="checkbox" class="preorder-checkbox" data-detail="{{ json_encode($retur->detail) }}" data-total="{{ $retur->total }}"></td>
-                                                @if ($jabatan == 'OWNER')
-                                                    <td class="text-center"><input type="checkbox" class="edit-checkbox" data-detail="{{ enkrip($retur->id) }}"></td>
-                                                    <td class="text-center"><input type="checkbox" class="delete-checkbox"></td>
-                                                @else
-                                                    <td class="text-center"><input type="checkbox" class="show-checkbox" data-detail="{{ enkrip($retur->id) }}"></td>
-                                                    <td class="text-center"><input type="checkbox" disabled class="delete-checkbox"></td>
-                                                @endif
+                                                <td class="text-center"><input type="checkbox" class="edit-checkbox" data-detail="{{ enkrip($retur->id) }}"></td>
+                                                <td class="text-center"><input type="checkbox" class="delete-checkbox"></td>
                                             </tr>
                                         @endforeach
                                     </tbody>

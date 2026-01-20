@@ -1889,8 +1889,9 @@ class PreOrderController extends Controller
         $titleHeader = 'DAFTAR KEMBALI BARANG';
 
         $retur = Pengembalian::find($id);
+        $jabatan = auth()->user()->jabatan;
 
-        return view('preorder.return-po.edit', compact('title', 'titleHeader', 'retur'));
+        return view('preorder.return-po.edit', compact('title', 'titleHeader', 'retur', 'jabatan'));
     }
 
     public function daftarReceiveSupplier($id, $sup)

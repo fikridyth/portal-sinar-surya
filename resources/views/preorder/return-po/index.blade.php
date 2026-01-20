@@ -33,24 +33,15 @@
                                 <div class="row align-items-center mt-1">
                                     <label class="col-3 col-form-label">NAMA SUPPLIER</label>
                                     <div class="col-7">
-                                        @if ($jabatan == 'OWNER')
-                                            <form id="supplier-form" action="{{ route('create-return-po') }}" method="POST">
-                                                @csrf
-                                                <select id="supplier-select" name="id_supplier" required class="supplier-select btn-block">
-                                                    <option value=""></option>
-                                                    @foreach ($suppliers as $supplier)
-                                                        <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </form>
-                                        @else
-                                            <select id="supplier-select" disabled name="id_supplier" required class="supplier-select btn-block">
+                                        <form id="supplier-form" action="{{ route('create-return-po') }}" method="POST">
+                                            @csrf
+                                            <select id="supplier-select" name="id_supplier" required class="supplier-select btn-block">
                                                 <option value=""></option>
                                                 @foreach ($suppliers as $supplier)
                                                     <option value="{{ $supplier->id }}">{{ $supplier->nomor }} - {{ $supplier->nama }}</option>
                                                 @endforeach
                                             </select>
-                                        @endif
+                                        </form>
                                     </div>
                                 </div>
 
