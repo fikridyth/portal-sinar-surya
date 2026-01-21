@@ -511,7 +511,7 @@
                         <input type="text" id="nama_supplier"  value="{{ $product->supplier->nama }}" readonly class="form-control readonly-input" autocomplete="off" />
                     </div>
                     <div class="col-2">
-                        <a href="{{ route('master.product.index') }}" class="btn btn-primary">LIST INVENTORY</a>
+                        <button disabled class="btn btn-primary">LIST INVENTORY</button>
                     </div>
                 </div>
             {{-- end border --}}

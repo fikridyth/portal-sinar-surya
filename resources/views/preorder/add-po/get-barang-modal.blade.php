@@ -73,23 +73,27 @@
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-end fw-bold">TOTAL</td>
+                                <td class="text-start fw-bold" id="grand-total">0.00</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
 
             <div class="custom-modal-footer d-flex justify-content-center">
-                <button type="button" class="btn btn-secondary mx-5" id="cancelPoModal">
-                    KEMBALI
+                <button type="submit" class="btn btn-primary mx-5">
+                    BUAT PO
                 </button>
                 <button type="submit" formaction="{{ route('preorder.add-po.cetak') }}" formmethod="POST" formtarget="_blank" class="btn btn-warning mx-2">
                     CETAK
                 </button>
-                <button type="submit" class="btn btn-primary mx-5">
-                    PROSES
+                <button type="button" class="btn btn-secondary mx-5" id="cancelPoModal">
+                    KEMBALI
                 </button>
             </div>
-
         </form>
-
     </div>
 </div>

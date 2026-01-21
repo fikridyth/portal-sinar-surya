@@ -1087,13 +1087,15 @@ class PreOrderController extends Controller
             $item['is_ppn']     = $valuePpn;
             $item['old_price']  = round($basePrice);
             $item['price']      = round($priceWithPpn);
-            $item['field_total']= round($fieldTotal);
+            if ($item['field_total'] > 0) {
+                $item['field_total'] = round($fieldTotal);
+            }
 
             // Simpan kembali ke detail
             $detail[$key] = $item;
 
             // Akumulasi grand total
-            $grandTotal += $fieldTotal;
+            $grandTotal += $item['field_total'];
         }
 
         // Update preorder

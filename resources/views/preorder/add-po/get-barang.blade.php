@@ -589,6 +589,16 @@
 
             row.querySelector('.total').value = formatNumber(total);
             row.querySelector('.fieldtotal').value = total;
+            updateGrandTotal();
+        }
+        
+        function updateGrandTotal() {
+            let grandTotal = 0;
+            document.querySelectorAll('.fieldtotal').forEach(input => {
+                grandTotal += parseFloat(input.value) || 0;
+            });
+
+            document.getElementById('grand-total').textContent = grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 2 });
         }
     </script>
 @endsection

@@ -675,7 +675,10 @@
                             class="form-control readonly-input" autocomplete="off" />
                     </div>
                     <div class="col-2">
-                        <a href="{{ route('master.product.index') }}" class="btn btn-primary">LIST INVENTORY</a>
+                        <a href="{{ route('master.product.index', ['search' => $product->nama]) }}"
+                            class="btn btn-primary">
+                            LIST INVENTORY
+                        </a>
                     </div>
                 </div>
                 {{-- end border --}}

@@ -42,6 +42,24 @@
     {{ $dataTable->scripts() }}
 
     <script>
+        const initialSearch = @json(request('search'));
+        $(document).ready(function () {
+            if (!initialSearch) return;
+
+            const table = window.LaravelDataTables["product-table"];
+
+            // Tunggu sampai DataTable benar-benar siap
+            table.on('init', function () {
+                table.search(initialSearch).draw();
+
+                const searchInput = document.querySelector('#product-table_filter input');
+                if (searchInput) {
+                    searchInput.value = initialSearch;
+                    searchInput.focus();
+                }
+            });
+        });
+
         const barcodeValues = [];
         let inputTimeout;
         document.getElementById('barcodeInput').addEventListener('input', function(event) {
