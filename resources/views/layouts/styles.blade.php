@@ -35,7 +35,16 @@
     body {
         font-weight: 700; /* bold */
     }
-    
+
+    table {
+        font-weight: 700; /* semua teks dalam tabel bold */
+    }
+
+    table th,
+    table td {
+        font-weight: 700; /* backup jika ingin lebih spesifik */
+    }
+
     /* uppercase text */
     .uppercase-input {
         text-transform: uppercase
