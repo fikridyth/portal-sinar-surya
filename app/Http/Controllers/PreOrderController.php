@@ -1603,7 +1603,8 @@ class PreOrderController extends Controller
         foreach($hargaSementaras as $harga) {
             $product = Product::find($harga->id_product);
             $product->update([
-                'harga_jual' => $product->harga_jual_lama
+                'harga_jual' => $product->harga_jual_lama,
+                'profit' => $product->mark_up_lama
             ]);
         }
         $hargaSementarapos = HargaSementaraPos::where('nomor_po', $preorder->nomor_po)->get();
@@ -1740,6 +1741,7 @@ class PreOrderController extends Controller
             $product = Product::where('kode', $new['kode'])->first();
             $product->update([
                 'harga_jual_lama' => $product->harga_jual,
+                'mark_up_lama' => $product->profit,
                 'harga_jual' => $new['harga_jual'],
                 'profit' => $new['mark_up'],
                 'updated_at' => now(),
