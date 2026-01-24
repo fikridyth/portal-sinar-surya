@@ -296,6 +296,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
         Route::put('/user/{id}/update', [UserController::class, 'update'])->name('user.update');
         Route::delete('/user/{id}/destroy', [UserController::class, 'destroy'])->name('user.destroy');
+        Route::post('/cek-password-owner', [UserController::class, 'cekPasswordOwner']);
         
         // Role
         Route::get('/role', [UserController::class, 'indexRole'])->name('role.index');

@@ -1713,7 +1713,7 @@ class PreOrderController extends Controller
                 'mark_up' => $mark_up
             ];
         }, $sortName, $sortCode, $sortPrice, $request->harga_jual, $request->mark_up);
-        // dd($newData);
+        dd($newData);
 
         $maxNo = HargaSementara::max('nomor');
         $getNext = $maxNo + 1;

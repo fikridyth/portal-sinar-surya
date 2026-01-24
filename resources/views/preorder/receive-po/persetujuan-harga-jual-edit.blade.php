@@ -85,7 +85,7 @@
                                         <input type="text" hidden name="harga_pokok[{{ $index }}]" id="persetujuan_harga_pokok_{{ $index }}" value="{{ $dtl['price'] }}">
                                         <input type="text" hidden name="nama[{{ $index }}]" value="{{ $dtl['nama'] . '/' . $dtl['unit_jual'] . '/' . $dtl['kode'] . '/' . $dtl['price'] }}">
                                         <td class="text-center">{{ number_format($product->harga_lama) }}</td>
-                                        <td class="text-center" style="color: <?= $product->harga_lama >= $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($hargaSetelahDiskonHeader) }}</td>
+                                        <td class="text-center" style="color: <?= $product->harga_lama > $dtl['price'] ? 'red' : 'black'; ?>">{{ number_format($hargaSetelahDiskonHeader) }}</td>
                                         <td class="text-center">{{ number_format((($dtl['price'] - $product->harga_lama) / $product->harga_lama) * 100, 2) }}</td>
                                         <td class="text-center" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($product->harga_jual) }}</td>
                                         
@@ -106,7 +106,7 @@
 
                                         <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
                                         {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
-                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" value="{{ $index }}" class="select-product"></td>
+                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" data-harga-setelah-diskon="{{ $hargaSetelahDiskonHeader }}" data-harga-jual="{{ $product->harga_jual }}" value="{{ $index }}" class="select-product"></td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -180,18 +180,18 @@
                                             <input type="text" hidden name="harga_pokok[${indexCounter}]" id="persetujuan_harga_pokok_${indexCounter}" value="${hargaSetelahDiskon}">
                                             <td class="text-center">${number_format(product.harga_lama)}</td>
                                             <td class="text-center"
-                                                style="color: ${product.harga_lama >= hargaSetelahDiskon ? 'red' : 'black'}">
+                                                style="color: ${product.harga_lama > hargaSetelahDiskon ? 'red' : 'black'}">
                                                 ${number_format(hargaSetelahDiskon)}
                                             </td>
                                             <td class="text-center">${number_format_mark_up(((hargaSetelahDiskon - product.harga_lama) / product.harga_lama) * 100)}</td>
-                                            <td class="text-center">${number_format(product.harga_jual)}</td>
+                                            <td class="text-center" style="color: ${hargaSetelahDiskon > product.harga_jual ? 'red' : 'black'}">${number_format(product.harga_jual)}</td>
                                             <td class="text-center">
                                                 <input type="text" name="harga_jual[${indexCounter}]" id="persetujuan_harga_jual_${indexCounter}" value="${hargaKelipatan}" size="10">
                                             </td>
                                             <td class="text-center">
                                                 <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${product.profit}" size="5">
                                             </td>
-                                            <td class="text-center"><input type="checkbox" class="select-product" value="${indexCounter}" checked></td>
+                                            <td class="text-center"><input type="checkbox" class="select-product" data-harga-setelah-diskon="${hargaSetelahDiskon}" data-harga-jual="${product.harga_jual}" value="${indexCounter}" checked></td>
                                         `;
                                         // tbody.appendChild(newRow);
                                         parentRow.insertAdjacentElement('afterend', newRow);
@@ -278,24 +278,110 @@
         }
 
         const form = document.getElementById('filter-form');
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
             const checkboxes = document.querySelectorAll('.select-product');
-            console.log(checkboxes);
+            let adaHargaLebihKecil = false;
+
             checkboxes.forEach(checkbox => {
-                if (!checkbox.checked) {
-                    // Hapus input harga_sementara yang tidak dicentang
-                    const hiddenInput = document.querySelector(`input[name="harga_pokok[${checkbox.value}]"]`);
-                    const hiddenInput2 = document.querySelector(`input[name="nama[${checkbox.value}]"]`);
-                    const hiddenInput3 = document.querySelector(`input[name="harga_jual[${checkbox.value}]"]`);
-                    const hiddenInput4 = document.querySelector(`input[name="mark_up[${checkbox.value}]"]`);
-                    if (hiddenInput) {
-                        hiddenInput.remove();
-                        hiddenInput2.remove();
-                        hiddenInput3.remove();
-                        hiddenInput4.remove();
+                if (checkbox.checked) {
+                    const index = checkbox.value;
+
+                    const hargaSetelahDiskon = parseFloat(
+                        checkbox.dataset.hargaSetelahDiskon
+                    );
+
+                    const hargaJual = parseFloat(
+                        checkbox.dataset.hargaJual
+                    );
+
+                    // const hargaJual = parseFloat(
+                    //     document.getElementById(`persetujuan_harga_jual_${index}`).value
+                    // );
+
+                    if (hargaJual < hargaSetelahDiskon) {
+                        adaHargaLebihKecil = true;
                     }
                 }
             });
+
+            const lanjutSubmit = () => {
+                checkboxes.forEach(checkbox => {
+                    if (!checkbox.checked) {
+                        const index = checkbox.value;
+                        [
+                            `input[name="harga_pokok[${index}]"]`,
+                            `input[name="nama[${index}]"]`,
+                            `input[name="harga_jual[${index}]"]`,
+                            `input[name="mark_up[${index}]"]`
+                        ].forEach(selector => {
+                            const el = document.querySelector(selector);
+                            if (el) el.remove();
+                        });
+                    }
+                });
+
+                form.submit();
+            };
+
+            if (adaHargaLebihKecil) {
+                Swal.fire({
+                    title: 'Konfirmasi Harga',
+                    text: 'Ada harga jual di bawah harga preorder. Tetap lanjutkan?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, lanjutkan',
+                    cancelButtonText: 'Tidak'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Masukkan Password Owner',
+                            input: 'password',
+                            inputPlaceholder: 'Password',
+                            showCancelButton: true,
+                            confirmButtonText: 'Verifikasi',
+                            preConfirm: (password) => {
+                                if (!password) {
+                                    Swal.showValidationMessage('Password wajib diisi');
+                                }
+                                return password;
+                            }
+                        }).then(resultPassword => {
+                            if (resultPassword.isConfirmed) {
+                                fetch('/master/cek-password-owner', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document
+                                            .querySelector('meta[name="csrf-token"]')
+                                            .getAttribute('content')
+                                    },
+                                    body: JSON.stringify({
+                                        password: resultPassword.value
+                                    })
+                                })
+                                .then(res => {
+                                    if (!res.ok) throw new Error('Password salah');
+                                    return res.json();
+                                })
+                                .then(data => {
+                                    lanjutSubmit();
+                                })
+                                .catch(() => {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: 'Password owner salah'
+                                    });
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                lanjutSubmit();
+            }
         });
     </script>
 @endsection

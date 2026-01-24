@@ -109,4 +109,28 @@ class UserController extends Controller
             ->with('alert.status', '00')
             ->with('alert.message', "Update Otorisasi Success!");
     }
+
+    public function cekPasswordOwner(Request $request)
+    {
+        $password = $request->input('password'); // WAJIB
+
+        if (!$password) {
+            return response()->json([
+                'message' => 'Password kosong'
+            ], 422);
+        }
+
+        $ownerPassword = User::where('JABATAN', 'OWNER')
+            ->pluck('show_password')
+            ->first();
+
+        if (strtoupper($password) === strtoupper($ownerPassword)) {
+            return response()->json(['status' => 'success']);
+        }
+
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Password salah'
+        ], 401);
+    }
 }

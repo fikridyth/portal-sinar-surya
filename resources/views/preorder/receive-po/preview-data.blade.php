@@ -48,7 +48,7 @@
                                             @if ($dtl['price'] > $product->harga_lama)
                                                 <td class="text-end" style="background-color: red; color: white;">{{ number_format($dtl['price']) }}</td>
                                             @else
-                                                <td class="text-end" style="color: <?= $changeTextColor < 0 ? 'red' : 'black'; ?>">{{ number_format($dtl['price']) }}</td>
+                                                <td class="text-end" style="color: black">{{ number_format($dtl['price']) }}</td>
                                             @endif 
                                         @else
                                             <td class="text-end">{{ number_format($dtl['price']) }}</td>
