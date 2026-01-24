@@ -1599,8 +1599,22 @@ class PreOrderController extends Controller
     {
         $id = dekrip($id);
         $preorder = Preorder::find($id);
-        HargaSementara::where('nomor_po', $preorder->nomor_po)->delete();
-        HargaSementaraPos::where('nomor_po', $preorder->nomor_po)->delete();
+        $hargaSementaras = HargaSementara::where('nomor_po', $preorder->nomor_po)->get();
+        foreach($hargaSementaras as $harga) {
+            $product = Product::find($harga->id_product);
+            $product->update([
+                'harga_jual' => $product->harga_jual_lama
+            ]);
+        }
+        $hargaSementarapos = HargaSementaraPos::where('nomor_po', $preorder->nomor_po)->get();
+        foreach($hargaSementarapos as $harga2) {
+            $productPos = ProductPos::find($harga2->id_product);
+            $productPos->update([
+                'harga_jual' => $product->harga_jual_lama
+            ]);
+        }
+        $hargaSementaras->each->delete();
+        $hargaSementarapos->each->delete();
         $preorder->update([
             'is_persetujuan' => null
         ]);
@@ -1724,20 +1738,20 @@ class PreOrderController extends Controller
             // dd($new);
             // update harga baru untuk master product
             $product = Product::where('kode', $new['kode'])->first();
-            // $product->update([
-            //     // 'harga_pokok' => $new['harga_pokok'],
-            //     'harga_jual' => $new['harga_jual'],
-            //     'profit' => $new['mark_up'],
-            //     'updated_at' => now(),
-            //     'is_transfer' => null,
-            // ]);
-            // $productPos = ProductPos::where('kode', $new['kode'])->first();
-            // $productPos->update([
-            //     // 'harga_pokok' => $new['harga_pokok'],
-            //     'harga_jual' => $new['harga_jual'],
-            //     'profit' => $new['mark_up'],
-            //     'updated_at' => now()
-            // ]);
+            $product->update([
+                'harga_jual_lama' => $product->harga_jual,
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now(),
+                'is_transfer' => null,
+            ]);
+            $productPos = ProductPos::where('kode', $new['kode'])->first();
+            $productPos->update([
+                'harga_jual_lama' => $productPos->harga_jual,
+                'harga_jual' => $new['harga_jual'],
+                'profit' => $new['mark_up'],
+                'updated_at' => now()
+            ]);
 
             HargaSementara::create([
                 'id_supplier' => $product->id_supplier,
