@@ -1648,12 +1648,15 @@ class PreOrderController extends Controller
     {
         // ubah hanya data yang dicentang
         // kirim ke pos hasil update
-        // dd($request->all());
+        // dd($request->input('nama'));
         $validator = Validator::make($request->all(), [
             'mark_up.*' => 'required|numeric|min:0',
         ]);
 
         // Check if validation fails
+        if ($request->input('nama') == null) {
+            return Redirect::back()->with('alert.status', '99')->with('alert.message', "Checklist data terlebih dahulu!");
+        }
         if ($validator->fails()) {
             return Redirect::back()->with('alert.status', '99')->with('alert.message', "Mark Up Tidak Boleh Minus!");
         }

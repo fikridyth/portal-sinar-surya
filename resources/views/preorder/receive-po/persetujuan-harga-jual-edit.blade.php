@@ -106,7 +106,7 @@
 
                                         <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ $product->profit }}" size="5"></td>
                                         {{-- <td class="text-center"><input type="text" name="mark_up[{{ $index }}]" id="persetujuan_mark_up_{{ $index }}" onkeypress='return validateNumberInput(event)' value="{{ number_format((($product->harga_jual - $dtl['price']) / $dtl['price']) * 100, 2) }}" size="5"></td> --}}
-                                        <td class="text-center"><input type="checkbox" data-kode="{{ $dtl['kode'] }}" data-harga-setelah-diskon="{{ $hargaSetelahDiskonHeader }}" data-harga-jual="{{ $product->harga_jual }}" value="{{ $index }}" class="select-product"></td>
+                                        <td class="text-center"><input type="checkbox" data-index="{{ $index }}" data-kode="{{ $dtl['kode'] }}" data-harga-setelah-diskon="{{ $hargaSetelahDiskonHeader }}" data-harga-jual="{{ $product->harga_jual }}" data-nama="{{ $product->nama }}/{{ $product->unit_jual }}" value="{{ $index }}" class="select-product"></td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -126,7 +126,7 @@
                             <a class="btn btn-danger" href="{{ route('persetujuan-harga-jual') }}">KEMBALI</a>
                         </div>
                         <div class="mx-2">
-                            <button type="submit" disabled id="ganti-harga-btn" class="btn btn-primary">GANTI HARGA</button>
+                            <button type="submit" id="ganti-harga-btn" class="btn btn-primary">GANTI HARGA</button>
                         </div>
                     </div>
                 </div>
@@ -191,7 +191,7 @@
                                             <td class="text-center">
                                                 <input type="text" name="mark_up[${indexCounter}]" id="persetujuan_mark_up_${indexCounter}" value="${product.profit}" size="5">
                                             </td>
-                                            <td class="text-center"><input type="checkbox" class="select-product" data-harga-setelah-diskon="${hargaSetelahDiskon}" data-harga-jual="${product.harga_jual}" value="${indexCounter}" checked></td>
+                                            <td class="text-center"><input type="checkbox" class="select-product" data-kode="${product.kode}" data-harga-setelah-diskon="${hargaSetelahDiskon}" data-harga-jual="${product.harga_jual}" value="${indexCounter}" data-nama="${product.nama}/${product.unit_jual}" data-index="${indexCounter}" checked></td>
                                         `;
                                         // tbody.appendChild(newRow);
                                         parentRow.insertAdjacentElement('afterend', newRow);
@@ -281,60 +281,119 @@
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const checkboxes = document.querySelectorAll('.select-product');
-            let adaHargaLebihKecil = false;
+            let adaHargaKurang = false;
+            let produkBermasalah = [];
 
-            checkboxes.forEach(checkbox => {
+            document.querySelectorAll('.select-product').forEach(function (checkbox) {
+                const hargaSetelahDiskon = parseFloat(checkbox.dataset.hargaSetelahDiskon);
+                let hargaUntukValidasi;
+
                 if (checkbox.checked) {
-                    const index = checkbox.value;
-
-                    const hargaSetelahDiskon = parseFloat(
-                        checkbox.dataset.hargaSetelahDiskon
+                    // Ambil dari input harga_jual (roundedValue)
+                    const index = checkbox.dataset.index;
+                    hargaUntukValidasi = parseFloat(
+                        document.getElementById('persetujuan_harga_jual_' + index).value
                     );
+                } else {
+                    // Ambil dari harga_jual product lama
+                    hargaUntukValidasi = parseFloat(checkbox.dataset.hargaJual);
+                }
 
-                    const hargaJual = parseFloat(
-                        checkbox.dataset.hargaJual
-                    );
-
-                    // const hargaJual = parseFloat(
-                    //     document.getElementById(`persetujuan_harga_jual_${index}`).value
-                    // );
-
-                    if (hargaJual < hargaSetelahDiskon) {
-                        adaHargaLebihKecil = true;
-                    }
+                if (hargaUntukValidasi < hargaSetelahDiskon) {
+                    adaHargaKurang = true;
+                    // Push sebagai objek supaya mudah akses index & nama
+                    produkBermasalah.push({
+                        nama: checkbox.dataset.nama,
+                        index: checkbox.dataset.index
+                    });
                 }
             });
 
-            const lanjutSubmit = () => {
-                checkboxes.forEach(checkbox => {
-                    if (!checkbox.checked) {
-                        const index = checkbox.value;
-                        [
-                            `input[name="harga_pokok[${index}]"]`,
-                            `input[name="nama[${index}]"]`,
-                            `input[name="harga_jual[${index}]"]`,
-                            `input[name="mark_up[${index}]"]`
-                        ].forEach(selector => {
-                            const el = document.querySelector(selector);
-                            if (el) el.remove();
-                        });
-                    }
+            if (adaHargaKurang) {
+                let listProduk = '<ul>';
+                produkBermasalah.forEach(function(item) {
+                    listProduk += `<li class="text-start">
+                        <a href="#" class="focus-harga" data-index="${item.index}">${item.nama}</a>
+                    </li>`;
                 });
+                listProduk += '</ul>';
 
-                form.submit();
-            };
-
-            if (adaHargaLebihKecil) {
+                // event listener untuk klik link di SweetAlert
+                // karena konten Swal dinamis, pakai setTimeout untuk memastikan DOM ada
                 Swal.fire({
-                    title: 'Konfirmasi Harga',
-                    text: 'Ada harga jual di bawah harga preorder. Tetap lanjutkan?',
+                    title: 'Konfirmasi',
+                    html: `
+                        Terdapat harga jual yang lebih kecil dari harga preorder<br><br>
+                        ${listProduk}
+                    `,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, lanjutkan',
-                    cancelButtonText: 'Tidak'
-                }).then(result => {
+                    cancelButtonText: 'Batal',
+                    didOpen: () => {
+                        // event listener klik link
+                        document.querySelectorAll('.focus-harga').forEach(link => {
+                            link.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const index = this.dataset.index;
+                                const input = document.getElementById('persetujuan_harga_jual_' + index);
+                                if (input) {
+                                    Swal.close();
+                                    setTimeout(() => {
+                                        input.focus();
+                                        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }, 500);
+                                }
+                            });
+                        });
+                    }
+                }).then((result) => {
                     if (result.isConfirmed) {
+                        // e.target.submit(); // lanjut submit
+                        const checkboxes = document.querySelectorAll('.select-product');
+                        let adaHargaLebihKecil = false;
+
+                        checkboxes.forEach(checkbox => {
+                            if (checkbox.checked) {
+                                const index = checkbox.value;
+
+                                const hargaSetelahDiskon = parseFloat(
+                                    checkbox.dataset.hargaSetelahDiskon
+                                );
+
+                                // const hargaJual = parseFloat(
+                                //     checkbox.dataset.hargaJual
+                                // );
+
+                                const hargaJual = parseFloat(
+                                    document.getElementById(`persetujuan_harga_jual_${index}`).value
+                                );
+
+                                if (hargaJual < hargaSetelahDiskon) {
+                                    adaHargaLebihKecil = true;
+                                }
+                            }
+                        });
+
+                        const lanjutSubmit = () => {
+                            checkboxes.forEach(checkbox => {
+                                if (!checkbox.checked) {
+                                    const index = checkbox.value;
+                                    [
+                                        `input[name="harga_pokok[${index}]"]`,
+                                        `input[name="nama[${index}]"]`,
+                                        `input[name="harga_jual[${index}]"]`,
+                                        `input[name="mark_up[${index}]"]`
+                                    ].forEach(selector => {
+                                        const el = document.querySelector(selector);
+                                        if (el) el.remove();
+                                    });
+                                }
+                            });
+
+                            form.submit();
+                        };
+
                         Swal.fire({
                             title: 'Masukkan Password Owner',
                             input: 'password',
@@ -380,7 +439,108 @@
                     }
                 });
             } else {
-                lanjutSubmit();
+                e.target.submit(); // aman, langsung submit
+                const checkboxes = document.querySelectorAll('.select-product');
+                let adaHargaLebihKecil = false;
+
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        const index = checkbox.value;
+
+                        const hargaSetelahDiskon = parseFloat(
+                            checkbox.dataset.hargaSetelahDiskon
+                        );
+
+                        // const hargaJual = parseFloat(
+                        //     checkbox.dataset.hargaJual
+                        // );
+
+                        const hargaJual = parseFloat(
+                            document.getElementById(`persetujuan_harga_jual_${index}`).value
+                        );
+
+                        if (hargaJual < hargaSetelahDiskon) {
+                            adaHargaLebihKecil = true;
+                        }
+                    }
+                });
+
+                const lanjutSubmit = () => {
+                    checkboxes.forEach(checkbox => {
+                        if (!checkbox.checked) {
+                            const index = checkbox.value;
+                            [
+                                `input[name="harga_pokok[${index}]"]`,
+                                `input[name="nama[${index}]"]`,
+                                `input[name="harga_jual[${index}]"]`,
+                                `input[name="mark_up[${index}]"]`
+                            ].forEach(selector => {
+                                const el = document.querySelector(selector);
+                                if (el) el.remove();
+                            });
+                        }
+                    });
+
+                    form.submit();
+                };
+
+                if (adaHargaLebihKecil) {
+                    Swal.fire({
+                        title: 'Konfirmasi Harga',
+                        text: 'Ada harga jual di bawah harga preorder. Tetap lanjutkan?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, lanjutkan',
+                        cancelButtonText: 'Tidak'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Masukkan Password Owner',
+                                input: 'password',
+                                inputPlaceholder: 'Password',
+                                showCancelButton: true,
+                                confirmButtonText: 'Verifikasi',
+                                preConfirm: (password) => {
+                                    if (!password) {
+                                        Swal.showValidationMessage('Password wajib diisi');
+                                    }
+                                    return password;
+                                }
+                            }).then(resultPassword => {
+                                if (resultPassword.isConfirmed) {
+                                    fetch('/master/cek-password-owner', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document
+                                                .querySelector('meta[name="csrf-token"]')
+                                                .getAttribute('content')
+                                        },
+                                        body: JSON.stringify({
+                                            password: resultPassword.value
+                                        })
+                                    })
+                                    .then(res => {
+                                        if (!res.ok) throw new Error('Password salah');
+                                        return res.json();
+                                    })
+                                    .then(data => {
+                                        lanjutSubmit();
+                                    })
+                                    .catch(() => {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Gagal',
+                                            text: 'Password owner salah'
+                                        });
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    lanjutSubmit();
+                }
             }
         });
     </script>

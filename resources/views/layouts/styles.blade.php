@@ -32,6 +32,10 @@
 <link href="{{ asset('assets/css/select2.min.css') }}" rel="stylesheet" />
 
 <style>
+    body {
+        font-weight: 700; /* bold */
+    }
+    
     /* uppercase text */
     .uppercase-input {
         text-transform: uppercase
