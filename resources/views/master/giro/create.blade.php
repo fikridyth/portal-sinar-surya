@@ -41,7 +41,7 @@
                         <label class="form-label h6 mt-2" for="nama_sumber">SATU BUKU ADA</label>
                     </div>
                     <div class="col-3">
-                        <input type="text" id="nama" name="count" value="" required class="form-control" autocomplete="off" />
+                        <input type="text" id="nama" name="count" value="25" readonly class="form-control" autocomplete="off" />
                     </div>
                     <div class="col-2">
                         <label class="form-label h6 mt-2" for="nama_sumber">LEMBAR</label>

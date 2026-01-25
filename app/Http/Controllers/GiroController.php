@@ -75,9 +75,10 @@ class GiroController extends Controller
     public function index()
     {
         $title = 'Master Giro';
+        $titleHeader = 'BUKU CEK / GIRO';
         $banks = Bank::where('status', 1)->get();
 
-        return view('master.giro.index', compact('title', 'banks'));
+        return view('master.giro.index', compact('title', 'banks', 'titleHeader'));
     }
 
     public function getData(Request $request)
@@ -87,7 +88,7 @@ class GiroController extends Controller
         $rekening = $request->input('rekening');
 
         // Fetch data from database
-        $dataHeader = GiroHeader::where('id_bank', $idBank)->where('kode', $rekening)->orderBy('dari', 'desc')->limit(10)->get();
+        $dataHeader = GiroHeader::where('id_bank', $idBank)->where('kode', $rekening)->orderBy('dari', 'desc')->get();
         foreach ($dataHeader as $data) {
             $data->id_enkrip = enkrip($data->id);
             // dd($data);

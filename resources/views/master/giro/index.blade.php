@@ -1,22 +1,22 @@
 @extends('main')
+@section('styles')
+    <style>
+        #loading {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+    </style>
+@endsection
 
 @section('content')
-    <div class="container mb-7">
-        <div class="d-flex align-items-center justify-content-center">
-            <div class="mt-4">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active h3 text-center" aria-current="page">BUKU CEK / GIRO
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-
-        <div class="card">
+    <div class="container">
+        <div class="card mt-n2">
             <div class="card-body">
-                <div class="d-flex justify-content-center mb-2">
-                    <div class="form-group">
+                <div class="d-flex justify-content-center">
+                    <div class="form-group mt-n4 mb-n2">
                         <div class="row align-items-center">
                             <label for="nomorSupplier2" class="col-6 col-form-label">Nama Bank</label>
                             <div class="col-6">
@@ -46,22 +46,28 @@
                     </div>
                 </div>
                 <hr>
-                <table id="data-table" class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th class="text-center">KODE</th>
-                            <th class="text-center">DARI NOMOR</th>
-                            <th class="text-center">SAMPAI NOMOR</th>
-                            <th class="text-center">KADALUWARSA</th>
-                            <th class="text-center">C/G</th>
-                            <th class="text-center">STATUS</th>
-                            <th class="text-center">DETAIL</th>
-                            {{-- <th class="text-center">HAPUS</th> --}}
-                        </tr>
-                    </thead>
-                    <tbody id="data-tbody">
-                    </tbody>
-                </table>
+                <div id="loading" class="text-center my-3" style="display: none;">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <div class="mt-2 fw-bold">Mohon tunggu...</div>
+                </div>
+                <div style="overflow-x: auto; height: 650px; border: 1px solid #ccc;">
+                    <table id="data-table" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="text-center">KODE</th>
+                                <th class="text-center">DARI NOMOR</th>
+                                <th class="text-center">SAMPAI NOMOR</th>
+                                <th class="text-center">KADALUWARSA</th>
+                                <th class="text-center">C/G</th>
+                                <th class="text-center">STATUS</th>
+                                <th class="text-center">DETAIL</th>
+                                {{-- <th class="text-center">HAPUS</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody id="data-tbody" style="height: 10px; vertical-align: middle;">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -84,6 +90,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             const bankSelect = document.querySelector('.bank-select');
             const rekeningRadios = document.querySelectorAll('input[name="rekening"]');
+            const loading = document.getElementById('loading');
+            const tbody = document.getElementById('data-tbody');
 
             function updateTable() {
                 const selectedOption = bankSelect.options[bankSelect.selectedIndex];
@@ -92,12 +100,17 @@
                 const rekening = Array.from(rekeningRadios).find(radio => radio.checked)?.value;
 
                 if (idBank && rekening) {
+                    loading.style.display = 'block';
+                    tbody.innerHTML = '';
+
                     fetch(`/master/get-data-giro?id_bank=${idBank}&rekening=${rekening}`)
                         .then(response => response.json())
                         .then(data => {
+                            loading.style.display = 'none';
+
                             const tbody = document.getElementById('data-tbody');
                             tbody.innerHTML = ''; // Clear existing data
-                            
+
                             const row1 = document.createElement('tr');
                             row1.innerHTML = `
                                 <td colspan="8" class="text-center"><a href="giro/create/${dataId}" class="btn btn-sm btn-primary">BUAT GIRO BARU</a></td>
@@ -118,7 +131,10 @@
                                 tbody.appendChild(row2);
                             });
                         })
-                        .catch(error => console.error('Error fetching data:', error));
+                        .catch(error => {
+                            loading.style.display = 'none';
+                            console.error('Error fetching data:', error)
+                        });
                 }
             }
 
